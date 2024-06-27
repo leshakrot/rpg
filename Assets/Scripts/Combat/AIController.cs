@@ -1,5 +1,6 @@
 using RPG.Combat;
 using RPG.Core;
+using RPG.Movement;
 using UnityEngine;
 
 namespace RPG.Control
@@ -11,6 +12,7 @@ namespace RPG.Control
         private Fighter _fighter;
         private GameObject _player;
         private Health _health;
+        private Mover _mover;
 
         private Vector3 _guardLocation;
 
@@ -19,6 +21,9 @@ namespace RPG.Control
             _fighter = GetComponent<Fighter>();
             _player = GameObject.FindWithTag("Player");
             _health = GetComponent<Health>();
+            _mover = GetComponent<Mover>();
+
+            _guardLocation = transform.position;
         }
 
         private void Update()
@@ -31,7 +36,7 @@ namespace RPG.Control
             }
             else
             {
-                _fighter.Cancel();
+                _mover.StartMoveAction(_guardLocation);
             }
         }
 
