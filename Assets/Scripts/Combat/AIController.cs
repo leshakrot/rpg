@@ -1,6 +1,7 @@
 using RPG.Combat;
 using RPG.Core;
 using RPG.Movement;
+using System;
 using UnityEngine;
 
 namespace RPG.Control
@@ -10,6 +11,9 @@ namespace RPG.Control
         [SerializeField] private float _chaseDistance = 5f;
         [SerializeField] private float _suspitionTime = 3f;
 
+        [SerializeField] private PatrolPath _patrolPath;
+        [SerializeField] private float _waypointTolerance = 1f;
+
         private ActionScheduler _actionScheduler;
 
         private Fighter _fighter;
@@ -17,8 +21,9 @@ namespace RPG.Control
         private Health _health;
         private Mover _mover;
 
-        private Vector3 _guardLocation;
+        private Vector3 _guardPosition;
         private float _timeSinceLastSawPlayer = Mathf.Infinity;
+        private int _currentWaypointIndex = 0;
 
         private void Start()
         {
@@ -29,7 +34,7 @@ namespace RPG.Control
             _health = GetComponent<Health>();
             _mover = GetComponent<Mover>();
 
-            _guardLocation = transform.position;
+            _guardPosition = transform.position;
         }
 
         private void Update()
@@ -47,15 +52,42 @@ namespace RPG.Control
             }
             else
             {
-                GuardBehaviour();
+                PatrolBehaviour();
             }
 
             _timeSinceLastSawPlayer += Time.deltaTime;
         }
 
-        private void GuardBehaviour()
+        private void PatrolBehaviour()
         {
-            _mover.StartMoveAction(_guardLocation);
+            Vector3 nextPosition = _guardPosition;
+
+            if(_patrolPath != null)
+            {
+                if (AtWaypoint())
+                {
+                    CycleWaypoint();
+                }
+                nextPosition = GetCurrentWaypoint();
+            }
+
+            _mover.StartMoveAction(nextPosition);
+        }
+
+        private Vector3 GetCurrentWaypoint()
+        {
+            return _patrolPath.GetWaypoint(_currentWaypointIndex);
+        }
+
+        private void CycleWaypoint()
+        {
+            _currentWaypointIndex = _patrolPath.GetNextIndex(_currentWaypointIndex);
+        }
+
+        private bool AtWaypoint()
+        {
+            float distanceToWaypoint = Vector3.Distance(transform.position, GetCurrentWaypoint());
+            return distanceToWaypoint < _waypointTolerance;
         }
 
         private void SuspicionBehaviour()
