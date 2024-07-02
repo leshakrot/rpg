@@ -1,14 +1,16 @@
 using RPG.Core;
 using RPG.Movement;
+using System;
 using UnityEngine;
 
 namespace RPG.Combat
 {
     public class Fighter : MonoBehaviour, IAction
     {
-        [SerializeField] private float _weaponRange = 2f;
         [SerializeField] private float _timeBetweenAttacks = 1f;
-        [SerializeField] private float _weaponDamage = 5f;
+
+        [SerializeField] private Transform _handTransform;
+        [SerializeField] private Weapon _weapon;
 
         private ActionScheduler _actionScheduler;
         private Health _target;
@@ -21,6 +23,14 @@ namespace RPG.Combat
             _actionScheduler = GetComponent<ActionScheduler>();
             _mover = GetComponent<Mover>();
             _animator = GetComponent<Animator>();
+
+            SpawnWeapon();
+        }
+
+        private void SpawnWeapon()
+        {
+            if (_weapon == null) return;
+            _weapon.Spawn(_handTransform, _animator);
         }
 
         private void Update()
@@ -60,7 +70,7 @@ namespace RPG.Combat
 
         private bool GetIsInRange()
         {
-            return Vector3.Distance(transform.position, _target.transform.position) < _weaponRange;
+            return Vector3.Distance(transform.position, _target.transform.position) < _weapon.GetRange();
         }
 
         public bool CanAttack(GameObject combatTarget)
@@ -92,7 +102,7 @@ namespace RPG.Combat
         public void Hit()
         {
             if (_target == null) return;
-            _target.TakeDamage(_weaponDamage);
+            _target.TakeDamage(_weapon.GetDamage());
         }
     }
 }

@@ -34,22 +34,18 @@ namespace RPG.SceneManagement
 
         private IEnumerator Transition()
         {
-            if(_sceneToLoad < 0)
+            if (_sceneToLoad < 0)
             {
+                Debug.LogError("Scene to load not set.");
                 yield break;
             }
-
             DontDestroyOnLoad(gameObject);
-
             Fader fader = FindObjectOfType<Fader>();
 
             yield return fader.FadeOut(_fadeOutTime);
-
             SavingWrapper wrapper = FindObjectOfType<SavingWrapper>();
             wrapper.Save();
-
             yield return SceneManager.LoadSceneAsync(_sceneToLoad);
-
             wrapper.Load();
 
             Portal otherPortal = GetOtherPortal();
@@ -58,7 +54,6 @@ namespace RPG.SceneManagement
             wrapper.Save();
 
             yield return new WaitForSeconds(_fadeWaitTime);
-
             yield return fader.FadeIn(_fadeInTime);
 
             Destroy(gameObject);
