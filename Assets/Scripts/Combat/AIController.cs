@@ -15,6 +15,9 @@ namespace RPG.Control
         [SerializeField] private float _waypointTolerance = 1f;
         [SerializeField] private float _waypointDwellTime = 3f;
 
+        [Range(0,1)]
+        [SerializeField] private float _patrolSpeedFraction = 0.2f;
+
         private ActionScheduler _actionScheduler;
 
         private Fighter _fighter;
@@ -81,7 +84,7 @@ namespace RPG.Control
 
             if(_timeSinceArrivedAtWaypoint > _waypointDwellTime)
             {
-                _mover.StartMoveAction(nextPosition);
+                _mover.StartMoveAction(nextPosition, _patrolSpeedFraction);
             }          
         }
 
