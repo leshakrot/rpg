@@ -1,7 +1,7 @@
 using UnityEngine;
 using RPG.Movement;
 using RPG.Combat;
-using RPG.Core;
+using RPG.Resources;
 
 namespace RPG.Control
 {
@@ -11,7 +11,7 @@ namespace RPG.Control
         private Fighter _fighter;
         private Health _health;
 
-        private void Start()
+        private void Awake()
         {
             _mover = GetComponent<Mover>();
             _fighter = GetComponent<Fighter>();

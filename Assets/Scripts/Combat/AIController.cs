@@ -1,6 +1,7 @@
 using RPG.Combat;
 using RPG.Core;
 using RPG.Movement;
+using RPG.Resources;
 using System;
 using UnityEngine;
 
@@ -30,15 +31,17 @@ namespace RPG.Control
         private float _timeSinceArrivedAtWaypoint = Mathf.Infinity;
         private int _currentWaypointIndex = 0;
 
-        private void Start()
+        private void Awake()
         {
             _actionScheduler = GetComponent<ActionScheduler>();
-
             _fighter = GetComponent<Fighter>();
             _player = GameObject.FindWithTag("Player");
             _health = GetComponent<Health>();
             _mover = GetComponent<Mover>();
+        }
 
+        private void Start()
+        {
             _guardPosition = transform.position;
         }
 

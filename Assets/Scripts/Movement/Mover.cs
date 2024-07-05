@@ -1,4 +1,5 @@
 using RPG.Core;
+using RPG.Resources;
 using RPG.Saving;
 using UnityEngine;
 using UnityEngine.AI;
@@ -16,7 +17,7 @@ namespace RPG.Movement
 
         private Health _health;
 
-        private void Start()
+        private void Awake()
         {
             _actionScheduler = GetComponent<ActionScheduler>();
             _navMeshAgent = GetComponent<NavMeshAgent>();
