@@ -4,11 +4,13 @@ using RPG.Stats;
 using System;
 using UnityEngine;
 
-namespace RPG.Resources
+namespace RPG.Attributes
 {
     public class Health : MonoBehaviour, ISaveable
     {
-        [SerializeField] private float _healthPoints = 100f;
+        [SerializeField] private float _regenerationPercentage = 100;
+
+        private float _healthPoints = -1f;
 
         private Animator _animator;
         private ActionScheduler _actionScheduler;
@@ -22,7 +24,11 @@ namespace RPG.Resources
 
         private void Start()
         {
-            _healthPoints = GetComponent<BaseStats>().GetHealth();
+            GetComponent<BaseStats>().onLevelUp += RegenerateHealth;
+            if(_healthPoints < 0)
+            {
+                _healthPoints = GetComponent<BaseStats>().GetStat(Stat.Health);
+            }
         }
 
         public void TakeDamage(GameObject instigator, float damage)
@@ -35,9 +41,19 @@ namespace RPG.Resources
             }
         }
 
+        public float GetHealthPoints()
+        {
+            return _healthPoints;
+        }
+
+        public float GetMaxHealthPoints()
+        {
+            return GetComponent<BaseStats>().GetStat(Stat.Health);
+        }
+
         public float GetPercentage()
         {
-            return 100 * (_healthPoints / GetComponent<BaseStats>().GetHealth());
+            return 100 * (_healthPoints / GetComponent<BaseStats>().GetStat(Stat.Health));
         }
 
         private void Die()
@@ -55,8 +71,15 @@ namespace RPG.Resources
             Experience experience = instigator.GetComponent<Experience>();
             if (experience == null) return;
 
-            experience.GainExperience(GetComponent<BaseStats>().GetExperienceReward());
+            experience.GainExperience(GetComponent<BaseStats>().GetStat(Stat.ExperienceReward));
         }
+
+        private void RegenerateHealth()
+        {
+            float regenHealthPoints = GetComponent<BaseStats>().GetStat(Stat.Health) * (_regenerationPercentage / 100);
+            _healthPoints = Mathf.Max(_healthPoints, regenHealthPoints);
+        }
+
 
 
         public bool IsDead()

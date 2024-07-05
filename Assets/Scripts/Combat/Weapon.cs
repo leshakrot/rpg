@@ -1,6 +1,4 @@
-using RPG.Core;
-using RPG.Resources;
-using System;
+using RPG.Attributes;
 using UnityEngine;
 
 namespace RPG.Combat
@@ -65,10 +63,10 @@ namespace RPG.Combat
             return _projectile != null;
         }
 
-        public void LaunchProjectile(Transform rightHand, Transform leftHand, Health target, GameObject instigator)
+        public void LaunchProjectile(Transform rightHand, Transform leftHand, Health target, GameObject instigator, float calculatedDamage)
         {
             Projectile projectileInstance = Instantiate(_projectile, GetTransform(rightHand, leftHand).position, Quaternion.identity);
-            projectileInstance.SetTarget(target, instigator, _weaponDamage);
+            projectileInstance.SetTarget(target, instigator, calculatedDamage);
         }
 
         public float GetDamage()

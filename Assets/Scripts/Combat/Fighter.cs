@@ -1,7 +1,8 @@
+using RPG.Attributes;
 using RPG.Core;
 using RPG.Movement;
-using RPG.Resources;
 using RPG.Saving;
+using RPG.Stats;
 using UnityEngine;
 
 namespace RPG.Combat
@@ -117,8 +118,12 @@ namespace RPG.Combat
         {
             if (_target == null) return;
 
-            if (_currentWeapon.HasProjectile()) _currentWeapon.LaunchProjectile(_rightHandTransform, _leftHandTransform, _target, gameObject);
-            else _target.TakeDamage(gameObject, _currentWeapon.GetDamage());
+            float damage = GetComponent<BaseStats>().GetStat(Stat.Damage);
+            if (_currentWeapon.HasProjectile()) _currentWeapon.LaunchProjectile(_rightHandTransform, _leftHandTransform, _target, gameObject, damage);
+            else
+            {             
+                _target.TakeDamage(gameObject, damage);
+            }
         }
 
         public void Shoot()
@@ -128,13 +133,13 @@ namespace RPG.Combat
 
         public object CaptureState()
         {
-            return _currentWeapon.name;
+            return _currentWeapon.name;          
         }
 
         public void RestoreState(object state)
         {
             string weaponName = (string)state;
-            Weapon weapon = UnityEngine.Resources.Load<Weapon>(weaponName);
+            Weapon weapon = Resources.Load<Weapon>(weaponName);
             EquipWeapon(weapon);
         }
     }
