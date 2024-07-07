@@ -23,16 +23,27 @@ namespace RPG.Attributes
         }
 
         private void Start()
-        {
-            GetComponent<BaseStats>().onLevelUp += RegenerateHealth;
+        {           
             if(_healthPoints < 0)
             {
                 _healthPoints = GetComponent<BaseStats>().GetStat(Stat.Health);
             }
         }
 
+        private void OnEnable()
+        {
+            GetComponent<BaseStats>().onLevelUp += RegenerateHealth;
+        }
+
+        private void OnDisable()
+        {
+            GetComponent<BaseStats>().onLevelUp -= RegenerateHealth;
+        }
+
         public void TakeDamage(GameObject instigator, float damage)
         {
+            print(gameObject.name + " took damage: " + damage);
+
             _healthPoints = Mathf.Max(_healthPoints - damage, 0);
             if(_healthPoints == 0)
             {
