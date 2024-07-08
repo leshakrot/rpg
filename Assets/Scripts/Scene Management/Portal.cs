@@ -12,7 +12,10 @@ namespace RPG.SceneManagement
         enum DestinationIndentifier
         {
             FarmVillage,
-            VillageFarm
+            VillageFarm,
+
+            FarmAutumnVillage,
+            AutumnVillageFarm
         }
 
         [SerializeField] private int _sceneToLoad = 1;
