@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5995899078654418122}
-  - component: {fileID: 1253582271006318155}
   - component: {fileID: 6382639610877371558}
   m_Layer: 0
   m_Name: Damage Text
@@ -34,27 +33,6 @@ Transform:
   - {fileID: 3946239273794629812}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &1253582271006318155
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5801717839580372621}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 4a0ab6e9b08212b4d87323113a006006, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &6382639610877371558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9c6942e035b96a408bdd582609d2fe9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _damageText: {fileID: 4292278289824199554}
 --- !u!1 &6491696864897716765
 GameObject:
   m_ObjectHideFlags: 0
@@ -82,6 +61,8 @@ GameObject:
   - component: {fileID: 5324717533905753708}
   - component: {fileID: 7389792897145356298}
   - component: {fileID: 191910641694083092}
+  - component: {fileID: 4543099016378791244}
+  - component: {fileID: 1445863184919434499}
   m_Layer: 5
   m_Name: DamageText
   m_TagString: Untagged
@@ -204,13 +185,49 @@ Animation:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6491696864897716765}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Animation: {fileID: 7400000, guid: c3d1dd3ce22373347a5eee4639417272, type: 2}
   m_Animations: []
   m_WrapMode: 0
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
+  m_UpdateMode: 0
   m_CullingType: 0
+--- !u!114 &4543099016378791244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6491696864897716765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e4250fe6d9ddfd4284b751a5b11cc06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _targetToDestroy: {fileID: 5801717839580372621}
+--- !u!95 &1445863184919434499
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6491696864897716765}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4a0ab6e9b08212b4d87323113a006006, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6629099658704820535
 GameObject:
   m_ObjectHideFlags: 0
