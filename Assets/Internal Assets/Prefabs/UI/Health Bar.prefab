@@ -177,7 +177,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7537640104021810653}
-  m_LocalRotation: {x: -0, y: -1, z: -0, w: -0.00000037252897}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
@@ -263,6 +263,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6860509551169404004}
   - component: {fileID: 8566672159239484137}
+  - component: {fileID: 2962652759232170146}
   m_Layer: 0
   m_Name: Health Bar
   m_TagString: Untagged
@@ -298,3 +299,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 882e7cc3ab2465d47a9c7ea8c4a04e4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2962652759232170146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7826354661692652221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5a8491a4eee7d54986a19ab7958dd47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _healthComponent: {fileID: 0}
+  _foreground: {fileID: 851957457090426463}
+  _rootCanvas: {fileID: 3721264604544314989}
