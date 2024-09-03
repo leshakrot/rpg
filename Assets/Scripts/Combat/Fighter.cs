@@ -16,13 +16,14 @@ namespace RPG.Combat
 
         [SerializeField] private Transform _rightHandTransform;
         [SerializeField] private Transform _leftHandTransform;
-        [SerializeField] private Weapon _defaultWeapon = null;
+        [SerializeField] private WeaponConfig _defaultWeapon = null;
 
         private ActionScheduler _actionScheduler;
         private Health _target;
         private Mover _mover;
         private Animator _animator;
         private float _timeSinceLastAttack = Mathf.Infinity;
+        private WeaponConfig _currentWeaponConfig;
         private LazyValue<Weapon> _currentWeapon;
 
         private void Awake()
@@ -31,29 +32,29 @@ namespace RPG.Combat
             _mover = GetComponent<Mover>();
             _animator = GetComponent<Animator>();
 
+            _currentWeaponConfig = _defaultWeapon;
             _currentWeapon = new LazyValue<Weapon>(SetupDefaultWeapon);
         }
 
         private Weapon SetupDefaultWeapon()
-        {
-            AttachWeapon(_defaultWeapon);
-            return _defaultWeapon;
+        {    
+            return AttachWeapon(_defaultWeapon);
         }
 
         private void Start()
         {
-            _currentWeapon.ForceInit();      
+            _currentWeapon.ForceInit();     
         }
 
-        public void EquipWeapon(Weapon weapon)
+        public void EquipWeapon(WeaponConfig weapon)
         {
-            _currentWeapon.value = weapon;
-            AttachWeapon(weapon);
+            _currentWeaponConfig = weapon;
+            _currentWeapon.value = AttachWeapon(weapon);
         }
 
-        private void AttachWeapon(Weapon weapon)
+        private Weapon AttachWeapon(WeaponConfig weapon)
         {
-            weapon.Spawn(_rightHandTransform, _leftHandTransform, _animator);
+            return weapon.Spawn(_rightHandTransform, _leftHandTransform, _animator);
         }
 
         public Health GetTarget()
@@ -98,7 +99,7 @@ namespace RPG.Combat
 
         private bool GetIsInRange()
         {
-            return Vector3.Distance(transform.position, _target.transform.position) < _currentWeapon.value.GetRange();
+            return Vector3.Distance(transform.position, _target.transform.position) < _currentWeaponConfig.GetRange();
         }
 
         public bool CanAttack(GameObject combatTarget)
@@ -131,7 +132,7 @@ namespace RPG.Combat
         {
             if(stat == Stat.Damage)
             {
-                yield return _currentWeapon.value.GetDamage();
+                yield return _currentWeaponConfig.GetDamage();
             }
         }
 
@@ -139,7 +140,7 @@ namespace RPG.Combat
         {
             if (stat == Stat.Damage)
             {
-                yield return _currentWeapon.value.GetPercentageBonus();
+                yield return _currentWeaponConfig.GetPercentageBonus();
             }
         }
 
@@ -148,7 +149,13 @@ namespace RPG.Combat
             if (_target == null) return;
 
             float damage = GetComponent<BaseStats>().GetStat(Stat.Damage);
-            if (_currentWeapon.value.HasProjectile()) _currentWeapon.value.LaunchProjectile(_rightHandTransform, _leftHandTransform, _target, gameObject, damage);
+
+            if(_currentWeapon.value != null)
+            {
+                _currentWeapon.value.OnHit();
+            }
+
+            if (_currentWeaponConfig.HasProjectile()) _currentWeaponConfig.LaunchProjectile(_rightHandTransform, _leftHandTransform, _target, gameObject, damage);
             else
             {             
                 _target.TakeDamage(gameObject, damage);
@@ -162,13 +169,13 @@ namespace RPG.Combat
 
         public object CaptureState()
         {
-            return _currentWeapon.value.name;          
+            return _currentWeaponConfig.name;          
         }
 
         public void RestoreState(object state)
         {
             string weaponName = (string)state;
-            Weapon weapon = Resources.Load<Weapon>(weaponName);
+            WeaponConfig weapon = Resources.Load<WeaponConfig>(weaponName);
             EquipWeapon(weapon);
         }
     }

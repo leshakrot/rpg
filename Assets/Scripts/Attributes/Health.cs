@@ -12,6 +12,7 @@ namespace RPG.Attributes
     {
         [SerializeField] private float _regenerationPercentage = 100;
         [SerializeField] private UnityEvent<float> _takeDamage;
+        [SerializeField] private UnityEvent _onDie;
 
         private LazyValue<float> _healthPoints;
 
@@ -56,10 +57,16 @@ namespace RPG.Attributes
 
             if(_healthPoints.value == 0)
             {
+                _onDie.Invoke();
                 Die();
                 AwardExperience(instigator);
             }
             else _takeDamage.Invoke(damage);
+        }
+
+        public void Heal(float healthToRestore)
+        {
+            _healthPoints.value = Mathf.Min(_healthPoints.value + healthToRestore, GetMaxHealthPoints());
         }
 
         public float GetHealthPoints()
