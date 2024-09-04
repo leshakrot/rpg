@@ -207,6 +207,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _target: {fileID: 0}
   _maxSpeed: 6
+  _maxNavPathLength: 40
 --- !u!95 &161934672455438629
 Animator:
   serializedVersion: 7
@@ -276,7 +277,7 @@ MonoBehaviour:
       - m_Target: {fileID: 2163449307328015028}
         m_TargetAssemblyTypeName: RPG.UI.DamageText.DamageTextSpawner, Assembly-CSharp
         m_MethodName: Spawn
-        m_Mode: 4
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
