@@ -1,10 +1,13 @@
+using GameDevTV.Inventories;
 using RPG.Attributes;
+using RPG.Stats;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RPG.Combat
 {
     [CreateAssetMenu(fileName = "Weapon", menuName = "RPG/ Weapons/ New Weapon", order = 0)]
-    public class WeaponConfig: ScriptableObject
+    public class WeaponConfig: EquipableItem, IModifierProvider
     {
         [SerializeField] private AnimatorOverrideController _animatorOverride = null;
         [SerializeField] private Weapon _equippedPrefab;
@@ -86,6 +89,22 @@ namespace RPG.Combat
         public float GetRange()
         {
             return _weaponRange;
+        }
+
+        public IEnumerable<float> GetAdditiveModifiers(Stat stat)
+        {
+            if(stat == Stat.Damage)
+            {
+                yield return _weaponDamage;
+            }
+        }
+
+        public IEnumerable<float> GetPercentageModifiers(Stat stat)
+        {
+            if (stat == Stat.Damage)
+            {
+                yield return _percantageBonus;
+            }
         }
     }
 }

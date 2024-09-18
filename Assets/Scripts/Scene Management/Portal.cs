@@ -53,7 +53,6 @@ namespace RPG.SceneManagement
             PlayerController newPlayerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
             newPlayerController.enabled = false;
 
-
             savingWrapper.Load();
 
             Portal otherPortal = GetOtherPortal();

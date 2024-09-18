@@ -124,13 +124,38 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
         type: 3}
+      propertyPath: _onDie.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
       propertyPath: _takeDamage.m_PersistentCalls.m_Calls.Array.size
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
         type: 3}
+      propertyPath: _onDie.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
+      propertyPath: _onDie.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 6313000335727546957}
+    - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
+      propertyPath: _onDie.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
       propertyPath: _takeDamage.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
+      propertyPath: _onDie.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: RandomDrop
       objectReference: {fileID: 0}
     - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
         type: 3}
@@ -149,8 +174,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
         type: 3}
+      propertyPath: _onDie.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: RPG.Inventories.RandomDropper, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
       propertyPath: _takeDamage.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
       value: RPG.Control.AIController, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
+      propertyPath: _onDie.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
         type: 3}
@@ -251,6 +286,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 6991818344359335946}
+    - targetCorrespondingSourceObject: {fileID: 3599500272086516982, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6313000335727546957}
   m_SourcePrefab: {fileID: 100100000, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265, type: 3}
 --- !u!114 &2575106704021699651 stripped
 MonoBehaviour:
@@ -319,10 +358,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _chaseDistance: 5
   _suspitionTime: 5
+  _agroCooldownTime: 5
   _patrolPath: {fileID: 0}
   _waypointTolerance: 1
   _waypointDwellTime: 3
   _patrolSpeedFraction: 0.2
+  _shoutDistance: 5
+--- !u!114 &6313000335727546957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3182546067588808471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 917245a9f0f743c4db2429edb822da5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scatterDistance: 1
+  _dropLibrary: {fileID: 11400000, guid: 1648a246799301c48ae37e8cccef223e, type: 2}
 --- !u!4 &9136524882188010742 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7138810541904264983, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,

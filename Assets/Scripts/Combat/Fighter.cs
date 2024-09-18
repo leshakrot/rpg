@@ -7,10 +7,11 @@ using RPG.Stats;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using GameDevTV.Inventories;
 
 namespace RPG.Combat
 {
-    public class Fighter : MonoBehaviour, IAction, ISaveable, IModifierProvider
+    public class Fighter : MonoBehaviour, IAction, ISaveable
     {
         [SerializeField] private float _timeBetweenAttacks = 1f;
 
@@ -20,6 +21,7 @@ namespace RPG.Combat
 
         private ActionScheduler _actionScheduler;
         private Health _target;
+        private Equipment _equipment;
         private Mover _mover;
         private Animator _animator;
         private float _timeSinceLastAttack = Mathf.Infinity;
@@ -34,6 +36,12 @@ namespace RPG.Combat
 
             _currentWeaponConfig = _defaultWeapon;
             _currentWeapon = new LazyValue<Weapon>(SetupDefaultWeapon);
+
+            _equipment = GetComponent<Equipment>();
+            if (_equipment)
+            {
+                _equipment.equipmentUpdated += UpdateWeapon;
+            }
         }
 
         private Weapon SetupDefaultWeapon()
@@ -50,6 +58,19 @@ namespace RPG.Combat
         {
             _currentWeaponConfig = weapon;
             _currentWeapon.value = AttachWeapon(weapon);
+        }
+
+        private void UpdateWeapon()
+        {
+            var weapon = _equipment.GetItemInSlot(EquipLocation.Weapon) as WeaponConfig;
+            if(weapon == null)
+            {
+                EquipWeapon(_defaultWeapon);
+            }
+            else
+            {
+                EquipWeapon(weapon);
+            }
         }
 
         private Weapon AttachWeapon(WeaponConfig weapon)
@@ -127,22 +148,6 @@ namespace RPG.Combat
         {
             _animator.ResetTrigger("attack");
             _animator.SetTrigger("stopAttack");
-        }
-
-        public IEnumerable<float> GetAdditiveModifiers(Stat stat)
-        {
-            if(stat == Stat.Damage)
-            {
-                yield return _currentWeaponConfig.GetDamage();
-            }
-        }
-
-        public IEnumerable<float> GetPercentageModifiers(Stat stat)
-        {
-            if (stat == Stat.Damage)
-            {
-                yield return _currentWeaponConfig.GetPercentageBonus();
-            }
         }
 
         public void Hit()
