@@ -15,5 +15,7 @@ namespace GameDevTV.Inventories
         Weapon,
         Shield,
         Gloves,
+        UpperArm,
+        LowerArm,
     }
 }
