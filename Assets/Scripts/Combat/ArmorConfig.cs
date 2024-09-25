@@ -69,6 +69,11 @@ namespace RPG.Combat
             return _equipLocation;
         }
 
+        public void SetupEquipLocation(EquipLocation equipLocation)
+        {
+            _equipLocation = equipLocation;
+        }
+
         //public float GetDamage()
         //{
         //    return _weaponDamage;

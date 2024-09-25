@@ -123,6 +123,7 @@ namespace RPG.Combat
         private void CheckArmor(EquipLocation equipLocation)
         {
             var armor = _equipment.GetItemInSlot(equipLocation) as ArmorConfig;
+            _defaultArmor.SetupEquipLocation(equipLocation);
             if (armor == null)
             {
                 EquipArmor(_defaultArmor);
@@ -140,15 +141,16 @@ namespace RPG.Combat
 
         private Armor AttachArmor(ArmorConfig armor)
         {
-            switch (armor.GetEquipLocation())
+            var equipLocation = armor.GetEquipLocation();
+            switch (equipLocation)
             {
                 case EquipLocation.Body:
                     {
                         return armor.Spawn(_bodyTransform, _bodyTransform, _bodyTransform);
                     }
                 case EquipLocation.UpperArm:
-                    {
-                        return armor.Spawn(_bodyTransform, _upperArmLeftTransform, _upperArmRightTransform);
+                    {                     
+                        return armor.Spawn(_bodyTransform, _upperArmLeftTransform, _upperArmRightTransform);                     
                     }
                 case EquipLocation.LowerArm:
                     {
