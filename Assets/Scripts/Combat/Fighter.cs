@@ -33,7 +33,7 @@ namespace RPG.Combat
         [SerializeField] private Transform _lowerArmRightTransform;
 
         [SerializeField] private WeaponConfig _defaultWeapon = null;
-        [SerializeField] private ArmorConfig _defaultArmor = null;
+        [SerializeField] private BodyArmorConfig _defaultArmor = null;
 
         private ActionScheduler _actionScheduler;
         private Health _target;
@@ -42,9 +42,9 @@ namespace RPG.Combat
         private Animator _animator;
         private float _timeSinceLastAttack = Mathf.Infinity;
         private WeaponConfig _currentWeaponConfig;
-        private ArmorConfig _currentArmorConfig;
+        private BodyArmorConfig _currentArmorConfig;
         private LazyValue<Weapon> _currentWeapon;
-        private LazyValue<Armor> _currentArmor;
+        private LazyValue<BodyArmor> _currentArmor;
 
         private void Awake()
         {
@@ -56,13 +56,19 @@ namespace RPG.Combat
             _currentWeapon = new LazyValue<Weapon>(SetupDefaultWeapon);
 
             _currentArmorConfig = _defaultArmor;
-            _currentArmor = new LazyValue<Armor>(SetupDefaultArmor);
+            _currentArmor = new LazyValue<BodyArmor>(SetupDefaultArmor);
 
             _equipment = GetComponent<Equipment>();
             if (_equipment)
             {
                 _equipment.equipmentUpdated += UpdateWeapon;
-                _equipment.equipmentUpdated += UpdateArmor;
+                _equipment.equipmentUpdated += UpdateBodyArmor;
+                _equipment.equipmentUpdated += UpdateUpperArmArmor;
+                _equipment.equipmentUpdated += UpdateLowerArmArmor;
+                _equipment.equipmentUpdated += UpdateHelmetArmor;
+                _equipment.equipmentUpdated += UpdateBootsArmor;
+                _equipment.equipmentUpdated += UpdateGlovesArmor;
+                _equipment.equipmentUpdated += UpdateTrousersArmor;
             }
         }
 
@@ -71,7 +77,7 @@ namespace RPG.Combat
             return AttachWeapon(_defaultWeapon);
         }
 
-        private Armor SetupDefaultArmor()
+        private BodyArmor SetupDefaultArmor()
         {
             return AttachArmor(_defaultArmor);
         }
@@ -88,7 +94,7 @@ namespace RPG.Combat
             _currentWeapon.value = AttachWeapon(weapon);
         }
 
-        public void EquipArmor(ArmorConfig armor)
+        public void EquipArmor(BodyArmorConfig armor)
         {
             _currentArmorConfig = armor;
             _currentArmor.value = AttachArmor(armor);
@@ -106,23 +112,49 @@ namespace RPG.Combat
                 EquipWeapon(weapon);
             }
         }
-        
-        private void UpdateArmor()
-        {  
+
+        private void UpdateBodyArmor()
+        {
             CheckArmor(EquipLocation.Body);
+        }
+        private void UpdateUpperArmArmor()
+        {
             CheckArmor(EquipLocation.UpperArm);
+        }
+        private void UpdateLowerArmArmor()
+        {
             CheckArmor(EquipLocation.LowerArm);
+        }
+        private void UpdateHelmetArmor()
+        {
             CheckArmor(EquipLocation.Helmet);
+        }
+        private void UpdateBootsArmor()
+        {
             CheckArmor(EquipLocation.Boots);
-            CheckArmor(EquipLocation.Necklace);
-            CheckArmor(EquipLocation.Shield);
+        }
+        private void UpdateGlovesArmor()
+        {
             CheckArmor(EquipLocation.Gloves);
+        }
+        private void UpdateTrousersArmor()
+        {
             CheckArmor(EquipLocation.Trousers);
         }
 
+        //private void UpdateShield()
+        //{            
+        //    CheckArmor(EquipLocation.Shield);                  
+        //}
+
+        //private void UpdateNecklace()
+        //{
+        //    CheckArmor(EquipLocation.Necklace);
+        //}
+
         private void CheckArmor(EquipLocation equipLocation)
         {
-            var armor = _equipment.GetItemInSlot(equipLocation) as ArmorConfig;
+            var armor = _equipment.GetItemInSlot(equipLocation) as BodyArmorConfig;
             _defaultArmor.SetupEquipLocation(equipLocation);
             if (armor == null)
             {
@@ -139,7 +171,7 @@ namespace RPG.Combat
             return weapon.Spawn(_rightHandTransform, _leftHandTransform, _animator);
         }
 
-        private Armor AttachArmor(ArmorConfig armor)
+        private BodyArmor AttachArmor(BodyArmorConfig armor)
         {
             var equipLocation = armor.GetEquipLocation();
             switch (equipLocation)
@@ -290,7 +322,7 @@ namespace RPG.Combat
             WeaponConfig weapon = Resources.Load<WeaponConfig>(weaponName);
             EquipWeapon(weapon);
             string armorName = (string)state;
-            ArmorConfig armor = Resources.Load<ArmorConfig>(armorName);
+            BodyArmorConfig armor = Resources.Load<BodyArmorConfig>(armorName);
             EquipArmor(armor);
         }
     }

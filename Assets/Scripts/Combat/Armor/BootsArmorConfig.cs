@@ -6,10 +6,10 @@ using UnityEngine;
 
 namespace RPG.Combat
 {
-    [CreateAssetMenu(fileName = "Armor", menuName = "RPG/ Armor/ New Armor", order = 1)]
-    public class ArmorConfig: EquipableItem/*, IModifierProvider*/
+    [CreateAssetMenu(fileName = "Boots Armor", menuName = "RPG/ Boots Armor/ New Boots Armor", order = 6)]
+    public class BootsArmorConfig: EquipableItem/*, IModifierProvider*/
     {
-        [SerializeField] private Armor _equippedPrefab;
+        [SerializeField] private BootsArmor _equippedPrefab;
         [SerializeField] private bool _isSingle;
         [SerializeField] private bool _isLeft;
         [SerializeField] private EquipLocation _equipLocation;
@@ -19,13 +19,13 @@ namespace RPG.Combat
         //[SerializeField] private bool _isRightHanded = true;
         //[SerializeField] private Projectile _projectile;
 
-        private const string armorName = "Armor";
+        private const string armorName = "Boots Armor";
 
-        public Armor Spawn(Transform equipSingle, Transform equipLeft, Transform equipRight)
+        public BootsArmor Spawn(Transform equipSingle, Transform equipLeft, Transform equipRight)
         {
             DestroyOldArmor(equipSingle, equipLeft, equipRight);
 
-            Armor armor = null;
+            BootsArmor armor = null;
             if(_equippedPrefab != null)
             {
                 Transform equipTransform = GetTransform(equipSingle, equipLeft, equipRight);

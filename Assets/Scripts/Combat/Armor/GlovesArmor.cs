@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace RPG.Combat
 {
-    public class Armor : MonoBehaviour
+    public class GlovesArmor : MonoBehaviour
     {
         //[SerializeField] private UnityEvent _onHit;
         //public void OnHit()
