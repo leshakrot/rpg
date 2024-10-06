@@ -10,8 +10,6 @@ namespace RPG.Combat
     public class HelmetArmorConfig: EquipableItem/*, IModifierProvider*/
     {
         [SerializeField] private HelmetArmor _equippedPrefab;
-        [SerializeField] private bool _isSingle;
-        [SerializeField] private bool _isLeft;
         [SerializeField] private EquipLocation _equipLocation;
         //[SerializeField] private float _weaponDamage = 5f;
         //[SerializeField] private float _percantageBonus = 0;
@@ -21,14 +19,13 @@ namespace RPG.Combat
 
         private const string armorName = "Helmet Armor";
 
-        public HelmetArmor Spawn(Transform equipSingle, Transform equipLeft, Transform equipRight)
+        public HelmetArmor Spawn(Transform equipTransform)
         {
-            DestroyOldArmor(equipSingle, equipLeft, equipRight);
+            DestroyOldArmor(equipTransform);
 
             HelmetArmor armor = null;
             if(_equippedPrefab != null)
             {
-                Transform equipTransform = GetTransform(equipSingle, equipLeft, equipRight);
                 armor = Instantiate(_equippedPrefab, equipTransform);
                 armor.gameObject.name = armorName;
             }
@@ -36,32 +33,15 @@ namespace RPG.Combat
             return armor;
         }
 
-        private void DestroyOldArmor(Transform equipTransform, Transform equipLeftTransform, Transform equipRightTransform)
+        private void DestroyOldArmor(Transform equipTransform)
         {
             Transform oldArmor = equipTransform.Find(armorName);
-            if (oldArmor == null)
-            {
-                oldArmor = equipLeftTransform.Find(armorName);
-            }
-
-            if (oldArmor == null)
-            {
-                oldArmor = equipRightTransform.Find(armorName);
-            }
+            
 
             if (oldArmor == null) return;
 
             oldArmor.name = "Destroying";
             Destroy(oldArmor.gameObject);
-        }
-
-        private Transform GetTransform(Transform equipSingle, Transform equipLeft, Transform equipRight)
-        {
-            Transform equipTransform;
-            if (_isSingle) equipTransform = equipSingle;
-            else if(_isLeft) equipTransform = equipLeft;
-            else equipTransform = equipRight;
-            return equipTransform;
         }
 
         public EquipLocation GetEquipLocation()
