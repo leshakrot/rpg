@@ -1,52 +1,71 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using GameDevTV.Utils;
 using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace RPG.Dialogue
 {
     public class DialogueNode : ScriptableObject
     {
-        [SerializeField] private bool _isPlayerSpeaking = false;
-        [SerializeField] private string _text;
-        [SerializeField] private List<string> _children = new List<string>();
-        [SerializeField] private Rect _rect = new Rect(0, 0, 200, 100);
+        [SerializeField]
+        bool isPlayerSpeaking = false;
+        [SerializeField]
+        string text;
+        [SerializeField]
+        List<string> children = new List<string>();
+        [SerializeField]
+        Rect rect = new Rect(0, 0, 200, 100);
+        [SerializeField]
+        string onEnterAction;
+        [SerializeField]
+        string onExitAction;
 
         public Rect GetRect()
         {
-            return _rect;
+            return rect;
         }
 
         public string GetText()
         {
-            return _text;
+            return text;
         }
 
         public List<string> GetChildren()
         {
-            return _children;
+            return children;
         }
 
         public bool IsPlayerSpeaking()
         {
-            return _isPlayerSpeaking;
+            return isPlayerSpeaking;
+        }
+
+        public string GetOnEnterAction()
+        {
+            return onEnterAction;
+        }
+
+        public string GetOnExitAction()
+        {
+            return onExitAction;
         }
 
 #if UNITY_EDITOR
         public void SetPosition(Vector2 newPosition)
         {
             Undo.RecordObject(this, "Move Dialogue Node");
-            _rect.position = newPosition;
+            rect.position = newPosition;
             EditorUtility.SetDirty(this);
         }
 
         public void SetText(string newText)
         {
-            if(newText != _text)
+            if (newText != text)
             {
                 Undo.RecordObject(this, "Update Dialogue Text");
-                _text = newText;
+                text = newText;
                 EditorUtility.SetDirty(this);
             }
         }
@@ -54,24 +73,23 @@ namespace RPG.Dialogue
         public void AddChild(string childID)
         {
             Undo.RecordObject(this, "Add Dialogue Link");
-            _children.Add(childID);
+            children.Add(childID);
             EditorUtility.SetDirty(this);
         }
 
         public void RemoveChild(string childID)
         {
             Undo.RecordObject(this, "Remove Dialogue Link");
-            _children.Add(childID);
+            children.Remove(childID);
             EditorUtility.SetDirty(this);
         }
 
         public void SetPlayerSpeaking(bool newIsPlayerSpeaking)
         {
             Undo.RecordObject(this, "Change Dialogue Speaker");
-            _isPlayerSpeaking = newIsPlayerSpeaking;
+            isPlayerSpeaking = newIsPlayerSpeaking;
             EditorUtility.SetDirty(this);
         }
 #endif
     }
 }
-
