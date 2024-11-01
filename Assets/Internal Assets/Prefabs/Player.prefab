@@ -189,6 +189,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 7240229723186314671}
+    - targetCorrespondingSourceObject: {fileID: 3599500272086516982, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 895535524154462637}
   m_SourcePrefab: {fileID: 100100000, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265, type: 3}
 --- !u!1 &212139946877236958 stripped
 GameObject:
@@ -332,6 +336,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerName: Abobus
+--- !u!114 &895535524154462637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 212139946877236958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6051a06daeaf4444a55a9cb256b42f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _statuses:
+  - _quest: {fileID: 11400000, guid: 95b64f581e658b44ab098931040cc645, type: 2}
+    _completedObjectives:
+    - a
+    - b
+    - c
+  - _quest: {fileID: 11400000, guid: cac58abd7817b4143a1133bbd1dc7a47, type: 2}
+    _completedObjectives:
+    - 1
+    - 2
 --- !u!4 &5769238769826680127 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7138810541904264983, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
