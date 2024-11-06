@@ -56,11 +56,10 @@ namespace RPG.UI
 
         private void BuildChoiceList()
         {
-            _choiceRoot.DetachChildren();
-            //foreach (Transform item in _choiceRoot)
-            //{
-            //    Destroy(item.gameObject);
-            //}   
+            foreach (Transform item in _choiceRoot)
+            {
+                Destroy(item.gameObject);
+            }
             foreach (DialogueNode choice in _playerConversant.GetChoices())
             {
                 GameObject choiceInstance = Instantiate(_choicePrefab, _choiceRoot);

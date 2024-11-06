@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using GameDevTV.Utils;
+using RPG.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,6 +22,8 @@ namespace RPG.Dialogue
         string onEnterAction;
         [SerializeField]
         string onExitAction;
+        [SerializeField]
+        Condition condition;
 
         public Rect GetRect()
         {
@@ -50,6 +53,11 @@ namespace RPG.Dialogue
         public string GetOnExitAction()
         {
             return onExitAction;
+        }
+
+        public bool CheckCondition(IEnumerable<IPredicateEvaluator> evaluators)
+        {
+            return condition.Check(evaluators);
         }
 
 #if UNITY_EDITOR
@@ -89,7 +97,7 @@ namespace RPG.Dialogue
             Undo.RecordObject(this, "Change Dialogue Speaker");
             isPlayerSpeaking = newIsPlayerSpeaking;
             EditorUtility.SetDirty(this);
-        }
+        }      
 #endif
     }
 }
