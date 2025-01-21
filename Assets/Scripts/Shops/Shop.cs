@@ -1,5 +1,6 @@
 using GameDevTV.Inventories;
 using RPG.Control;
+using RPG.Inventories;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,10 +25,21 @@ namespace RPG.Shops
 
         Dictionary<InventoryItem, int> transaction = new Dictionary<InventoryItem, int>();
 
+        Shopper currentShopper;
 
         public event Action onChange;
 
+        public void SetShopper(Shopper shopper)
+        {
+            currentShopper = shopper;
+        }
+
         public IEnumerable<ShopItem> GetFilteredItems()
+        {
+            return GetAllItems(); 
+        }
+
+        public IEnumerable<ShopItem> GetAllItems()
         {
             foreach(StockItemConfig config in stockConfig)
             {
@@ -65,12 +77,38 @@ namespace RPG.Shops
          
         public void ConfirmTransaction()
         {
+            Inventory shopperInventory = currentShopper.GetComponent<Inventory>();
+            Purse shopperPurse = currentShopper.GetComponent<Purse>();
+            if(shopperInventory == null || shopperPurse == null) return;
 
+            var transactionSnapshot = new Dictionary<InventoryItem, int>(transaction);
+
+            foreach(ShopItem shopItem in GetAllItems())
+            {
+                InventoryItem item = shopItem.GetInventoryItem();
+                int quantity = shopItem.GetQuantityInTransaction();
+                float price = shopItem.GetPrice();
+                for(int i = 0; i < quantity; i++)
+                {
+                    if(shopperPurse.GetBalance() < price) break;
+                    bool success = shopperInventory.AddToFirstEmptySlot(item, 1);
+                    if(success)
+                    {
+                        AddToTransaction(item, -1);
+                        shopperPurse.UpdateBalance(-price);
+                    }
+                }
+            }
         }
 
         public float TransactionTotal()
         {
-            return 0;
+            float total = 0;
+            foreach (ShopItem item in GetAllItems())
+            {
+                total += item.GetPrice() * item.GetQuantityInTransaction();
+            }
+            return total;
         }
 
         public void AddToTransaction(InventoryItem item, int quantity)
