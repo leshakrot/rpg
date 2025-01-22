@@ -91,8 +91,6 @@ namespace RPG.Shops
             Purse shopperPurse = currentShopper.GetComponent<Purse>();
             if(shopperInventory == null || shopperPurse == null) return;
 
-            var transactionSnapshot = new Dictionary<InventoryItem, int>(transaction);
-
             foreach(ShopItem shopItem in GetAllItems())
             {
                 InventoryItem item = shopItem.GetInventoryItem();
@@ -142,8 +140,6 @@ namespace RPG.Shops
             {
                 transaction[item] += quantity;
             }
-
-            transaction[item] += quantity;
 
             if(transaction[item] <= 0)
             {
