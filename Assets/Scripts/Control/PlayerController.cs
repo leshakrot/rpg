@@ -5,6 +5,8 @@ using RPG.Attributes;
 using System;
 using UnityEngine.EventSystems;
 using UnityEngine.AI;
+using RPG.Core;
+using GameDevTV.Inventories;
 
 namespace RPG.Control
 {
@@ -13,6 +15,7 @@ namespace RPG.Control
         private Mover _mover;
         private Fighter _fighter;
         private Health _health;
+        private ActionStore _actionStore;
 
         [System.Serializable]
         private struct CursorMapping
@@ -25,6 +28,7 @@ namespace RPG.Control
         [SerializeField] private CursorMapping[] _cursorMappings = null;
         [SerializeField] private float _maxNavmeshProjectionDistance = 1f;
         [SerializeField] private float _raycastRadius = 1f;
+        [SerializeField] private int _numberOfAbilities = 6;
 
         private bool _isDraggingUI = false;
 
@@ -33,6 +37,7 @@ namespace RPG.Control
             _mover = GetComponent<Mover>();
             _fighter = GetComponent<Fighter>();
             _health = GetComponent<Health>();
+            _actionStore = GetComponent<ActionStore>();
         }
 
         private void Update()
@@ -43,6 +48,8 @@ namespace RPG.Control
                 SetCursor(CursorType.None);
                 return;
             }
+
+            UseAbilities();
 
             if (InteractWithComponent()) return;
             if (InteractWithMovement()) return;
@@ -70,6 +77,17 @@ namespace RPG.Control
                 return true;
             }
             return false;
+        }
+
+        private void UseAbilities()
+        {
+            for (int i = 0; i < _numberOfAbilities; i++)
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1 + i))
+                {
+                    _actionStore.Use(i, gameObject);
+                }
+            }         
         }
 
         private bool InteractWithComponent()
