@@ -2,27 +2,38 @@
 using System.Collections.Generic;
 using GameDevTV.Core.UI.Dragging;
 using GameDevTV.Inventories;
+using RPG.Abilities;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameDevTV.UI.Inventories
 {
     /// <summary>
     /// The UI slot for the player action bar.
     /// </summary>
-    public class ActionSlotUI : MonoBehaviour, IItemHolder, IDragContainer<InventoryItem>
+    public class ActionSlotUI : MonoBehaviour, IItemHolder, IDragContainer<GameDevTV.Inventories.InventoryItem>
     {
         // CONFIG DATA
         [SerializeField] InventoryItemIcon icon = null;
         [SerializeField] int index = 0;
+        [SerializeField] Image cooldownOverlay = null;
 
         // CACHE
         ActionStore store;
+        CooldownStore cooldownStore;
 
         // LIFECYCLE METHODS
         private void Awake()
         {
-            store = GameObject.FindGameObjectWithTag("Player").GetComponent<ActionStore>();
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            store = player.GetComponent<ActionStore>();
+            cooldownStore = player.GetComponent<CooldownStore>();
             store.storeUpdated += UpdateIcon;
+        }
+
+        private void Update()
+        {
+            cooldownOverlay.fillAmount = cooldownStore.GetFractionRemaining(GetItem());
         }
 
         // PUBLIC
