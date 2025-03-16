@@ -570,6 +570,18 @@ namespace RPG.Combat
             return _target;
         }
 
+        public Transform GetHandTransform(bool isRightHand)
+        {
+            if (isRightHand)
+            {
+                return _rightHandTransform;
+            }
+            else
+            {
+                return _leftHandTransform;
+            }
+        }
+
         private void Update()
         {
             _timeSinceLastAttack += Time.deltaTime; 
