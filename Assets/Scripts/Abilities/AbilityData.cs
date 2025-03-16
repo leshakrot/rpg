@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using RPG.Core;
 
-public class AbilityData
+public class AbilityData : IAction
 {
 	GameObject user;
 	Vector3 targetedPoint;
 	IEnumerable<GameObject> targets;
+	bool cancelled = false;
 	
 	public AbilityData(GameObject user)
 	{
@@ -41,5 +43,15 @@ public class AbilityData
 	public void StartCoroutine(IEnumerator coroutine)
 	{
 		user.GetComponent<MonoBehaviour>().StartCoroutine(coroutine);
+	}
+
+    public void Cancel()
+    {
+		cancelled = true;
+    }
+
+	public bool IsCancelled()
+	{
+		return cancelled;
 	}
 }
