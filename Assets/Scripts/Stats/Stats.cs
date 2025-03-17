@@ -1,4 +1,4 @@
-namespace RPG.Stats
+﻿namespace RPG.Stats
 {
     public enum Stat
     {
@@ -7,6 +7,8 @@ namespace RPG.Stats
         ManaRegenRate,
         ExperienceReward,
         ExperienceToLevelUp,
-        Damage
+	    Damage,
+	    TotalTraitPoints,
+	    BuyingDiscountPercentage
     }
 }
