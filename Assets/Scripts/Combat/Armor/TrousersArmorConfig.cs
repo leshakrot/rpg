@@ -1,4 +1,4 @@
-using GameDevTV.Inventories;
+﻿using GameDevTV.Inventories;
 using RPG.Attributes;
 using RPG.Stats;
 using System.Collections.Generic;
@@ -17,10 +17,11 @@ namespace RPG.Combat
         //[SerializeField] private bool _isRightHanded = true;
         //[SerializeField] private Projectile _projectile;
 
-        private const string armorName = "Trousers Armor";
-
+	    private const string armorName = "Trousers Armor";
+        
         public TrousersArmor Spawn(Transform equipTransform)
-        {
+	    {
+        	
             DestroyOldArmor(equipTransform);
 
             TrousersArmor armor = null;
@@ -33,15 +34,42 @@ namespace RPG.Combat
             return armor;
         }
 
-        private void DestroyOldArmor(Transform equipTransform)
-        {
-            Transform oldArmor = equipTransform.Find(armorName);
-            
-            if (oldArmor == null) return;
+	    private void DestroyOldArmor(Transform equipTransform)
+	    {
+		    // Находим старую броню по имени
+		    Transform oldArmor = equipTransform.Find(armorName);
 
-            oldArmor.name = "Destroying";
-            Destroy(oldArmor.gameObject);
-        }
+		    if (oldArmor == null) return;
+
+		    // Получаем SkinnedMeshRenderer у старой брони
+		    if (!oldArmor.TryGetComponent(out SkinnedMeshRenderer oldSMR))
+		    {
+			    Debug.LogError("Старая броня не содержит SkinnedMeshRenderer!");
+			    return;
+		    }
+
+		    // Проверяем, есть ли SkinnedMeshRenderer у нового префаба
+		    if (!_equippedPrefab.TryGetComponent(out SkinnedMeshRenderer newSMR))
+		    {
+			    Debug.LogError("Новый префаб не содержит SkinnedMeshRenderer!");
+			    return;
+		    }
+
+		    // Сохраняем новый меш и материалы из нового префаба
+		    Mesh newArmorMesh = newSMR.sharedMesh;
+		    Material[] newMaterials = newSMR.sharedMaterials;
+
+		    // Копируем данные из старого SkinnedMeshRenderer в новый
+		    SkinnedMeshRendererCopier.CopySkinnedMeshRenderer(oldSMR, newSMR);
+
+		    // Восстанавливаем новый меш и материалы после копирования
+		    newSMR.sharedMesh = newArmorMesh;
+		    newSMR.sharedMaterials = newMaterials;
+
+		    // Переименовываем и уничтожаем старую броню
+		    oldArmor.name = "Destroying";
+		    Destroy(oldArmor.gameObject);
+	    }
 
         public EquipLocation GetEquipLocation()
         {
