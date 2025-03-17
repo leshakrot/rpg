@@ -1,4 +1,4 @@
-using RPG.Attributes;
+﻿using RPG.Attributes;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -66,7 +66,7 @@ namespace RPG.Combat
             Health health = other.GetComponent<Health>();
             if (_target != null && health != _target) return;
             if (health == null || health.IsDead()) return;
-            if (other.gameObject != _instigator) return;
+	        if (other.gameObject == _instigator) return;
             health.TakeDamage(_instigator, _damage);
 
             _speed = 0;
