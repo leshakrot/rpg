@@ -20,6 +20,7 @@ Material:
   - _NORMALMAP
   - _REFRACTION
   - _SHARP_INERSECTION
+  - _SPECULARHIGHLIGHTS_OFF
   - _TRANSLUCENCY
   - _WAVES
   m_InvalidKeywords:
@@ -37,7 +38,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: _NormalSpeed
+  m_LockedProperties: _NormalSpeed _WaveSteepness
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -255,7 +256,7 @@ Material:
     - _SparkleIntensity: 0
     - _SparkleSize: 0.302
     - _SpecularHighlights: 1
-    - _SpecularReflectionsOn: 1
+    - _SpecularReflectionsOn: 0
     - _Speed: 0.1
     - _SrcBlend: 1
     - _SunReflectionDistortion: 0.762
@@ -297,13 +298,13 @@ Material:
     - _Direction: {r: 7, g: -15, b: 0, a: 0}
     - _DistanceNormalsFadeDist: {r: 0, g: 80, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FoamColor: {r: 0.8018868, g: 0.47770748, b: 0.22316661, a: 1}
+    - _FoamColor: {r: 0.7924528, g: 0.09420939, b: 0.018689923, a: 1}
     - _FoamTiling: {r: 0.1, g: 0.1, b: 0, a: 0}
     - _HorizonColor: {r: 0.3379762, g: 0.46226418, b: 0.45771706, a: 0.15}
     - _IntersectionColor: {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 1}
     - _NormalTiling: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShallowColor: {r: 0.07547166, g: 0.18867922, b: 0, a: 1}
+    - _ShallowColor: {r: 0.20754719, g: 0.11275236, b: 0.10671058, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _WaterColor: {r: 0.21176466, g: 0.6745098, b: 1, a: 1}
     - _WaterShallowColor: {r: 0, g: 0.9394503, b: 1, a: 1}

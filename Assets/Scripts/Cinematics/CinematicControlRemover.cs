@@ -1,4 +1,4 @@
-using RPG.Control;
+﻿using RPG.Control;
 using RPG.Core;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -6,7 +6,10 @@ using UnityEngine.Playables;
 namespace RPG.Cinematics
 {
     public class CinematicControlRemover : MonoBehaviour
-    {
+	{
+		[SerializeField] private GameObject _hud;
+		[SerializeField] private GameObject _uiCanvas;
+    	
         private PlayableDirector _playableDirector;
         private GameObject _player;
         private PlayerController _playerController;
@@ -35,12 +38,16 @@ namespace RPG.Cinematics
         private void DisableControl(PlayableDirector pd)
         {
             _actionScheduler.CancelCurrentAction();
-            _playerController.enabled = false;
+	        _playerController.enabled = false;
+	        _hud.SetActive(false);
+	        _uiCanvas.SetActive(false);
         }
 
         private void EnableControl(PlayableDirector pd)
         {
-            _playerController.enabled = true;
+	        _playerController.enabled = true;
+	        _hud.SetActive(true);
+	        _uiCanvas.SetActive(true);
         }
     }
 }
