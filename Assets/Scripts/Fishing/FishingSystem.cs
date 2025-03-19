@@ -1,33 +1,42 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using GameDevTV.Inventories;
 
 public class FishingSystem : MonoBehaviour
 {
-	public event Action<string> OnFishCaught; // Событие при поимке рыбы
+	[SerializeField] private FishingUI fishingUI;
+	[SerializeField] private FishingMiniGame fishingMiniGame;
+	[SerializeField] private List<InventoryItem> possibleCatches = new List<InventoryItem>();
+	[SerializeField] private Inventory inventory;
+	
 
-	[SerializeField] private FishingMiniGame fishingMiniGame; // Мини-игра рыбалки
-	[SerializeField] private List<string> possibleCatches; // Возможные находки
+    private void OnEnable()
+    {
+        fishingMiniGame.OnFishingComplete += HandleFishCaught;
+    }
 
-	public void StartFishing()
+    private void OnDisable()
+    {
+        fishingMiniGame.OnFishingComplete -= HandleFishCaught;
+    }
+
+    public void StartFishing()
 	{
 		Debug.Log("Заброс удочки...");
 
-		// Подписываемся на событие завершения мини-игры
-		fishingMiniGame.OnFishingComplete += HandleFishCaught;
-
-		// Запускаем мини-игру
 		fishingMiniGame.StartMiniGame();
 	}
 
-	private void HandleFishCaught(string itemName)
+	private void HandleFishCaught()
 	{
-		Debug.Log($"Вы поймали: {itemName}");
+		AddCaughtFishToInventory(possibleCatches[UnityEngine.Random.Range(0, possibleCatches.Count - 1)], 1);
+		fishingUI.ToggleSuccessNotificationVisibility(true);
+		fishingUI.ToggleFishingButtonVisibility();
+	}
 
-		// Отправляем событие о поимке рыбы
-		OnFishCaught?.Invoke(itemName);
-
-		// Отписываемся от события, чтобы избежать дублирования
-		fishingMiniGame.OnFishingComplete -= HandleFishCaught;
+	private void AddCaughtFishToInventory(InventoryItem fishItem, int number)
+	{
+		inventory.AddToFirstEmptySlot(fishItem, number);
 	}
 }

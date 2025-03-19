@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class FishingMiniGame : MonoBehaviour
@@ -26,7 +27,7 @@ public class FishingMiniGame : MonoBehaviour
 	private float directionChangeTimer = 0f; // Таймер смены направления
 	private float directionChangeInterval = 1f; // Интервал смены направления (в секундах)
 
-	public event System.Action<string> OnFishingComplete; // Событие завершения рыбалки
+	public event Action OnFishingComplete; // Событие завершения рыбалки
 
 	private void Start()
 	{
@@ -115,9 +116,9 @@ public class FishingMiniGame : MonoBehaviour
 		// Если таймер истёк, меняем направление и скорость
 		if (directionChangeTimer <= 0f)
 		{
-			iconVelocityY = Random.value > 0.5f ? 1f : -1f; // Случайное направление
-			currentIconSpeed = Random.Range(minIconSpeed, maxIconSpeed); // Случайная скорость
-			directionChangeTimer = Random.Range(0.5f, 2f); // Новый интервал
+			iconVelocityY = UnityEngine.Random.value > 0.5f ? 1f : -1f; // Случайное направление
+			currentIconSpeed = UnityEngine.Random.Range(minIconSpeed, maxIconSpeed); // Случайная скорость
+			directionChangeTimer = UnityEngine.Random.Range(0.5f, 2f); // Новый интервал
 		}
 
 		// Получаем текущую позицию иконки
@@ -184,7 +185,7 @@ public class FishingMiniGame : MonoBehaviour
 		Debug.Log("Рыба поймана!");
 
 		// Отправляем событие о завершении рыбалки
-		//OnFishingComplete?.Invoke("Рыба"); // Заменить на реальный результат
+		OnFishingComplete?.Invoke(); // Заменить на реальный результат
 
 		// Сбрасываем игру
 		ResetGame();

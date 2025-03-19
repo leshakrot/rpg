@@ -6,8 +6,10 @@ public class FishingUI : MonoBehaviour
 	[SerializeField] private Button fishingButton; // Кнопка "Ловить рыбу"
 	[SerializeField] private GameObject fishingMiniGamePanel; // Панель мини-игры
 	[SerializeField] private FishingMiniGame fishingMiniGame; // Мини-игра рыбалки
+    [SerializeField] private GameObject successNotification;
+    [SerializeField] private GameObject failureNotification;
 
-	private void Start()
+    private void Start()
 	{
 		// Инициализация
 		if (fishingButton != null)
@@ -32,12 +34,32 @@ public class FishingUI : MonoBehaviour
 			// Запускаем мини-игру через FishingMiniGame
 			fishingMiniGame.StartMiniGame();
 		}
-		fishingButton.gameObject.SetActive(false);
-	}
+		ToggleFishingButtonVisibility();
+		ToggleSuccessNotificationVisibility(false);
+		ToggleFailureNotificationVisibility(false);
+    }
 
 	public void HideFishingMiniGame()
 	{
 		if (fishingMiniGamePanel != null)
 			fishingMiniGamePanel.SetActive(false);
+
+        ToggleSuccessNotificationVisibility(false);
+        ToggleFailureNotificationVisibility(false);
+    }
+
+	public void ToggleFishingButtonVisibility()
+	{
+        fishingButton.gameObject.SetActive(!fishingButton.gameObject.activeSelf);
+    }
+
+	public void ToggleSuccessNotificationVisibility(bool b)
+	{
+		successNotification.SetActive(b);
 	}
+
+    public void ToggleFailureNotificationVisibility(bool b)
+    {
+        failureNotification.SetActive(b);
+    }
 }
