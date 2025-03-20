@@ -1,4 +1,4 @@
-using RPG.Attributes;
+﻿using RPG.Attributes;
 using RPG.Control;
 using UnityEngine;
 
@@ -15,7 +15,7 @@ namespace RPG.Combat
         public bool HandleRaycast(PlayerController callingController)
         {
             if(!enabled) return false;
-            if (!callingController.GetComponent<Fighter>().CanAttack(gameObject))
+	        if (!callingController.GetComponent<PlayerFighter>().CanAttack(gameObject))
             {
                 return false;
             }
@@ -23,7 +23,7 @@ namespace RPG.Combat
 
             if (Input.GetMouseButton(0))
             {
-                callingController.GetComponent<Fighter>().Attack(gameObject);
+	            callingController.GetComponent<PlayerFighter>().Attack(gameObject);
             }
             return true;
         }

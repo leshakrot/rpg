@@ -1,4 +1,4 @@
-using RPG.Attributes;
+﻿using RPG.Attributes;
 using RPG.Control;
 using System.Collections;
 using UnityEngine;
@@ -23,7 +23,7 @@ namespace RPG.Combat
         {
             if(_weapon != null)
             {
-                subject.GetComponent<Fighter>().EquipWeapon(_weapon);
+	            subject.GetComponent<PlayerFighter>().EquipWeapon(_weapon);
             }        
             
             if(_healthToRestore > 0)

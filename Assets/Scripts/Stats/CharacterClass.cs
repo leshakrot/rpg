@@ -1,4 +1,4 @@
-namespace RPG.Stats
+﻿namespace RPG.Stats
 {
     public enum CharacterClass
     {
@@ -6,7 +6,8 @@ namespace RPG.Stats
         Grunt,
         Mage,
         Archer,
-        Orc,
+	    Orc,
+	    Wolf,
         Chest
     }
 }

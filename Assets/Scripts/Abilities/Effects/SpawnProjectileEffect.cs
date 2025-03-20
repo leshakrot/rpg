@@ -1,4 +1,4 @@
-using RPG.Attributes;
+﻿using RPG.Attributes;
 using RPG.Combat;
 using System;
 using UnityEngine;
@@ -15,7 +15,7 @@ namespace RPG.Abilities.Effects
 
         public override void StartEffect(AbilityData data, Action finished)
         {
-            Fighter fighter = data.GetUser().GetComponent<Fighter>();
+	        PlayerFighter fighter = data.GetUser().GetComponent<PlayerFighter>();
             Vector3 spawnPosition = fighter.GetHandTransform(isRightHand).position;
             if (useTargetPoint)
             {

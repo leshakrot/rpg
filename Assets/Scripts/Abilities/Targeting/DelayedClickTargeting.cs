@@ -39,9 +39,11 @@ namespace RPG.Abilities.Targeting
             while(!data.IsCancelled())
             {
                 Cursor.SetCursor(cursorTexture, cursorHotspot, CursorMode.Auto);
-                RaycastHit raycastHit;
+	            RaycastHit raycastHit;
+	            
                 if (Physics.Raycast(PlayerController.GetMouseRay(), out raycastHit, 1000, layerMask))
                 {
+                	Debug.Log("ray correct");
                     targetingPrefabInstance.position = raycastHit.point;
 
                     if(Input.GetMouseButtonDown(0))
@@ -52,6 +54,7 @@ namespace RPG.Abilities.Targeting
                         break;
                     }
                 }
+	            else Debug.DrawRay(PlayerController.GetMouseRay().origin, PlayerController.GetMouseRay().direction * 1000, Color.blue, 2f);
                 yield return null;
             }
             targetingPrefabInstance.gameObject.SetActive(false);

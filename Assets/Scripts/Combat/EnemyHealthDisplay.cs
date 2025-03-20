@@ -1,4 +1,4 @@
-using RPG.Attributes;
+﻿using RPG.Attributes;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,11 +7,11 @@ namespace RPG.Combat
 {
     public class EnemyHealthDisplay : MonoBehaviour
     {
-        private Fighter _fighter;
+	    private PlayerFighter _fighter;
 
         private void Awake()
         {
-            _fighter = GameObject.FindWithTag("Player").GetComponent<Fighter>();
+	        _fighter = GameObject.FindWithTag("Player").GetComponent<PlayerFighter>();
         }
 
         private void Update()

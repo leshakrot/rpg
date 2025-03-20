@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using RPG.Movement;
 using RPG.Combat;
 using RPG.Attributes;
@@ -13,7 +13,7 @@ namespace RPG.Control
     public class PlayerController : MonoBehaviour
     {
         private Mover _mover;
-        private Fighter _fighter;
+	    private PlayerFighter _fighter;
         private Health _health;
         private ActionStore _actionStore;
 
@@ -35,7 +35,7 @@ namespace RPG.Control
         private void Awake()
         {
             _mover = GetComponent<Mover>();
-            _fighter = GetComponent<Fighter>();
+	        _fighter = GetComponent<PlayerFighter>();
             _health = GetComponent<Health>();
             _actionStore = GetComponent<ActionStore>();
         }
