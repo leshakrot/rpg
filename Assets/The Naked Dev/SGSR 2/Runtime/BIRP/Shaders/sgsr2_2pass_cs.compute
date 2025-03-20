@@ -1,0 +1,12 @@
+#pragma kernel CS_Convert   SGSR2_CONVERT
+#pragma kernel CS_Upscale   SGSR2_UPSCALE
+
+//#pragma enable_d3d11_debug_symbols
+
+#include "sgsr2_birp.hlsl"
+#ifdef SGSR2_CONVERT
+#include "../../Shaders/2_pass_cs/sgsr2_convert.hlsl"
+#endif
+#ifdef SGSR2_UPSCALE
+#include "../../Shaders/2_pass_cs/sgsr2_upscale.hlsl"
+#endif

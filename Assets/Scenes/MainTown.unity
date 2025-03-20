@@ -11570,7 +11570,7 @@ PrefabInstance:
     - target: {fileID: 1147082332458336910, guid: 8590e108f95cfa542a8c648ad7aa511f,
         type: 3}
       propertyPath: sceneToLoad
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5049961946591271319, guid: 8590e108f95cfa542a8c648ad7aa511f,
         type: 3}
@@ -20539,34 +20539,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bbac99c6f4d9a242b34cc55512251dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _timeBetweenAttacks: 1
-  _rightHandTransform: {fileID: 3846105420803276402}
-  _leftHandTransform: {fileID: 3846105420803296316}
-  _bodyTransform: {fileID: 0}
-  _helmetTransform: {fileID: 0}
-  _bootsLeftTransform: {fileID: 0}
-  _bootsRightTransform: {fileID: 0}
-  _necklaceTransform: {fileID: 0}
-  _shieldTransform: {fileID: 0}
-  _glovesLeftTransform: {fileID: 0}
-  _glovesRightTransform: {fileID: 0}
-  _trousersTransform: {fileID: 0}
-  _upperArmLeftTransform: {fileID: 0}
-  _upperArmRightTransform: {fileID: 0}
-  _lowerArmLeftTransform: {fileID: 0}
-  _lowerArmRightTransform: {fileID: 0}
-  _defaultWeapon: {fileID: 11400000, guid: e88d03d27df8df34489aaad669991421, type: 2}
-  _defaultBodyArmor: {fileID: 0}
-  _defaultUpperArmLeftArmor: {fileID: 0}
-  _defaultUpperArmRightArmor: {fileID: 0}
-  _defaultLowerArmLeftArmor: {fileID: 0}
-  _defaultLowerArmRightArmor: {fileID: 0}
-  _defaultHelmetArmor: {fileID: 0}
-  _defaultBootLeftArmor: {fileID: 0}
-  _defaultBootRightArmor: {fileID: 0}
-  _defaultGloveLeftArmor: {fileID: 0}
-  _defaultGloveRightArmor: {fileID: 0}
-  _defaultTrousersArmor: {fileID: 0}
+  timeBetweenAttacks: 1
+  autoAttackRange: 4
+  defaultWeapon: {fileID: 0}
+  rightHandTransform: {fileID: 0}
+  leftHandTransform: {fileID: 0}
 --- !u!23 &1723682974666958870
 MeshRenderer:
   m_ObjectHideFlags: 0

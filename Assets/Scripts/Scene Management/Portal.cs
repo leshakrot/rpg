@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using RPG.Control;
 using GameDevTV.Saving;
@@ -12,7 +12,7 @@ namespace RPG.SceneManagement
     {
         enum DestinationIdentifier
         {
-            A, B, C, D, E
+	        MainTown_Pond, B, C, D, E
         }
 
         [SerializeField] int sceneToLoad = -1;
