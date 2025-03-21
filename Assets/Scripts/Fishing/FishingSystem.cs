@@ -32,7 +32,7 @@ public class FishingSystem : MonoBehaviour
 	{
 		AddCaughtFishToInventory(possibleCatches[UnityEngine.Random.Range(0, possibleCatches.Count - 1)], 1);
 		fishingUI.ToggleSuccessNotificationVisibility(true);
-		fishingUI.ToggleFishingButtonVisibility();
+		fishingUI.ShowFishingButton(true);
 	}
 
 	private void AddCaughtFishToInventory(InventoryItem fishItem, int number)

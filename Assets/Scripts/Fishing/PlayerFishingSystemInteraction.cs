@@ -14,6 +14,5 @@ public class PlayerFishingSystemInteraction : MonoBehaviour
 	{
 		// Игрок покинул зону рыбалки
 		fishingUI.ShowFishingButton(false);
-		fishingUI.HideFishingMiniGame();
 	}
 }

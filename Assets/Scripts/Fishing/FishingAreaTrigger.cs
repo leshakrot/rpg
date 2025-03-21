@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using RPG.Control;
+using RPG.Core;
 
 public class FishingAreaTrigger : MonoBehaviour
 {

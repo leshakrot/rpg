@@ -50,14 +50,16 @@ namespace GameDevTV.Inventories
             return number;
         }
 
-        public void PickupItem()
-        {
-            bool foundSlot = inventory.AddToFirstEmptySlot(item, number);
-            if (foundSlot)
-            {
-                Destroy(gameObject);
-            }
-        }
+	    public void PickupItem()
+	    {
+		    Debug.Log($"[Pickup] Поднятие предмета: {item?.name}, количество: {number}");
+
+		    bool foundSlot = inventory.AddToFirstEmptySlot(item, number);
+		    if (foundSlot)
+		    {
+			    Destroy(gameObject);
+		    }
+	    }
 
         public bool CanBePickedUp()
         {

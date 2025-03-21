@@ -25,10 +25,15 @@ namespace GameDevTV.Inventories
         /// The number of items contained in the pickup. Only used if the item
         /// is stackable.
         /// </param>
-        public void DropItem(InventoryItem item, int number)
-        {
-            SpawnPickup(item, GetDropLocation(), number);
-        }
+	    public void DropItem(InventoryItem item, int number)
+	    {
+		    if (item == null || number <= 0) return;
+
+		    Debug.Log($"[ItemDropper] Дроп предмета: {item?.name}, количество: {number}");
+
+		    SpawnPickup(item, GetDropLocation(), number);
+	    }
+
 
         /// <summary>
         /// Create a pickup at the current position.
@@ -52,11 +57,13 @@ namespace GameDevTV.Inventories
 
         // PRIVATE
 
-        public void SpawnPickup(InventoryItem item, Vector3 spawnLocation, int number)
-        {
-            var pickup = item.SpawnPickup(spawnLocation, number);
-            droppedItems.Add(pickup);
-        }
+	    public void SpawnPickup(InventoryItem item, Vector3 spawnLocation, int number)
+	    {
+		    Debug.Log($"[ItemDropper] Создание Pickup: {item?.name}, количество: {number}");
+
+		    var pickup = item.SpawnPickup(spawnLocation, number);
+		    droppedItems.Add(pickup);
+	    }
 
         [System.Serializable]
         private struct DropRecord
@@ -87,7 +94,13 @@ namespace GameDevTV.Inventories
         }
 
         void ISaveable.RestoreState(object state)
-        {
+	    {
+		    foreach (Pickup pickup in droppedItems)
+		    {
+			    if (pickup != null) Destroy(pickup.gameObject);
+		    }
+		    droppedItems.Clear();
+        	
             var droppedItemsList = (List<DropRecord>)state;
             int buildIndex = SceneManager.GetActiveScene().buildIndex;
             otherSceneDroppedItems.Clear();

@@ -67,6 +67,7 @@ public class FishingMiniGame : MonoBehaviour
 
 	public void StartMiniGame()
 	{
+		ResetGame();
 		if (isPlaying)
 		{
 			Debug.LogWarning("Мини-игра уже запущена!");

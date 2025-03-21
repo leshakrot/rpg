@@ -3,7 +3,8 @@ using UnityEngine.UI;
 
 public class FishingUI : MonoBehaviour
 {
-	[SerializeField] private Button fishingButton; // Кнопка "Ловить рыбу"
+	[SerializeField] private InteractButton interactButton;
+	[SerializeField] private Sprite interactSprite;
 	[SerializeField] private GameObject fishingMiniGamePanel; // Панель мини-игры
 	[SerializeField] private FishingMiniGame fishingMiniGame; // Мини-игра рыбалки
     [SerializeField] private GameObject successNotification;
@@ -12,8 +13,8 @@ public class FishingUI : MonoBehaviour
     private void Start()
 	{
 		// Инициализация
-		if (fishingButton != null)
-			fishingButton.gameObject.SetActive(false);
+		if (interactButton != null)
+			interactButton.gameObject.SetActive(false);
 
 		if (fishingMiniGamePanel != null)
 			fishingMiniGamePanel.SetActive(false);
@@ -21,8 +22,13 @@ public class FishingUI : MonoBehaviour
 
 	public void ShowFishingButton(bool show)
 	{
-		if (fishingButton != null)
-			fishingButton.gameObject.SetActive(show);
+		if (interactButton != null)
+		{
+			interactButton.SetIcon(interactSprite);
+			interactButton.SetInteractionText("Ловить рыбу");
+			interactButton.gameObject.GetComponent<Button>().onClick.AddListener(StartFishingMiniGame);
+			interactButton.gameObject.SetActive(show);
+		}
 	}
 
 	public void StartFishingMiniGame()
@@ -34,7 +40,7 @@ public class FishingUI : MonoBehaviour
 			// Запускаем мини-игру через FishingMiniGame
 			fishingMiniGame.StartMiniGame();
 		}
-		ToggleFishingButtonVisibility();
+		ShowFishingButton(false);
 		ToggleSuccessNotificationVisibility(false);
 		ToggleFailureNotificationVisibility(false);
     }
@@ -42,15 +48,15 @@ public class FishingUI : MonoBehaviour
 	public void HideFishingMiniGame()
 	{
 		if (fishingMiniGamePanel != null)
-			fishingMiniGamePanel.SetActive(false);
-
+		{
+			interactButton.SetIcon(null);
+			interactButton.SetInteractionText(null);
+			interactButton.gameObject.GetComponent<Button>().onClick.RemoveAllListeners();
+			fishingMiniGamePanel.SetActive(false);	
+		}
+		ShowFishingButton(true);
         ToggleSuccessNotificationVisibility(false);
         ToggleFailureNotificationVisibility(false);
-    }
-
-	public void ToggleFishingButtonVisibility()
-	{
-        fishingButton.gameObject.SetActive(!fishingButton.gameObject.activeSelf);
     }
 
 	public void ToggleSuccessNotificationVisibility(bool b)

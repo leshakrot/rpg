@@ -324,7 +324,7 @@ namespace RPG.Combat
         }
         private void UpdateGloveRightArmor()
         {
-            CheckArmor(EquipLocation.GlovesLeft);
+	        CheckArmor(EquipLocation.GlovesRight);
         }
         private void UpdateTrousersArmor()
         {
@@ -672,22 +672,118 @@ namespace RPG.Combat
             Hit();
         }
 
-        public object CaptureState()
-        {
-            List<object> state = new List<object>();
-            state.Add(_currentWeaponConfig.name);
-            state.Add(_currentBodyArmorConfig.name);
-            return state;
-        }
+		public object CaptureState()
+		{
+			// Создаем словарь для хранения всех данных о текущем оружии и броне
+			Dictionary<string, string> state = new Dictionary<string, string>
+			{
+				{ "Weapon", _currentWeaponConfig.name },
+				{ "BodyArmor", _currentBodyArmorConfig?.name },
+				{ "UpperArmLeftArmor", _currentUpperArmLeftArmorConfig?.name },
+				{ "UpperArmRightArmor", _currentUpperArmRightArmorConfig?.name },
+				{ "LowerArmLeftArmor", _currentLowerArmLeftArmorConfig?.name },
+				{ "LowerArmRightArmor", _currentLowerArmRightArmorConfig?.name },
+				{ "HelmetArmor", _currentHelmetArmorConfig?.name },
+				{ "BootLeftArmor", _currentBootLeftArmorConfig?.name },
+				{ "BootRightArmor", _currentBootRightArmorConfig?.name },
+				{ "GloveLeftArmor", _currentGloveLeftArmorConfig?.name },
+				{ "GloveRightArmor", _currentGloveRightArmorConfig?.name },
+				{ "TrousersArmor", _currentTrousersArmorConfig?.name }
+			};
 
-        public void RestoreState(object state)
-        {
-            string weaponName = (string)state;
-            WeaponConfig weapon = Resources.Load<WeaponConfig>(weaponName);
-            EquipWeapon(weapon);
-            string armorName = (string)state;
-            BodyArmorConfig armor = Resources.Load<BodyArmorConfig>(armorName);
-            EquipArmor(armor);
-        }
+			return state;
+		}
+
+		public void RestoreState(object state)
+		{
+			// Преобразуем состояние обратно в словарь
+			Dictionary<string, string> savedState = (Dictionary<string, string>)state;
+
+			// Восстанавливаем оружие
+			if (savedState.ContainsKey("Weapon"))
+			{
+				string weaponName = savedState["Weapon"];
+				WeaponConfig weapon = UnityEngine.Resources.Load<WeaponConfig>(weaponName);
+				EquipWeapon(weapon);
+			}
+
+			// Восстанавливаем броню
+			if (savedState.ContainsKey("BodyArmor"))
+			{
+				string armorName = savedState["BodyArmor"];
+				BodyArmorConfig armor = UnityEngine.Resources.Load<BodyArmorConfig>(armorName);
+				EquipArmor(armor);
+			}
+
+			if (savedState.ContainsKey("UpperArmLeftArmor"))
+			{
+				string armorName = savedState["UpperArmLeftArmor"];
+				UpperArmLeftArmorConfig armor = UnityEngine.Resources.Load<UpperArmLeftArmorConfig>(armorName);
+				EquipArmor(armor);
+			}
+
+			if (savedState.ContainsKey("UpperArmRightArmor"))
+			{
+				string armorName = savedState["UpperArmRightArmor"];
+				UpperArmRightArmorConfig armor = UnityEngine.Resources.Load<UpperArmRightArmorConfig>(armorName);
+				EquipArmor(armor);
+			}
+
+			if (savedState.ContainsKey("LowerArmLeftArmor"))
+			{
+				string armorName = savedState["LowerArmLeftArmor"];
+				LowerArmLeftArmorConfig armor = UnityEngine.Resources.Load<LowerArmLeftArmorConfig>(armorName);
+				EquipArmor(armor);
+			}
+
+			if (savedState.ContainsKey("LowerArmRightArmor"))
+			{
+				string armorName = savedState["LowerArmRightArmor"];
+				LowerArmRightArmorConfig armor = UnityEngine.Resources.Load<LowerArmRightArmorConfig>(armorName);
+				EquipArmor(armor);
+			}
+
+			if (savedState.ContainsKey("HelmetArmor"))
+			{
+				string armorName = savedState["HelmetArmor"];
+				HelmetArmorConfig armor = UnityEngine.Resources.Load<HelmetArmorConfig>(armorName);
+				EquipArmor(armor);
+			}
+
+			if (savedState.ContainsKey("BootLeftArmor"))
+			{
+				string armorName = savedState["BootLeftArmor"];
+				BootLeftArmorConfig armor = UnityEngine.Resources.Load<BootLeftArmorConfig>(armorName);
+				EquipArmor(armor);
+			}
+
+			if (savedState.ContainsKey("BootRightArmor"))
+			{
+				string armorName = savedState["BootRightArmor"];
+				BootRightArmorConfig armor = UnityEngine.Resources.Load<BootRightArmorConfig>(armorName);
+				EquipArmor(armor);
+			}
+
+			if (savedState.ContainsKey("GloveLeftArmor"))
+			{
+				string armorName = savedState["GloveLeftArmor"];
+				GloveLeftArmorConfig armor = UnityEngine.Resources.Load<GloveLeftArmorConfig>(armorName);
+				EquipArmor(armor);
+			}
+
+			if (savedState.ContainsKey("GloveRightArmor"))
+			{
+				string armorName = savedState["GloveRightArmor"];
+				GloveRightArmorConfig armor = UnityEngine.Resources.Load<GloveRightArmorConfig>(armorName);
+				EquipArmor(armor);
+			}
+
+			if (savedState.ContainsKey("TrousersArmor"))
+			{
+				string armorName = savedState["TrousersArmor"];
+				TrousersArmorConfig armor = UnityEngine.Resources.Load<TrousersArmorConfig>(armorName);
+				EquipArmor(armor);
+			}
+		}
     }
 }
