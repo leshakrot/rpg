@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7873051884466848317}
   - component: {fileID: 8122651910779038400}
   - component: {fileID: 7497463443225164881}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Chest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -69,8 +69,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 16
-  initialItems: []
-  initialNumbers: 
+  initialItems:
+  - {fileID: 11400000, guid: 826c19e601e7eda499c6f5ebc625e7e1, type: 2}
+  - {fileID: 11400000, guid: 759344115a4e6eb43896c10f2514b0a9, type: 2}
+  - {fileID: 11400000, guid: c96b5c6c3d561db4184444bc5a10909f, type: 2}
+  - {fileID: 11400000, guid: e9cfbb43c64f93247b05aee713c4b855, type: 2}
+  - {fileID: 11400000, guid: bc081bfac2d3a09459f18f3363b6a391, type: 2}
+  initialNumbers: 0300000001000000010000000f00000001000000
   chestUI: {fileID: 0}
 --- !u!114 &7497463443225164881
 MonoBehaviour:
@@ -96,6 +101,14 @@ PrefabInstance:
     - target: {fileID: 144976, guid: 045cc9e875b3f1f48b4774837b97b949, type: 3}
       propertyPath: m_Name
       value: SM_Prop_Chest_03
+      objectReference: {fileID: 0}
+    - target: {fileID: 144976, guid: 045cc9e875b3f1f48b4774837b97b949, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 167976, guid: 045cc9e875b3f1f48b4774837b97b949, type: 3}
+      propertyPath: m_Layer
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 493996, guid: 045cc9e875b3f1f48b4774837b97b949, type: 3}
       propertyPath: m_LocalPosition.x
