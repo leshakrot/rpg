@@ -1,4 +1,4 @@
-﻿Shader "TerrainSurface"
+Shader "TerrainSurface"
 {
 	Properties
 	{
@@ -18,7 +18,11 @@
 	SubShader
 	{
 		Tags { "RenderType" = "Opaque" }
-		CGPROGRAM
+		Pass
+		{
+		
+		}
+		HLSLPROGRAM
 		#pragma surface surf StandardSpecular fullforwardshadows addshadow
 		// until texCubeLOD is solved
 		#pragma exclude_renderers gles
@@ -63,7 +67,7 @@
 			o.Smoothness 	= specGloss.a;
 		  	o.Normal 		= lerp (normal1, normal2, blend);
 		}
-		ENDCG
+		ENDHLSL
 	}
 
 	CustomEditor "BlendShaderGUI"
