@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using GameDevTV.Utils;
@@ -12,7 +12,7 @@ namespace RPG.Dialogue
     {
         [SerializeField]
         bool isPlayerSpeaking = false;
-        [SerializeField]
+	    [SerializeField][TextArea]
         string text;
         [SerializeField]
         List<string> children = new List<string>();
