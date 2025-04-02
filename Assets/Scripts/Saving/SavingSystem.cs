@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -56,6 +56,23 @@ namespace GameDevTV.Saving
         {
             RestoreState(LoadFile(saveFile));
         }
+        
+	    public bool SaveFileExists(string saveFile)
+	    {
+	    	string path = GetPathFromSaveFile(saveFile);
+		    return File.Exists(path);
+	    }
+	    
+	    public IEnumerable<string> ListSaves()
+	    {
+	    	foreach (string path in Directory.EnumerateFiles(Application.persistentDataPath))
+	    	{
+	    		if(Path.GetExtension(path) == ".sav")
+	    		{
+	    			yield return Path.GetFileNameWithoutExtension(path);
+	    		}
+	    	}
+	    }
 
         // PRIVATE
 

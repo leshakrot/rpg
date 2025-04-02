@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 namespace RPG.SceneManagement
@@ -42,7 +42,7 @@ namespace RPG.SceneManagement
         {
             while (!Mathf.Approximately(canvasGroup.alpha, target))
             {
-                canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, target, Time.deltaTime / time);
+	            canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, target, Time.unscaledDeltaTime / time);
                 yield return null;
             }
         }

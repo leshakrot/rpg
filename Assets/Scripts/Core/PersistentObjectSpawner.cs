@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace RPG.Core
@@ -7,15 +7,15 @@ namespace RPG.Core
     {
         [SerializeField] private GameObject _persistentObjectPrefab;
 
-        private static bool _hasSpawned;
+	    private static bool _hasSpawned = false;
 
         private void Awake()
         {
-            if (_hasSpawned) return;
+	        if (_hasSpawned) return;
+            
+	        _hasSpawned = true;
 
             SpawnPersistentObjects();
-
-            _hasSpawned = true;
         }
 
         private void SpawnPersistentObjects()
