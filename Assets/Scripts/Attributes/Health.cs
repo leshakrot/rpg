@@ -12,13 +12,13 @@ namespace RPG.Attributes
     {
         [SerializeField] private float _regenerationPercentage = 100;
         [SerializeField] private UnityEvent<float> _takeDamage;
-        [SerializeField] private UnityEvent _onDie;
+        public UnityEvent onDie;
 
         private LazyValue<float> _healthPoints;
 
         private Animator _animator;
         private ActionScheduler _actionScheduler;
-        private bool _isDead = false;
+        private bool _wasDeadLastFrame = false;
 
         private void Awake()
         {
@@ -57,16 +57,17 @@ namespace RPG.Attributes
 
             if(_healthPoints.value == 0)
             {
-                _onDie.Invoke();
-                Die();
+                onDie.Invoke();
                 AwardExperience(instigator);
             }
             else _takeDamage.Invoke(damage);
+            UpdateState();
         }
 
         public void Heal(float healthToRestore)
         {
             _healthPoints.value = Mathf.Min(_healthPoints.value + healthToRestore, GetMaxHealthPoints());
+            UpdateState();
         }
 
         public float GetHealthPoints()
@@ -89,14 +90,20 @@ namespace RPG.Attributes
             return _healthPoints.value / GetComponent<BaseStats>().GetStat(Stat.Health);
         }
 
-        private void Die()
+        private void UpdateState()
         {
-            if (_isDead) return;
+            if(!_wasDeadLastFrame && IsDead())
+            {
+                _animator.SetTrigger("die");
+                _actionScheduler.CancelCurrentAction();
+            }
 
-            _isDead = true;
-            _animator.SetTrigger("die");
-            _actionScheduler.CancelCurrentAction();
-            
+            if(_wasDeadLastFrame && !IsDead())
+            {
+                _animator.Rebind();
+            }
+
+            _wasDeadLastFrame = IsDead();
         }
 
         private void AwardExperience(GameObject instigator)
@@ -117,7 +124,7 @@ namespace RPG.Attributes
 
         public bool IsDead()
         {
-            return _isDead;
+            return _healthPoints.value <= 0; ;
         }
 
         public object CaptureState()
@@ -129,10 +136,7 @@ namespace RPG.Attributes
         {
             _healthPoints.value = (float)state;
 
-            if (_healthPoints.value == 0)
-            {
-                Die();
-            }
+            UpdateState();
         }
     }
 }

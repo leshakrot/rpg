@@ -15,13 +15,15 @@ namespace RPG.UI
 		
 		private void OnEnable()
 		{
+			if (playerController == null) return;
 			Time.timeScale = 0;
 			playerController.enabled = false;
 		}
 		
 		private void OnDisable()
 		{
-			Time.timeScale = 1;
+            if (playerController == null) return;
+            Time.timeScale = 1;
 			playerController.enabled = true;
 		}	
 		

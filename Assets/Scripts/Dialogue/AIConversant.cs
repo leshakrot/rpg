@@ -1,3 +1,4 @@
+using RPG.Attributes;
 using RPG.Combat;
 using RPG.Control;
 using UnityEngine;
@@ -19,6 +20,11 @@ namespace RPG.Dialogue
             if(_dialogue == null)
             {
                 return false;
+            }
+
+            if (TryGetComponent(out Health health))
+            {
+                if(health.IsDead()) return false;
             }
 
             if (Input.GetMouseButtonDown(0))
