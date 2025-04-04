@@ -1,5 +1,6 @@
 using GameDevTV.Inventories;
 using RPG.Attributes;
+using RPG.Inventories;
 using RPG.Stats;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine;
 namespace RPG.Combat
 {
     [CreateAssetMenu(fileName = "LowerArm Left Armor", menuName = "RPG/ LowerArm Left Armor/ New LowerArm Left Armor", order = 6)]
-    public class LowerArmLeftArmorConfig : EquipableItem/*, IModifierProvider*/
+    public class LowerArmLeftArmorConfig : StatsEquipableItem // EquipableItem/*, IModifierProvider*/
     {
         [SerializeField] private LowerArmLeftArmor _equippedPrefab;
         [SerializeField] private EquipLocation _equipLocation;

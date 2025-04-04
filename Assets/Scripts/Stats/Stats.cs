@@ -9,6 +9,7 @@
         ExperienceToLevelUp,
 	    Damage,
 	    TotalTraitPoints,
-	    BuyingDiscountPercentage
+	    BuyingDiscountPercentage,
+        Defence
     }
 }

@@ -14,6 +14,8 @@ namespace RPG.Combat
 	public class PlayerFighter : Fighter, IAction, ISaveable
 	{
         [SerializeField] private float _timeBetweenAttacks = 1f;
+        [SerializeField] private float _autoAttackRange = 4f;
+        [SerializeField] private bool _isAutoattacking = false;
 
         [SerializeField] private Transform _bodyTransform;
         [SerializeField] private Transform _helmetTransform;
@@ -585,7 +587,12 @@ namespace RPG.Combat
 
             if (_target == null) return;
 
-            if (_target.IsDead()) return;
+            if (_target.IsDead())
+            {
+                if (!_isAutoattacking) return;
+                _target = FindNewTargetInRange(_autoAttackRange);
+                if (_target == null) return;
+            }
 
             if (!GetIsInRange(_target.transform))
             {

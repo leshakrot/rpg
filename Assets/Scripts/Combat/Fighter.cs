@@ -53,7 +53,7 @@ namespace RPG.Combat
 			if (target == null) return;
 			if (target.IsDead()) 
 			{
-				target = FindNewTargetInRange();
+				target = FindNewTargetInRange(autoAttackRange);
 				if (target == null) return;
 			}
 
@@ -121,11 +121,11 @@ namespace RPG.Combat
 			}
 		}
 
-		private Health FindNewTargetInRange()
+		public Health FindNewTargetInRange(float range)
 		{
 			Health best = null;
 			float bestDistance = Mathf.Infinity;
-			foreach (var candidate in FindAllTargetsInRange())
+			foreach (var candidate in FindAllTargetsInRange(range))
 			{
 				float candidateDistance = Vector3.Distance(
 					transform.position, candidate.transform.position);
@@ -138,10 +138,10 @@ namespace RPG.Combat
 			return best;
 		}
 
-		private IEnumerable<Health> FindAllTargetsInRange()
+		private IEnumerable<Health> FindAllTargetsInRange(float range)
 		{
 			RaycastHit[] raycastHits = Physics.SphereCastAll(transform.position,
-				autoAttackRange, Vector3.up);
+				range, Vector3.up);
 			foreach (var hit in raycastHits)
 			{
 				Health health = hit.transform.GetComponent<Health>();
@@ -164,8 +164,14 @@ namespace RPG.Combat
 			if (target == null) return;
 
 			float damage = GetComponent<BaseStats>().GetStat(Stat.Damage);
+            BaseStats targetBaseStats = target.GetComponent<BaseStats>();
+            if (targetBaseStats != null)
+            {
+                float defence = targetBaseStats.GetStat(Stat.Defence);
+                damage /= 1 + defence / damage;
+            }
 
-			if(currentWeapon.value != null)
+            if (currentWeapon.value != null)
 			{
 				currentWeapon.value.OnHit();
 			}

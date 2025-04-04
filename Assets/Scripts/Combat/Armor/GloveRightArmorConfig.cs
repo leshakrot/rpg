@@ -1,5 +1,6 @@
 using GameDevTV.Inventories;
 using RPG.Attributes;
+using RPG.Inventories;
 using RPG.Stats;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine;
 namespace RPG.Combat
 {
     [CreateAssetMenu(fileName = "Glove Right Armor", menuName = "RPG/ Glove Right Armor/ New Glove Right Armor", order = 5)]
-    public class GloveRightArmorConfig: EquipableItem/*, IModifierProvider*/
+    public class GloveRightArmorConfig : StatsEquipableItem // EquipableItem/*, IModifierProvider*/
     {
         [SerializeField] private GloveRightArmor _equippedPrefab;
         [SerializeField] private EquipLocation _equipLocation;
