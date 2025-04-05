@@ -6,11 +6,13 @@ public class BookItem : ActionItem
 {
 	[SerializeField][TextArea] private string text;
 	
-	public override void Use(GameObject user)
+	public override bool Use(GameObject user)
 	{
 		if(user.TryGetComponent(out BookReader bookReader))
 		{
 			bookReader.OpenBook(this.GetDisplayName(), text);
+			return true;
 		}
+		return false;
 	}
 }

@@ -12,7 +12,7 @@ namespace RPG.SceneManagement
     {
         enum DestinationIdentifier
         {
-	        MainTown_Pond, B, C, D, E
+	        MainTown_Pond, B, C, D, E, Pond_Cave1
         }
 
         [SerializeField] int sceneToLoad = -1;
