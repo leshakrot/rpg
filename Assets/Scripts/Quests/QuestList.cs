@@ -1,6 +1,6 @@
 using GameDevTV.Inventories;
 using GameDevTV.Saving;
-using RPG.Core;
+using GameDevTV.Utils;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +12,11 @@ namespace RPG.Quests
         private List<QuestStatus> _statuses = new List<QuestStatus>();
 
         public event Action onUpdate;
+
+        private void Update()
+        {
+            CompleteObjectivesByPredicates();
+        }
 
         public void AddQuest(Quest quest)
         {
@@ -72,6 +77,24 @@ namespace RPG.Quests
             }
         }
 
+        private void CompleteObjectivesByPredicates()
+        {
+            foreach (QuestStatus status in _statuses)
+            {
+                if (status.IsComplete()) continue;
+                Quest quest = status.GetQuest();
+                foreach (var objective in quest.GetObjectives())
+                {
+                    if (status.IsObjectiveComplete(objective.reference)) continue;
+                    if (!objective.usesCondition) continue;
+                    if (objective.completionCondition.Check(GetComponents<IPredicateEvaluator>()))
+                    {
+                        CompleteObjective(quest, objective.reference);
+                    }
+                }
+            }
+        }
+
         public object CaptureState()
         {
             List<object> state = new List<object>();
@@ -100,9 +123,15 @@ namespace RPG.Quests
             switch (predicate)
             {
                 case "HasQuest":
-                    return HasQuest(Quest.GetByName(parameters[0]));
+                    Quest questHas = Quest.GetByName(parameters[0]);
+                    return questHas != null && HasQuest(questHas);
+
                 case "CompletedQuest":
-                    return GetQuestStatus(Quest.GetByName(parameters[0])).IsComplete();
+                    Quest questCompleted = Quest.GetByName(parameters[0]);
+                    if (questCompleted == null) return false;
+
+                    QuestStatus status = GetQuestStatus(questCompleted);
+                    return status != null && status.IsComplete();
             }
             return null;
         }

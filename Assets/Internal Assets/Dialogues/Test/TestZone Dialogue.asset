@@ -1,0 +1,234 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6057083353033878157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: f1bb2cf9-f316-434d-b3d1-4deaaf6ebc6b
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u041A\u043E\u0433\u0434\u0430"
+  children:
+  - 5a6e13f0-dd84-4dfc-8953-e192b768e22b
+  rect:
+    serializedVersion: 2
+    x: 361
+    y: 145
+    width: 200
+    height: 100
+  onEnterAction: 
+  onExitAction: 
+  condition:
+    _and:
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - TestZone
+        _negate: 0
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - TestZone
+        _negate: 1
+--- !u!114 &-3725786718791345134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: da06df81-2486-4878-b374-5dbb425781e1
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u0421\u043F\u0441"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 855
+    y: 41
+    width: 200
+    height: 100
+  onEnterAction: 
+  onExitAction: 
+  condition:
+    _and: []
+--- !u!114 &-2793882552631557027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 83eca3bf-bdfa-486b-933c-5815da76c360
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 1
+  text: "\u041E\u043A"
+  children:
+  - da06df81-2486-4878-b374-5dbb425781e1
+  rect:
+    serializedVersion: 2
+    x: 605
+    y: 41
+    width: 200
+    height: 100
+  onEnterAction: 
+  onExitAction: GiveQuest
+  condition:
+    _and: []
+--- !u!114 &-1424586085830275693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 5a6e13f0-dd84-4dfc-8953-e192b768e22b
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u0423\u0435\u0431\u044B\u0432\u0430\u0439"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 617
+    y: 165
+    width: 200
+    height: 100
+  onEnterAction: 
+  onExitAction: 
+  condition:
+    _and: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cb41413d0f918744b4655afe6c9f18f, type: 3}
+  m_Name: TestZone Dialogue
+  m_EditorClassIdentifier: 
+  nodes:
+  - {fileID: 8875753398800021431}
+  - {fileID: 1762492126036104504}
+  - {fileID: -6057083353033878157}
+  - {fileID: 2458772931805931649}
+  - {fileID: -2793882552631557027}
+  - {fileID: -3725786718791345134}
+  - {fileID: -1424586085830275693}
+  newNodeOffset: {x: 250, y: 0}
+--- !u!114 &1762492126036104504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: cc2bc3c2-1b8d-4193-8861-6e556136e708
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u0423\u0431\u0435\u0439"
+  children:
+  - 83eca3bf-bdfa-486b-933c-5815da76c360
+  rect:
+    serializedVersion: 2
+    x: 356
+    y: 41
+    width: 200
+    height: 100
+  onEnterAction: 
+  onExitAction: 
+  condition:
+    _and:
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - TestZone
+        _negate: 1
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - TestZone
+        _negate: 1
+--- !u!114 &2458772931805931649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 49ba2b5d-068e-4714-960a-b79f9d7b1be6
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u0425\u0430\u0440\u043E\u0448"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 363
+    y: 296
+    width: 200
+    height: 100
+  onEnterAction: 
+  onExitAction: 
+  condition:
+    _and:
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - TestZone
+        _negate: 0
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - TestZone
+        _negate: 0
+--- !u!114 &8875753398800021431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: ff1f7a6d-cb85-4727-b5af-8c7835d8236d
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u0425\u0430\u0439"
+  children:
+  - cc2bc3c2-1b8d-4193-8861-6e556136e708
+  - f1bb2cf9-f316-434d-b3d1-4deaaf6ebc6b
+  - 49ba2b5d-068e-4714-960a-b79f9d7b1be6
+  rect:
+    serializedVersion: 2
+    x: 105
+    y: 41
+    width: 200
+    height: 100
+  onEnterAction: 
+  onExitAction: 
+  condition:
+    _and: []

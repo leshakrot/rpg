@@ -209,6 +209,36 @@ MonoBehaviour:
   onExitAction: 
   condition:
     _and: []
+--- !u!114 &-4242896728383273889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 9a918f86-55ce-4a96-bce2-1d38b27ce3fc
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 1
+  text: "\u042F \u043D\u0430\u0448\u0435\u043B \u043A\u043D\u0438\u0433\u0443 \u043C\u0435\u043B\u044C\u043D\u0438\u043A\u0430"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 372
+    y: 425
+    width: 200
+    height: 100
+  onEnterAction: 
+  onExitAction: 
+  condition:
+    _and:
+    - _or:
+      - _predicate: HasInventoryItem
+        _parameters:
+        - be7e6487-6829-4a1f-9952-db5776d4ffca
+        _negate: 0
 --- !u!114 &-4018753018112616781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -557,6 +587,7 @@ MonoBehaviour:
   - {fileID: -395718811536822047}
   - {fileID: -8887026728816864082}
   - {fileID: -2475136448895198014}
+  - {fileID: -4242896728383273889}
   newNodeOffset: {x: 250, y: 0}
 --- !u!114 &572948829354648586
 MonoBehaviour:
@@ -710,6 +741,7 @@ MonoBehaviour:
   children:
   - 5b22353a-9428-49d6-863e-b1a1da92dd73
   - 3cab4c47-8dc6-48f6-b364-cfc6e3010eab
+  - 9a918f86-55ce-4a96-bce2-1d38b27ce3fc
   rect:
     serializedVersion: 2
     x: 84
