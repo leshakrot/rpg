@@ -30,7 +30,7 @@ namespace RPG.Control
         [SerializeField] private float _raycastRadius = 1f;
         [SerializeField] private int _numberOfAbilities = 6;
 
-        private bool _isDraggingUI = false;
+        public bool _isDraggingUI = false;
 
         private void Awake()
         {
