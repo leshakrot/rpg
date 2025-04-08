@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace RPG.SceneManagement
 {
-    public class Portal : MonoBehaviour
+    public class Portal : MonoBehaviour, ISaveable
     {
         enum DestinationIdentifier
         {
@@ -22,8 +22,16 @@ namespace RPG.SceneManagement
         [SerializeField] float fadeInTime = 2f;
         [SerializeField] float fadeWaitTime = 0.5f;
 
+        [SerializeField] bool isAvailable = true;
+
+        public void ToggleAvailability(bool b)
+        {
+            isAvailable = b;
+        }
+
         private void OnTriggerEnter(Collider other)
         {
+            if (!isAvailable) return;
             if (other.tag == "Player")
             {
                 StartCoroutine(Transition());
@@ -87,6 +95,26 @@ namespace RPG.SceneManagement
             }
 
             return null;
+        }
+
+
+        public object CaptureState()
+        {
+            // Возвращаем текущее значение isAvailable
+            return isAvailable;
+        }
+
+        public void RestoreState(object state)
+        {
+            // Проверяем, что сохраненное состояние является булевым значением
+            if (state is bool)
+            {
+                isAvailable = (bool)state;
+            }
+            else
+            {
+                Debug.LogError("Неверный тип данных при восстановлении состояния портала.");
+            }
         }
     }
 }
