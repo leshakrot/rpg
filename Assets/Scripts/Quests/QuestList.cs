@@ -53,6 +53,22 @@ namespace RPG.Quests
             }
         }
 
+        public void AddProgress(Quest quest, string objectiveRef, int amount = 1)
+        {
+            QuestStatus status = GetQuestStatus(quest);
+            if (status == null) return;
+
+            status.IncrementProgress(objectiveRef, amount);
+
+            if (status.IsComplete())
+            {
+                GiveReward(quest);
+            }
+
+            onUpdate?.Invoke();
+        }
+
+
         private QuestStatus GetQuestStatus(Quest quest)
         {
             foreach (QuestStatus status in _statuses)

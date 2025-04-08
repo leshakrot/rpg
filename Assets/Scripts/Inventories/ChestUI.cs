@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using GameDevTV.Inventories;
+using UnityEngine.Events;
 
 public class ChestUI : MonoBehaviour
 {
-	[SerializeField] InteractButton interactButton;
+    public UnityEvent onOpen;
+
+    [SerializeField] InteractButton interactButton;
 	[SerializeField] Sprite interactSprite;
 	[SerializeField] GameObject chestSlotPrefab;
 	[SerializeField] Transform slotsParent;
@@ -50,6 +53,8 @@ public class ChestUI : MonoBehaviour
 		//rect.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
 
 		Redraw();
+
+		onOpen.Invoke();
 	}
 
 	public void CloseChest()

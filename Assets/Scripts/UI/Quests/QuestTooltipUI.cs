@@ -23,15 +23,20 @@ namespace RPG.UI.Quests
 
             foreach (var objective in quest.GetObjectives())
             {
-                GameObject prefab = _objectiveIncompletePrefab;
-                if (status.IsObjectiveComplete(objective.reference))
-                {
-                    prefab = _objectivePrefab;
-                }
+                GameObject prefab = status.IsObjectiveComplete(objective.reference) ? _objectivePrefab : _objectiveIncompletePrefab;
                 GameObject objectiveInstance = Instantiate(prefab, _objectiveContainer);
                 TextMeshProUGUI objectiveText = objectiveInstance.GetComponentInChildren<TextMeshProUGUI>();
-                objectiveText.text = objective.description;
+
+                string progressText = "";
+                if (objective.hasProgress && !status.IsObjectiveComplete(objective.reference))
+                {
+                    int current = status.GetCurrentProgress(objective.reference);
+                    progressText = $" ({current}/{objective.requiredCount})";
+                }
+
+                objectiveText.text = objective.description + progressText;
             }
+
             _rewardText.text = GetRewardText(quest);
         }
 

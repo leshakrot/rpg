@@ -23,7 +23,7 @@ namespace RPG.UI
 		private void OnDisable()
 		{
             if (playerController == null) return;
-			Time.timeScale = 1;
+			Time.timeScale = 4;
 			playerController.enabled = true;
 		}	
 		

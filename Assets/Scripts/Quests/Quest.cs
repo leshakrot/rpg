@@ -3,6 +3,7 @@ using GameDevTV.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace RPG.Quests
@@ -28,7 +29,11 @@ namespace RPG.Quests
             public string description;
             public bool usesCondition = false;
             public Condition completionCondition;
+
+            public bool hasProgress = false;
+            public int requiredCount = 1;
         }
+
 
         public string GetTitle()
         {
@@ -44,6 +49,12 @@ namespace RPG.Quests
         {
             return _objectives;
         }
+
+        public Objective GetObjective(string reference)
+        {
+            return _objectives.FirstOrDefault(o => o.reference == reference);
+        }
+
 
         public IEnumerable<Reward> GetRewards()
         {
