@@ -13,8 +13,29 @@ MonoBehaviour:
   m_Name: Miller Notes
   m_EditorClassIdentifier: 
   _objectives:
-  - reference: pond_millernotes
-    description: "\u041D\u0430\u0439\u0434\u0438 \u043A\u043D\u0438\u0433\u0443 \u043C\u0435\u043B\u044C\u043D\u0438\u043A\u0430"
+  - reference: pond_millernotes_find
+    description: "\u041D\u0430\u0439\u0434\u0438 \u0434\u043D\u0435\u0432\u043D\u0438\u043A
+      \u043C\u0435\u043B\u044C\u043D\u0438\u043A\u0430"
+    usesCondition: 1
+    completionCondition:
+      _and:
+      - _or:
+        - _predicate: HasInventoryItem
+          _parameters:
+          - be7e6487-6829-4a1f-9952-db5776d4ffca
+          _negate: 0
+  - reference: pond_millernotes_bring
+    description: "\u041E\u0442\u043D\u0435\u0441\u0438 \u0434\u043D\u0435\u0432\u043D\u0438\u043A
+      \u043C\u0435\u043B\u044C\u043D\u0438\u043A\u0430 \u041C\u0443\u0434\u0440\u043E\u043C\u0443
+      \u0414\u0435\u0440\u0435\u0432\u0443"
+    usesCondition: 0
+    completionCondition:
+      _and:
+      - _or:
+        - _predicate: HasInventoryItem
+          _parameters:
+          - be7e6487-6829-4a1f-9952-db5776d4ffca
+          _negate: 0
   _rewards:
   - number: 1
     item: {fileID: 11400000, guid: 15cc065084d7bd14584f4e870a627e75, type: 2}

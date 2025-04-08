@@ -368,7 +368,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 240782698938995344}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.2558122, y: -0.22362338, z: 0.060952365, w: 0.93852943}
+  m_LocalRotation: {x: 0.034469012, y: 0.9584164, z: -0.25079677, w: 0.13172285}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1717,7 +1717,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 562320620538664049}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.22580111, y: -0.22545075, z: 0.053801652, w: 0.9461983}
+  m_LocalRotation: {x: 0.030928388, y: 0.9647902, z: -0.22503516, w: 0.13259886}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2077,7 +2077,7 @@ Transform:
   m_GameObject: {fileID: 609992897455834507}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 24.239578, y: 13.848, z: 132.67128}
+  m_LocalPosition: {x: 58.19049, y: 22.81, z: 11.489407}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2108,7 +2108,7 @@ MonoBehaviour:
   m_Follow: {fileID: 5206837805567857089}
   m_CommonLens: 1
   m_Lens:
-    FieldOfView: 40
+    FieldOfView: 50
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -2128,10 +2128,10 @@ MonoBehaviour:
   m_YAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 2
+    m_MaxSpeed: 0
     m_AccelTime: 0.2
     m_DecelTime: 0.1
-    m_InputAxisName: Mouse ScrollWheel
+    m_InputAxisName: Mouse Y
     m_InputAxisValue: 0
     m_InvertInput: 1
     m_MinValue: 0
@@ -2152,7 +2152,7 @@ MonoBehaviour:
   m_XAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 0
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: Mouse X
@@ -23661,7 +23661,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8111698950115046399}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.2626082, y: -0.22317584, z: 0.06257168, w: 0.9366506}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -35420,37 +35420,37 @@ PrefabInstance:
     - target: {fileID: 436863932241933019, guid: f55c2195f9236864ea1848fe2c855f35,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 52.81163
+      value: 58.19049
       objectReference: {fileID: 0}
     - target: {fileID: 436863932241933019, guid: f55c2195f9236864ea1848fe2c855f35,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 26.961193
+      value: 22.81
       objectReference: {fileID: 0}
     - target: {fileID: 436863932241933019, guid: f55c2195f9236864ea1848fe2c855f35,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 12.193203
+      value: 11.489407
       objectReference: {fileID: 0}
     - target: {fileID: 436863932241933019, guid: f55c2195f9236864ea1848fe2c855f35,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.3894007
+      value: 0.13172284
       objectReference: {fileID: 0}
     - target: {fileID: 436863932241933019, guid: f55c2195f9236864ea1848fe2c855f35,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.14605066
+      value: 0.03446901
       objectReference: {fileID: 0}
     - target: {fileID: 436863932241933019, guid: f55c2195f9236864ea1848fe2c855f35,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.8514994
+      value: 0.9584164
       objectReference: {fileID: 0}
     - target: {fileID: 436863932241933019, guid: f55c2195f9236864ea1848fe2c855f35,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.31935093
+      value: -0.25079677
       objectReference: {fileID: 0}
     - target: {fileID: 436863932241933019, guid: f55c2195f9236864ea1848fe2c855f35,
         type: 3}
@@ -35469,8 +35469,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1072639118690235488, guid: f55c2195f9236864ea1848fe2c855f35,
         type: 3}
+      propertyPath: field of view
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 1072639118690235488, guid: f55c2195f9236864ea1848fe2c855f35,
+        type: 3}
       propertyPath: far clip plane
-      value: 100
+      value: 5000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1072639118690235488, guid: f55c2195f9236864ea1848fe2c855f35,
+        type: 3}
+      propertyPath: near clip plane
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1072639118690235488, guid: f55c2195f9236864ea1848fe2c855f35,
+        type: 3}
+      propertyPath: orthographic size
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1072639118690235488, guid: f55c2195f9236864ea1848fe2c855f35,
         type: 3}

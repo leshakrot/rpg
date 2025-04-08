@@ -89,6 +89,7 @@ MonoBehaviour:
   - ee708201-e78b-49a5-b44a-b3ac2b8cdb0a
   - bf63bdde-d95d-446c-86e0-3d8819956fc5
   - f7691ed3-8808-4631-85b2-e2245d373725
+  - 6e457a63-2adb-4bd9-b4e1-8e03660e40ce
   rect:
     serializedVersion: 2
     x: 676
@@ -201,8 +202,8 @@ MonoBehaviour:
   - 9db86e0e-d9cb-482c-a115-0126422b5261
   rect:
     serializedVersion: 2
-    x: 846
-    y: 482
+    x: 928
+    y: 455
     width: 200
     height: 100
   onEnterAction: 
@@ -223,7 +224,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPlayerSpeaking: 1
   text: "\u042F \u043D\u0430\u0448\u0435\u043B \u043A\u043D\u0438\u0433\u0443 \u043C\u0435\u043B\u044C\u043D\u0438\u043A\u0430"
-  children: []
+  children:
+  - 46d62202-6ccf-4d7a-9b3f-8bf25e9048d7
   rect:
     serializedVersion: 2
     x: 372
@@ -239,6 +241,16 @@ MonoBehaviour:
         _parameters:
         - be7e6487-6829-4a1f-9952-db5776d4ffca
         _negate: 0
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - Miller Notes
+        _negate: 0
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - Miller Notes
+        _negate: 1
 --- !u!114 &-4018753018112616781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -588,6 +600,8 @@ MonoBehaviour:
   - {fileID: -8887026728816864082}
   - {fileID: -2475136448895198014}
   - {fileID: -4242896728383273889}
+  - {fileID: 3360597860443244389}
+  - {fileID: 1027382175829941465}
   newNodeOffset: {x: 250, y: 0}
 --- !u!114 &572948829354648586
 MonoBehaviour:
@@ -657,6 +671,37 @@ MonoBehaviour:
     width: 200
     height: 100
   onEnterAction: 
+  onExitAction: 
+  condition:
+    _and:
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - Miller Notes
+        _negate: 1
+--- !u!114 &1027382175829941465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 46d62202-6ccf-4d7a-9b3f-8bf25e9048d7
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u0421\u043F\u0430\u0441\u0438\u0431\u043E! \u0421\u043B\u0443\u0448\u0430\u0439
+    \u0442\u0430\u0439\u043D\u0443"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 939
+    y: 610
+    width: 200
+    height: 100
+  onEnterAction: CompleteQuest
   onExitAction: 
   condition:
     _and: []
@@ -751,7 +796,12 @@ MonoBehaviour:
   onEnterAction: 
   onExitAction: 
   condition:
-    _and: []
+    _and:
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - Miller Notes
+        _negate: 1
 --- !u!114 &2717328672186308088
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -821,6 +871,48 @@ MonoBehaviour:
   onExitAction: 
   condition:
     _and: []
+--- !u!114 &3360597860443244389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 6e457a63-2adb-4bd9-b4e1-8e03660e40ce
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 1
+  text: "\u0423 \u043C\u0435\u043D\u044F \u0435\u0441\u0442\u044C \u0442\u043E \u0447\u0442\u043E
+    \u0442\u044B \u0438\u0449\u0435\u0448\u044C!"
+  children:
+  - 46d62202-6ccf-4d7a-9b3f-8bf25e9048d7
+  rect:
+    serializedVersion: 2
+    x: 689
+    y: 446
+    width: 200
+    height: 100
+  onEnterAction: 
+  onExitAction: 
+  condition:
+    _and:
+    - _or:
+      - _predicate: HasInventoryItem
+        _parameters:
+        - be7e6487-6829-4a1f-9952-db5776d4ffca
+        _negate: 0
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - Miller Notes
+        _negate: 1
+    - _or:
+      - _predicate: QuestCompleted
+        _parameters:
+        - Miller Notes
+        _negate: 1
 --- !u!114 &3572682706058506385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -908,7 +1000,12 @@ MonoBehaviour:
   onEnterAction: 
   onExitAction: 
   condition:
-    _and: []
+    _and:
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - Miller Notes
+        _negate: 1
 --- !u!114 &6610439488734305507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -933,7 +1030,7 @@ MonoBehaviour:
     width: 200
     height: 100
   onEnterAction: 
-  onExitAction: 
+  onExitAction: GiveQuest
   condition:
     _and: []
 --- !u!114 &7067969400841569753
