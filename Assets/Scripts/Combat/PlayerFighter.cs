@@ -790,7 +790,7 @@ namespace RPG.Combat
 				string armorName = savedState["TrousersArmor"];
 				TrousersArmorConfig armor = UnityEngine.Resources.Load<TrousersArmorConfig>(armorName);
 				EquipArmor(armor);
-			}
+			}		
 		}
     }
 }

@@ -227,10 +227,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 3985924019936815728}
-    - targetCorrespondingSourceObject: {fileID: 3599500272086516982, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2251327151784544440}
   m_SourcePrefab: {fileID: 100100000, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265, type: 3}
 --- !u!1 &212139946877236958 stripped
 GameObject:
@@ -290,6 +286,9 @@ MonoBehaviour:
   _maxNavmeshProjectionDistance: 1
   _raycastRadius: 1
   _numberOfAbilities: 6
+  wasdMoveSpeedFraction: 1
+  lookAheadDistance: 1
+  rotationSpeed: 10
   _isDraggingUI: 0
 --- !u!136 &181648149547853713
 CapsuleCollider:
@@ -490,19 +489,6 @@ MonoBehaviour:
   fadeTime: 0.2
   healthRegenPercentage: 40
   enemyHealthRegenPercentage: 60
---- !u!114 &2251327151784544440
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 212139946877236958}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84c512801310e164693403e7e6cfa6fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  freeLookCamera: {fileID: 0}
 --- !u!4 &5769238769826680127 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7138810541904264983, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,

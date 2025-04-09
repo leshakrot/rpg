@@ -28,16 +28,37 @@ namespace RPG.Control
         [SerializeField] private CursorMapping[] _cursorMappings = null;
         [SerializeField] private float _maxNavmeshProjectionDistance = 1f;
         [SerializeField] private float _raycastRadius = 1f;
-        [SerializeField] private int _numberOfAbilities = 6;
+	    [SerializeField] private int _numberOfAbilities = 6;
+        
+	    [Header("WASD Movement")]
+	    [Tooltip("Доля от максимальной скорости Mover при движении через WASD.")]
+	    [SerializeField] float wasdMoveSpeedFraction = 1f; // 1f = полная скорость
+	    [Tooltip("Насколько далеко впереди устанавливать цель для NavMeshAgent при движении WASD.")]
+	    [SerializeField] float lookAheadDistance = 1.0f;
+	    [Tooltip("Скорость поворота персонажа в сторону движения WASD.")]
+	    [SerializeField] float rotationSpeed = 10f;
 
-        public bool _isDraggingUI = false;
+	    public bool _isDraggingUI = false;
+        
+	    private Transform cameraTransform;
 
         private void Awake()
         {
             _mover = GetComponent<Mover>();
 	        _fighter = GetComponent<PlayerFighter>();
             _health = GetComponent<Health>();
-            _actionStore = GetComponent<ActionStore>();
+	        _actionStore = GetComponent<ActionStore>();
+            
+	        if (Camera.main != null)
+	        {
+		        cameraTransform = Camera.main.transform;
+	        }
+	        else
+	        {
+		        Debug.LogError("PlayerController: Не найдена основная камера (Main Camera). Убедитесь, что у камеры есть тег 'MainCamera'.");
+		        // Можно выключить компонент, если камера критична для управления
+		        // enabled = false;
+	        }
         }
 
         private void Update()
@@ -48,6 +69,8 @@ namespace RPG.Control
                 SetCursor(CursorType.None);
                 return;
             }
+            
+	        bool didMoveWithWASD = HandleWASDMovement();
 
             UseAbilities();
 
@@ -56,6 +79,54 @@ namespace RPG.Control
 
             SetCursor(CursorType.None);
         }
+        
+	    private bool HandleWASDMovement()
+	    {
+		    // Проверяем, есть ли ссылка на камеру
+		    if (cameraTransform == null) return false;
+
+		    float horizontalInput = Input.GetAxis("Horizontal");
+		    float verticalInput = Input.GetAxis("Vertical");
+
+		    Vector3 inputDirection = new Vector3(horizontalInput, 0f, verticalInput);
+
+		    // Выходим, если нет значимого ввода
+		    if (inputDirection.magnitude < 0.1f)
+		    {
+			    return false; // Движения WASD не было
+		    }
+
+		    // --- Расчет направления относительно камеры ---
+		    Vector3 cameraForward = cameraTransform.forward;
+		    cameraForward.y = 0f;
+		    cameraForward.Normalize();
+
+		    Vector3 cameraRight = cameraTransform.right;
+		    cameraRight.y = 0f;
+		    cameraRight.Normalize();
+
+		    Vector3 moveDirection = (cameraForward * verticalInput + cameraRight * horizontalInput).normalized;
+
+		    // --- Расчет целевой точки для NavMeshAgent ---
+		    Vector3 targetPosition = transform.position + moveDirection * lookAheadDistance;
+
+		    // --- Передача команды Mover ---
+		    _mover.StartMoveAction(targetPosition, wasdMoveSpeedFraction);
+
+		    // --- Поворот персонажа ---
+		    HandleRotation(moveDirection);
+
+		    return true; // Движение WASD было совершено
+	    }
+	    
+	    private void HandleRotation(Vector3 lookDirection)
+	    {
+		    if (lookDirection.sqrMagnitude > 0.01f)
+		    {
+			    Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+			    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+		    }
+	    }
 
         private bool InteractWithUI()
         {
@@ -127,11 +198,18 @@ namespace RPG.Control
 
             if (hasHit)
             {
-                if (!_mover.CanMoveTo(target)) return false;
+	            //if (!_mover.CanMoveTo(target)) return false;
 
                 if (Input.GetMouseButton(0))
                 {
-                    _mover.StartMoveAction(target, 1f);
+	                if (_mover.CanMoveTo(target))
+	                {
+		                _mover.StartMoveAction(target, 1f); // Используем полную скорость для клика
+	                }
+	                else
+	                {
+		                // Можно добавить сюда звук ошибки или визуальный фидбек, если клик невозможен
+	                }
                 }
                 SetCursor(CursorType.Movement);
                 return true;
