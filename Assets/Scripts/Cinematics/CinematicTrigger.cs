@@ -2,6 +2,7 @@ using RPG.Control;
 using GameDevTV.Saving;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.Events;
 
 namespace RPG.Cinematics
 {
@@ -15,7 +16,7 @@ namespace RPG.Cinematics
             if(other.TryGetComponent(out PlayerController player) && !_isTriggered)
             {
                 _isTriggered = true;
-                GetComponent<PlayableDirector>().Play();               
+                GetComponent<PlayableDirector>().Play();  
             }           
         }
 
