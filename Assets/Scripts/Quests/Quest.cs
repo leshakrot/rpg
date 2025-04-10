@@ -1,4 +1,4 @@
-using GameDevTV.Inventories;
+﻿using GameDevTV.Inventories;
 using GameDevTV.Utils;
 using System;
 using System.Collections;
@@ -31,7 +31,10 @@ namespace RPG.Quests
             public Condition completionCondition;
 
             public bool hasProgress = false;
-            public int requiredCount = 1;
+	        public int requiredCount = 1;
+            
+	        public bool hiddenInitially = false;
+	        public Condition revealCondition;
         }
 
 

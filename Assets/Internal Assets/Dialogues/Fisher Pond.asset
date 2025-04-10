@@ -113,8 +113,18 @@ MonoBehaviour:
     - _or:
       - _predicate: CompletedQuest
         _parameters:
-        - Miller Notes
+        - "\u0414\u043D\u0435\u0432\u043D\u0438\u043A"
         _negate: 0
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
+        _negate: 1
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
+        _negate: 1
 --- !u!114 &-4997813797341376164
 MonoBehaviour:
   m_ObjectHideFlags: 0

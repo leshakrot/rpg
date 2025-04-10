@@ -9,6 +9,7 @@ namespace RPG.Cinematics
 	{
 		[SerializeField] private GameObject _hud;
 		[SerializeField] private GameObject _uiCanvas;
+		[SerializeField] private GameObject _introBGCanvas;
         [SerializeField] private GameObject _mainCamera;
         [SerializeField] private GameObject _cinemachineBrainCamera;
 
@@ -43,12 +44,14 @@ namespace RPG.Cinematics
 	        _playerController.enabled = false;
 	        _hud.SetActive(false);
 	        _uiCanvas.SetActive(false);
+	        _introBGCanvas.SetActive(true);
             _mainCamera.SetActive(false);
             _cinemachineBrainCamera.SetActive(true);
         }
 
         private void EnableControl(PlayableDirector pd)
-        {
+		{
+			_introBGCanvas.SetActive(false);
 	        _playerController.enabled = true;
 	        _hud.SetActive(true);
 	        _uiCanvas.SetActive(true);

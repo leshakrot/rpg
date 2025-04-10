@@ -1,4 +1,4 @@
-using GameDevTV.Inventories;
+﻿using GameDevTV.Inventories;
 using GameDevTV.Saving;
 using GameDevTV.Utils;
 using System;
@@ -15,7 +15,8 @@ namespace RPG.Quests
 
         private void Update()
         {
-            CompleteObjectivesByPredicates();
+	        CompleteObjectivesByPredicates();
+	        RevealObjectivesByConditions();
         }
 
         public void AddQuest(Quest quest)
@@ -69,7 +70,7 @@ namespace RPG.Quests
         }
 
 
-        private QuestStatus GetQuestStatus(Quest quest)
+	    public QuestStatus GetQuestStatus(Quest quest)
         {
             foreach (QuestStatus status in _statuses)
             {
@@ -110,6 +111,28 @@ namespace RPG.Quests
                 }
             }
         }
+        
+	    private void RevealObjectivesByConditions()
+	    {
+		    foreach (QuestStatus status in _statuses)
+		    {
+			    if (status.IsComplete()) continue;
+
+			    Quest quest = status.GetQuest();
+
+			    foreach (var objective in quest.GetObjectives())
+			    {
+				    if (!objective.hiddenInitially) continue;
+				    if (status.IsObjectiveRevealed(objective.reference)) continue;
+				    if (objective.revealCondition != null && 
+					    objective.revealCondition.Check(GetComponents<IPredicateEvaluator>()))
+				    {
+					    status.RevealObjective(objective.reference);
+					    onUpdate?.Invoke(); // чтобы обновить UI
+				    }
+			    }
+		    }
+	    }
 
         public object CaptureState()
         {
@@ -147,7 +170,16 @@ namespace RPG.Quests
                     if (questCompleted == null) return false;
 
                     QuestStatus status = GetQuestStatus(questCompleted);
-                    return status != null && status.IsComplete();
+	                return status != null && status.IsComplete();
+                case "CompletedObjective":
+	                if (parameters.Length < 1) return false;
+	                string objectiveRef = parameters[0];
+	                foreach (var objectiveStatus in GetComponent<QuestList>().GetStatuses())
+	                {
+		                if (objectiveStatus.IsObjectiveComplete(objectiveRef))
+			                return true;
+	                }
+	                return false;
             }
             return null;
         }

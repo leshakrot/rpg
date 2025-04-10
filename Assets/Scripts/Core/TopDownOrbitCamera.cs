@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
+using GameDevTV.Saving;
+using System.Collections.Generic;
 
-public class TopDownOrbitCamera : MonoBehaviour
+public class TopDownOrbitCamera : MonoBehaviour, ISaveable
 {
 	[Header("Target")]
 	[Tooltip("Объект, за которым следит камера (игрок).")]
@@ -55,6 +57,15 @@ public class TopDownOrbitCamera : MonoBehaviour
 	private bool _isRotating = false; // Флаг для отслеживания вращения (особенно на мобильных)
 	private float _initialPinchDistance = 0f; // Для мобильного зума
 	private float _initialDistanceOnPinch = 0f; // Для мобильного зума
+	
+	[System.Serializable]
+	private struct CameraSaveData
+	{
+		public float currentX;
+		public float currentY;
+		public float distance;
+	}
+	
 
 	void Start()
 	{
@@ -225,6 +236,39 @@ public class TopDownOrbitCamera : MonoBehaviour
 			enabled = false;
 		} else {
 			enabled = true;
+		}
+	}
+	
+	public object CaptureState()
+	{
+		CameraSaveData data = new CameraSaveData();
+		data.currentX = _currentX;
+		data.currentY = _currentY;
+		data.distance = distance;
+		Debug.Log($"Camera [{gameObject.name}] Capturing State: X={data.currentX}, Y={data.currentY}, Dist={data.distance}"); // <-- Добавь лог
+
+		return data;
+	}
+
+	public void RestoreState(object state)
+	{
+		if (state is CameraSaveData data)
+		{
+			_currentX = data.currentX;
+			_currentY = data.currentY;
+			distance = data.distance;
+
+			_smoothX = _currentX;
+			_smoothY = _currentY;
+			_smoothDistance = distance;
+			
+			Debug.Log($"Camera [{gameObject.name}] RestoreState called with data: X={data.currentX}, Y={data.currentY}, Dist={data.distance}"); // <-- Добавь лог
+
+
+		}
+		else
+		{
+			Debug.LogWarning($"[{gameObject.name}] Camera RestoreState received invalid data type: {state?.GetType()}");
 		}
 	}
 }

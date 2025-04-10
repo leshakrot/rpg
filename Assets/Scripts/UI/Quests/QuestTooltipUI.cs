@@ -1,4 +1,4 @@
-using RPG.Quests;
+п»їusing RPG.Quests;
 using System;
 using TMPro;
 using UnityEngine;
@@ -23,6 +23,8 @@ namespace RPG.UI.Quests
 
             foreach (var objective in quest.GetObjectives())
             {
+            	if (!status.IsObjectiveRevealed(objective.reference)) continue;
+            	
                 GameObject prefab = status.IsObjectiveComplete(objective.reference) ? _objectivePrefab : _objectiveIncompletePrefab;
                 GameObject objectiveInstance = Instantiate(prefab, _objectiveContainer);
                 TextMeshProUGUI objectiveText = objectiveInstance.GetComponentInChildren<TextMeshProUGUI>();
@@ -57,7 +59,7 @@ namespace RPG.UI.Quests
             }
             if(rewardText == "")
             {
-                rewardText = "Нет награды";
+                rewardText = "пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
             }
             rewardText += ".";
             return rewardText;

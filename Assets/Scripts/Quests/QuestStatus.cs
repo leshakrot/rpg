@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace RPG.Quests
 {
@@ -8,7 +9,8 @@ namespace RPG.Quests
     public class QuestStatus
     {
         private Quest _quest;
-        private List<string> _completedObjectives = new List<string>();
+	    private List<string> _completedObjectives = new List<string>();
+	    private List<string> _revealedObjectives = new List<string>();
 
         // Добавляем прогресс по количеству
         private Dictionary<string, int> _objectiveProgress = new Dictionary<string, int>();
@@ -17,7 +19,8 @@ namespace RPG.Quests
         class QuestStatusRecord
         {
             public string questName;
-            public List<string> completedObjectives;
+	        public List<string> completedObjectives;
+	        public List<string> revealedObjectives;
             public Dictionary<string, int> objectiveProgress;
         }
 
@@ -30,9 +33,25 @@ namespace RPG.Quests
         {
             QuestStatusRecord state = objectState as QuestStatusRecord;
             _quest = Quest.GetByName(state.questName);
-            _completedObjectives = state.completedObjectives;
+	        _completedObjectives = state.completedObjectives;
+	        _revealedObjectives = state.revealedObjectives;
             _objectiveProgress = state.objectiveProgress ?? new Dictionary<string, int>();
         }
+
+	    public void RevealObjective(string objectiveRef)
+	    {
+		    if (!_revealedObjectives.Contains(objectiveRef))
+		    {
+			    _revealedObjectives.Add(objectiveRef);
+		    }
+	    }
+	    
+	    public bool IsObjectiveRevealed(string reference)
+	    {
+		    var objective = _quest.GetObjectives().FirstOrDefault(o => o.reference == reference);
+		    if (objective == null) return false;
+		    return !objective.hiddenInitially || _revealedObjectives.Contains(reference);
+	    }
 
         public Quest GetQuest()
         {
@@ -53,7 +72,12 @@ namespace RPG.Quests
         {
             if (_quest.HasObjective(objective) && !_completedObjectives.Contains(objective))
             {
-                _completedObjectives.Add(objective);
+	            _completedObjectives.Add(objective);
+                
+	            if (QuestEvents.Instance != null)
+	            {
+		            QuestEvents.Instance.ObjectiveCompleted(_quest, objective);
+	            }
             }
         }
 
@@ -83,7 +107,8 @@ namespace RPG.Quests
         {
             QuestStatusRecord state = new QuestStatusRecord();
             state.questName = _quest.name;
-            state.completedObjectives = _completedObjectives;
+	        state.completedObjectives = _completedObjectives;
+	        state.revealedObjectives = _revealedObjectives;
             state.objectiveProgress = _objectiveProgress;
             return state;
         }

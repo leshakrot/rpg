@@ -29,6 +29,8 @@ namespace RPG.Control
         [SerializeField] private float _maxNavmeshProjectionDistance = 1f;
         [SerializeField] private float _raycastRadius = 1f;
 	    [SerializeField] private int _numberOfAbilities = 6;
+	    [SerializeField] private ParticleSystem _movementTargetIndicator;
+	    [SerializeField] private ParticleSystem _movementTargetIndicatorNoTarget;
         
 	    [Header("WASD Movement")]
 	    [Tooltip("Доля от максимальной скорости Mover при движении через WASD.")]
@@ -75,7 +77,7 @@ namespace RPG.Control
             UseAbilities();
 
             if (InteractWithComponent()) return;
-            if (InteractWithMovement()) return;
+	        if (InteractWithMovement()) return;
 
             SetCursor(CursorType.None);
         }
@@ -199,16 +201,21 @@ namespace RPG.Control
             if (hasHit)
             {
 	            //if (!_mover.CanMoveTo(target)) return false;
-
+	            if(Input.GetMouseButtonUp(0) && _mover.CanMoveTo(target))
+	            {
+		            _movementTargetIndicator.transform.position = target;
+		            _movementTargetIndicator.Play();
+	            }  
                 if (Input.GetMouseButton(0))
                 {
 	                if (_mover.CanMoveTo(target))
 	                {
-		                _mover.StartMoveAction(target, 1f); // Используем полную скорость для клика
+		                _mover.StartMoveAction(target, 1f); // Используем полную скорость для клик           
 	                }
 	                else
 	                {
-		                // Можно добавить сюда звук ошибки или визуальный фидбек, если клик невозможен
+		                //_movementTargetIndicatorNoTarget.transform.position = target;
+		                //_movementTargetIndicatorNoTarget.Play();
 	                }
                 }
                 SetCursor(CursorType.Movement);
