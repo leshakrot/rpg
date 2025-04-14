@@ -26,11 +26,11 @@ MonoBehaviour:
     m_path: Assets/Scenes/Cave1.unity
   - m_enabled: 1
     m_path: Assets/Scenes/MainTown.unity
-  - m_enabled: 1
+  - m_enabled: 0
     m_path: Assets/Scenes/ArtisanVillage.unity
-  - m_enabled: 1
+  - m_enabled: 0
     m_path: Assets/Scenes/FarmerVillage.unity
-  - m_enabled: 1
+  - m_enabled: 0
     m_path: Assets/Scenes/HunterVillage.unity
   - m_enabled: 0
     m_path: Assets/Scenes/Sandbox 3.unity
@@ -848,7 +848,7 @@ MonoBehaviour:
     - line: '|   webGLThreadsSupport: 0'
     - line: '|   webGLDecompressionFallback: 0'
     - line: '|   webGLInitialMemorySize: 32'
-    - line: '|   webGLMaximumMemorySize: 2048'
+    - line: '|   webGLMaximumMemorySize: 512'
     - line: '|   webGLMemoryGrowthMode: 2'
     - line: '|   webGLMemoryLinearGrowthStep: 16'
     - line: '|   webGLMemoryGeometricGrowthStep: 0.2'
@@ -978,7 +978,10 @@ MonoBehaviour:
     - line: '|   windowsGamepadBackendHint: 0'
     - line: '|   cloudProjectId: 6336b56a-3b38-492b-9717-417c6d1fcf2e'
     - line: '|   framebufferDepthMemorylessMode: 0'
-    - line: '|   qualitySettingsNames: []'
+    - line: '|   qualitySettingsNames:'
+    - line: '|   - Performant'
+    - line: '|   - Balanced'
+    - line: '|   - High Fidelity'
     - line: '|   projectName: RPG'
     - line: '|   organizationId: alexeiikrot'
     - line: '|   cloudEnabled: 0'

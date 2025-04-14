@@ -1,50 +1,40 @@
 ﻿using UnityEngine;
-using GameDevTV.Saving;
-using System.Collections.Generic;
+using GameDevTV.Saving; // Убедись, что using для ISaveable на месте, если он нужен
 
-public class TopDownOrbitCamera : MonoBehaviour, ISaveable
+// Добавляем пространство имен UnityEngine.EventSystems для проверки UI
+using UnityEngine.EventSystems;
+
+public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опционально, если используется
 {
+	// ... (все твои [SerializeField] переменные остаются без изменений) ...
 	[Header("Target")]
-	[Tooltip("Объект, за которым следит камера (игрок).")]
 	[SerializeField] private Transform target;
-	[Tooltip("Смещение точки фокуса камеры по высоте от пивота цели.")]
 	[SerializeField] private float targetHeightOffset = 1.2f;
 
 	[Header("Orbit & Rotation")]
-	[Tooltip("Скорость вращения камеры по горизонтали.")]
 	[SerializeField] private float horizontalRotationSpeed = 200f;
-	[Tooltip("Скорость вращения камеры по вертикали.")]
 	[SerializeField] private float verticalRotationSpeed = 100f;
-	[Tooltip("Чувствительность вращения для мобильных устройств.")]
-	[SerializeField] private float mobileRotationSensitivity = 0.5f;
-	[Tooltip("Минимальный угол наклона камеры (градусы).")]
+	[Tooltip("Чувствительность вращения для мобильных устройств (подбери значение).")]
+	[SerializeField] private float mobileRotationSensitivity = 0.4f; // Возможно, потребуется настройка
 	[SerializeField] private float minVerticalAngle = 10f;
-	[Tooltip("Максимальный угол наклона камеры (градусы).")]
 	[SerializeField] private float maxVerticalAngle = 85f;
 
 	[Header("Zoom")]
-	[Tooltip("Текущее расстояние до цели.")]
 	[SerializeField] private float distance = 7f;
-	[Tooltip("Минимальное расстояние до цели.")]
 	[SerializeField] private float minDistance = 2f;
-	[Tooltip("Максимальное расстояние до цели.")]
 	[SerializeField] private float maxDistance = 15f;
-	[Tooltip("Скорость приближения/отдаления колесиком мыши.")]
 	[SerializeField] private float mouseZoomSpeed = 5f;
-	[Tooltip("Скорость приближения/отдаления жестом на мобильных устройствах.")]
-	[SerializeField] private float mobileZoomSpeed = 0.02f;
+	[Tooltip("Чувствительность масштабирования для мобильных устройств (подбери значение).")]
+	[SerializeField] private float mobileZoomSpeed = 0.05f; // Возможно, потребуется настройка
 
 	[Header("Smoothing")]
-	[Tooltip("Время сглаживания движения камеры.")]
 	[SerializeField] private float positionSmoothTime = 0.15f;
-	[Tooltip("Время сглаживания вращения камеры.")]
 	[SerializeField] private float rotationSmoothTime = 0.1f;
-	[Tooltip("Время сглаживания изменения дистанции.")]
 	[SerializeField] private float distanceSmoothTime = 0.15f;
 
 	// Приватные переменные
 	private float _currentX = 0f;
-	private float _currentY = 45f; // Начальный угол наклона
+	private float _currentY = 45f;
 	private float _smoothX = 0f;
 	private float _smoothY = 0f;
 	private float _smoothDistance = 0f;
@@ -54,199 +44,206 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable
 	private float _currentYVelocity = 0f;
 	private float _currentDistanceVelocity = 0f;
 
-	private bool _isRotating = false; // Флаг для отслеживания вращения (особенно на мобильных)
-	private float _initialPinchDistance = 0f; // Для мобильного зума
-	private float _initialDistanceOnPinch = 0f; // Для мобильного зума
-	
+	// Флаги для управления состоянием ввода
+	private bool _isDragging = false; // Для отслеживания активного перетаскивания мышью/пальцем
+	private bool _isPinching = false; // Для отслеживания активного масштабирования пальцами
+
+	// Структура для сохранения (если используется ISaveable)
 	[System.Serializable]
-	private struct CameraSaveData
-	{
-		public float currentX;
-		public float currentY;
-		public float distance;
-	}
-	
+	private struct CameraSaveData { public float currentX; public float currentY; public float distance; }
 
 	void Start()
 	{
-		if (target == null)
-		{
-			Debug.LogError("Цель для камеры не назначена!");
-			enabled = false; // Выключаем скрипт, если нет цели
-			return;
-		}
-
-		// Инициализация углов на основе начальной позиции камеры, если нужно
-		// Vector3 angles = transform.eulerAngles;
-		// _currentX = angles.y;
-		// _currentY = angles.x;
-
-		// Устанавливаем начальные сглаженные значения
-		_smoothX = _currentX;
-		_smoothY = _currentY;
-		_smoothDistance = distance;
-
-		// Ограничиваем начальную дистанцию
+		// ... (твой код Start) ...
+		if (target == null) { /*...*/ enabled = false; return; }
+		_smoothX = _currentX; _smoothY = _currentY; _smoothDistance = distance;
 		distance = Mathf.Clamp(distance, minDistance, maxDistance);
 	}
 
 	void LateUpdate()
 	{
-		if (!target) return; // Если цель пропала во время игры
+		if (!target) return;
 
-		HandleInput();
+		// Проверяем, не над UI ли происходит взаимодействие, чтобы не вращать камеру случайно
+		if (!IsPointerOverUIObject())
+		{
+			HandleInput();
+		}
+		else
+		{
+			// Сбрасываем флаги, если взаимодействие над UI
+			_isDragging = false;
+			_isPinching = false;
+		}
+
 		CalculateCameraTransform();
 	}
 
+	// --- ОБНОВЛЕННЫЙ МЕТОД ОБРАБОТКИ ВВОДА ---
 	void HandleInput()
 	{
-		// --- Обработка ввода для ПК (Мышь) ---
-#if UNITY_EDITOR || UNITY_STANDALONE
-		// Вращение при зажатой ПКМ
-		if (Input.GetMouseButtonDown(1)) // Нажатие ПКМ
-		{
-			_isRotating = true;
-		}
-		if (Input.GetMouseButtonUp(1)) // Отпускание ПКМ
-		{
-			_isRotating = false;
-		}
-		if (_isRotating && Input.GetMouseButton(1))
-		{
-			_currentX += Input.GetAxis("Mouse X") * horizontalRotationSpeed * Time.deltaTime;
-			_currentY -= Input.GetAxis("Mouse Y") * verticalRotationSpeed * Time.deltaTime; // Инвертируем Y для привычного управления
-		}
+		bool useMobileInput = false; // Определяем, использовать ли мобильную логику
 
-		// Масштабирование колесиком мыши
-		float scroll = Input.GetAxis("Mouse ScrollWheel");
-		if (Mathf.Abs(scroll) > 0.01f) // Проверяем, было ли вращение колеса
-		{
-			distance -= scroll * mouseZoomSpeed;
-		}
-
-#endif
-
-		// --- Обработка ввода для Мобильных устройств ---
 #if UNITY_IOS || UNITY_ANDROID
-		// Вращение (один палец, свайп)
-		if (Input.touchCount == 1)
-		{
-		Touch touch = Input.GetTouch(0);
-		if (touch.phase == TouchPhase.Began)
-		{
-		_isRotating = true; // Можно использовать для определения начала свайпа
-		}
-		else if (touch.phase == TouchPhase.Moved && _isRotating)
-		{
-		_currentX += touch.deltaPosition.x * mobileRotationSensitivity * Time.deltaTime * (horizontalRotationSpeed / 5); // Подбираем коэфф.
-		_currentY -= touch.deltaPosition.y * mobileRotationSensitivity * Time.deltaTime * (verticalRotationSpeed / 5); // Подбираем коэфф.
-		}
-		else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
-		{
-		_isRotating = false;
-		}
-		}
-		// Если было больше одного касания, сбрасываем флаг вращения одним пальцем
-		else if (Input.touchCount > 1)
-		{
-		_isRotating = false;
-		}
-
-
-		// Масштабирование (два пальца, pinch-to-zoom)
-		if (Input.touchCount == 2)
-		{
-		Touch touchZero = Input.GetTouch(0);
-		Touch touchOne = Input.GetTouch(1);
-
-		// Если один из пальцев только что коснулся экрана, запоминаем начальное состояние
-		if (touchZero.phase == TouchPhase.Began || touchOne.phase == TouchPhase.Began)
-		{
-		_initialPinchDistance = Vector2.Distance(touchZero.position, touchOne.position);
-		_initialDistanceOnPinch = distance; // Запоминаем текущую дистанцию камеры
-		_isRotating = false; // Отключаем вращение во время зума
-		}
-		// Если пальцы двигаются
-		else if (touchZero.phase == TouchPhase.Moved || touchOne.phase == TouchPhase.Moved)
-		{
-		float currentPinchDistance = Vector2.Distance(touchZero.position, touchOne.position);
-
-		// Избегаем деления на ноль
-		if (_initialPinchDistance > 0.01f)
-		{
-		// Рассчитываем новую дистанцию на основе изменения расстояния между пальцами
-		// Чем БОЛЬШЕ текущее расстояние между пальцами относительно начального, тем МЕНЬШЕ должна быть distance (приближение)
-		// Чем МЕНЬШЕ текущее расстояние, тем БОЛЬШЕ distance (отдаление)
-		float scaleFactor = _initialPinchDistance / currentPinchDistance;
-		distance = _initialDistanceOnPinch * scaleFactor;
-
-		// Альтернативный вариант: изменение дистанции пропорционально изменению расстояния между пальцами
-		// float deltaDistance = (_initialPinchDistance - currentPinchDistance) * mobileZoomSpeed;
-		// distance = _initialDistanceOnPinch + deltaDistance;
-		}
-		}
-		}
+		useMobileInput = true;
+#elif UNITY_WEBGL
+		useMobileInput = Input.touchSupported; // В WebGL ориентируемся на поддержку тачскрина
+		// Debug.Log($"WebGL Touch Supported: {useMobileInput}"); // Для отладки
 #endif
 
-		// Ограничение вертикального угла
-		_currentY = ClampAngle(_currentY, minVerticalAngle, maxVerticalAngle);
+		// --- Логика для Мобильных устройств (iOS, Android, WebGL с тачскрином) ---
+		if (useMobileInput)
+		{
+			// Масштабирование (Pinch-to-Zoom) - Проверяем в первую очередь
+			if (Input.touchCount == 2)
+			{
+				Touch touchZero = Input.GetTouch(0);
+				Touch touchOne = Input.GetTouch(1);
 
-		// Ограничение дистанции
+				// Рассчитываем позиции пальцев в предыдущем кадре
+				Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
+				Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+
+				// Рассчитываем расстояние между пальцами в текущем и предыдущем кадрах
+				float prevMagnitude = (touchZeroPrevPos - touchOnePrevPos).magnitude;
+				float currentMagnitude = (touchZero.position - touchOne.position).magnitude;
+
+				// Разница расстояний между кадрами
+				float difference = currentMagnitude - prevMagnitude;
+
+				// Изменяем дистанцию. Если пальцы расходятся (difference > 0), зум OUT (distance УВЕЛИЧИВАЕТСЯ).
+				// Если пальцы сходятся (difference < 0), зум IN (distance УМЕНЬШАЕТСЯ).
+				// Поэтому используем difference с обратным знаком или меняем порядок вычитания.
+				distance -= difference * mobileZoomSpeed; // Подбери mobileZoomSpeed
+
+				_isPinching = true; // Устанавливаем флаг масштабирования
+				_isDragging = false; // Отключаем вращение во время масштабирования
+			}
+			else
+			{
+				_isPinching = false; // Сбрасываем флаг, если пальцев не два
+			}
+
+			// Вращение (один палец, свайп) - Срабатывает, только если не масштабируем
+			if (!_isPinching && Input.touchCount == 1)
+			{
+				Touch touch = Input.GetTouch(0);
+
+				if (touch.phase == TouchPhase.Began)
+				{
+					_isDragging = true; // Начинаем перетаскивание/вращение
+				}
+				else if (touch.phase == TouchPhase.Moved && _isDragging)
+				{
+					// Вращаем камеру на основе движения пальца
+					_currentX += touch.deltaPosition.x * mobileRotationSensitivity;
+					_currentY -= touch.deltaPosition.y * mobileRotationSensitivity;
+				}
+				else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+				{
+					_isDragging = false; // Заканчиваем перетаскивание
+				}
+			}
+			else if (Input.touchCount == 0) // Сбрасываем флаг, если палец убран
+			{
+				_isDragging = false;
+			}
+		}
+		// --- Логика для ПК (Редактор, Standalone, WebGL без тачскрина) ---
+		else // if (!useMobileInput)
+		{
+			// Вращение при зажатой ПКМ
+			if (Input.GetMouseButtonDown(1))
+			{
+				_isDragging = true;
+			}
+
+			if (Input.GetMouseButton(1) && _isDragging)
+			{
+				// Используем Time.deltaTime для GetAxis, т.к. это непрерывное значение
+				_currentX += Input.GetAxis("Mouse X") * horizontalRotationSpeed * Time.deltaTime;
+				_currentY -= Input.GetAxis("Mouse Y") * verticalRotationSpeed * Time.deltaTime;
+			}
+
+			if (Input.GetMouseButtonUp(1))
+			{
+				_isDragging = false;
+			}
+
+			// Масштабирование колесиком мыши
+			float scroll = Input.GetAxis("Mouse ScrollWheel");
+			if (Mathf.Abs(scroll) > 0.01f)
+			{
+				distance -= scroll * mouseZoomSpeed;
+			}
+		}
+
+		// --- Ограничения применяются всегда ---
+		_currentY = ClampAngle(_currentY, minVerticalAngle, maxVerticalAngle);
 		distance = Mathf.Clamp(distance, minDistance, maxDistance);
 	}
+	// -------------------------------------------
 
 	void CalculateCameraTransform()
 	{
-		// Сглаживание значений
+		// ... (твой код CalculateCameraTransform остается без изменений) ...
 		_smoothX = Mathf.SmoothDamp(_smoothX, _currentX, ref _currentXVelocity, rotationSmoothTime);
 		_smoothY = Mathf.SmoothDamp(_smoothY, _currentY, ref _currentYVelocity, rotationSmoothTime);
 		_smoothDistance = Mathf.SmoothDamp(_smoothDistance, distance, ref _currentDistanceVelocity, distanceSmoothTime);
 
-		// Вычисление вращения и позиции
 		Vector3 targetPivotPosition = target.position + Vector3.up * targetHeightOffset;
-		Quaternion rotation = Quaternion.Euler(_smoothY, _smoothX, 0); // Y - вертикальный угол, X - горизонтальный
+		Quaternion rotation = Quaternion.Euler(_smoothY, _smoothX, 0);
 		Vector3 direction = rotation * Vector3.forward;
 		Vector3 desiredPosition = targetPivotPosition - direction * _smoothDistance;
 
-		// Применение сглаженной позиции и вращения
 		transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref _currentPositionVelocity, positionSmoothTime);
 		transform.rotation = rotation;
-
-		// Альтернатива: можно заставить камеру всегда смотреть на точку фокуса
-		// transform.LookAt(targetPivotPosition);
-		// Однако установка rotation напрямую дает больше контроля над орбитальным вращением
 	}
 
-	// Вспомогательная функция для ограничения угла, т.к. углы Эйлера "заворачиваются"
 	private float ClampAngle(float angle, float min, float max)
 	{
-		// Пример простой нормализации для вертикального угла, обычно этого достаточно
-		// if (angle < -360f) angle += 360f;
-		// if (angle > 360f) angle -= 360f;
+		// ... (твой код ClampAngle) ...
 		return Mathf.Clamp(angle, min, max);
 	}
 
-	// Позволяет сменить цель камеры из другого скрипта
 	public void SetTarget(Transform newTarget)
 	{
-		target = newTarget;
-		if (target == null)
-		{
-			Debug.LogError("Новая цель для камеры не назначена (null)!");
-			enabled = false;
-		} else {
-			enabled = true;
-		}
+		// ... (твой код SetTarget) ...
 	}
-	
+
+	// --- Вспомогательный метод для проверки UI ---
+	private bool IsPointerOverUIObject()
+	{
+		// Проверяем, есть ли вообще EventSystem
+		if (EventSystem.current == null) return false;
+
+		// Создаем данные для PointerEvent
+		PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+
+		// Определяем позицию для проверки (мышь или первый тач)
+		if (Input.touchCount > 0)
+		{
+			eventDataCurrentPosition.position = Input.GetTouch(0).position;
+		}
+		else
+		{
+			eventDataCurrentPosition.position = Input.mousePosition;
+		}
+
+		// Выполняем Raycast по UI
+		System.Collections.Generic.List<RaycastResult> results = new System.Collections.Generic.List<RaycastResult>();
+		EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+		return results.Count > 0; // Если есть хоть один результат, значит над UI
+	}
+	// ------------------------------------------
+
+
+	// --- ISaveable Implementation (если используется) ---
 	public object CaptureState()
 	{
 		CameraSaveData data = new CameraSaveData();
-		data.currentX = _currentX;
-		data.currentY = _currentY;
-		data.distance = distance;
-		Debug.Log($"Camera [{gameObject.name}] Capturing State: X={data.currentX}, Y={data.currentY}, Dist={data.distance}"); // <-- Добавь лог
-
+		data.currentX = _currentX; data.currentY = _currentY; data.distance = distance;
+		// Debug.Log($"Camera [{gameObject.name}] Capturing State..."); // Для отладки
 		return data;
 	}
 
@@ -254,21 +251,11 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable
 	{
 		if (state is CameraSaveData data)
 		{
-			_currentX = data.currentX;
-			_currentY = data.currentY;
-			distance = data.distance;
-
-			_smoothX = _currentX;
-			_smoothY = _currentY;
-			_smoothDistance = distance;
-			
-			Debug.Log($"Camera [{gameObject.name}] RestoreState called with data: X={data.currentX}, Y={data.currentY}, Dist={data.distance}"); // <-- Добавь лог
-
-
+			// Debug.Log($"Camera [{gameObject.name}] RestoreState called..."); // Для отладки
+			_currentX = data.currentX; _currentY = data.currentY; distance = data.distance;
+			_smoothX = _currentX; _smoothY = _currentY; _smoothDistance = distance;
 		}
-		else
-		{
-			Debug.LogWarning($"[{gameObject.name}] Camera RestoreState received invalid data type: {state?.GetType()}");
-		}
+		// else { Debug.LogWarning(...); } // Для отладки
 	}
+	// -------------------------------------------------
 }
