@@ -58,7 +58,9 @@ namespace RPG.Dialogue
 
         public IEnumerable<DialogueNode> GetChoices()
         {
-            return FilterOnCondition(_currentDialogue.GetPlayerChildren(_currentNode));
+            var choices = FilterOnCondition(_currentDialogue.GetPlayerChildren(_currentNode)).ToList();
+            Debug.Log($"GetChoices found {choices.Count} choices."); 
+            return choices;
         }
 
         public void SelectChoice(DialogueNode chosenNode)
@@ -83,6 +85,8 @@ namespace RPG.Dialogue
             DialogueNode[] children = FilterOnCondition(_currentDialogue.GetAIChildren(_currentNode)).ToArray();
             int randomIndex = UnityEngine.Random.Range(0, children.Count());
             TriggerExitAction();
+            Debug.Log($"Player responses count: {numPlayerResponses}");
+            Debug.Log($"AI children count: {children.Length}");
             _currentNode = children[randomIndex];
             TriggerEnterAction();
             onConversationUpdated();
@@ -90,7 +94,9 @@ namespace RPG.Dialogue
 
         public bool HasNext()
         {
-            return FilterOnCondition(_currentDialogue.GetAllChildren(_currentNode)).Count() > 0;
+            int count = FilterOnCondition(_currentDialogue.GetAllChildren(_currentNode)).Count(); 
+            Debug.Log($"HasNext found {count} children."); 
+            return count > 0;
         }
 
         private IEnumerable<DialogueNode> FilterOnCondition(IEnumerable<DialogueNode> inputNode)
@@ -100,6 +106,7 @@ namespace RPG.Dialogue
                 if (node.CheckCondition(GetEvaluators()))
                 {
                     yield return node;
+                    Debug.Log($"Node {node.name} CheckCondition result: {node.CheckCondition(GetEvaluators())}");
                 }
             }
         }
