@@ -1,4 +1,4 @@
-using GameDevTV.Utils;
+﻿using GameDevTV.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,24 +92,51 @@ namespace RPG.Dialogue
             onConversationUpdated();
         }
 
-        public bool HasNext()
-        {
-            int count = FilterOnCondition(_currentDialogue.GetAllChildren(_currentNode)).Count(); 
-            Debug.Log($"HasNext found {count} children."); 
-            return count > 0;
-        }
+	    public bool HasNext()
+	    {
+	    	string nodeID = (_currentNode != null) ? _currentNode.name : "NULL"; // Предполагаем, что есть GetUniqueID() или используем name
+		    Debug.Log($"HasNext: Called for node: {nodeID}");
+		    var allChildren = _currentDialogue.GetAllChildren(_currentNode);
+		    // Конвертируем в список, чтобы посчитать, если GetAllChildren возвращает ленивый IEnumerable
+		    var allChildrenList = allChildren.ToList();
+		    int initialCount = allChildrenList.Count;
+		    // Добавим имя текущего узла для контекста
+		    string nodeName = (_currentNode != null) ? _currentNode.name : "NULL";
+		    Debug.Log($"HasNext: Node '{nodeName}' - Initial children count: {initialCount}");
 
-        private IEnumerable<DialogueNode> FilterOnCondition(IEnumerable<DialogueNode> inputNode)
-        {
-            foreach(var node in inputNode)
-            {
-                if (node.CheckCondition(GetEvaluators()))
-                {
-                    yield return node;
-                    Debug.Log($"Node {node.name} CheckCondition result: {node.CheckCondition(GetEvaluators())}");
-                }
-            }
-        }
+		    // Теперь фильтруем список, который уже в памяти
+		    var filteredChildren = FilterOnCondition(allChildrenList);
+		    int filteredCount = filteredChildren.Count(); // Или ToList().Count()
+		    Debug.Log($"HasNext: Node '{nodeName}' - Filtered children count: {filteredCount}");
+		    return filteredCount > 0;
+	    }
+
+	    private IEnumerable<DialogueNode> FilterOnCondition(IEnumerable<DialogueNode> inputNodes)
+	    {
+		    // Получаем эвалюаторы один раз и логируем их количество
+		    var evaluators = GetEvaluators().ToList();
+		    Debug.Log($"FilterOnCondition: Checking with {evaluators.Count} evaluators.");
+
+		    foreach(var node in inputNodes)
+		    {
+			    // Проверяем, что узел не null перед доступом к имени
+			    string nodeName = (node != null) ? node.name : "NULL_NODE";
+			    if (node == null)
+			    {
+				    Debug.LogWarning("FilterOnCondition: Encountered a NULL node in inputNodes.");
+				    continue; // Пропускаем null узлы, если они вдруг есть
+			    }
+
+			    bool conditionResult = node.CheckCondition(evaluators);
+			    Debug.Log($"FilterOnCondition: Checking node '{nodeName}'. Condition result: {conditionResult}");
+			    if (conditionResult)
+			    {
+				    // Этот лог покажет, какие узлы ПРОШЛИ проверку
+				    Debug.Log($"FilterOnCondition: Node '{nodeName}' PASSED.");
+				    yield return node;
+			    }
+		    }
+	    }
 
         private IEnumerable<IPredicateEvaluator> GetEvaluators()
         {

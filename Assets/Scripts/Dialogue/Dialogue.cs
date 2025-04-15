@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +24,28 @@ namespace RPG.Dialogue
                 nodeLookup[node.name] = node;
             }
         }
+        
+	    private void OnEnable()
+	    {
+		    // Заполняем словарь при включении объекта
+		    // OnEnable может вызываться несколько раз, поэтому Clear() важен
+		    nodeLookup.Clear();
+		    if (nodes != null)
+		    {
+			    foreach (DialogueNode node in nodes)
+			    {
+				    if (node != null)
+				    {
+					    // Здесь доступ к node.name должен быть безопасен
+					    nodeLookup[node.name] = node;
+				    }
+			    }
+		    }
+		    // Важно: Если ты используешь OnValidate для заполнения в редакторе,
+		    // убедись, что логика не конфликтует. Возможно, OnEnable достаточно
+		    // и для редактора (вызывается после OnValidate при включении).
+		    // Но для надежности оставь заполнение и в OnValidate для editor-only логики.
+	    }
 
         public IEnumerable<DialogueNode> GetAllNodes()
         {
@@ -36,7 +58,7 @@ namespace RPG.Dialogue
         }
 
         public IEnumerable<DialogueNode> GetAllChildren(DialogueNode parentNode)
-        {
+	    {	
             foreach (string childID in parentNode.GetChildren())
             {
                 if (nodeLookup.ContainsKey(childID))
@@ -44,6 +66,7 @@ namespace RPG.Dialogue
                     yield return nodeLookup[childID];
                 }
             }
+            
         }
 
         public IEnumerable<DialogueNode> GetPlayerChildren(DialogueNode currentNode)
@@ -139,7 +162,8 @@ namespace RPG.Dialogue
         }
 
         public void OnAfterDeserialize()
-        {
+	    {
+		    
         }
     }
 }

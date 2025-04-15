@@ -53,8 +53,17 @@ namespace RPG.Dialogue
         }
 
         public bool CheckCondition(IEnumerable<IPredicateEvaluator> evaluators)
-        {
-            return condition.Check(evaluators);
+	    {
+		    string nodeName = this.name; // Или другой идентификатор узла
+		    Debug.Log($"Node '{nodeName}': Starting CheckCondition.");
+		    // Логируйте условия, которые определены на этом узле
+		    // Debug.Log($"Node '{nodeName}': Conditions to check: [ваши условия]");
+
+		    bool overallResult = condition.Check(evaluators);
+
+    		// Логируйте финальный результат для этого узла
+			    Debug.Log($"Node '{nodeName}': CheckCondition evaluated to: {overallResult}");
+		    return overallResult;
         }
 
 #if UNITY_EDITOR
