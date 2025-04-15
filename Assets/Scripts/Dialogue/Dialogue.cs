@@ -14,16 +14,7 @@ namespace RPG.Dialogue
         [SerializeField]
         Vector2 newNodeOffset = new Vector2(250, 0);
 
-        Dictionary<string, DialogueNode> nodeLookup = new Dictionary<string, DialogueNode>();
-
-        private void OnValidate()
-        {
-            nodeLookup.Clear();
-            foreach (DialogueNode node in GetAllNodes())
-            {
-                nodeLookup[node.name] = node;
-            }
-        }
+        Dictionary<string, DialogueNode> nodeLookup = new Dictionary<string, DialogueNode>();      
         
 	    private void OnEnable()
 	    {
@@ -93,6 +84,14 @@ namespace RPG.Dialogue
         }
 
 #if UNITY_EDITOR
+        private void OnValidate()
+        {
+            nodeLookup.Clear();
+            foreach (DialogueNode node in GetAllNodes())
+            {
+                nodeLookup[node.name] = node;
+            }
+        }
         public void CreateNode(DialogueNode parent)
         {
             DialogueNode newNode = MakeNode(parent);
