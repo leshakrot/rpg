@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 15003, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: WebGL 1
   m_EditorClassIdentifier: 
+  m_AssetVersion: 1
   m_BuildTarget: 20
   m_Subtarget: 0
   m_PlatformId: 84a3bb9e7420477f885e98145999eb20
   m_PlatformBuildProfile:
     rid: 1000
+  m_OverrideGlobalSceneList: 1
   m_Scenes:
   - m_enabled: 1
     m_path: Assets/Scenes/MainMenu.unity
@@ -88,6 +90,7 @@ MonoBehaviour:
     - line: '|   m_StereoRenderingPath: 0'
     - line: '|   m_ActiveColorSpace: 0'
     - line: '|   unsupportedMSAAFallback: 0'
+    - line: '|   m_SpriteBatchMaxVertexCount: 65535'
     - line: '|   m_SpriteBatchVertexThreshold: 300'
     - line: '|   m_MTRendering: 1'
     - line: '|   mipStripping: 0'
@@ -109,19 +112,18 @@ MonoBehaviour:
     - line: '|   androidRenderOutsideSafeArea: 1'
     - line: '|   androidUseSwappy: 0'
     - line: '|   androidBlitType: 0'
-    - line: '|   androidResizableWindow: 0'
+    - line: '|   androidResizeableActivity: 0'
     - line: '|   androidDefaultWindowWidth: 1920'
     - line: '|   androidDefaultWindowHeight: 1080'
     - line: '|   androidMinimumWindowWidth: 400'
     - line: '|   androidMinimumWindowHeight: 300'
     - line: '|   androidFullscreenMode: 1'
     - line: '|   androidAutoRotationBehavior: 1'
-    - line: '|   androidApplicationEntry: 1'
     - line: '|   androidPredictiveBackSupport: 0'
+    - line: '|   androidApplicationEntry: 1'
     - line: '|   defaultIsNativeResolution: 1'
     - line: '|   macRetinaSupport: 1'
     - line: '|   runInBackground: 0'
-    - line: '|   captureSingleScreen: 0'
     - line: '|   muteOtherAudioSources: 0'
     - line: '|   Prepare IOS For Recording: 0'
     - line: '|   Force IOS Speakers When Recording: 0'
@@ -224,7 +226,7 @@ MonoBehaviour:
     - line: '|   CreateWallpaper: 0'
     - line: '|   androidSplitApplicationBinary: 0'
     - line: '|   keepLoadedShadersAlive: 0'
-    - line: '|   StripUnusedMeshComponents: 0'
+    - line: '|   StripUnusedMeshComponents: 1'
     - line: '|   strictShaderVariantMatching: 0'
     - line: '|   VertexChannelCompressionMask: 4054'
     - line: '|   iPhoneSdkVersion: 988'
@@ -555,11 +557,14 @@ MonoBehaviour:
     - line: '|       m_Height: 720'
     - line: '|       m_Kind: 1'
     - line: '|       m_SubKind: '
-    - line: '|   m_BuildTargetBatching: []'
+    - line: '|   m_BuildTargetBatching:'
+    - line: '|   - m_BuildTarget: WebGL'
+    - line: '|     m_StaticBatching: 1'
+    - line: '|     m_DynamicBatching: 1'
     - line: '|   m_BuildTargetShaderSettings: []'
     - line: '|   m_BuildTargetGraphicsJobs:'
     - line: '|   - m_BuildTarget: WebGLSupport'
-    - line: '|     m_GraphicsJobs: 0'
+    - line: '|     m_GraphicsJobs: 1'
     - line: '|   m_BuildTargetGraphicsJobMode: []'
     - line: '|   m_BuildTargetGraphicsAPIs:'
     - line: '|   - m_BuildTarget: iOSSupport'
@@ -586,6 +591,9 @@ MonoBehaviour:
     - line: '|   - serializedVersion: 2'
     - line: '|     m_BuildTarget: Android'
     - line: '|     m_EncodingQuality: 1'
+    - line: '|   - serializedVersion: 2'
+    - line: '|     m_BuildTarget: WebGL'
+    - line: '|     m_EncodingQuality: 1'
     - line: '|   m_BuildTargetGroupLightmapSettings: []'
     - line: '|   m_BuildTargetGroupLoadStoreDebugModeSettings: []'
     - line: '|   m_BuildTargetNormalMapEncoding:'
@@ -595,9 +603,13 @@ MonoBehaviour:
     - line: '|   - serializedVersion: 3'
     - line: '|     m_BuildTarget: Android'
     - line: '|     m_Formats: 03000000'
+    - line: '|   - serializedVersion: 3'
+    - line: '|     m_BuildTarget: WebGL'
+    - line: '|     m_Formats: 05000000'
     - line: '|   playModeTestRunnerEnabled: 0'
     - line: '|   runPlayModeTestAsEditModeTest: 0'
     - line: '|   actionOnDotNetUnhandledException: 1'
+    - line: '|   editorGfxJobOverride: 1'
     - line: '|   enableInternalProfiler: 0'
     - line: '|   logObjCUncaughtExceptions: 1'
     - line: '|   enableCrashReportAPI: 0'
@@ -848,7 +860,7 @@ MonoBehaviour:
     - line: '|   webGLThreadsSupport: 0'
     - line: '|   webGLDecompressionFallback: 0'
     - line: '|   webGLInitialMemorySize: 32'
-    - line: '|   webGLMaximumMemorySize: 256'
+    - line: '|   webGLMaximumMemorySize: 2048'
     - line: '|   webGLMemoryGrowthMode: 2'
     - line: '|   webGLMemoryLinearGrowthStep: 16'
     - line: '|   webGLMemoryGeometricGrowthStep: 0.2'
@@ -861,7 +873,7 @@ MonoBehaviour:
     - line: '|   webWasm2023: 0'
     - line: '|   scriptingDefineSymbols:'
     - line: '|     Standalone: YG_PLUGIN_YANDEX_GAME;UNITY_URP;TND_SGSR2'
-    - line: '|     WebGL: YG_PLUGIN_YANDEX_GAME;UNITY_URP;TND_SGSR2'
+    - line: '|     WebGL: YG_PLUGIN_YANDEX_GAME'
     - line: '|   additionalCompilerArguments: {}'
     - line: '|   platformArchitecture: {}'
     - line: '|   scriptingBackend: {}'
@@ -916,8 +928,7 @@ MonoBehaviour:
     - line: '|   metroTileBackgroundColor: {r: 0.13333334, g: 0.17254902, b: 0.21568628,
         a: 0}'
     - line: '|   metroSplashScreenBackgroundColor: {r: 0.12941177, g: 0.17254902,
-        b: 0.21568628,'
-    - line: '|     a: 1}'
+        b: 0.21568628,    a: 1}'
     - line: '|   metroSplashScreenUseBackgroundColor: 0'
     - line: '|   syncCapabilities: 0'
     - line: '|   platformCapabilities: {}'
@@ -974,7 +985,7 @@ MonoBehaviour:
     - line: '|   qnxGraphicConfPath: '
     - line: '|   apiCompatibilityLevel: 6'
     - line: '|   captureStartupLogs: {}'
-    - line: '|   activeInputHandler: 0'
+    - line: '|   activeInputHandler: 2'
     - line: '|   windowsGamepadBackendHint: 0'
     - line: '|   cloudProjectId: 6336b56a-3b38-492b-9717-417c6d1fcf2e'
     - line: '|   framebufferDepthMemorylessMode: 0'
@@ -990,6 +1001,8 @@ MonoBehaviour:
     - line: '|   platformRequiresReadableAssets: 0'
     - line: '|   virtualTexturingSupportEnabled: 0'
     - line: '|   insecureHttpOption: 1'
+    - line: '|   androidVulkanDenyFilterList: []'
+    - line: '|   androidVulkanAllowFilterList: []'
     - line: '| '
   references:
     version: 2

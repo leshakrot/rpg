@@ -54,6 +54,7 @@ MonoBehaviour:
       - rid: 3806180858668515423
       - rid: 446802163587350547
       - rid: 3806180858668515424
+      - rid: 4357401233573281792
     m_RuntimeSettings:
       m_List:
       - rid: 446802163587350528
@@ -63,7 +64,6 @@ MonoBehaviour:
       - rid: 446802163587350533
       - rid: 446802163587350536
       - rid: 446802163587350538
-      - rid: 446802163587350540
       - rid: 446802163587350543
       - rid: 446802163587350544
       - rid: 446802163587350547
@@ -110,6 +110,8 @@ MonoBehaviour:
           type: 3}
         m_xrMirrorViewPS: {fileID: 4800000, guid: d5a307c014552314b9f560906d708772,
           type: 3}
+        m_xrMotionVector: {fileID: 4800000, guid: f89aac1e4f84468418fe30e611dff395,
+          type: 3}
     - rid: 446802163587350530
       type: {class: UniversalRendererResources, ns: UnityEngine.Rendering.Universal,
         asm: Unity.RenderPipelines.Universal.Runtime}
@@ -135,6 +137,12 @@ MonoBehaviour:
         m_CoreBlitColorAndDepthPS: {fileID: 4800000, guid: d104b2fc1ca6445babb8e90b0758136b,
           type: 3}
         m_SamplingPS: {fileID: 4800000, guid: 04c410c9937594faa893a11dceb85f7e, type: 3}
+        m_TerrainDetailLit: {fileID: 4800000, guid: f6783ab646d374f94b199774402a5144,
+          type: 3}
+        m_TerrainDetailGrassBillboard: {fileID: 4800000, guid: 29868e73b638e48ca99a19ea58c48d90,
+          type: 3}
+        m_TerrainDetailGrass: {fileID: 4800000, guid: e507fdfead5ca47e8b9a768b51c291a1,
+          type: 3}
     - rid: 446802163587350533
       type: {class: URPDefaultVolumeProfileSettings, ns: UnityEngine.Rendering.Universal,
         asm: Unity.RenderPipelines.Universal.Runtime}
@@ -205,8 +213,7 @@ MonoBehaviour:
           type: 3}
         m_FallOffLookup: {fileID: 2800000, guid: 5688ab254e4c0634f8d6c8e0792331ca,
           type: 3}
-        m_DefaultCustomMaterial: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3,
-          type: 2}
+        m_CopyDepthPS: {fileID: 4800000, guid: d6dae50ee9e1bfa4db75f19f99355220, type: 3}
         m_DefaultLitMaterial: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3,
           type: 2}
         m_DefaultUnlitMaterial: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40,
@@ -234,6 +241,8 @@ MonoBehaviour:
         m_DefaultTerrainMaterial: {fileID: 2100000, guid: 594ea882c5a793440b60ff72d896021e,
           type: 2}
         m_DefaultDecalMaterial: {fileID: 2100000, guid: 31d0dcc6f2dd4e4408d18036a2c93862,
+          type: 2}
+        m_DefaultSpriteMaterial: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40,
           type: 2}
     - rid: 3806180858668515418
       type: {class: UniversalRenderPipelineEditorShaders, ns: UnityEngine.Rendering.Universal,
@@ -305,17 +314,17 @@ MonoBehaviour:
           type: 3}
         voxelizeSceneShader: {fileID: 4800000, guid: c8b6a681c7b4e2e4785ffab093907f9e,
           type: 3}
-        traceVirtualOffsetCS: {fileID: 7200000, guid: 805f10d263aac4b4098c0279cd37a4f3,
+        traceVirtualOffsetCS: {fileID: -6772857160820960102, guid: ff2cbab5da58bf04d82c5f34037ed123,
           type: 3}
-        traceVirtualOffsetRT: {fileID: 4807578003741378534, guid: b60511f4aa1443f4d8c0b18f4fec92f4,
+        traceVirtualOffsetRT: {fileID: -5126288278712620388, guid: ff2cbab5da58bf04d82c5f34037ed123,
           type: 3}
-        skyOcclusionCS: {fileID: 7200000, guid: 798f52ec82fa04048a12826bbbbcf7b4,
+        skyOcclusionCS: {fileID: -6772857160820960102, guid: 5a2a534753fbdb44e96c3c78b5a6999d,
           type: 3}
-        skyOcclusionRT: {fileID: 4807578003741378534, guid: dfaf42b38dd001f49a72d8102b709f29,
+        skyOcclusionRT: {fileID: -5126288278712620388, guid: 5a2a534753fbdb44e96c3c78b5a6999d,
           type: 3}
-        renderingLayerCS: {fileID: 7200000, guid: a63c9cf933e3d8f41ae680a372784ebf,
+        renderingLayerCS: {fileID: -6772857160820960102, guid: 94a070d33e408384bafc1dea4a565df9,
           type: 3}
-        renderingLayerRT: {fileID: 4807578003741378534, guid: c2be09c936362eb49a58f08aeb30627a,
+        renderingLayerRT: {fileID: -5126288278712620388, guid: 94a070d33e408384bafc1dea4a565df9,
           type: 3}
     - rid: 3806180858668515422
       type: {class: ProbeVolumeGlobalSettings, ns: UnityEngine.Rendering, asm: Unity.RenderPipelines.Core.Runtime}
@@ -339,3 +348,9 @@ MonoBehaviour:
         m_IncludeReferencedInScenes: 0
         m_IncludeAssetsByLabel: 0
         m_LabelToInclude: 
+    - rid: 4357401233573281792
+      type: {class: UniversalRenderPipelineEditorAssets, ns: UnityEngine.Rendering.Universal,
+        asm: Unity.RenderPipelines.Universal.Runtime}
+      data:
+        m_DefaultSettingsVolumeProfile: {fileID: 11400000, guid: eda47df5b85f4f249abf7abd73db2cb2,
+          type: 2}
