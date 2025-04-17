@@ -249,7 +249,7 @@ namespace StylizedWater2
             UnityEngine.Profiling.Profiler.BeginSample("Planar Water Reflections", camera);
 
             //Render scale changed
-            if (Math.Abs(renderScale - m_renderScale) > 0.02f)
+            if (Math.Abs(renderScale - m_renderScale) > 0.001f)
             {
                 RenderTexture.ReleaseTemporary(m_reflectionCamera.targetTexture);
                 CreateRenderTexture(m_reflectionCamera, camera);
@@ -261,7 +261,6 @@ namespace StylizedWater2
             
             UpdateCameraProperties(camera, m_reflectionCamera);
             UpdatePerspective(camera, m_reflectionCamera);
-
             
             bool fogEnabled = RenderSettings.fog && !enableFog;
             //Fog is based on clip-space z-distance and doesn't work with oblique projections
@@ -430,6 +429,9 @@ namespace StylizedWater2
             newCamera.clearFlags = includeSkybox ? CameraClearFlags.Skybox : CameraClearFlags.Depth;
             //Required to maintain the alpha channel for the scene view
             newCamera.backgroundColor = Color.clear;
+            
+            //Occlusion culling has to be disabled, otherwise objects culled by the main camera will be culled for the reflection camera
+            //Setting the culling matrix for the camera doesn't appear to have any effect
             newCamera.useOcclusionCulling = false;
 
             //Component required for the UniversalRenderPipeline.RenderSingleCamera call
@@ -437,7 +439,6 @@ namespace StylizedWater2
             data.requiresDepthTexture = false;
             data.requiresColorTexture = false;
             data.renderShadows = renderShadows;
-
             rendererIndex = PipelineUtilities.ValidateRenderer(rendererIndex);
             data.SetRenderer(rendererIndex);
 
@@ -459,8 +460,10 @@ namespace StylizedWater2
                 colorFormat);
 
             rtDsc.depthBufferBits = 16;
+            //rtDsc.msaaSamples = UniversalRenderPipeline.asset.msaaSampleCount; //Waste of resources, water distortion makes it virtually unnoticeable.
             
             targetCamera.targetTexture = RenderTexture.GetTemporary(rtDsc);
+            targetCamera.targetTexture.filterMode = scale < 1f ? FilterMode.Bilinear : FilterMode.Point;
             targetCamera.targetTexture.name = $"{source.name}_Reflection {rtDsc.width}x{rtDsc.height}";
         }
         
@@ -500,7 +503,6 @@ namespace StylizedWater2
             reflectionCam.fieldOfView = source.fieldOfView;
             reflectionCam.orthographic = source.orthographic;
             reflectionCam.orthographicSize = source.orthographicSize;
-            reflectionCam.useOcclusionCulling = source.useOcclusionCulling;
         }
 
         private void UpdatePerspective(Camera source, Camera reflectionCam)
@@ -553,6 +555,9 @@ namespace StylizedWater2
 
             reflectionCam.projectionMatrix = projectionMatrix;
             reflectionCam.worldToCameraMatrix = viewMatrix;
+
+            //Unfortunately has to effect, camera appears ti use the culling matrix from the source camera anyway
+            //reflectionCam.cullingMatrix = projectionMatrix * viewMatrix;
         }
 
         // Calculates reflection matrix around the given plane

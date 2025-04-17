@@ -4,6 +4,9 @@
 
 //Double sample depth to avoid depth discrepancies 
 
+#if UNITY_VERSION >= 60000 && !defined(LIGHTMAP_ON) && (defined(PROBE_VOLUMES_L1) || defined(PROBE_VOLUMES_L2))
+#warning Adaptive Probe Volumes are in use, this is not supported. Probe occlusion will not affect the water surface.
+#endif
 #define COLLAPSIBLE_GROUP 1
 
 //Normalize the amount of normal-based distortion between reflection probes and screen-space reflections
@@ -264,7 +267,7 @@ float4 ForwardPassFragment(Varyings input, FRONT_FACE_TYPE_REAL vertexFace : FRO
 	water.waveNormal = normalWS;
 	
 #if _WAVES
-	WaveInfo waves = GetWaveInfo(uv, TIME * _WaveSpeed, _WaveHeight,  lerp(1, 0, vertexColor.b), _WaveFadeDistance.x, _WaveFadeDistance.y);
+	WaveInfo waves = GetWaveInfo(uv, positionWS, TIME * _WaveSpeed, _WaveHeight,  lerp(1, 0, vertexColor.b), _WaveFadeDistance.x, _WaveFadeDistance.y);
 	
 	#if !_FLAT_SHADING
 	waves.normal = normalize(water.vertexNormal + waves.normal);
@@ -786,6 +789,9 @@ float4 ForwardPassFragment(Varyings input, FRONT_FACE_TYPE_REAL vertexFace : FRO
 	InputData inputData = (InputData)0;
 	inputData.positionWS = positionWS;
 	inputData.viewDirectionWS = water.viewDir;
+	#if UNITY_VERSION >= 202230
+	inputData.normalizedScreenSpaceUV = scene.positionSS.xy / scene.positionSS.w;
+	#endif
 	inputData.shadowCoord = shadowCoords;
 	#if UNDERWATER_ENABLED
 	//Flatten normals for underwater lighting (distracting, peers through the fog)
@@ -801,7 +807,14 @@ float4 ForwardPassFragment(Varyings input, FRONT_FACE_TYPE_REAL vertexFace : FRO
 	#if defined(DYNAMICLIGHTMAP_ON) && UNITY_VERSION >= 202120
     inputData.bakedGI = SAMPLE_GI(input.staticLightmapUV, input.dynamicLightmapUV.xy, input.vertexSH, inputData.normalWS);
 	#elif !defined(LIGHTMAP_ON) && (defined(PROBE_VOLUMES_L1) || defined(PROBE_VOLUMES_L2))
+	
+	#if UNITY_VERSION >= 600009 //Not supported, but patched to avoid compile error
+	float4 probeOcclusion;
+	inputData.bakedGI = SAMPLE_GI(input.vertexSH, GetAbsolutePositionWS(inputData.positionWS), inputData.normalWS, inputData.viewDirectionWS, input.positionCS.xy, probeOcclusion, probeOcclusion);
+	#else
 	inputData.bakedGI = SAMPLE_GI(input.vertexSH, GetAbsolutePositionWS(inputData.positionWS), inputData.normalWS, inputData.viewDirectionWS, input.positionCS.xy);
+	#endif
+	
     #else
     inputData.bakedGI = SAMPLE_GI(input.staticLightmapUV, input.vertexSH, inputData.normalWS);
     #endif
@@ -828,7 +841,6 @@ float4 ForwardPassFragment(Varyings input, FRONT_FACE_TYPE_REAL vertexFace : FRO
 	#else
 	inputData.tangentToWorld = 0;
 	#endif
-	inputData.normalizedScreenSpaceUV = scene.positionSS.xy / scene.positionSS.w;
 	inputData.shadowMask = water.shadowMask.xxxx;
 	#if defined(DYNAMICLIGHTMAP_ON)
 	inputData.dynamicLightmapUV = input.dynamicLightmapUV;

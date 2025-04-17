@@ -15,7 +15,7 @@ using Object = UnityEngine.Object;
 
 namespace StylizedWater2
 {
-    [ScriptedImporter(3, FILE_EXTENSION)]
+    [ScriptedImporter(3, new [] { FILE_EXTENSION }, 1)]
     public class WaterMeshImporter : ScriptedImporter
     {
         private const string FILE_EXTENSION = "watermesh";

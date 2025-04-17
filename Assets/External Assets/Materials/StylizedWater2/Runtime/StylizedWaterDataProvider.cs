@@ -133,6 +133,13 @@ namespace NWH.DWP2.WaterData
             {
                 EditorGUILayout.HelpBox("A water material must be assigned!", MessageType.Error);
             }
+            else
+            {
+                if (StylizedWater2.WaveParameters.WavesEnabled(waterMat.objectReferenceValue as Material) == false)
+                {
+                    EditorGUILayout.HelpBox("The \"Waves\" feature is disabled on this material. Enable it to fix misalignments", MessageType.Warning);
+                }
+            }
             
             EditorGUILayout.PropertyField(dynamicMaterial);
 

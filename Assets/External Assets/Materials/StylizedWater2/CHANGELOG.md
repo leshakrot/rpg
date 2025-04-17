@@ -1,3 +1,31 @@
+1.7.0
+
+Fixed:
+- Planar Reflections: objects disappearing when occlusion culling is enabled
+- Forward+: Point/spot lights no longer affecting the water surface beyond a certain distance
+
+1.6.9
+
+Changed:
+- Minor code changes required to make upgrading to Stylized Water 3 possible.
+
+Fixed:
+- Patched critical shader errors when using APV in Unity 6 (not supported)
+
+1.6.8
+
+Changed:
+- Shader now falls back to URP's "magenta" shader, when failing to compile, which supports DOTS
+- Removed shader error workaround for MacOS added in v1.6.6. The related bug is now fixed in 2022.3.36f1+
+
+Fixed:
+- Hotfix for OUTPUT_SH4 and SAMPLE_GI shader macro errors in Unity 6000.0.9f1+
+
+1.6.7
+
+Fixed:
+- Enviro fog shading not having any effect since version 3.1.3 due to a code change
+
 1.6.6
 
 Fixed:
