@@ -45,6 +45,12 @@ namespace RPG.Control
         [SerializeField] float tapThresholdTime = 0.3f;
         [Tooltip("Максимальное расстояние перемещения пальца для определения тапа (пиксели).")]
         [SerializeField] float tapThresholdDistance = 15f;
+        [Tooltip("Ширина виртуального джойстика (% от ширины экрана).")]
+        [SerializeField] float joystickWidth = 0.3f;
+        [Tooltip("Высота виртуального джойстика (% от высоты экрана).")]
+        [SerializeField] float joystickHeight = 0.3f;
+        [Tooltip("Ограничение свайпов для камеры только правой половиной экрана.")]
+        [SerializeField] bool restrictCameraSwipesToRightHalf = true;
 
         public bool _isDraggingUI = false;
 
@@ -56,6 +62,19 @@ namespace RPG.Control
         private int _currentTouchId = -1;
         private bool _isTouchActive = false;
         private bool _isTouchProcessed = false;
+
+        // Переменные для виртуального джойстика
+        private bool _isJoystickActive = false;
+        private Vector2 _joystickStartPosition;
+        private Vector2 _joystickCurrentPosition;
+        private float _joystickMaxRadius;
+        private int _joystickTouchId = -1;
+        private bool _wasJoystickUsedThisFrame = false;
+
+        // Текстуры для отрисовки джойстика
+        private Texture2D _joystickBgTexture;
+        private Texture2D _joystickKnobTexture;
+        private bool _joystickTexturesInitialized = false;
 
         private void Awake()
         {
@@ -72,6 +91,24 @@ namespace RPG.Control
             {
                 Debug.LogError("PlayerController: Не найдена основная камера (Main Camera). Убедитесь, что у камеры есть тег 'MainCamera'.");
             }
+
+            // Инициализация джойстика
+            _joystickMaxRadius = Screen.width * 0.1f; // 10% экрана
+            InitializeJoystickTextures();
+        }
+
+        private void InitializeJoystickTextures()
+        {
+            // Создаем текстуры для джойстика
+            _joystickBgTexture = new Texture2D(1, 1);
+            _joystickBgTexture.SetPixel(0, 0, new Color(0.5f, 0.5f, 0.5f, 0.5f));
+            _joystickBgTexture.Apply();
+
+            _joystickKnobTexture = new Texture2D(1, 1);
+            _joystickKnobTexture.SetPixel(0, 0, new Color(1f, 1f, 1f, 0.8f));
+            _joystickKnobTexture.Apply();
+
+            _joystickTexturesInitialized = true;
         }
 
         private void Update()
@@ -83,20 +120,152 @@ namespace RPG.Control
                 return;
             }
 
-            // Обрабатываем WASD движение на десктопе
-            bool didMoveWithWASD = HandleWASDMovement();
+            _wasJoystickUsedThisFrame = false;
+
+            // Обрабатываем мобильный джойстик
+            bool didMoveWithJoystick = HandleJoystickMovement();
+
+            // Обрабатываем WASD движение на десктопе (только если не двигались джойстиком)
+            bool didMoveWithWASD = !didMoveWithJoystick && HandleWASDMovement();
 
             // Обрабатываем способности (нажатие 1-6)
             UseAbilities();
 
-            // Обрабатываем взаимодействие с компонентами
-            if (InteractWithComponent()) return;
+            // Обрабатываем взаимодействие с компонентами (только если не двигались джойстиком)
+            if (!didMoveWithJoystick && InteractWithComponent()) return;
 
-            // Обрабатываем движение по клику/тапу в мире
-            if (InteractWithMovement()) return;
+            // Обрабатываем движение по клику/тапу в мире (только если не двигались джойстиком)
+            if (!didMoveWithJoystick && InteractWithMovement()) return;
 
             // Если ничего не сработало, устанавливаем курсор по умолчанию
             SetCursor(CursorType.None);
+        }
+
+        private void OnGUI()
+        {
+            // Рисуем джойстик только на мобильных устройствах
+#if UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL
+            if (_isJoystickActive && _joystickTexturesInitialized)
+            {
+                // Рисуем фон джойстика
+                float bgSize = _joystickMaxRadius * 2;
+                GUI.DrawTexture(new Rect(_joystickStartPosition.x - bgSize / 2, Screen.height - _joystickStartPosition.y - bgSize / 2, bgSize, bgSize), _joystickBgTexture, ScaleMode.StretchToFill, true, 0, Color.white, 0, 0);
+
+                // Рисуем кноб джойстика
+                float knobSize = bgSize * 0.5f;
+                GUI.DrawTexture(new Rect(_joystickCurrentPosition.x - knobSize / 2, Screen.height - _joystickCurrentPosition.y - knobSize / 2, knobSize, knobSize), _joystickKnobTexture, ScaleMode.StretchToFill, true, 0, Color.white, 0, 0);
+            }
+#endif
+        }
+
+        private bool HandleJoystickMovement()
+        {
+#if UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL
+            // На десктопе джойстик не нужен
+#if UNITY_EDITOR || UNITY_STANDALONE
+            return false;
+#endif
+
+            int touchCount = Input.touchCount;
+            if (touchCount == 0)
+            {
+                // Сбрасываем джойстик, если нет касаний
+                ResetJoystick();
+                return false;
+            }
+
+            // Обработка активных касаний
+            for (int i = 0; i < touchCount; i++)
+            {
+                Touch touch = Input.GetTouch(i);
+
+                // Если касание уже отслеживается для джойстика
+                if (_isJoystickActive && touch.fingerId == _joystickTouchId)
+                {
+                    // Обновляем позицию джойстика
+                    if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
+                    {
+                        _joystickCurrentPosition = touch.position;
+                        Vector2 direction = _joystickCurrentPosition - _joystickStartPosition;
+
+                        // Ограничиваем движение джойстика
+                        if (direction.magnitude > _joystickMaxRadius)
+                        {
+                            direction = direction.normalized * _joystickMaxRadius;
+                            _joystickCurrentPosition = _joystickStartPosition + direction;
+                        }
+
+                        // Преобразуем направление 2D в 3D для движения персонажа
+                        HandleJoystickDirection(direction / _joystickMaxRadius);
+                        _wasJoystickUsedThisFrame = true;
+                    }
+                    // Завершаем использование джойстика
+                    else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+                    {
+                        ResetJoystick();
+                    }
+
+                    // Касание уже обработано джойстиком
+                    continue;
+                }
+
+                // Создаем новый джойстик, если:
+                // 1. Джойстик еще не активен
+                // 2. Касание началось в левой половине экрана (если включено ограничение)
+                // 3. Не обрабатывается камерой
+                if (!_isJoystickActive && touch.phase == TouchPhase.Began &&
+                    touch.position.x < Screen.width * 0.5f &&
+                    !TopDownOrbitCamera.IsInputUsedByCamera)
+                {
+                    _joystickStartPosition = touch.position;
+                    _joystickCurrentPosition = touch.position;
+                    _joystickTouchId = touch.fingerId;
+                    _isJoystickActive = true;
+                }
+            }
+
+            // Возвращаем true если джойстик использовался в этом кадре
+            return _wasJoystickUsedThisFrame;
+#else
+            return false;
+#endif
+        }
+
+        private void HandleJoystickDirection(Vector2 normalizedDirection)
+        {
+            if (normalizedDirection.magnitude < 0.1f || cameraTransform == null)
+                return;
+
+            // Конвертируем 2D направление джойстика в 3D направление относительно камеры
+            Vector3 cameraForward = cameraTransform.forward;
+            cameraForward.y = 0f;
+            cameraForward.Normalize();
+
+            Vector3 cameraRight = cameraTransform.right;
+            cameraRight.y = 0f;
+            cameraRight.Normalize();
+
+            // Направление движения в мировых координатах
+            Vector3 moveDirection = (cameraForward * normalizedDirection.y + cameraRight * normalizedDirection.x).normalized;
+
+            // Целевая позиция для NavMeshAgent
+            Vector3 targetPosition = transform.position + moveDirection * lookAheadDistance;
+
+            // Скорость зависит от интенсивности отклонения джойстика
+            float speedFraction = normalizedDirection.magnitude * wasdMoveSpeedFraction;
+
+            // Передаем команду движения в Mover
+            _mover.StartMoveAction(targetPosition, speedFraction);
+
+            // Поворачиваем персонажа в направлении движения
+            HandleRotation(moveDirection);
+        }
+
+        private void ResetJoystick()
+        {
+            _isJoystickActive = false;
+            _joystickTouchId = -1;
+            _wasJoystickUsedThisFrame = false;
         }
 
         private bool HandleWASDMovement()
@@ -215,8 +384,8 @@ namespace RPG.Control
 
         private bool InteractWithMovement()
         {
-            // Если камера использует ввод, не обрабатываем движение персонажа
-            if (TopDownOrbitCamera.IsInputUsedByCamera) return false;
+            // Если камера использует ввод или активен джойстик, не обрабатываем движение персонажа по клику/тапу
+            if (TopDownOrbitCamera.IsInputUsedByCamera || _isJoystickActive) return false;
 
 #if UNITY_EDITOR || UNITY_STANDALONE
             return HandlePCMovement();
@@ -262,8 +431,8 @@ namespace RPG.Control
 
         private bool HandleMobileMovement()
         {
-            // Если нет касаний, выходим
-            if (Input.touchCount == 0)
+            // Если нет касаний или активен джойстик, выходим
+            if (Input.touchCount == 0 || _isJoystickActive)
             {
                 // Сбрасываем состояние обработки тача
                 ResetTouchState();
@@ -280,6 +449,14 @@ namespace RPG.Control
             if (Input.touchCount == 1)
             {
                 Touch touch = Input.GetTouch(0);
+
+                // Игнорируем левую половину экрана, если это активирует джойстик
+                if (touch.phase == TouchPhase.Began && touch.position.x < Screen.width * 0.5f && !_isJoystickActive)
+                {
+                    // Это потенциально начало работы джойстика, не обрабатываем как тап для движения
+                    // Джойстик активируется в HandleJoystickMovement()
+                    return false;
+                }
 
                 // Новое касание началось
                 if (touch.phase == TouchPhase.Began && !_isTouchActive)
@@ -349,7 +526,8 @@ namespace RPG.Control
             }
             else if (Input.touchCount > 1)
             {
-                // Если более одного касания, сбрасываем состояние тача
+                // Если более одного касания, сбрасываем состояние тача для движения
+                // (двухпальцевый жест может быть обработан для джойстика или камеры)
                 ResetTouchState();
             }
 
@@ -399,6 +577,20 @@ namespace RPG.Control
         public static Ray GetMouseRay()
         {
             return Camera.main.ScreenPointToRay(Input.mousePosition);
+        }
+
+        // Публичный метод для проверки, активен ли джойстик
+        // Может использоваться другими системами для проверки состояния ввода
+        public bool IsJoystickActive()
+        {
+            return _isJoystickActive;
+        }
+
+        // Публичный метод для проверки, находится ли касание в левой половине экрана
+        // (полезен для скрипта камеры, чтобы определить область для свайпов)
+        public static bool IsTouchInLeftHalfOfScreen(Vector2 touchPosition)
+        {
+            return touchPosition.x < Screen.width * 0.5f;
         }
     }
 }

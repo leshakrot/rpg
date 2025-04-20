@@ -47,6 +47,8 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
     [SerializeField] private float maxSwipeTime = 0.5f;
     [Tooltip("Задержка перед определением свайпа (в секундах).")]
     [SerializeField] private float swipeDetectionDelay = 0.1f;
+    [Tooltip("Ограничить свайпы только правой половиной экрана.")]
+    [SerializeField] private bool restrictToRightHalfScreen = true;
 
     [Header("Smoothing")]
     [Tooltip("Время сглаживания движения камеры.")]
@@ -58,7 +60,7 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
 
     [Header("Debugging")]
     [Tooltip("Включить подробные логи в консоль для отладки ввода.")]
-    [SerializeField] private bool enableDebugLogs = true; // <-- Включи для теста!
+    [SerializeField] private bool enableDebugLogs = false;
 
     // Приватные переменные состояния
     private float _currentX = 0f;
@@ -183,7 +185,7 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
         distance = Mathf.Clamp(distance, minDistance, maxDistance);
     }
 
-    // --- Логика для ПК управления (остается в основном как есть) ---
+    // --- Логика для ПК управления ---
     private void HandlePCInput()
     {
         if (Input.GetMouseButtonDown(1))
@@ -264,6 +266,16 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
     private void HandleSingleTouchInput()
     {
         Touch touch = Input.GetTouch(0);
+
+        // Сначала проверяем, находится ли касание в правой половине экрана
+        // Если включено ограничение и касание в левой половине - игнорируем его для камеры
+        if (restrictToRightHalfScreen && touch.position.x < Screen.width * 0.5f)
+        {
+            // Левая сторона экрана зарезервирована для джойстика
+            if (enableDebugLogs && Time.frameCount % 30 == 0)
+                Debug.Log($"[{gameObject.name}] Touch ignored in left half of screen (reserved for joystick)");
+            return;
+        }
 
         // Обработка начала касания
         if (touch.phase == TouchPhase.Began)
@@ -346,6 +358,20 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
 
         Touch touch0 = Input.GetTouch(0);
         Touch touch1 = Input.GetTouch(1);
+
+        // Если обязательное ограничение правой половины экрана, проверяем хотя бы одно касание справа
+        if (restrictToRightHalfScreen)
+        {
+            bool isTouch0InRightHalf = touch0.position.x >= Screen.width * 0.5f;
+            bool isTouch1InRightHalf = touch1.position.x >= Screen.width * 0.5f;
+
+            if (!isTouch0InRightHalf && !isTouch1InRightHalf)
+            {
+                // Оба касания в левой половине - игнорируем для пинча камеры
+                if (enableDebugLogs) Debug.Log($"[{gameObject.name}] Pinch ignored: Both touches in left half of screen");
+                return;
+            }
+        }
 
         // Инициализация жеста масштабирования
         if (!_isPinching)
