@@ -170,16 +170,35 @@ namespace RPG.Quests
                     if (questCompleted == null) return false;
 
                     QuestStatus status = GetQuestStatus(questCompleted);
-	                return status != null && status.IsComplete();
+                    return status != null && status.IsComplete();
+
                 case "CompletedObjective":
-	                if (parameters.Length < 1) return false;
-	                string objectiveRef = parameters[0];
-	                foreach (var objectiveStatus in GetComponent<QuestList>().GetStatuses())
-	                {
-		                if (objectiveStatus.IsObjectiveComplete(objectiveRef))
-			                return true;
-	                }
-	                return false;
+                    if (parameters.Length < 2) return false;
+                    Quest quest = Quest.GetByName(parameters[0]);
+                    if (quest == null) return false;
+                    
+                    status = GetQuestStatus(quest);
+                    if (status == null) return false;
+                    
+                    return status.IsObjectiveComplete(parameters[1]);
+
+                case "CompletedObjectives":
+                    if (parameters.Length != 1) return false;
+                    quest = Quest.GetByName(parameters[0]);
+                    if (quest == null) return false;
+                    
+                    status = GetQuestStatus(quest);
+                    if (status == null) return false;
+                    
+                    // Проверяем все цели квеста, кроме return_to_merchant
+                    foreach (var objective in quest.GetObjectives())
+                    {
+                        if (objective.reference != "return_to_merchant" && !status.IsObjectiveComplete(objective.reference))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
             }
             return null;
         }
