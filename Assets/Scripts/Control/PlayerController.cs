@@ -76,6 +76,20 @@ namespace RPG.Control
         private Texture2D _joystickKnobTexture;
         private bool _joystickTexturesInitialized = false;
 
+        private bool IsMobilePlatform
+        {
+            get
+            {
+                #if UNITY_EDITOR
+                    return UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.Android || 
+                           UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.iOS;
+                #else
+                    return Application.platform == RuntimePlatform.Android || 
+                           Application.platform == RuntimePlatform.IPhonePlayer;
+                #endif
+            }
+        }
+
         private void Awake()
         {
             _mover = GetComponent<Mover>();
@@ -122,8 +136,8 @@ namespace RPG.Control
 
             _wasJoystickUsedThisFrame = false;
 
-            // Обрабатываем мобильный джойстик
-            bool didMoveWithJoystick = HandleJoystickMovement();
+            // Обрабатываем мобильный джойстик только на мобильных платформах
+            bool didMoveWithJoystick = IsMobilePlatform && HandleJoystickMovement();
 
             // Обрабатываем WASD движение на десктопе (только если не двигались джойстиком)
             bool didMoveWithWASD = !didMoveWithJoystick && HandleWASDMovement();
@@ -131,21 +145,26 @@ namespace RPG.Control
             // Обрабатываем способности (нажатие 1-6)
             UseAbilities();
 
-            // Обрабатываем взаимодействие с компонентами (только если не двигались джойстиком)
-            if (!didMoveWithJoystick && InteractWithComponent()) return;
+            // На десктопе и WebGL обрабатываем взаимодействие с компонентами и движение по клику
+            if (!IsMobilePlatform)
+            {
+                if (InteractWithComponent()) return;
+                if (InteractWithMovement()) return;
+            }
+            // На мобильных устройствах обрабатываем тачи только если не использовался джойстик
+            else if (!didMoveWithJoystick)
+            {
+                if (InteractWithComponent()) return;
+                if (InteractWithMovement()) return;
+            }
 
-            // Обрабатываем движение по клику/тапу в мире (только если не двигались джойстиком)
-            if (!didMoveWithJoystick && InteractWithMovement()) return;
-
-            // Если ничего не сработало, устанавливаем курсор по умолчанию
             SetCursor(CursorType.None);
         }
 
         private void OnGUI()
         {
             // Рисуем джойстик только на мобильных устройствах
-#if UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL
-            if (_isJoystickActive && _joystickTexturesInitialized)
+            if (IsMobilePlatform && _isJoystickActive && _joystickTexturesInitialized)
             {
                 // Рисуем фон джойстика
                 float bgSize = _joystickMaxRadius * 2;
@@ -155,16 +174,13 @@ namespace RPG.Control
                 float knobSize = bgSize * 0.5f;
                 GUI.DrawTexture(new Rect(_joystickCurrentPosition.x - knobSize / 2, Screen.height - _joystickCurrentPosition.y - knobSize / 2, knobSize, knobSize), _joystickKnobTexture, ScaleMode.StretchToFill, true, 0, Color.white, 0, 0);
             }
-#endif
         }
 
         private bool HandleJoystickMovement()
         {
-#if UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL
-            // На десктопе джойстик не нужен
-#if UNITY_EDITOR || UNITY_STANDALONE
-            return false;
-#endif
+            // Проверяем, что мы на мобильной платформе
+            if (!IsMobilePlatform)
+                return false;
 
             int touchCount = Input.touchCount;
             if (touchCount == 0)
@@ -226,9 +242,6 @@ namespace RPG.Control
 
             // Возвращаем true если джойстик использовался в этом кадре
             return _wasJoystickUsedThisFrame;
-#else
-            return false;
-#endif
         }
 
         private void HandleJoystickDirection(Vector2 normalizedDirection)
@@ -384,182 +397,65 @@ namespace RPG.Control
 
         private bool InteractWithMovement()
         {
-            // Если камера использует ввод или активен джойстик, не обрабатываем движение персонажа по клику/тапу
-            if (TopDownOrbitCamera.IsInputUsedByCamera || _isJoystickActive) return false;
+            // Проверяем, что это клик мышью или тач
+            bool isMouseClick = Input.GetMouseButtonDown(0);
+            if (!isMouseClick && !IsMobilePlatform)
+                return false;
 
-#if UNITY_EDITOR || UNITY_STANDALONE
-            return HandlePCMovement();
-#elif UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL
-            return HandleMobileMovement();
-#else
-            return HandlePCMovement(); // Fallback для других платформ
-#endif
-        }
-
-        private bool HandlePCMovement()
-        {
             Vector3 target;
             bool hasHit = RaycastNavmesh(out target);
 
             if (hasHit)
             {
-                if (Input.GetMouseButtonUp(0) && _mover.CanMoveTo(target))
+                if (!_mover.CanMoveTo(target)) 
                 {
-                    _movementTargetIndicator.transform.position = target;
-                    _movementTargetIndicator.Play();
+                    SetCursor(CursorType.None);
+                    return true;
                 }
 
                 if (Input.GetMouseButton(0))
                 {
-                    if (_mover.CanMoveTo(target))
+                    _mover.StartMoveAction(target, wasdMoveSpeedFraction);
+                    if (_movementTargetIndicator != null)
                     {
-                        _mover.StartMoveAction(target, 1f);
-                    }
-                    else if (_movementTargetIndicatorNoTarget != null)
-                    {
-                        _movementTargetIndicatorNoTarget.transform.position = target;
-                        _movementTargetIndicatorNoTarget.Play();
+                        _movementTargetIndicator.transform.position = target;
+                        _movementTargetIndicator.Play();
                     }
                 }
-
                 SetCursor(CursorType.Movement);
                 return true;
             }
-
             return false;
-        }
-
-        private bool HandleMobileMovement()
-        {
-            // Если нет касаний или активен джойстик, выходим
-            if (Input.touchCount == 0 || _isJoystickActive)
-            {
-                // Сбрасываем состояние обработки тача
-                ResetTouchState();
-                return false;
-            }
-
-            // Если пользователь двигает камеру (свайп/зум), не обрабатываем движение персонажа
-            if (TopDownOrbitCamera.IsInputUsedByCamera)
-            {
-                return false;
-            }
-
-            // Обрабатываем только одиночное касание - для движения нам нужен только один палец
-            if (Input.touchCount == 1)
-            {
-                Touch touch = Input.GetTouch(0);
-
-                // Игнорируем левую половину экрана, если это активирует джойстик
-                if (touch.phase == TouchPhase.Began && touch.position.x < Screen.width * 0.5f && !_isJoystickActive)
-                {
-                    // Это потенциально начало работы джойстика, не обрабатываем как тап для движения
-                    // Джойстик активируется в HandleJoystickMovement()
-                    return false;
-                }
-
-                // Новое касание началось
-                if (touch.phase == TouchPhase.Began && !_isTouchActive)
-                {
-                    _touchStartPosition = touch.position;
-                    _touchStartTime = Time.time;
-                    _currentTouchId = touch.fingerId;
-                    _isTouchActive = true;
-                    _isTouchProcessed = false;
-                }
-                // Продолжение активного касания
-                else if (touch.phase == TouchPhase.Moved && _isTouchActive && touch.fingerId == _currentTouchId)
-                {
-                    // Если палец двигается слишком далеко, это уже не тап, а свайп
-                    // Камера должна обработать это как свайп, поэтому мы просто не обрабатываем это как движение
-                    float distanceMoved = Vector2.Distance(_touchStartPosition, touch.position);
-                    if (distanceMoved > tapThresholdDistance && !_isTouchProcessed)
-                    {
-                        // Этот тач больше не будет обрабатываться как тап для движения
-                        _isTouchProcessed = true;
-                    }
-                }
-                // Завершение касания
-                else if ((touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) &&
-                         _isTouchActive && touch.fingerId == _currentTouchId && !_isTouchProcessed)
-                {
-                    float touchDuration = Time.time - _touchStartTime;
-                    float distanceMoved = Vector2.Distance(_touchStartPosition, touch.position);
-
-                    // Если это был короткий тап с маленьким смещением, обрабатываем как движение
-                    if (touchDuration < tapThresholdTime && distanceMoved < tapThresholdDistance)
-                    {
-                        // Выполняем рейкаст для определения цели движения
-                        Vector3 target;
-                        bool hasHit = RaycastNavmesh(out target);
-
-                        if (hasHit && _mover.CanMoveTo(target))
-                        {
-                            _mover.StartMoveAction(target, 1f);
-
-                            // Показываем индикатор движения
-                            if (_movementTargetIndicator != null)
-                            {
-                                _movementTargetIndicator.transform.position = target;
-                                _movementTargetIndicator.Play();
-                            }
-
-                            // Отмечаем, что тач обработан
-                            _isTouchProcessed = true;
-                            SetCursor(CursorType.Movement);
-
-                            // Сбрасываем состояние тача
-                            ResetTouchState();
-                            return true;
-                        }
-                        else if (_movementTargetIndicatorNoTarget != null)
-                        {
-                            // Показываем индикатор невозможности движения
-                            _movementTargetIndicatorNoTarget.transform.position = target;
-                            _movementTargetIndicatorNoTarget.Play();
-                        }
-                    }
-
-                    // Сбрасываем состояние тача
-                    ResetTouchState();
-                }
-            }
-            else if (Input.touchCount > 1)
-            {
-                // Если более одного касания, сбрасываем состояние тача для движения
-                // (двухпальцевый жест может быть обработан для джойстика или камеры)
-                ResetTouchState();
-            }
-
-            return false;
-        }
-
-        private void ResetTouchState()
-        {
-            _isTouchActive = false;
-            _isTouchProcessed = false;
-            _currentTouchId = -1;
         }
 
         private bool RaycastNavmesh(out Vector3 target)
         {
-            target = new Vector3();
+            target = Vector3.zero;
+            
             RaycastHit hit;
-            bool hasHit = Physics.Raycast(GetMouseRay(), out hit);
+            Ray ray = GetMouseRay();
+            bool hasHit = Physics.Raycast(ray, out hit);
+
             if (!hasHit) return false;
+
             NavMeshHit navMeshHit;
-            bool hasCastToNavMesh = NavMesh.SamplePosition(hit.point, out navMeshHit, _maxNavmeshProjectionDistance, NavMesh.AllAreas);
+            bool hasCastToNavMesh = NavMesh.SamplePosition(
+                hit.point, out navMeshHit, _maxNavmeshProjectionDistance, NavMesh.AllAreas);
+
             if (!hasCastToNavMesh) return false;
 
             target = navMeshHit.position;
-
+            
             return true;
         }
 
         private void SetCursor(CursorType type)
         {
             CursorMapping mapping = GetCursorMapping(type);
-            Cursor.SetCursor(mapping.texture, mapping.hotspot, CursorMode.Auto);
+            if (mapping.texture != null)
+            {
+                Cursor.SetCursor(mapping.texture, mapping.hotspot, CursorMode.Auto);
+            }
         }
 
         private CursorMapping GetCursorMapping(CursorType type)
