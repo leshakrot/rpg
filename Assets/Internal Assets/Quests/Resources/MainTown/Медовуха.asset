@@ -18,7 +18,11 @@ MonoBehaviour:
       \u0442\u0440\u0430\u043A\u0442\u0438\u0440\u0430"
     usesCondition: 0
     completionCondition:
-      _and: []
+      _and:
+      - _or:
+        - _predicate: 
+          _parameters: []
+          _negate: 0
     hasProgress: 0
     requiredCount: 0
     hiddenInitially: 0
@@ -51,7 +55,7 @@ MonoBehaviour:
     completionCondition:
       _and: []
     hasProgress: 1
-    requiredCount: 6
+    requiredCount: 2
     hiddenInitially: 1
     revealCondition:
       _and:
