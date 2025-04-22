@@ -18,7 +18,7 @@ Material:
   - _NORMALMAP
   - _RECEIVE_SHADOWS_OFF
   - _SHARP_INERSECTION
-  - _UNLIT
+  - _SPECULARHIGHLIGHTS_OFF
   m_InvalidKeywords:
   - ADVANCED_LIGHTING
   - _CROSSPAN_INTERSECTION
@@ -34,7 +34,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: 
+  m_LockedProperties: _SparkleSize
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -200,7 +200,7 @@ Material:
     - _IntersectionTiling: 0.16999984
     - _IntersectionWaveDist: 33.28
     - _LightingMode: 0
-    - _LightingOn: 0
+    - _LightingOn: 1
     - _Metallic: 0
     - _Metallicness: 0.1
     - _NORMALMAPOn: 1
@@ -250,10 +250,10 @@ Material:
     - _SlopeThreshold: 0.25
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
-    - _SparkleIntensity: 4
+    - _SparkleIntensity: 0
     - _SparkleSize: 0.7
     - _SpecularHighlights: 1
-    - _SpecularReflectionsOn: 1
+    - _SpecularReflectionsOn: 0
     - _Speed: 1
     - _SrcBlend: 1
     - _SunReflectionDistortion: 0.71
