@@ -1,0 +1,136 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b887383adfa29fd47b5b333aba08945b, type: 3}
+  m_Name: "\u041C\u0435\u0434\u043E\u0432\u0443\u0445\u0430"
+  m_EditorClassIdentifier: 
+  _objectives:
+  - reference: investigate_cellar
+    description: "\u041E\u0441\u043C\u043E\u0442\u0440\u0435\u0442\u044C \u043F\u043E\u0434\u0432\u0430\u043B
+      \u0442\u0440\u0430\u043A\u0442\u0438\u0440\u0430"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 0
+    hiddenInitially: 0
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - talk_to_innkeeper
+          _negate: 0
+  - reference: find_tracks
+    description: "\u041D\u0430\u0439\u0442\u0438 \u0441\u043B\u0435\u0434\u044B \u0432\u043E\u0440\u043E\u0432"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 0
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - investigate_cellar
+          _negate: 0
+  - reference: clear_forest_path
+    description: "\u041E\u0447\u0438\u0441\u0442\u0438\u0442\u044C \u043F\u0443\u0442\u044C
+      \u0432 \u043B\u0435\u0441\u0443 \u043E\u0442 \u0440\u0430\u0437\u0431\u043E\u0439\u043D\u0438\u043A\u043E\u0432"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 1
+    requiredCount: 6
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - find_tracks
+          _negate: 0
+  - reference: find_hideout
+    description: "\u041D\u0430\u0439\u0442\u0438 \u0443\u0431\u0435\u0436\u0438\u0449\u0435
+      \u0432\u043E\u0440\u043E\u0432 \u0432 \u043F\u0435\u0449\u0435\u0440\u0435"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 0
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - clear_forest_path
+          _negate: 0
+  - reference: defeat_bandit_leader
+    description: "\u041F\u043E\u0431\u0435\u0434\u0438\u0442\u044C \u0433\u043B\u0430\u0432\u0430\u0440\u044F
+      \u0440\u0430\u0437\u0431\u043E\u0439\u043D\u0438\u043A\u043E\u0432"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 0
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - find_hideout
+          _negate: 0
+  - reference: retrieve_mead
+    description: "\u0417\u0430\u0431\u0440\u0430\u0442\u044C \u0443\u043A\u0440\u0430\u0434\u0435\u043D\u043D\u0443\u044E
+      \u043C\u0435\u0434\u043E\u0432\u0443\u0445\u0443"
+    usesCondition: 1
+    completionCondition:
+      _and:
+      - _or:
+        - _predicate: HasInventoryItem
+          _parameters:
+          - b348c320-c549-466e-bdf9-cbb35f273f85
+          _negate: 0
+    hasProgress: 0
+    requiredCount: 0
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - defeat_bandit_leader
+          _negate: 0
+  - reference: return_to_innkeeper
+    description: "\u0412\u0435\u0440\u043D\u0443\u0442\u044C \u043C\u0435\u0434\u043E\u0432\u0443\u0445\u0443
+      \u0442\u0440\u0430\u043A\u0442\u0438\u0440\u0449\u0438\u043A\u0443"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 0
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - retrieve_mead
+          _negate: 0
+  _rewards:
+  - number: 150
+    item: {fileID: 11400000, guid: 14c9d40d213c40d43b1755b25c673e9b, type: 2}
+  - number: 1
+    item: {fileID: 11400000, guid: 826c19e601e7eda499c6f5ebc625e7e1, type: 2}
