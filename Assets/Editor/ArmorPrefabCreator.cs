@@ -21,10 +21,18 @@ public class ArmorPrefabCreator : EditorWindow
     private int selectedLootRayIndex = 0;
     private GameObject playerPrefab;
     
+    // Иконка для ScriptableObject
+    private Sprite iconSprite;
+    
     // Настройки трансформа для Static модели
     private Vector3 staticModelPosition = Vector3.zero;
     private Vector3 staticModelRotation = Vector3.zero;
     private Vector3 staticModelScale = Vector3.one;
+    
+    // Словари для хранения настроек трансформа для каждого типа брони
+    private Dictionary<string, Vector3> savedPositions = new Dictionary<string, Vector3>();
+    private Dictionary<string, Vector3> savedRotations = new Dictionary<string, Vector3>();
+    private Dictionary<string, Vector3> savedScales = new Dictionary<string, Vector3>();
     
     // Предпросмотр
     private GameObject previewInstance;
@@ -37,9 +45,10 @@ public class ArmorPrefabCreator : EditorWindow
 
     // Сохранение настроек
     private const string LootRayPrefabsKey = "ArmorPrefabCreator_LootRayPrefabs";
-    private const string StaticModelPositionKey = "ArmorPrefabCreator_StaticModelPosition";
-    private const string StaticModelRotationKey = "ArmorPrefabCreator_StaticModelRotation";
-    private const string StaticModelScaleKey = "ArmorPrefabCreator_StaticModelScale";
+    private const string StaticModelPositionsKey = "ArmorPrefabCreator_StaticModelPositions";
+    private const string StaticModelRotationsKey = "ArmorPrefabCreator_StaticModelRotations";
+    private const string StaticModelScalesKey = "ArmorPrefabCreator_StaticModelScales";
+    private const string IconSpritePathKey = "ArmorPrefabCreator_IconSpritePath";
 
     [MenuItem("RPG/Armor/Create Armor Prefab")]
     public static void ShowWindow()
@@ -88,48 +97,85 @@ public class ArmorPrefabCreator : EditorWindow
             }
         }
         
-        // Загрузка настроек трансформа
-        string positionData = EditorPrefs.GetString(StaticModelPositionKey, "");
-        if (!string.IsNullOrEmpty(positionData))
+        // Загрузка сохраненных значений трансформа для каждого типа брони
+        string positionsData = EditorPrefs.GetString(StaticModelPositionsKey, "");
+        if (!string.IsNullOrEmpty(positionsData))
         {
-            string[] values = positionData.Split(',');
-            if (values.Length == 3)
+            string[] entries = positionsData.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string entry in entries)
             {
-                float x = float.Parse(values[0]);
-                float y = float.Parse(values[1]);
-                float z = float.Parse(values[2]);
-                staticModelPosition = new Vector3(x, y, z);
+                string[] parts = entry.Split(':');
+                if (parts.Length == 2)
+                {
+                    string armorType = parts[0];
+                    string[] values = parts[1].Split(',');
+                    if (values.Length == 3)
+                    {
+                        float x = float.Parse(values[0]);
+                        float y = float.Parse(values[1]);
+                        float z = float.Parse(values[2]);
+                        savedPositions[armorType] = new Vector3(x, y, z);
+                    }
+                }
             }
         }
         
-        string rotationData = EditorPrefs.GetString(StaticModelRotationKey, "");
-        if (!string.IsNullOrEmpty(rotationData))
+        string rotationsData = EditorPrefs.GetString(StaticModelRotationsKey, "");
+        if (!string.IsNullOrEmpty(rotationsData))
         {
-            string[] values = rotationData.Split(',');
-            if (values.Length == 3)
+            string[] entries = rotationsData.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string entry in entries)
             {
-                float x = float.Parse(values[0]);
-                float y = float.Parse(values[1]);
-                float z = float.Parse(values[2]);
-                staticModelRotation = new Vector3(x, y, z);
+                string[] parts = entry.Split(':');
+                if (parts.Length == 2)
+                {
+                    string armorType = parts[0];
+                    string[] values = parts[1].Split(',');
+                    if (values.Length == 3)
+                    {
+                        float x = float.Parse(values[0]);
+                        float y = float.Parse(values[1]);
+                        float z = float.Parse(values[2]);
+                        savedRotations[armorType] = new Vector3(x, y, z);
+                    }
+                }
             }
         }
         
-        string scaleData = EditorPrefs.GetString(StaticModelScaleKey, "");
-        if (!string.IsNullOrEmpty(scaleData))
+        string scalesData = EditorPrefs.GetString(StaticModelScalesKey, "");
+        if (!string.IsNullOrEmpty(scalesData))
         {
-            string[] values = scaleData.Split(',');
-            if (values.Length == 3)
+            string[] entries = scalesData.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string entry in entries)
             {
-                float x = float.Parse(values[0]);
-                float y = float.Parse(values[1]);
-                float z = float.Parse(values[2]);
-                staticModelScale = new Vector3(x, y, z);
+                string[] parts = entry.Split(':');
+                if (parts.Length == 2)
+                {
+                    string armorType = parts[0];
+                    string[] values = parts[1].Split(',');
+                    if (values.Length == 3)
+                    {
+                        float x = float.Parse(values[0]);
+                        float y = float.Parse(values[1]);
+                        float z = float.Parse(values[2]);
+                        savedScales[armorType] = new Vector3(x, y, z);
+                    }
+                }
             }
         }
+        
+        // Установка текущих значений трансформа в соответствии с выбранным типом брони
+        UpdateTransformFromSaved();
         
         // Загрузка Root Armor Pickup префаба
         rootArmorPickupPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Internal Assets/Prefabs/Pickups/Root Armor Pickup.prefab");
+        
+        // Загрузка спрайта иконки
+        string iconPath = EditorPrefs.GetString(IconSpritePathKey, "");
+        if (!string.IsNullOrEmpty(iconPath))
+        {
+            iconSprite = AssetDatabase.LoadAssetAtPath<Sprite>(iconPath);
+        }
     }
     
     private void SaveSettings()
@@ -145,10 +191,66 @@ public class ArmorPrefabCreator : EditorWindow
         }
         EditorPrefs.SetString(LootRayPrefabsKey, string.Join("|", paths));
         
-        // Сохранение настроек трансформа
-        EditorPrefs.SetString(StaticModelPositionKey, $"{staticModelPosition.x},{staticModelPosition.y},{staticModelPosition.z}");
-        EditorPrefs.SetString(StaticModelRotationKey, $"{staticModelRotation.x},{staticModelRotation.y},{staticModelRotation.z}");
-        EditorPrefs.SetString(StaticModelScaleKey, $"{staticModelScale.x},{staticModelScale.y},{staticModelScale.z}");
+        // Сохранить текущие значения в словари
+        SaveCurrentTransform();
+        
+        // Преобразование словарей в строки для сохранения
+        List<string> positionEntries = new List<string>();
+        foreach (var pair in savedPositions)
+        {
+            Vector3 pos = pair.Value;
+            positionEntries.Add($"{pair.Key}:{pos.x},{pos.y},{pos.z}");
+        }
+        EditorPrefs.SetString(StaticModelPositionsKey, string.Join("|", positionEntries));
+        
+        List<string> rotationEntries = new List<string>();
+        foreach (var pair in savedRotations)
+        {
+            Vector3 rot = pair.Value;
+            rotationEntries.Add($"{pair.Key}:{rot.x},{rot.y},{rot.z}");
+        }
+        EditorPrefs.SetString(StaticModelRotationsKey, string.Join("|", rotationEntries));
+        
+        List<string> scaleEntries = new List<string>();
+        foreach (var pair in savedScales)
+        {
+            Vector3 scale = pair.Value;
+            scaleEntries.Add($"{pair.Key}:{scale.x},{scale.y},{scale.z}");
+        }
+        EditorPrefs.SetString(StaticModelScalesKey, string.Join("|", scaleEntries));
+        
+        // Сохранение спрайта иконки
+        if (iconSprite != null)
+        {
+            EditorPrefs.SetString(IconSpritePathKey, AssetDatabase.GetAssetPath(iconSprite));
+        }
+    }
+
+    private void SaveCurrentTransform()
+    {
+        // Сохраняем текущие значения трансформа для выбранного типа брони
+        if (!string.IsNullOrEmpty(selectedArmorType))
+        {
+            savedPositions[selectedArmorType] = staticModelPosition;
+            savedRotations[selectedArmorType] = staticModelRotation;
+            savedScales[selectedArmorType] = staticModelScale;
+        }
+    }
+    
+    private void UpdateTransformFromSaved()
+    {
+        // Загружаем сохраненные значения трансформа для выбранного типа брони
+        if (!string.IsNullOrEmpty(selectedArmorType))
+        {
+            if (savedPositions.ContainsKey(selectedArmorType))
+                staticModelPosition = savedPositions[selectedArmorType];
+                
+            if (savedRotations.ContainsKey(selectedArmorType))
+                staticModelRotation = savedRotations[selectedArmorType];
+                
+            if (savedScales.ContainsKey(selectedArmorType))
+                staticModelScale = savedScales[selectedArmorType];
+        }
     }
 
     private void Initialize()
@@ -188,6 +290,18 @@ public class ArmorPrefabCreator : EditorWindow
         foreach (var key in armorTypeMapping.Keys)
         {
             armorTypesList.Add(key);
+        }
+        
+        // Инициализация словарей для настроек трансформа
+        savedPositions.Clear();
+        savedRotations.Clear();
+        savedScales.Clear();
+        
+        foreach (var armorType in armorTypesList)
+        {
+            savedPositions[armorType] = Vector3.zero;
+            savedRotations[armorType] = Vector3.zero;
+            savedScales[armorType] = Vector3.one;
         }
     }
     
@@ -298,8 +412,35 @@ public class ArmorPrefabCreator : EditorWindow
         int newSelectedIndex = EditorGUILayout.Popup("Тип брони:", selectedIndex, armorTypesList.ToArray());
         if (newSelectedIndex != selectedIndex && newSelectedIndex >= 0 && newSelectedIndex < armorTypesList.Count)
         {
+            // Сохраняем текущие настройки трансформа перед сменой типа брони
+            SaveCurrentTransform();
+            
+            // Меняем тип брони
             selectedArmorType = armorTypesList[newSelectedIndex];
+            
+            // Загружаем настройки трансформа для нового типа брони
+            UpdateTransformFromSaved();
+            
+            // Обновляем предпросмотр
             UpdatePreview();
+        }
+        
+        EditorGUILayout.Space(10);
+        
+        // Иконка для ScriptableObject
+        GUILayout.Label("Иконка брони", EditorStyles.boldLabel);
+        EditorGUI.BeginChangeCheck();
+        iconSprite = (Sprite)EditorGUILayout.ObjectField("Иконка (Sprite):", iconSprite, typeof(Sprite), false);
+        if (EditorGUI.EndChangeCheck())
+        {
+            SaveSettings();
+        }
+        
+        // Показываем превью иконки если она выбрана
+        if (iconSprite != null)
+        {
+            Rect spriteRect = GUILayoutUtility.GetRect(64, 64, GUILayout.ExpandWidth(false));
+            GUI.DrawTexture(spriteRect, iconSprite.texture, ScaleMode.ScaleToFit);
         }
         
         EditorGUILayout.Space(10);
@@ -360,6 +501,7 @@ public class ArmorPrefabCreator : EditorWindow
         // Настройки трансформа для статичной модели
         GUILayout.Label("Настройка трансформа для Static модели:", EditorStyles.boldLabel);
         
+        EditorGUI.BeginChangeCheck();
         Vector3 newPosition = EditorGUILayout.Vector3Field("Позиция:", staticModelPosition);
         Vector3 newRotation = EditorGUILayout.Vector3Field("Поворот:", staticModelRotation);
         Vector3 newScale = EditorGUILayout.Vector3Field("Масштаб:", staticModelScale);
@@ -369,6 +511,10 @@ public class ArmorPrefabCreator : EditorWindow
             staticModelPosition = newPosition;
             staticModelRotation = newRotation;
             staticModelScale = newScale;
+            
+            // Сохраняем новые значения для текущего типа брони
+            SaveCurrentTransform();
+            
             UpdatePreview();
         }
         
@@ -596,6 +742,21 @@ public class ArmorPrefabCreator : EditorWindow
             if (equippedPrefabProperty != null)
             {
                 equippedPrefabProperty.objectReferenceValue = prefabAsset.GetComponent(armorTypeMapping[selectedArmorType]);
+            }
+            
+            // Установка иконки
+            var iconProperty = serializedObject.FindProperty("_icon");
+            if (iconProperty == null)
+                iconProperty = serializedObject.FindProperty("icon");
+                
+            if (iconProperty != null && iconSprite != null)
+            {
+                Debug.Log($"Устанавливаем иконку: {iconSprite.name}");
+                iconProperty.objectReferenceValue = iconSprite;
+            }
+            else if (iconProperty == null)
+            {
+                Debug.LogWarning("Свойство _icon/icon не найдено!");
             }
             
             // Установка категории Item (Armor)
