@@ -33,8 +33,12 @@ namespace RPG.Quests
         {
             QuestStatusRecord state = objectState as QuestStatusRecord;
             _quest = Quest.GetByName(state.questName);
-	        _completedObjectives = state.completedObjectives;
-	        _revealedObjectives = state.revealedObjectives;
+            if (_quest == null)
+            {
+                Debug.LogWarning($"Failed to load quest: {state.questName}. Make sure the quest asset exists in Resources folder.");
+            }
+            _completedObjectives = state.completedObjectives;
+            _revealedObjectives = state.revealedObjectives;
             _objectiveProgress = state.objectiveProgress ?? new Dictionary<string, int>();
         }
 
@@ -115,6 +119,8 @@ namespace RPG.Quests
 
         public bool IsComplete()
         {
+            if (_quest == null) return false;
+            
             foreach (var objective in _quest.GetObjectives())
             {
                 if (!_completedObjectives.Contains(objective.reference))
