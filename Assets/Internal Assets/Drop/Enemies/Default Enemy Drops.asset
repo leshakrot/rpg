@@ -12,21 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 006acf164eb756640b652553bc5d7471, type: 3}
   m_Name: Default Enemy Drops
   m_EditorClassIdentifier: 
-  _potentialDrops:
+  dropConfigs:
   - item: {fileID: 11400000, guid: 15cc065084d7bd14584f4e870a627e75, type: 2}
-    relativeChance:
-    - 1
-    - 1
-    minNumber: 0100000001000000
-    maxNumber: 0200000002000000
-  - item: {fileID: 11400000, guid: 00a78ba2284e6884e9da625b0de6d099, type: 2}
-    relativeChance:
-    - 1
-    - 1
-    minNumber: 0100000001000000
-    maxNumber: 0200000002000000
-  _dropChancePercentage:
-  - 40
-  - 50
-  _minDrops: 0100000001000000
-  _maxDrops: 0100000002000000
+    relativeChance: 90
+    usePerLevelChance: 0
+    relativeChancePerLevel:
+    - minLevel: 1
+      maxLevel: 5
+      value: 0
+    minNumber: 1
+    usePerLevelMinNumber: 0
+    minNumberPerLevel: []
+    maxNumber: 1
+    usePerLevelMaxNumber: 0
+    maxNumberPerLevel: []
+  - item: {fileID: 11400000, guid: e9cfbb43c64f93247b05aee713c4b855, type: 2}
+    relativeChance: 90
+    usePerLevelChance: 0
+    relativeChancePerLevel: []
+    minNumber: 1
+    usePerLevelMinNumber: 0
+    minNumberPerLevel: []
+    maxNumber: 1
+    usePerLevelMaxNumber: 0
+    maxNumberPerLevel: []
+  globalConfig:
+    dropChancePercentage: 50
+    minDrops: 1
+    maxDrops: 3
+    usePerLevelDropChance: 0
+    dropChancePerLevel: []
+    minDropsPerLevel: []
+    maxDropsPerLevel: []
