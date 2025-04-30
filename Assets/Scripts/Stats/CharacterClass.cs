@@ -8,6 +8,7 @@
         Archer,
 	    Orc,
 	    Wolf,
+	    Boar,
         Chest
     }
 }
