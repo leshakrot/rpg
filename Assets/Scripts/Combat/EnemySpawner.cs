@@ -5,6 +5,7 @@ using System;
 using UnityEngine.SceneManagement;
 using RPG.SceneManagement;
 using System.Collections;
+using RPG.Stats;
 
 namespace RPG.Combat
 {
@@ -21,6 +22,14 @@ namespace RPG.Combat
         [Tooltip("Максимальное количество врагов на зону")]
         [SerializeField] private int maxEnemiesPerZone = 5;
         
+        [Header("Автолевелинг врагов")]
+        [Tooltip("Включить автоматическую установку уровня врагов равным уровню игрока")]
+        [SerializeField] private bool useAutoLeveling = true;
+        [Tooltip("Минимальное отклонение от уровня игрока (может быть отрицательным)")]
+        [SerializeField] private int minLevelOffset = -1;
+        [Tooltip("Максимальное отклонение от уровня игрока")]
+        [SerializeField] private int maxLevelOffset = 2;
+        
         [Header("Отладка и визуализация")]
         [Tooltip("Выводить отладочную информацию о спавне врагов в консоль")]
         [SerializeField] private bool showDebugInfo = false;
@@ -31,6 +40,7 @@ namespace RPG.Combat
         private List<GameObject> spawnedEnemies = new List<GameObject>();
         private string currentSceneName;
         private bool isInitialized = false;
+        private int playerLevel = 1; // Значение по умолчанию
         
         private void Awake()
         {
@@ -100,6 +110,12 @@ namespace RPG.Combat
         public void SpawnEnemies()
         {
             if (showDebugInfo) Debug.Log($"[EnemySpawner] Начинаем спавн врагов на сцене {currentSceneName}");
+            
+            // Обновляем уровень игрока перед спавном врагов
+            if (useAutoLeveling)
+            {
+                UpdatePlayerLevel();
+            }
             
             if (useSpawnZones)
             {
@@ -303,6 +319,12 @@ namespace RPG.Combat
             spawnedEnemies.Add(enemy);
             point.SetOccupied(true);
             
+            // Устанавливаем уровень врага, если включен автолевелинг
+            if (useAutoLeveling)
+            {
+                SetEnemyLevel(enemy);
+            }
+            
             if (showDebugInfo) Debug.Log($"[EnemySpawner] Создан враг {enemy.name} в точке {point.name}");
             
             // Инициализируем врага
@@ -319,6 +341,62 @@ namespace RPG.Combat
             }
             
             return true;
+        }
+        
+        // Метод для установки уровня врага на основе уровня игрока
+        private void SetEnemyLevel(GameObject enemy)
+        {
+            BaseStats enemyStats = enemy.GetComponent<BaseStats>();
+            if (enemyStats == null) return;
+            
+            // Обновляем уровень игрока перед установкой уровня врага
+            UpdatePlayerLevel();
+            
+            // Рассчитываем случайное отклонение от уровня игрока
+            int levelOffset = UnityEngine.Random.Range(minLevelOffset, maxLevelOffset + 1);
+            int enemyLevel = Mathf.Max(1, playerLevel + levelOffset); // Уровень не может быть меньше 1
+            
+            // Устанавливаем уровень врага через рефлексию, так как startingLevel - приватное поле
+            var field = typeof(BaseStats).GetField("_startingLevel", 
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            
+            if (field != null)
+            {
+                field.SetValue(enemyStats, enemyLevel);
+                
+                if (showDebugInfo)
+                {
+                    Debug.Log($"[EnemySpawner] Установлен уровень {enemyLevel} для врага {enemy.name} " +
+                              $"(уровень игрока: {playerLevel}, смещение: {levelOffset})");
+                }
+            }
+            else if (showDebugInfo)
+            {
+                Debug.LogWarning("[EnemySpawner] Не удалось установить уровень врага - не найдено поле _startingLevel");
+            }
+        }
+        
+        // Получить текущий уровень игрока
+        private void UpdatePlayerLevel()
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                BaseStats playerStats = player.GetComponent<BaseStats>();
+                if (playerStats != null)
+                {
+                    playerLevel = playerStats.GetLevel();
+                    if (showDebugInfo) Debug.Log($"[EnemySpawner] Уровень игрока: {playerLevel}");
+                }
+                else if (showDebugInfo)
+                {
+                    Debug.LogWarning("[EnemySpawner] У игрока отсутствует компонент BaseStats");
+                }
+            }
+            else if (showDebugInfo)
+            {
+                Debug.LogWarning("[EnemySpawner] Игрок не найден на сцене");
+            }
         }
         
         // Очистка списка врагов (используется при смене сцены)

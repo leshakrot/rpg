@@ -66,6 +66,36 @@ public class EnemySpawnerEditor : Editor
 
         EditorGUILayout.Space();
         
+        // Настройки автолевелинга
+        EditorGUILayout.LabelField("Автолевелинг врагов", EditorStyles.boldLabel);
+        
+        SerializedProperty useAutoLevelingProp = serializedObject.FindProperty("useAutoLeveling");
+        EditorGUILayout.PropertyField(useAutoLevelingProp, new GUIContent("Использовать автолевелинг"));
+        
+        if (useAutoLevelingProp.boolValue)
+        {
+            EditorGUI.indentLevel++;
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("minLevelOffset"), 
+                new GUIContent("Мин. смещение уровня", 
+                "Минимальное смещение от уровня игрока (может быть отрицательным)"));
+            
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("maxLevelOffset"), 
+                new GUIContent("Макс. смещение уровня", 
+                "Максимальное смещение от уровня игрока"));
+            
+            // Добавляем информационное сообщение для разработчика
+            EditorGUILayout.HelpBox(
+                "Уровень врага будет выбран случайно в диапазоне:\n" +
+                "УровеньИгрока + МинСмещение до УровеньИгрока + МаксСмещение\n\n" +
+                "Например, если уровень игрока 5, минимальное смещение -1, " +
+                "максимальное смещение 2, то уровень врага будет от 4 до 7.", 
+                MessageType.Info);
+            
+            EditorGUI.indentLevel--;
+        }
+
+        EditorGUILayout.Space();
+        
         // Настройки отладки и визуализации
         showDebugSettings = EditorGUILayout.Foldout(showDebugSettings, "Отладка и визуализация", true);
         if (showDebugSettings)

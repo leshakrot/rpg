@@ -1,0 +1,75 @@
+# Инструкции по созданию тестовой сцены для GameHUD
+
+## Шаг 1: Создание новой сцены
+1. В Unity выберите File -> New Scene
+2. Сохраните сцену как "GameHUD_TestScene" в папке Assets/Scenes
+
+## Шаг 2: Настройка основных элементов
+1. Создайте пустой GameObject и назовите его "GameManager"
+2. Добавьте на него компонент HUDTester.cs
+3. Настройте параметры тестера в инспекторе:
+   - Test Mode: Включено
+   - Клавиши: Q, W, A, S, E (или другие по вашему выбору)
+   - Значения изменения: 10 для здоровья/маны, 25 для опыта
+
+## Шаг 3: Добавление игрока
+1. Создайте пустой GameObject и назовите его "Player"
+2. Установите тег "Player" через инспектор
+3. Добавьте следующие компоненты:
+   - Health.cs
+   - Mana.cs
+   - BaseStats.cs
+   - Experience.cs
+   - PlayerFighter.cs
+4. Настройте начальные значения:
+   - Health: MaxHealthPoints = 100
+   - Mana: MaxMana = 100
+   - BaseStats: Установите Character Class и Level = 1
+   - Experience: Установите 0 очков
+
+## Шаг 4: Добавление тестового врага
+1. Создайте пустой GameObject и назовите его "TestEnemy"
+2. Добавьте следующие компоненты:
+   - Health.cs
+3. Настройте начальные значения:
+   - Health: MaxHealthPoints = 50
+
+## Шаг 5: Добавление игрового HUD
+1. Следуйте инструкциям из GameHUD.prefab.txt для создания UI
+2. Добавьте созданный HUD на сцену
+3. Убедитесь, что все ссылки корректно настроены
+
+## Шаг 6: Настройка камеры
+1. Выберите Main Camera в сцене
+2. Настройте подходящий цвет фона (например, светло-серый)
+
+## Шаг 7: Тестирование
+1. Запустите сцену
+2. Используйте клавиши для изменения параметров:
+   - Q - уменьшить здоровье игрока
+   - W - увеличить здоровье игрока
+   - A - уменьшить ману игрока
+   - S - увеличить ману игрока
+   - E - добавить опыт игроку
+3. Проверьте, что все значения корректно отображаются и обновляются
+
+## Дополнительно: Настройка выбора врага
+1. Добавьте следующий код в скрипт HUDTester:
+```csharp
+[Header("Enemy Selection")]
+[SerializeField] private KeyCode selectEnemyKey = KeyCode.F;
+[SerializeField] private GameObject testEnemy;
+
+// В методе Update добавьте:
+if (Input.GetKeyDown(selectEnemyKey) && testEnemy != null)
+{
+    Health enemyHealth = testEnemy.GetComponent<Health>();
+    if (enemyHealth != null && playerFighter != null)
+    {
+        playerFighter.SetTarget(enemyHealth);
+        Debug.Log("Выбран враг как цель");
+    }
+}
+```
+2. Установите ссылку на объект TestEnemy в инспекторе
+3. Используйте клавишу F для выбора врага и проверки отображения его здоровья в HUD 

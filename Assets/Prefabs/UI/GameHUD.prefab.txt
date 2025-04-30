@@ -1,0 +1,96 @@
+# Инструкция по созданию префаба GameHUD (упрощенная версия)
+
+## Общая структура
+Создайте Canvas (рендер мод - Screen Space - Overlay) с именем "GameHUD" и добавьте на него скрипт GameHUD.cs.
+Установите подходящий CanvasScaler с настройками для вашего разрешения.
+
+## Иерархия компонентов:
+```
+GameHUD (Canvas)
+|-- PlayerStatsPanel (Panel, верхний левый угол)
+|   |-- PlayerHealthBar (GameObject)
+|   |   |-- Background (Image, прямоугольник, цвет темно-серый)
+|   |   |-- Foreground (Image, прямоугольник, цвет красный)
+|   |   |-- TitleText (Text, текст "Здоровье", выравнивание влево)
+|   |   |-- ValueText (Text, текст "100/100", выравнивание вправо)
+|   |-- PlayerManaBar (GameObject)
+|   |   |-- Background (Image, прямоугольник, цвет темно-серый)
+|   |   |-- Foreground (Image, прямоугольник, цвет синий)
+|   |   |-- TitleText (Text, текст "Мана", выравнивание влево)
+|   |   |-- ValueText (Text, текст "100/100", выравнивание вправо)
+|   |-- PlayerLevelDisplay (GameObject)
+|   |   |-- LevelText (Text, текст "Уровень: 1")
+|   |-- PlayerExperienceBar (GameObject)
+|       |-- Background (Image, прямоугольник, цвет темно-серый)
+|       |-- Foreground (Image, прямоугольник, цвет золотистый)
+|       |-- TitleText (Text, текст "Опыт", выравнивание влево)
+|       |-- ValueText (Text, текст "0/100", выравнивание вправо)
+|-- EnemyStatsPanel (Panel, верхний правый угол)
+    |-- EnemyTargetHealthBar (GameObject)
+        |-- Background (Image, прямоугольник, цвет темно-серый)
+        |-- Foreground (Image, прямоугольник, цвет темно-красный)
+        |-- TitleText (Text, текст "Цель", выравнивание влево)
+        |-- ValueText (Text, текст "100/100", выравнивание вправо)
+```
+
+## Настройка компонентов StatusBar:
+Для каждого компонента типа StatusBar (PlayerHealthBar, PlayerManaBar, PlayerExperienceBar, EnemyTargetHealthBar):
+1. Добавьте на родительский GameObject соответствующий скрипт (PlayerHealthBar.cs, PlayerManaBar.cs, и т.д.)
+2. В инспекторе установите ссылки:
+   - Foreground: ссылка на дочерний объект Foreground (RectTransform)
+   - ValueText: ссылка на компонент Text объекта ValueText
+   - TitleText: ссылка на компонент Text объекта TitleText
+
+## Настройка структуры полос (как в оригинальном HealthBar):
+1. Background и Foreground должны быть одинакового размера и полностью перекрывать друг друга в начальном состоянии
+2. Для Foreground установите:
+   - Pivot: 0,0.5 (левый центр)
+   - Anchor: левый центр
+   - Position: X=0, Y=0 (совпадает с левым краем Background)
+   - Scale: X=1, Y=1, Z=1 (в начальном состоянии)
+3. При уменьшении значения полосы скрипт будет уменьшать scale.x (от 1 до 0), что приведет к сжатию полосы слева
+
+## Размеры и позиции:
+- PlayerStatsPanel: выравнивание вверх-влево, отступ 20px от краёв
+- EnemyStatsPanel: выравнивание вверх-вправо, отступ 20px от краёв
+- Полосы статусов: высота 20-30px, ширина 200-300px
+- Отступы между полосами: 5-10px
+
+## Настройка текста:
+- Для всех Text объектов используйте шрифт размером 14-16
+- TitleText: выравнивание влево, отступ 5px слева
+- ValueText: выравнивание вправо, отступ 5px справа
+
+## Настройка скрипта GameHUD:
+После размещения всех объектов в инспекторе установите ссылки на соответствующие GameObjects:
+- Player Health Bar: объект PlayerHealthBar
+- Player Mana Bar: объект PlayerManaBar
+- Player Level Display: объект PlayerLevelDisplay
+- Player Experience Bar: объект PlayerExperienceBar
+- Enemy Health Bar: объект EnemyTargetHealthBar
+
+## Дополнительные настройки индикаторов:
+1. По умолчанию hideWhenFull и hideWhenEmpty установлены в false - индикаторы всегда видны
+2. Если хотите, чтобы индикаторы скрывались при определенных значениях, включите соответствующие опции
+3. Для каждой полосы можно настроить smoothSpeed - скорость плавного изменения
+
+## Пример отображения при разных значениях:
+```
+100% здоровья:
++------------------+  ← Background
+|██████████████████|  ← Foreground (scale.x = 1)
++------------------+
+Здоровье     100/100
+
+50% здоровья:
++------------------+  ← Background
+|█████████|        |  ← Foreground (scale.x = 0.5)
++------------------+
+Здоровье      50/100
+
+20% здоровья:
++------------------+  ← Background
+|████|             |  ← Foreground (scale.x = 0.2)
++------------------+
+Здоровье      20/100
+``` 
