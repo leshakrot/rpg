@@ -51,6 +51,7 @@ namespace RPG.UI
             if (playerStats != null)
             {
                 playerStats.onLevelUp += OnLevelUp;
+                playerStats.onStatChanged += OnStatChanged;
             }
         }
         
@@ -64,12 +65,23 @@ namespace RPG.UI
             if (playerStats != null)
             {
                 playerStats.onLevelUp -= OnLevelUp;
+                playerStats.onStatChanged -= OnStatChanged;
             }
             
             if (levelUpAnimationCoroutine != null)
             {
                 StopCoroutine(levelUpAnimationCoroutine);
                 levelUpAnimationCoroutine = null;
+            }
+        }
+        
+        // Реакция на изменение статистики
+        private void OnStatChanged(Stat stat)
+        {
+            // Нас интересуют только изменения в статистике опыта
+            if (stat == Stat.ExperienceToLevelUp)
+            {
+                UpdateExperienceBar();
             }
         }
         
@@ -87,38 +99,6 @@ namespace RPG.UI
             
             // Обновляем отображение шкалы
             UpdateExperienceBar();
-            
-            // Дополнительная проверка и переопределение значений шкалы для гарантии корректного отображения
-            if (playerStats != null && playerExperience != null)
-            {
-                int currentLevel = playerStats.GetLevel();
-                float currentXP = playerExperience.GetPoints();
-                
-                // ИСПРАВЛЕНО: Корректно получаем значения опыта для уровней
-                float xpForCurrentLevel = GetTotalXPForLevel(currentLevel);
-                float xpForNextLevel = GetTotalXPForLevel(currentLevel + 1);
-                
-                float remainingXP = currentXP - xpForCurrentLevel;
-                float requiredXP = xpForNextLevel - xpForCurrentLevel;
-                
-                if (requiredXP > 0)
-                {
-                    float levelProgress = remainingXP / requiredXP;
-                    currentFraction = Mathf.Clamp01(levelProgress);
-                    targetFraction = currentFraction;
-                    
-                    // Мгновенное обновление заполнения шкалы (без анимации)
-                    if (foreground != null)
-                    {
-                        foreground.localScale = new Vector3(currentFraction, 1, 1);
-                    }
-                    
-                    // Принудительное обновление текста
-                    SetValueText(String.Format("{0:0}/{1:0}", 
-                        Mathf.FloorToInt(remainingXP), 
-                        Mathf.FloorToInt(requiredXP)));
-                }
-            }
             
             // Запускаем анимацию повышения уровня
             if (levelUpAnimationCoroutine != null)
@@ -173,15 +153,6 @@ namespace RPG.UI
             base.Update();
         }
         
-        // ИСПРАВЛЕНО: Новый метод для получения ОБЩЕГО опыта, необходимого для достижения уровня
-        private float GetTotalXPForLevel(int level)
-        {
-            if (level <= 1) return 0; // Для 1-го уровня требуется 0 опыта
-            
-            // Непосредственно получаем значение из Progression через BaseStats
-            return playerStats.GetXPToLevelUp(level);
-        }
-        
         // Обновление отображения опыта на основе текущего состояния
         private void UpdateExperienceDisplay()
         {
@@ -191,9 +162,9 @@ namespace RPG.UI
                 int currentLevel = playerStats.GetLevel();
                 float currentXP = playerExperience.GetPoints();
                 
-                // ИСПРАВЛЕНО: Корректно получаем значения опыта для уровней
-                float xpForCurrentLevel = GetTotalXPForLevel(currentLevel);
-                float xpForNextLevel = GetTotalXPForLevel(currentLevel + 1);
+                // Получаем значения опыта для текущего и следующего уровня
+                float xpForCurrentLevel = playerStats.GetXPToLevelUp(currentLevel);
+                float xpForNextLevel = playerStats.GetXPToLevelUp(currentLevel + 1);
                 
                 // Вычисляем оставшийся опыт и требуемый опыт для следующего уровня
                 float remainingXP = currentXP - xpForCurrentLevel;
@@ -202,16 +173,16 @@ namespace RPG.UI
                 // Если вдруг есть проблема с делением на ноль
                 if (requiredXP <= 0)
                 {
-                    Debug.LogWarning($"PlayerExperienceBar: requiredXP равен {requiredXP}, что может вызвать деление на ноль. Используем 1.0 вместо этого.");
+                    // Максимальный уровень или ошибка в данных прогрессии
                     requiredXP = 1.0f;
+                    remainingXP = 1.0f; // Для максимального уровня показываем полную полосу
                 }
                 
                 // Расчет прогресса до следующего уровня
                 float levelProgress = remainingXP / requiredXP;
                 
-                // Принудительно устанавливаем значение (без сглаживания)
-                currentFraction = Mathf.Clamp01(levelProgress);
-                targetFraction = currentFraction;
+                // Устанавливаем заполнение полосы опыта
+                SetFraction(Mathf.Clamp01(levelProgress));
                 
                 // Обновляем текст шкалы: текущий опыт из необходимого для следующего уровня
                 SetValueText(String.Format("{0:0}/{1:0}", 

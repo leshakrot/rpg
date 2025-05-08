@@ -16,7 +16,7 @@ namespace RPG.Editor
         private GUIStyle _levelStyle;
         private Color _originalBackgroundColor;
         
-        // Параметры для генерации значений
+        // Параметры для генерации значений (используются только для контекстного меню)
         private float _startValue = 100f;
         private float _increment = 20f;
         private float _growthFactor = 1.2f;
@@ -40,28 +40,46 @@ namespace RPG.Editor
         };
         
         private CharacterClass _selectedAutoGenClass = CharacterClass.Player;
-        private bool _showAutoGenSettings = false;
+        private bool _showAutoGenSettings = true; // По умолчанию открыто
         
         // Словарь множителей сложности для каждого класса
         private Dictionary<CharacterClass, float> _difficultyMultipliers = new Dictionary<CharacterClass, float>()
         {
             { CharacterClass.Grunt, 1.0f },
-            { CharacterClass.Mage, 1.0f },
+            { CharacterClass.Mage, 1.1f },
             { CharacterClass.Archer, 1.0f },
-            { CharacterClass.Orc, 1.0f },
-            { CharacterClass.Wolf, 1.0f },
-            { CharacterClass.Boar, 1.0f },
-            { CharacterClass.Chest, 1.0f }
+            { CharacterClass.Orc, 1.2f },
+            { CharacterClass.Wolf, 0.8f },
+            { CharacterClass.Boar, 0.9f },
+            { CharacterClass.Chest, 1.0f },
         };
         
         // Аннотации для ползунков сложности
-        private string[] _difficultyLabels = { "Очень легко", "Легко", "Средне", "Сложно", "Очень сложно" };
+        private string[] _difficultyLabels = { "Очень легко", "Легко", "Нормально", "Сложно", "Очень сложно" };
         private Color[] _difficultyColors = {
             new Color(0.5f, 1.0f, 0.5f), // Зеленый - легко
             new Color(0.7f, 1.0f, 0.7f), // Светло-зеленый
             new Color(1.0f, 1.0f, 0.6f), // Желтый - средне
             new Color(1.0f, 0.7f, 0.7f), // Светло-красный
             new Color(1.0f, 0.5f, 0.5f)  // Красный - сложно
+        };
+        
+        // Настройки глобальной сложности игры
+        private float _globalDifficultyMultiplier = 1.0f;
+        private bool _showGlobalDifficultySettings = true;
+        private int _selectedDifficultyPreset = 2; // По умолчанию "Нормально"
+        private string[] _difficultyPresets = { "Очень легко", "Легко", "Нормально", "Сложно", "Хардкор", "Кошмар", "Невозможно" };
+        private float[] _presetValues = { 0.7f, 0.85f, 1.0f, 1.25f, 1.5f, 2.0f, 2.5f };
+        private Dictionary<string, float> _difficultySettings = new Dictionary<string, float>()
+        {
+            { "Здоровье врагов", 1.0f },
+            { "Урон врагов", 1.0f },
+            { "Защита врагов", 1.0f },
+            { "Опыт за врагов", 1.0f },
+            { "Опыт для повышения уровня", 1.0f },
+            { "Шанс уклонения врагов", 1.0f },
+            { "Шанс критического удара врагов", 1.0f },
+            { "Шанс парирования врагов", 1.0f }
         };
         
         private void OnEnable()
@@ -79,7 +97,8 @@ namespace RPG.Editor
             EditorGUILayout.LabelField("Настройки прогрессии персонажей", EditorStyles.boldLabel);
             EditorGUILayout.Space(5);
             
-            ShowGenerationTools();
+            ShowGlobalDifficultySettings();
+            ShowGlobalAutoGenerationButton();
             ShowAutoGenerationTools();
             
             EditorGUILayout.Space(10);
@@ -108,50 +127,47 @@ namespace RPG.Editor
                 
                 // Добавляем кнопки управления справа от заголовка
                 EditorGUILayout.BeginHorizontal();
-                _foldoutStates[foldoutKey] = EditorGUILayout.Foldout(_foldoutStates[foldoutKey], 
-                    $"Класс: {className}", true, _headerStyle);
+                
+                // Используем стиль для заголовка
+                _foldoutStates[foldoutKey] = EditorGUILayout.Foldout(
+                    _foldoutStates[foldoutKey], 
+                    $"Класс: {className}", 
+                    true, 
+                    _headerStyle);
                 
                 GUILayout.FlexibleSpace();
                 
-                // Кнопка автогенерации для конкретного класса
-                if (GUILayout.Button("Автогенерация", GUILayout.Width(110)))
+                // Добавляем кнопку автогенерации для конкретного класса
+                if (GUILayout.Button("Автогенерация", GUILayout.Width(100)))
                 {
-                    AutoGenerateForClass((CharacterClass)characterClassProperty.enumValueIndex, statsProperty);
+                    CharacterClass charClass = (CharacterClass)characterClassProperty.enumValueIndex;
+                    float difficulty = charClass == CharacterClass.Player ? 1.0f : _difficultyMultipliers[charClass];
+                    AutoGenerateForClass(charClass, statsProperty, difficulty);
                 }
                 
-                // Кнопка изменения класса
-                EditorGUI.BeginChangeCheck();
-                EditorGUILayout.PropertyField(characterClassProperty, GUIContent.none, GUILayout.Width(100));
-                if (EditorGUI.EndChangeCheck())
-                {
-                    serializedObject.ApplyModifiedProperties();
-                }
-                
-                // Кнопки управления классами
                 if (GUILayout.Button("+", GUILayout.Width(25)))
                 {
                     InsertClassAt(classIndex);
+                    break;
                 }
                 
                 if (GUILayout.Button("-", GUILayout.Width(25)))
                 {
                     RemoveClassAt(classIndex);
-                    EditorGUILayout.EndHorizontal();
-                    EditorGUILayout.EndVertical();
                     break;
                 }
                 
                 EditorGUILayout.EndHorizontal();
                 
-                // Если раздел развернут, показываем статистики для класса
+                // Если заголовок развернут, показываем содержимое
                 if (_foldoutStates[foldoutKey])
                 {
-                    if (statsProperty.arraySize == 0)
-                    {
-                        EditorGUILayout.HelpBox("Нет настроек статистики. Добавьте статистику кнопкой ниже или используйте автогенерацию.", MessageType.Info);
-                    }
+                    // Редактирование класса персонажа
+                    EditorGUILayout.PropertyField(characterClassProperty);
                     
-                    // Отображаем статистики для данного класса
+                    EditorGUILayout.Space(5);
+                    
+                    // Отображаем статистики
                     for (int statIndex = 0; statIndex < statsProperty.arraySize; statIndex++)
                     {
                         SerializedProperty statProperty = statsProperty.GetArrayElementAtIndex(statIndex);
@@ -159,122 +175,82 @@ namespace RPG.Editor
                         SerializedProperty levelsProperty = statProperty.FindPropertyRelative("levels");
                         
                         string statName = statTypeProperty.enumDisplayNames[statTypeProperty.enumValueIndex];
-                        string statFoldoutKey = $"{foldoutKey}_Stat_{statIndex}_{statName}";
                         
+                        // Создаем уникальный ключ для foldout статистики
+                        string statFoldoutKey = $"{foldoutKey}_Stat_{statIndex}_{statName}";
                         if (!_foldoutStates.ContainsKey(statFoldoutKey))
                         {
                             _foldoutStates[statFoldoutKey] = false;
                         }
                         
-                        // Вложенный блок для статистики
                         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                         
-                        // Заголовок статистики
                         EditorGUILayout.BeginHorizontal();
-                        _foldoutStates[statFoldoutKey] = EditorGUILayout.Foldout(_foldoutStates[statFoldoutKey], 
-                            $"Статистика: {statName}", true, _statStyle);
+                        
+                        // Используем стиль для статистики
+                        _foldoutStates[statFoldoutKey] = EditorGUILayout.Foldout(
+                            _foldoutStates[statFoldoutKey], 
+                            $"Статистика: {statName}", 
+                            true, 
+                            _statStyle);
                         
                         GUILayout.FlexibleSpace();
                         
-                        // Предлагаем рекомендуемое начальное значение
-                        if (GUILayout.Button("Рекомендуемое значение", GUILayout.Width(150)))
+                        // Кнопка генерации шаблона значений
+                        if (GUILayout.Button("Сгенерировать", GUILayout.Width(100)))
                         {
-                            if (levelsProperty.arraySize > 0)
-                            {
-                                SerializedProperty firstLevelProperty = levelsProperty.GetArrayElementAtIndex(0);
-                                firstLevelProperty.floatValue = ProgressionUtility.GetRecommendedBaseValue(
-                                    (Stat)statTypeProperty.enumValueIndex, 
-                                    (CharacterClass)characterClassProperty.enumValueIndex);
-                                serializedObject.ApplyModifiedProperties();
-                            }
+                            ShowGenerateValuesContextMenu(levelsProperty);
                         }
                         
-                        // Выбор типа статистики
-                        EditorGUI.BeginChangeCheck();
-                        EditorGUILayout.PropertyField(statTypeProperty, GUIContent.none, GUILayout.Width(100));
-                        if (EditorGUI.EndChangeCheck())
-                        {
-                            serializedObject.ApplyModifiedProperties();
-                        }
-                        
-                        // Кнопки управления статистиками
                         if (GUILayout.Button("+", GUILayout.Width(25)))
                         {
                             InsertStatAt(statsProperty, statIndex);
+                            break;
                         }
                         
                         if (GUILayout.Button("-", GUILayout.Width(25)))
                         {
                             RemoveStatAt(statsProperty, statIndex);
-                            EditorGUILayout.EndHorizontal();
-                            EditorGUILayout.EndVertical();
                             break;
                         }
                         
                         EditorGUILayout.EndHorizontal();
                         
-                        // Если статистика развернута, показываем значения по уровням
                         if (_foldoutStates[statFoldoutKey])
                         {
-                            // Ряд кнопок для управления массивом уровней
-                            EditorGUILayout.BeginHorizontal();
-                            EditorGUILayout.LabelField("Значения статистики по уровням:", EditorStyles.miniLabel);
-                            GUILayout.FlexibleSpace();
+                            // Редактирование типа статистики
+                            EditorGUILayout.PropertyField(statTypeProperty);
                             
-                            // Кнопка для генерации значений для этой статистики
-                            if (GUILayout.Button("Сгенерировать...", GUILayout.Width(120)))
-                            {
-                                ShowGenerateValuesContextMenu(levelsProperty);
-                            }
+                            EditorGUILayout.Space(5);
                             
-                            EditorGUI.BeginChangeCheck();
-                            int newSize = EditorGUILayout.IntField("Размер", levelsProperty.arraySize, GUILayout.Width(100));
-                            if (EditorGUI.EndChangeCheck() && newSize >= 0)
-                            {
-                                levelsProperty.arraySize = newSize;
-                                serializedObject.ApplyModifiedProperties();
-                            }
+                            // Отображаем значения для разных уровней
+                            EditorGUILayout.LabelField("Значения по уровням:");
                             
-                            if (GUILayout.Button("Добавить уровень", GUILayout.Width(120)))
+                            EditorGUILayout.BeginVertical(_levelStyle);
+                            
+                            // Кнопка добавления уровня
+                            if (GUILayout.Button("Добавить уровень"))
                             {
                                 levelsProperty.arraySize++;
                                 serializedObject.ApplyModifiedProperties();
-                                
-                                // Копируем предыдущее значение, если оно есть
-                                if (levelsProperty.arraySize > 1)
-                                {
-                                    SerializedProperty newLevelProp = levelsProperty.GetArrayElementAtIndex(levelsProperty.arraySize - 1);
-                                    SerializedProperty prevLevelProp = levelsProperty.GetArrayElementAtIndex(levelsProperty.arraySize - 2);
-                                    newLevelProp.floatValue = prevLevelProp.floatValue;
-                                    serializedObject.ApplyModifiedProperties();
-                                }
                             }
                             
-                            EditorGUILayout.EndHorizontal();
+                            EditorGUILayout.Space(5);
                             
-                            // Таблица значений по уровням
-                            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-                            
-                            // Заголовки столбцов
-                            EditorGUILayout.BeginHorizontal(_levelStyle);
-                            EditorGUILayout.LabelField("Уровень", GUILayout.Width(60));
-                            EditorGUILayout.LabelField("Значение");
-                            EditorGUILayout.EndHorizontal();
-                            
-                            // Значения по уровням
+                            // Поля для ввода значений
                             for (int levelIndex = 0; levelIndex < levelsProperty.arraySize; levelIndex++)
                             {
                                 SerializedProperty levelProperty = levelsProperty.GetArrayElementAtIndex(levelIndex);
                                 
-                                EditorGUILayout.BeginHorizontal(levelIndex % 2 == 0 ? _levelStyle : EditorStyles.inspectorDefaultMargins);
-                                EditorGUILayout.LabelField($"Ур. {levelIndex + 1}", GUILayout.Width(60));
+                                EditorGUILayout.BeginHorizontal();
+                                EditorGUILayout.LabelField($"Уровень {levelIndex + 1}:", GUILayout.Width(80));
+                                levelProperty.floatValue = EditorGUILayout.FloatField(levelProperty.floatValue);
                                 
-                                EditorGUI.BeginChangeCheck();
-                                float newValue = EditorGUILayout.FloatField(levelProperty.floatValue);
-                                if (EditorGUI.EndChangeCheck())
+                                if (GUILayout.Button("Х", GUILayout.Width(25)))
                                 {
-                                    levelProperty.floatValue = newValue;
+                                    levelsProperty.DeleteArrayElementAtIndex(levelIndex);
                                     serializedObject.ApplyModifiedProperties();
+                                    break;
                                 }
                                 
                                 EditorGUILayout.EndHorizontal();
@@ -284,147 +260,82 @@ namespace RPG.Editor
                         }
                         
                         EditorGUILayout.EndVertical();
-                        EditorGUILayout.Space(5);
                     }
                     
-                    // Кнопка для добавления новой статистики
-                    EditorGUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("Добавить статистику", GUILayout.Width(150)))
+                    EditorGUILayout.Space(5);
+                    
+                    // Кнопка добавления новой статистики
+                    if (GUILayout.Button("Добавить статистику"))
                     {
                         AddStatToClass(statsProperty);
                     }
-                    GUILayout.FlexibleSpace();
-                    EditorGUILayout.EndHorizontal();
                 }
                 
                 EditorGUILayout.EndVertical();
-                EditorGUILayout.Space(10);
             }
             
-            // Кнопка для добавления нового класса персонажа
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Добавить класс персонажа", GUILayout.Width(200), GUILayout.Height(30)))
+            EditorGUILayout.EndScrollView();
+            
+            EditorGUILayout.Space(10);
+            
+            // Кнопка добавления нового класса
+            if (GUILayout.Button("Добавить класс персонажа"))
             {
                 AddCharacterClass();
             }
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.EndHorizontal();
-            
-            EditorGUILayout.EndScrollView();
             
             serializedObject.ApplyModifiedProperties();
         }
         
-        private void ShowGenerationTools()
+        private void ShowGlobalAutoGenerationButton()
         {
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.LabelField("Инструменты генерации значений", EditorStyles.boldLabel);
+            EditorGUILayout.Space(5);
+            GUI.backgroundColor = new Color(0.6f, 0.8f, 1.0f); // Голубой для выделения
             
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Тип прогрессии:", GUILayout.Width(120));
-            _selectedProgressionType = EditorGUILayout.Popup(_selectedProgressionType, _progressionTypes);
-            EditorGUILayout.EndHorizontal();
+            GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
+            buttonStyle.fontStyle = FontStyle.Bold;
+            buttonStyle.fontSize = 12;
+            buttonStyle.padding = new RectOffset(10, 10, 8, 8);
             
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Начальное значение:", GUILayout.Width(120));
-            _startValue = EditorGUILayout.FloatField(_startValue);
-            EditorGUILayout.EndHorizontal();
-            
-            // Показываем параметры в зависимости от выбранного типа прогрессии
-            switch (_selectedProgressionType)
+            if (GUILayout.Button("СГЕНЕРИРОВАТЬ ВСЕ КЛАССЫ", buttonStyle, GUILayout.Height(40)))
             {
-                case 0: // Линейная
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Прирост:", GUILayout.Width(120));
-                    _increment = EditorGUILayout.FloatField(_increment);
-                    EditorGUILayout.EndHorizontal();
-                    break;
+                bool confirm = EditorUtility.DisplayDialog(
+                    "Автогенерация всех классов",
+                    "Это действие заменит прогрессию для всех классов персонажей с учетом текущих настроек сложности. Продолжить?",
+                    "Да, сгенерировать все", "Отмена");
                 
-                case 1: // Экспоненциальная
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Множитель роста:", GUILayout.Width(120));
-                    _growthFactor = EditorGUILayout.FloatField(_growthFactor);
-                    EditorGUILayout.EndHorizontal();
-                    break;
-                
-                case 2: // Полиномиальная
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Коэффициент:", GUILayout.Width(120));
-                    _increment = EditorGUILayout.FloatField(_increment);
-                    EditorGUILayout.EndHorizontal();
-                    
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Степень:", GUILayout.Width(120));
-                    _power = EditorGUILayout.FloatField(_power);
-                    EditorGUILayout.EndHorizontal();
-                    break;
-                
-                case 3: // Логарифмическая
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Коэффициент:", GUILayout.Width(120));
-                    _increment = EditorGUILayout.FloatField(_increment);
-                    EditorGUILayout.EndHorizontal();
-                    break;
-                
-                case 4: // Diablo-стиль
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Конечное значение:", GUILayout.Width(120));
-                    _endValue = EditorGUILayout.FloatField(_endValue);
-                    EditorGUILayout.EndHorizontal();
-                    break;
-                
-                case 5: // Dark Souls-стиль
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Множитель:", GUILayout.Width(120));
-                    _increment = EditorGUILayout.FloatField(_increment);
-                    EditorGUILayout.EndHorizontal();
-                    
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Смещение:", GUILayout.Width(120));
-                    _levelOffset = EditorGUILayout.FloatField(_levelOffset);
-                    EditorGUILayout.EndHorizontal();
-                    break;
-                
-                case 6: // Path of Exile-стиль
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Прирост за уровень:", GUILayout.Width(120));
-                    _increment = EditorGUILayout.FloatField(_increment);
-                    EditorGUILayout.EndHorizontal();
-                    break;
-                
-                case 7: // Final Fantasy-стиль
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Множитель роста:", GUILayout.Width(120));
-                    _growthFactor = EditorGUILayout.FloatField(_growthFactor);
-                    EditorGUILayout.EndHorizontal();
-                    break;
-                
-                case 8: // Волнообразная
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Множитель роста:", GUILayout.Width(120));
-                    _growthFactor = EditorGUILayout.FloatField(_growthFactor);
-                    EditorGUILayout.EndHorizontal();
-                    
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Амплитуда:", GUILayout.Width(120));
-                    _amplitude = EditorGUILayout.FloatField(_amplitude);
-                    EditorGUILayout.EndHorizontal();
-                    
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Частота:", GUILayout.Width(120));
-                    _frequency = EditorGUILayout.FloatField(_frequency);
-                    EditorGUILayout.EndHorizontal();
-                    break;
+                if (confirm)
+                {
+                    GenerateAllClasses();
+                }
             }
             
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Количество уровней:", GUILayout.Width(120));
-            _generationLevels = EditorGUILayout.IntField(_generationLevels);
-            EditorGUILayout.EndHorizontal();
+            GUI.backgroundColor = _originalBackgroundColor;
+            EditorGUILayout.Space(5);
+        }
+        
+        private void GenerateAllClasses()
+        {
+            // Передаем глобальные настройки сложности в ProgressionUtility
+            ProgressionUtility.SetGlobalDifficultySettings(_difficultySettings);
             
-            EditorGUILayout.EndVertical();
+            // Сначала сгенерируем игрока
+            AddClassWithAutoStats(CharacterClass.Player, 1.0f);
+            
+            // Затем всех остальных с учетом множителей сложности
+            foreach (CharacterClass characterClass in System.Enum.GetValues(typeof(CharacterClass)))
+            {
+                if (characterClass != CharacterClass.Player)
+                {
+                    AddClassWithAutoStats(characterClass, _difficultyMultipliers[characterClass]);
+                }
+            }
+            
+            // Обновляем кэш после генерации всех классов
+            Progression progression = (Progression)target;
+            progression.ForceUpdateCache();
+            
+            Debug.Log("Успешно сгенерированы все классы персонажей с учетом настроек сложности");
         }
         
         private void ShowAutoGenerationTools()
@@ -439,11 +350,6 @@ namespace RPG.Editor
             if (_showAutoGenSettings)
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Класс персонажа", GUILayout.Width(150));
-                _selectedAutoGenClass = (CharacterClass)EditorGUILayout.EnumPopup(_selectedAutoGenClass);
-                EditorGUILayout.EndHorizontal();
-                
-                EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Количество уровней", GUILayout.Width(150));
                 _generationLevels = EditorGUILayout.IntSlider(_generationLevels, 1, 100);
                 EditorGUILayout.EndHorizontal();
@@ -454,7 +360,18 @@ namespace RPG.Editor
                 EditorGUILayout.HelpBox("Используйте ползунки для настройки сложности каждого класса врагов. Значение 1.0 - стандартный баланс, значения выше делают врагов сильнее, ниже - слабее.", MessageType.Info);
                 EditorGUILayout.Space(5);
                 
-                // Ползунки сложности для каждого класса
+                // Добавляем пояснение о силе врагов
+                EditorGUILayout.HelpBox(
+                    "Приблизительная сила классов:\n" +
+                    "• Игрок = 3 гранта / 2.8 лучника / 2.5 мага / 2 орка / 4 волка / 3.5 кабана\n" +
+                    "• Орк сильнее других врагов, но медленнее\n" +
+                    "• Маг имеет высокий урон, но низкую защиту\n" +
+                    "• Волки и кабаны слабее, но часто встречаются группами",
+                    MessageType.Info);
+                
+                EditorGUILayout.Space(5);
+                
+                // Ползунки сложности для каждого класса с улучшенной визуализацией
                 foreach (CharacterClass enemyClass in System.Enum.GetValues(typeof(CharacterClass)))
                 {
                     // Пропускаем игрока, у него нет настройки сложности
@@ -470,7 +387,7 @@ namespace RPG.Editor
                     
                     EditorGUILayout.BeginHorizontal();
                     string className = System.Enum.GetName(typeof(CharacterClass), enemyClass);
-                    EditorGUILayout.LabelField($"Сложность: {className}", GUILayout.Width(150));
+                    EditorGUILayout.LabelField($"Класс: {className}", GUILayout.Width(150));
                     
                     // Определяем цвет полосы в зависимости от сложности
                     float difficulty = _difficultyMultipliers[enemyClass];
@@ -493,7 +410,7 @@ namespace RPG.Editor
                     
                     EditorGUILayout.EndHorizontal();
                     
-                    // Отображаем текстовое описание сложности
+                    // Отображаем текстовое описание сложности и примерный баланс
                     string difficultyLabel = GetDifficultyLabel(difficulty);
                     EditorGUILayout.LabelField($"Уровень сложности: {difficultyLabel} ({difficulty:F2}x)", EditorStyles.miniLabel);
                     
@@ -506,61 +423,88 @@ namespace RPG.Editor
                 
                 if (GUILayout.Button("Сбросить сложность"))
                 {
-                    foreach (CharacterClass enemyClass in System.Enum.GetValues(typeof(CharacterClass)))
-                    {
-                        if (enemyClass != CharacterClass.Player)
-                        {
-                            _difficultyMultipliers[enemyClass] = 1.0f;
-                        }
-                    }
-                    GUI.changed = true;
+                    ResetDifficultyToDefaults();
                 }
                 
                 GUILayout.FlexibleSpace();
                 
-                if (GUILayout.Button("Сгенерировать выбранный класс"))
+                if (GUILayout.Button("Игрок сильный"))
+                {
+                    SetPlayerStrengthPreset(0.8f); // Слабые враги = сильный игрок
+                }
+                
+                if (GUILayout.Button("Средний баланс"))
+                {
+                    ResetDifficultyToDefaults();
+                }
+                
+                if (GUILayout.Button("Игрок слабый"))
+                {
+                    SetPlayerStrengthPreset(1.2f); // Сильные враги = слабый игрок
+                }
+                
+                EditorGUILayout.EndHorizontal();
+                
+                EditorGUILayout.Space(5);
+                
+                EditorGUILayout.BeginHorizontal();
+                
+                EditorGUILayout.LabelField("Класс для автогенерации", GUILayout.Width(150));
+                _selectedAutoGenClass = (CharacterClass)EditorGUILayout.EnumPopup(_selectedAutoGenClass);
+                
+                if (GUILayout.Button("Сгенерировать класс"))
                 {
                     float difficultyMultiplier = _selectedAutoGenClass == CharacterClass.Player ? 
                         1.0f : _difficultyMultipliers[_selectedAutoGenClass];
                     
                     AddClassWithAutoStats(_selectedAutoGenClass, difficultyMultiplier);
-                    
-                    // Принудительно обновляем кэш
-                    Progression progression = (Progression)target;
-                    progression.ForceUpdateCache();
-                }
-                
-                if (GUILayout.Button("Сгенерировать все классы"))
-                {
-                    bool confirm = EditorUtility.DisplayDialog(
-                        "Подтверждение",
-                        "Это действие заменит прогрессию для всех классов персонажей с учетом настроек сложности. Продолжить?",
-                        "Да", "Отмена");
-                    
-                    if (confirm)
-                    {
-                        AddClassWithAutoStats(CharacterClass.Player, 1.0f);
-                        
-                        foreach (CharacterClass enemyClass in System.Enum.GetValues(typeof(CharacterClass)))
-                        {
-                            if (enemyClass != CharacterClass.Player)
-                            {
-                                AddClassWithAutoStats(enemyClass, _difficultyMultipliers[enemyClass]);
-                            }
-                        }
-                        
-                        // Принудительно обновляем кэш после генерации всех классов
-                        Progression progression = (Progression)target;
-                        progression.ForceUpdateCache();
-                        
-                        Debug.Log("Автоматически сгенерированы все классы персонажей с учетом настройки сложности");
-                    }
                 }
                 
                 EditorGUILayout.EndHorizontal();
             }
             
             EditorGUILayout.EndVertical();
+        }
+        
+        private void ResetDifficultyToDefaults()
+        {
+            _difficultyMultipliers[CharacterClass.Grunt] = 1.2f;
+            _difficultyMultipliers[CharacterClass.Mage] = 1.3f;
+            _difficultyMultipliers[CharacterClass.Archer] = 1.15f;
+            _difficultyMultipliers[CharacterClass.Orc] = 1.4f;
+            _difficultyMultipliers[CharacterClass.Wolf] = 1.0f;
+            _difficultyMultipliers[CharacterClass.Boar] = 1.1f;
+            _difficultyMultipliers[CharacterClass.Chest] = 1.0f;
+            GUI.changed = true;
+        }
+        
+        private void SetPlayerStrengthPreset(float multiplier)
+        {
+            foreach (CharacterClass enemyClass in System.Enum.GetValues(typeof(CharacterClass)))
+            {
+                if (enemyClass != CharacterClass.Player)
+                {
+                    // Применяем общий множитель, сохраняя относительные соотношения между врагами
+                    float baseMultiplier = GetDefaultDifficultyForClass(enemyClass);
+                    _difficultyMultipliers[enemyClass] = baseMultiplier * multiplier;
+                }
+            }
+            GUI.changed = true;
+        }
+        
+        private float GetDefaultDifficultyForClass(CharacterClass characterClass)
+        {
+            switch (characterClass)
+            {
+                case CharacterClass.Grunt: return 1.2f;
+                case CharacterClass.Mage: return 1.3f;
+                case CharacterClass.Archer: return 1.15f;
+                case CharacterClass.Orc: return 1.4f;
+                case CharacterClass.Wolf: return 1.0f;
+                case CharacterClass.Boar: return 1.1f;
+                case CharacterClass.Chest: return 1.0f;
+                default: return 1.0f;
+            }
         }
         
         private void ShowGenerateValuesContextMenu(SerializedProperty levelsProperty)
@@ -832,13 +776,526 @@ namespace RPG.Editor
         }
         
         // Метод для получения текстового описания сложности
-        private string GetDifficultyLabel(float difficulty)
+        private string GetDifficultyLabel(float difficultyValue)
         {
-            if (difficulty <= 0.7f) return _difficultyLabels[0]; // Очень легко
-            if (difficulty <= 0.9f) return _difficultyLabels[1]; // Легко
-            if (difficulty <= 1.1f) return _difficultyLabels[2]; // Средне
-            if (difficulty <= 1.5f) return _difficultyLabels[3]; // Сложно
-            return _difficultyLabels[4]; // Очень сложно
+            if (difficultyValue <= 0.75f)
+            {
+                return "Очень легко";
+            }
+            else if (difficultyValue <= 0.9f)
+            {
+                return "Легко";
+            }
+            else if (difficultyValue <= 1.1f)
+            {
+                return "Нормально";
+            }
+            else if (difficultyValue <= 1.4f)
+            {
+                return "Сложно";
+            }
+            else if (difficultyValue <= 1.75f)
+            {
+                return "Хардкор";
+            }
+            else if (difficultyValue <= 2.2f)
+            {
+                return "Кошмар";
+            }
+            else
+            {
+                return "Невозможно";
+            }
+        }
+        
+        private void ShowGlobalDifficultySettings()
+        {
+            EditorGUILayout.Space(10);
+            GUI.backgroundColor = new Color(1.0f, 0.8f, 0.8f); // Светло-красный для выделения
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            GUI.backgroundColor = _originalBackgroundColor;
+            
+            GUIStyle headerStyle = new GUIStyle(EditorStyles.boldLabel);
+            headerStyle.fontSize = 14;
+            headerStyle.alignment = TextAnchor.MiddleCenter;
+            
+            EditorGUILayout.LabelField("ОБЩАЯ СЛОЖНОСТЬ ИГРЫ", headerStyle);
+            EditorGUILayout.Space(5);
+            
+            _showGlobalDifficultySettings = EditorGUILayout.Foldout(_showGlobalDifficultySettings, "Настройки общей сложности", true, EditorStyles.foldoutHeader);
+            
+            if (_showGlobalDifficultySettings)
+            {
+                EditorGUILayout.Space(5);
+                EditorGUILayout.HelpBox("Общая сложность игры влияет на все аспекты баланса. Выберите предустановку или настройте вручную.", MessageType.Info);
+                EditorGUILayout.Space(5);
+                
+                // Секция предустановок сложности
+                EditorGUILayout.LabelField("Предустановки сложности", EditorStyles.boldLabel);
+                
+                // Отрисовка кнопок предустановок
+                EditorGUILayout.BeginHorizontal();
+                
+                for (int i = 0; i < _difficultyPresets.Length - 1; i++)
+                {
+                    GUIStyle presetButtonStyle = new GUIStyle(GUI.skin.button);
+                    
+                    // Выделяем выбранную предустановку
+                    if (i == _selectedDifficultyPreset)
+                    {
+                        presetButtonStyle.normal.background = CreateColorTexture(new Color(0.7f, 0.9f, 1.0f));
+                        presetButtonStyle.hover.background = CreateColorTexture(new Color(0.8f, 0.95f, 1.0f));
+                        presetButtonStyle.fontStyle = FontStyle.Bold;
+                    }
+                    
+                    if (GUILayout.Button(_difficultyPresets[i], presetButtonStyle))
+                    {
+                        _selectedDifficultyPreset = i;
+                        _globalDifficultyMultiplier = _presetValues[i];
+                        ApplyGlobalDifficultyPreset(i);
+                        GUI.changed = true;
+                    }
+                }
+                
+                EditorGUILayout.EndHorizontal();
+                
+                // Блок экстремальной сложности с выделением
+                EditorGUILayout.Space(10);
+                
+                // Создаем выделенный блок с красным фоном для экстремальных режимов
+                GUI.backgroundColor = new Color(0.9f, 0.3f, 0.3f);
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                GUI.backgroundColor = _originalBackgroundColor;
+                
+                GUIStyle extremeHeaderStyle = new GUIStyle(EditorStyles.boldLabel);
+                extremeHeaderStyle.fontSize = 13;
+                extremeHeaderStyle.alignment = TextAnchor.MiddleCenter;
+                extremeHeaderStyle.normal.textColor = new Color(0.9f, 0.2f, 0.2f);
+                
+                EditorGUILayout.LabelField("ПОВЫШЕННАЯ СЛОЖНОСТЬ", extremeHeaderStyle);
+                EditorGUILayout.Space(3);
+                
+                EditorGUILayout.HelpBox("Режимы повышенной сложности предназначены для опытных игроков. Враги будут значительно сильнее.", MessageType.Warning);
+                
+                // Блок кнопок "Кошмар" и "Невозможно"
+                EditorGUILayout.BeginHorizontal();
+                
+                // Стиль кнопки Кошмар
+                GUIStyle nightmareButtonStyle = new GUIStyle(GUI.skin.button);
+                nightmareButtonStyle.fontStyle = FontStyle.Bold;
+                nightmareButtonStyle.normal.textColor = Color.white;
+                nightmareButtonStyle.hover.textColor = Color.white;
+                nightmareButtonStyle.normal.background = CreateColorTexture(new Color(0.6f, 0.0f, 0.0f));
+                nightmareButtonStyle.hover.background = CreateColorTexture(new Color(0.7f, 0.1f, 0.1f));
+                
+                if (_selectedDifficultyPreset == 5)
+                {
+                    nightmareButtonStyle.normal.background = CreateColorTexture(new Color(0.7f, 0.2f, 0.2f));
+                    nightmareButtonStyle.hover.background = CreateColorTexture(new Color(0.8f, 0.3f, 0.3f));
+                }
+                
+                if (GUILayout.Button("КОШМАР", nightmareButtonStyle, GUILayout.Height(30)))
+                {
+                    bool confirm = EditorUtility.DisplayDialog(
+                        "Внимание! Режим Кошмар",
+                        "Вы собираетесь установить режим \"Кошмар\".\n\nЭта сложность предназначена для опытных игроков. Враги будут наносить большой урон и иметь высокое здоровье.\n\nВы уверены?",
+                        "Да, я готов к испытанию", "Отмена");
+                    
+                    if (confirm)
+                    {
+                        _selectedDifficultyPreset = 5;
+                        _globalDifficultyMultiplier = _presetValues[5];
+                        ApplyGlobalDifficultyPreset(5);
+                        GUI.changed = true;
+                    }
+                }
+                
+                // Стиль кнопки Невозможно (еще более яркий и угрожающий)
+                GUIStyle impossibleButtonStyle = new GUIStyle(nightmareButtonStyle);
+                impossibleButtonStyle.normal.background = CreateColorTexture(new Color(0.5f, 0.0f, 0.0f));
+                impossibleButtonStyle.hover.background = CreateColorTexture(new Color(0.6f, 0.1f, 0.1f));
+                
+                if (_selectedDifficultyPreset == 6)
+                {
+                    impossibleButtonStyle.normal.background = CreateColorTexture(new Color(0.65f, 0.0f, 0.0f));
+                    impossibleButtonStyle.hover.background = CreateColorTexture(new Color(0.75f, 0.1f, 0.1f));
+                }
+                
+                if (GUILayout.Button("НЕВОЗМОЖНО", impossibleButtonStyle, GUILayout.Height(30)))
+                {
+                    bool confirm = EditorUtility.DisplayDialog(
+                        "ВНИМАНИЕ! Экстремальная сложность",
+                        "Вы собираетесь установить режим \"Невозможно\".\n\nЭта сложность создаст невероятно сложный вызов даже для самых опытных игроков. Враги будут наносить огромный урон, иметь высокое здоровье и отличные параметры уклонения, критических ударов и парирования.\n\nВы уверены?",
+                        "Да, сделать игру безжалостной", "Отмена");
+                    
+                    if (confirm)
+                    {
+                        // Дополнительное предупреждение
+                        bool secondConfirm = EditorUtility.DisplayDialog(
+                            "ПОСЛЕДНЕЕ ПРЕДУПРЕЖДЕНИЕ",
+                            "Этот режим сложности действительно очень жесткий.\n\nВы уверены?",
+                            "ДА, Я ГОТОВ", "Я передумал");
+                        
+                        if (secondConfirm)
+                        {
+                            _selectedDifficultyPreset = 6; // Индекс режима Невозможно
+                            _globalDifficultyMultiplier = _presetValues[6];
+                            ApplyGlobalDifficultyPreset(6);
+                            GUI.changed = true;
+                        }
+                    }
+                }
+                
+                EditorGUILayout.EndHorizontal();
+                
+                EditorGUILayout.EndVertical();
+                
+                EditorGUILayout.Space(10);
+                
+                // Ползунок общей сложности
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Общий множитель сложности:", GUILayout.Width(180));
+                
+                // Определяем цвет полосы в зависимости от сложности
+                Color sliderColor = GetDifficultyColor(_globalDifficultyMultiplier);
+                GUI.color = sliderColor;
+                
+                float newGlobalDifficulty = EditorGUILayout.Slider(_globalDifficultyMultiplier, 0.5f, 2.0f);
+                
+                GUI.color = Color.white;
+                
+                if (newGlobalDifficulty != _globalDifficultyMultiplier)
+                {
+                    _globalDifficultyMultiplier = newGlobalDifficulty;
+                    
+                    // Автоматически выбираем ближайшую предустановку или "Пользовательскую"
+                    _selectedDifficultyPreset = FindClosestPreset(newGlobalDifficulty);
+                    
+                    // Применяем изменение ко всем параметрам сложности
+                    ScaleAllDifficultySettings(newGlobalDifficulty);
+                    GUI.changed = true;
+                }
+                
+                EditorGUILayout.EndHorizontal();
+                
+                // Отображаем текстовое описание сложности
+                string difficultyLabel = GetDifficultyLabel(_globalDifficultyMultiplier);
+                EditorGUILayout.LabelField($"Уровень сложности: {difficultyLabel} ({_globalDifficultyMultiplier:F2}x)", EditorStyles.miniLabel);
+                
+                EditorGUILayout.Space(10);
+                
+                // Детальные настройки сложности
+                EditorGUILayout.LabelField("Детальные настройки", EditorStyles.boldLabel);
+                EditorGUILayout.HelpBox("Данные настройки позволяют более тонко регулировать отдельные аспекты игры.", MessageType.Info);
+                
+                // Создаем временный список для сортировки ключей (чтобы порядок был предсказуемым)
+                List<string> sortedKeys = new List<string>(_difficultySettings.Keys);
+                
+                foreach (string setting in sortedKeys)
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField(setting + ":", GUILayout.Width(180));
+                    
+                    // Определяем цвет полосы
+                    float value = _difficultySettings[setting];
+                    Color paramSliderColor = GetDifficultyColor(value);
+                    GUI.color = paramSliderColor;
+                    
+                    float newValue = EditorGUILayout.Slider(value, 0.5f, 2.0f);
+                    
+                    GUI.color = Color.white;
+                    
+                    if (newValue != value)
+                    {
+                        _difficultySettings[setting] = newValue;
+                        GUI.changed = true;
+                    }
+                    
+                    EditorGUILayout.EndHorizontal();
+                }
+                
+                EditorGUILayout.Space(10);
+                
+                // Кнопка применения настроек
+                GUI.backgroundColor = new Color(0.8f, 1.0f, 0.8f); // Зеленоватый
+                if (GUILayout.Button("Применить настройки сложности", GUILayout.Height(30)))
+                {
+                    ApplyGlobalDifficultySettings();
+                    GUI.changed = true;
+                }
+                GUI.backgroundColor = _originalBackgroundColor;
+                
+                EditorGUILayout.Space(5);
+                
+                // Показываем дополнительные настройки для режимов высокой сложности
+                ShowExtraDifficultySettings();
+                
+                // Пояснения по влиянию настроек
+                EditorGUILayout.HelpBox(
+                    "Влияние настроек на игровой процесс:\n" +
+                    "• Увеличение здоровья врагов делает бои длиннее\n" +
+                    "• Увеличение урона врагов требует большей осторожности\n" +
+                    "• Увеличение защиты врагов снижает эффективность атак игрока\n" +
+                    "• Увеличение опыта за врагов ускоряет прогресс игрока\n" +
+                    "• Увеличение требуемого опыта замедляет прогресс игрока\n" +
+                    "• Увеличение шанса уклонения повышает вероятность, что враг полностью избежит атаки\n" +
+                    "• Увеличение шанса критического удара делает атаки врагов более опасными\n" +
+                    "• Увеличение шанса парирования позволяет врагам блокировать атаки и контратаковать",
+                    MessageType.Info);
+            }
+            
+            EditorGUILayout.EndVertical();
+        }
+        
+        private int FindClosestPreset(float value)
+        {
+            float minDistance = float.MaxValue;
+            int closestIndex = 0;
+            
+            for (int i = 0; i < _presetValues.Length; i++)
+            {
+                float distance = Mathf.Abs(_presetValues[i] - value);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    closestIndex = i;
+                }
+            }
+            
+            // Если расстояние слишком большое, то это "пользовательская" настройка
+            return minDistance < 0.05f ? closestIndex : _selectedDifficultyPreset;
+        }
+        
+        private void ApplyGlobalDifficultyPreset(int presetIndex)
+        {
+            float multiplier = _presetValues[presetIndex];
+            _globalDifficultyMultiplier = multiplier;
+            
+            // Устанавливаем значения для всех параметров в зависимости от выбранной предустановки
+            switch (presetIndex)
+            {
+                case 0: // Новичок (раньше был Легко)
+                    _difficultySettings["Здоровье врагов"] = 0.9f;
+                    _difficultySettings["Урон врагов"] = 0.85f;
+                    _difficultySettings["Защита врагов"] = 0.9f;
+                    _difficultySettings["Опыт за врагов"] = 1.1f;
+                    _difficultySettings["Опыт для повышения уровня"] = 0.9f;
+                    _difficultySettings["Шанс уклонения врагов"] = 0.7f;
+                    _difficultySettings["Шанс критического удара врагов"] = 0.7f;
+                    _difficultySettings["Шанс парирования врагов"] = 0.6f;
+                    break;
+                case 1: // Легко (раньше был Нормально)
+                    _difficultySettings["Здоровье врагов"] = 1.1f;
+                    _difficultySettings["Урон врагов"] = 1.1f;
+                    _difficultySettings["Защита врагов"] = 1.05f;
+                    _difficultySettings["Опыт за врагов"] = 1.0f;
+                    _difficultySettings["Опыт для повышения уровня"] = 1.0f;
+                    _difficultySettings["Шанс уклонения врагов"] = 1.0f;
+                    _difficultySettings["Шанс критического удара врагов"] = 1.0f;
+                    _difficultySettings["Шанс парирования врагов"] = 1.0f;
+                    break;
+                case 2: // Нормально (раньше был Сложно)
+                    _difficultySettings["Здоровье врагов"] = 1.3f;
+                    _difficultySettings["Урон врагов"] = 1.35f;
+                    _difficultySettings["Защита врагов"] = 1.25f;
+                    _difficultySettings["Опыт за врагов"] = 0.9f;
+                    _difficultySettings["Опыт для повышения уровня"] = 1.15f;
+                    _difficultySettings["Шанс уклонения врагов"] = 1.3f;
+                    _difficultySettings["Шанс критического удара врагов"] = 1.3f;
+                    _difficultySettings["Шанс парирования врагов"] = 1.25f;
+                    break;
+                case 3: // Сложно (раньше был Хардкор)
+                    _difficultySettings["Здоровье врагов"] = 1.6f;
+                    _difficultySettings["Урон врагов"] = 1.7f;
+                    _difficultySettings["Защита врагов"] = 1.5f;
+                    _difficultySettings["Опыт за врагов"] = 0.7f;
+                    _difficultySettings["Опыт для повышения уровня"] = 1.3f;
+                    _difficultySettings["Шанс уклонения врагов"] = 1.6f;
+                    _difficultySettings["Шанс критического удара врагов"] = 1.7f;
+                    _difficultySettings["Шанс парирования врагов"] = 1.5f;
+                    break;
+                case 4: // Хардкор (раньше был Экстрим)
+                    _difficultySettings["Здоровье врагов"] = 2.0f;
+                    _difficultySettings["Урон врагов"] = 2.2f;
+                    _difficultySettings["Защита врагов"] = 1.8f;
+                    _difficultySettings["Опыт за врагов"] = 0.6f;
+                    _difficultySettings["Опыт для повышения уровня"] = 1.5f;
+                    _difficultySettings["Шанс уклонения врагов"] = 2.0f;
+                    _difficultySettings["Шанс критического удара врагов"] = 2.0f;
+                    _difficultySettings["Шанс парирования врагов"] = 1.8f;
+                    break;
+                case 5: // Экстрим (улучшенный)
+                    _difficultySettings["Здоровье врагов"] = 2.3f;
+                    _difficultySettings["Урон врагов"] = 2.5f;
+                    _difficultySettings["Защита врагов"] = 2.0f;
+                    _difficultySettings["Опыт за врагов"] = 0.55f;
+                    _difficultySettings["Опыт для повышения уровня"] = 1.6f;
+                    _difficultySettings["Шанс уклонения врагов"] = 2.2f;
+                    _difficultySettings["Шанс критического удара врагов"] = 2.2f;
+                    _difficultySettings["Шанс парирования врагов"] = 2.0f;
+                    break;
+                case 6: // Кошмар (увеличенная сложность)
+                    _difficultySettings["Здоровье врагов"] = 2.7f;
+                    _difficultySettings["Урон врагов"] = 3.0f;
+                    _difficultySettings["Защита врагов"] = 2.4f;
+                    _difficultySettings["Опыт за врагов"] = 0.45f;
+                    _difficultySettings["Опыт для повышения уровня"] = 1.8f;
+                    _difficultySettings["Шанс уклонения врагов"] = 2.7f;
+                    _difficultySettings["Шанс критического удара врагов"] = 2.7f;
+                    _difficultySettings["Шанс парирования врагов"] = 2.4f;
+                    break;
+            }
+            
+            // Также обновляем множители сложности для классов
+            foreach (CharacterClass enemyClass in System.Enum.GetValues(typeof(CharacterClass)))
+            {
+                if (enemyClass != CharacterClass.Player)
+                {
+                    // Базовый множитель для класса
+                    float baseMultiplier = GetDefaultDifficultyForClass(enemyClass);
+                    // Применяем глобальный множитель
+                    _difficultyMultipliers[enemyClass] = baseMultiplier * multiplier;
+                }
+            }
+        }
+        
+        private void ScaleAllDifficultySettings(float globalMultiplier)
+        {
+            // Масштабирование относительно нормального уровня (1.0)
+            float scaleRatio = globalMultiplier / 1.0f;
+            
+            // Обновляем множители сложности для классов
+            foreach (CharacterClass enemyClass in System.Enum.GetValues(typeof(CharacterClass)))
+            {
+                if (enemyClass != CharacterClass.Player)
+                {
+                    float baseMultiplier = GetDefaultDifficultyForClass(enemyClass);
+                    _difficultyMultipliers[enemyClass] = baseMultiplier * scaleRatio;
+                }
+            }
+        }
+        
+        private void ApplyGlobalDifficultySettings()
+        {
+            bool confirm = EditorUtility.DisplayDialog(
+                "Применение настроек сложности",
+                "Это изменит множители сложности для всех классов врагов в соответствии с выбранными настройками. Продолжить?",
+                "Применить", "Отмена");
+                
+            if (confirm)
+            {
+                // Передаем настройки сложности в ProgressionUtility перед генерацией
+                ProgressionUtility.SetGlobalDifficultySettings(_difficultySettings);
+                
+                // Вызываем генерацию всех классов с обновленными настройками сложности
+                GenerateAllClasses();
+                
+                Debug.Log("Настройки глобальной сложности успешно применены ко всем классам персонажей");
+            }
+        }
+        
+        private void ShowExtraDifficultySettings()
+        {
+            // Если выбран режим Хардкор или выше, показываем дополнительные настройки бонусов для врагов
+            if (_selectedDifficultyPreset >= 4) // Хардкор или выше
+            {
+                EditorGUILayout.Space(10);
+                
+                GUI.backgroundColor = new Color(0.8f, 0.5f, 0.5f);
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                GUI.backgroundColor = _originalBackgroundColor;
+                
+                GUIStyle bonusHeaderStyle = new GUIStyle(EditorStyles.boldLabel);
+                bonusHeaderStyle.fontSize = 12;
+                bonusHeaderStyle.alignment = TextAnchor.MiddleCenter;
+                
+                string headerText = _selectedDifficultyPreset == 6 ? "БОНУСЫ ВРАГОВ (РЕЖИМ КОШМАРА)" : "БОНУСЫ ВРАГОВ (ВЫСОКАЯ СЛОЖНОСТЬ)";
+                EditorGUILayout.LabelField(headerText, bonusHeaderStyle);
+                EditorGUILayout.Space(3);
+                
+                EditorGUILayout.HelpBox("Эти настройки активны только в режимах высокой сложности и дают дополнительные преимущества врагам.", MessageType.Info);
+                EditorGUILayout.Space(5);
+                
+                // Отображаем ползунки для настройки бонусов
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Шанс уклонения:", GUILayout.Width(180));
+                
+                float dodgeValue = _difficultySettings["Шанс уклонения врагов"];
+                Color dodgeColor = GetDifficultyColor(dodgeValue);
+                GUI.color = dodgeColor;
+                float newDodgeValue = EditorGUILayout.Slider(dodgeValue, 1.0f, 2.5f);
+                GUI.color = Color.white;
+                
+                if (newDodgeValue != dodgeValue)
+                {
+                    _difficultySettings["Шанс уклонения врагов"] = newDodgeValue;
+                    GUI.changed = true;
+                }
+                
+                EditorGUILayout.EndHorizontal();
+                
+                // Описание параметра
+                EditorGUILayout.LabelField("Влияет на вероятность того, что враг полностью избежит атаки игрока", EditorStyles.miniLabel);
+                
+                EditorGUILayout.Space(5);
+                
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Критический урон:", GUILayout.Width(180));
+                
+                float critValue = _difficultySettings["Шанс критического удара врагов"];
+                Color critColor = GetDifficultyColor(critValue);
+                GUI.color = critColor;
+                float newCritValue = EditorGUILayout.Slider(critValue, 1.0f, 2.5f);
+                GUI.color = Color.white;
+                
+                if (newCritValue != critValue)
+                {
+                    _difficultySettings["Шанс критического удара врагов"] = newCritValue;
+                    GUI.changed = true;
+                }
+                
+                EditorGUILayout.EndHorizontal();
+                
+                // Описание параметра
+                EditorGUILayout.LabelField("Влияет на вероятность нанесения врагом критического урона (х1.5 от обычного)", EditorStyles.miniLabel);
+                
+                EditorGUILayout.Space(5);
+                
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Шанс парирования:", GUILayout.Width(180));
+                
+                float parryValue = _difficultySettings["Шанс парирования врагов"];
+                Color parryColor = GetDifficultyColor(parryValue);
+                GUI.color = parryColor;
+                float newParryValue = EditorGUILayout.Slider(parryValue, 1.0f, 2.5f);
+                GUI.color = Color.white;
+                
+                if (newParryValue != parryValue)
+                {
+                    _difficultySettings["Шанс парирования врагов"] = newParryValue;
+                    GUI.changed = true;
+                }
+                
+                EditorGUILayout.EndHorizontal();
+                
+                // Описание параметра
+                EditorGUILayout.LabelField("Влияет на вероятность того, что враг парирует атаку игрока и нанесет ответный удар", EditorStyles.miniLabel);
+                
+                EditorGUILayout.EndVertical();
+                
+                EditorGUILayout.EndVertical();
+            }
+        }
+        
+        // Вспомогательный метод для создания текстуры цвета для кнопок
+        private Texture2D CreateColorTexture(Color color)
+        {
+            Texture2D texture = new Texture2D(1, 1);
+            texture.SetPixel(0, 0, color);
+            texture.Apply();
+            return texture;
         }
     }
 } 

@@ -1,19 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RPG.Stats
 {
     /// <summary>
     /// Класс для управления прогрессией и статистикой персонажей разных классов на разных уровнях.
+    /// Обеспечивает эффективную работу со StatusBar и другими системами статистики.
     /// </summary>
     [CreateAssetMenu(fileName = "Progression", menuName = "RPG/ Stats/ New Progression", order = 0)]
     public class Progression : ScriptableObject
     {
         [Tooltip("Настройки прогрессии для различных классов персонажей")]
-        [SerializeField] ProgressionCharacterClass[] _characterClasses = null;
+        [SerializeField] private ProgressionCharacterClass[] _characterClasses = null;
 
         // Кэш данных для быстрого доступа
         private Dictionary<CharacterClass, Dictionary<Stat, float[]>> _lookupTable = null;
+
+        // События для отслеживания изменений в прогрессии
+        public event Action<CharacterClass, Stat> OnStatProgressionChanged;
+
+        #region Публичные методы
 
         /// <summary>
         /// Получает значение статистики для указанного класса персонажа и уровня.
@@ -24,37 +31,25 @@ namespace RPG.Stats
         /// <returns>Значение статистики или 0, если данные отсутствуют</returns>
         public float GetStat(Stat stat, CharacterClass characterClass, int level)
         {
-            // Гарантируем, что таблица поиска инициализирована
-            BuildLookup();
+            BuildLookupIfNeeded();
             
-            // Проверяем, существует ли запрашиваемый класс персонажа в таблице
-            if (!_lookupTable.ContainsKey(characterClass))
-            {
-                Debug.LogWarning($"Класс персонажа {characterClass} не найден в таблице прогрессии");
-                return 0;
-            }
-            
-            // Проверяем, существует ли запрашиваемая статистика для данного класса
-            if (!_lookupTable[characterClass].ContainsKey(stat))
+            if (!HasStatForClass(stat, characterClass))
             {
                 return 0;
             }
-
+            
             float[] levels = _lookupTable[characterClass][stat];
             
-            // Проверяем, есть ли какие-либо данные для этой статистики
             if (levels.Length == 0)
             {
                 return 0;
             }
             
-            // Если запрашиваемый уровень выше максимального, возвращаем значение для максимального уровня
             if (levels.Length < level)
             {
                 return levels[levels.Length - 1];
             }
 
-            // Возвращаем значение для указанного уровня (с учетом того, что массив начинается с 0)
             return levels[level - 1];
         }
 
@@ -66,17 +61,9 @@ namespace RPG.Stats
         /// <returns>Количество уровней или 0, если данные отсутствуют</returns>
         public int GetLevels(Stat stat, CharacterClass characterClass)
         {
-            BuildLookup();
+            BuildLookupIfNeeded();
             
-            // Проверяем, существует ли запрашиваемый класс персонажа в таблице
-            if (!_lookupTable.ContainsKey(characterClass))
-            {
-                Debug.LogWarning($"Класс персонажа {characterClass} не найден в таблице прогрессии");
-                return 0;
-            }
-            
-            // Проверяем, существует ли запрашиваемая статистика для данного класса
-            if (!_lookupTable[characterClass].ContainsKey(stat))
+            if (!HasStatForClass(stat, characterClass))
             {
                 return 0;
             }
@@ -92,14 +79,8 @@ namespace RPG.Stats
         /// <returns>true, если статистика существует</returns>
         public bool HasStat(Stat stat, CharacterClass characterClass)
         {
-            BuildLookup();
-            
-            if (!_lookupTable.ContainsKey(characterClass))
-            {
-                return false;
-            }
-            
-            return _lookupTable[characterClass].ContainsKey(stat);
+            BuildLookupIfNeeded();
+            return HasStatForClass(stat, characterClass);
         }
 
         /// <summary>
@@ -109,7 +90,7 @@ namespace RPG.Stats
         /// <returns>Список статистик или пустой список, если класс не найден</returns>
         public IEnumerable<Stat> GetAvailableStats(CharacterClass characterClass)
         {
-            BuildLookup();
+            BuildLookupIfNeeded();
             
             if (!_lookupTable.ContainsKey(characterClass))
             {
@@ -121,34 +102,13 @@ namespace RPG.Stats
         }
 
         /// <summary>
-        /// Инициализирует таблицу поиска для быстрого доступа к данным.
+        /// Получает все доступные классы персонажей.
         /// </summary>
-        private void BuildLookup()
+        /// <returns>Список классов персонажей</returns>
+        public IEnumerable<CharacterClass> GetAvailableClasses()
         {
-            // Пропускаем инициализацию, если таблица уже построена
-            if (_lookupTable != null) return;
-
-            _lookupTable = new Dictionary<CharacterClass, Dictionary<Stat, float[]>>();
-
-            foreach (ProgressionCharacterClass progressionClass in _characterClasses)
-            {
-                if (progressionClass == null) continue; // Защита от null
-
-                var statLookupTable = new Dictionary<Stat, float[]>();
-
-                foreach (ProgressionStat progressionStat in progressionClass.stats)
-                {
-                    if (progressionStat == null || progressionStat.levels == null) continue; // Защита от null
-                    
-                    // Создаем копию массива для предотвращения случайных изменений извне
-                    float[] levelsCopy = new float[progressionStat.levels.Length];
-                    System.Array.Copy(progressionStat.levels, levelsCopy, progressionStat.levels.Length);
-                    
-                    statLookupTable[progressionStat.stat] = levelsCopy;
-                }
-
-                _lookupTable[progressionClass.characterClass] = statLookupTable;
-            }
+            BuildLookupIfNeeded();
+            return _lookupTable.Keys;
         }
 
         /// <summary>
@@ -169,7 +129,124 @@ namespace RPG.Stats
             BuildLookup();
         }
 
-        [System.Serializable]
+        /// <summary>
+        /// Устанавливает новое значение для статистики указанного класса персонажа и уровня.
+        /// </summary>
+        /// <param name="stat">Тип статистики</param>
+        /// <param name="characterClass">Класс персонажа</param>
+        /// <param name="level">Уровень персонажа (начиная с 1)</param>
+        /// <param name="value">Новое значение</param>
+        /// <returns>true, если значение было успешно установлено</returns>
+        public bool SetStat(Stat stat, CharacterClass characterClass, int level, float value)
+        {
+            BuildLookupIfNeeded();
+            
+            if (!HasStatForClass(stat, characterClass))
+            {
+                Debug.LogWarning($"Статистика {stat} для класса {characterClass} не найдена");
+                return false;
+            }
+            
+            float[] levels = _lookupTable[characterClass][stat];
+            
+            if (level < 1 || level > levels.Length)
+            {
+                Debug.LogWarning($"Уровень {level} выходит за пределы допустимого диапазона для {stat}");
+                return false;
+            }
+            
+            levels[level - 1] = value;
+            
+            // Оповещаем об изменении статистики
+            OnStatProgressionChanged?.Invoke(characterClass, stat);
+            
+            return true;
+        }
+
+        /// <summary>
+        /// Получает значения статистики для всех классов персонажей на указанном уровне.
+        /// </summary>
+        /// <param name="stat">Тип статистики</param>
+        /// <param name="level">Уровень персонажа (начиная с 1)</param>
+        /// <returns>Словарь со значениями для каждого класса</returns>
+        public Dictionary<CharacterClass, float> GetStatForAllClasses(Stat stat, int level)
+        {
+            BuildLookupIfNeeded();
+            
+            Dictionary<CharacterClass, float> result = new Dictionary<CharacterClass, float>();
+            
+            foreach (CharacterClass characterClass in GetAvailableClasses())
+            {
+                if (HasStat(stat, characterClass))
+                {
+                    result[characterClass] = GetStat(stat, characterClass, level);
+                }
+            }
+            
+            return result;
+        }
+
+        #endregion
+
+        #region Приватные методы
+
+        /// <summary>
+        /// Строит таблицу поиска, если она ещё не построена.
+        /// </summary>
+        private void BuildLookupIfNeeded()
+        {
+            if (_lookupTable == null)
+            {
+                BuildLookup();
+            }
+        }
+
+        /// <summary>
+        /// Инициализирует таблицу поиска для быстрого доступа к данным.
+        /// </summary>
+        private void BuildLookup()
+        {
+            _lookupTable = new Dictionary<CharacterClass, Dictionary<Stat, float[]>>();
+
+            foreach (ProgressionCharacterClass progressionClass in _characterClasses)
+            {
+                if (progressionClass == null) continue; // Защита от null
+
+                var statLookupTable = new Dictionary<Stat, float[]>();
+
+                foreach (ProgressionStat progressionStat in progressionClass.stats)
+                {
+                    if (progressionStat == null || progressionStat.levels == null) continue; // Защита от null
+                    
+                    // Создаем копию массива для предотвращения случайных изменений извне
+                    float[] levelsCopy = new float[progressionStat.levels.Length];
+                    Array.Copy(progressionStat.levels, levelsCopy, progressionStat.levels.Length);
+                    
+                    statLookupTable[progressionStat.stat] = levelsCopy;
+                }
+
+                _lookupTable[progressionClass.characterClass] = statLookupTable;
+            }
+        }
+
+        /// <summary>
+        /// Проверяет наличие статистики для указанного класса персонажа.
+        /// </summary>
+        private bool HasStatForClass(Stat stat, CharacterClass characterClass)
+        {
+            if (!_lookupTable.ContainsKey(characterClass))
+            {
+                return false;
+            }
+            
+            return _lookupTable[characterClass].ContainsKey(stat);
+        }
+
+        #endregion
+
+        #region Вложенные классы
+
+        [Serializable]
         private class ProgressionCharacterClass
         {
             [Tooltip("Класс персонажа")]
@@ -179,7 +256,7 @@ namespace RPG.Stats
             public ProgressionStat[] stats;            
         }
 
-        [System.Serializable]
+        [Serializable]
         private class ProgressionStat
         {
             [Tooltip("Тип статистики")]
@@ -188,5 +265,7 @@ namespace RPG.Stats
             [Tooltip("Значения для каждого уровня (начиная с 1)")]
             public float[] levels;
         }
+
+        #endregion
     }
 }

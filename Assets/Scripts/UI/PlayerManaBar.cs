@@ -1,5 +1,6 @@
 using UnityEngine;
 using RPG.Attributes;
+using RPG.Stats;
 using System;
 
 namespace RPG.UI
@@ -7,6 +8,7 @@ namespace RPG.UI
     public class PlayerManaBar : StatusBar
     {
         private Mana playerMana;
+        private BaseStats playerStats;
         
         protected override void Awake()
         {
@@ -14,11 +16,64 @@ namespace RPG.UI
             barTitle = "Мана";
             barColor = Color.blue;
             
-            // Находим компонент Mana игрока
-            playerMana = GameObject.FindWithTag("Player").GetComponent<Mana>();
-            if (playerMana == null)
+            // Находим компоненты игрока
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null)
             {
-                Debug.LogError("PlayerManaBar: Не удалось найти компонент Mana у игрока!");
+                playerMana = player.GetComponent<Mana>();
+                playerStats = player.GetComponent<BaseStats>();
+                
+                if (playerMana == null)
+                {
+                    Debug.LogError("PlayerManaBar: Не удалось найти компонент Mana у игрока!");
+                }
+            }
+        }
+        
+        private void OnEnable()
+        {
+            if (playerStats != null)
+            {
+                // Подписываемся на событие изменения статистики
+                playerStats.onStatChanged += OnStatChanged;
+                playerStats.onLevelUp += RefreshBar;
+            }
+        }
+        
+        private void OnDisable()
+        {
+            if (playerStats != null)
+            {
+                // Отписываемся от событий
+                playerStats.onStatChanged -= OnStatChanged;
+                playerStats.onLevelUp -= RefreshBar;
+            }
+        }
+        
+        // Реагируем на изменение статистики
+        private void OnStatChanged(Stat stat)
+        {
+            if (stat == Stat.Mana || stat == Stat.ManaRegenRate)
+            {
+                RefreshBar();
+            }
+        }
+        
+        // Обновление данных бара
+        private void RefreshBar()
+        {
+            if (playerMana != null)
+            {
+                // При изменении значения, принудительно обновляем UI
+                // Это особенно важно при повышении уровня, когда максимальная мана изменяется
+                float currentMana = playerMana.GetMana();
+                float maxMana = playerMana.GetMaxMana();
+                
+                // Обновляем заполнение полосы
+                SetFraction(currentMana / maxMana);
+                
+                // Обновляем текст со значением
+                SetValueText(String.Format("{0:0}/{1:0}", currentMana, maxMana));
             }
         }
         
