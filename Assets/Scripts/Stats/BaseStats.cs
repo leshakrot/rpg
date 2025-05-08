@@ -103,6 +103,19 @@ namespace RPG.Stats
         {
             return _currentLevel.value;
         }
+        
+        // Публичный метод для получения опыта, необходимого для достижения определенного уровня
+        public float GetXPToLevelUp(int level)
+        {
+            if (level <= 1) return 0; // Первый уровень не требует опыта
+            
+            if (_progression != null)
+            {
+                return _progression.GetStat(Stat.ExperienceToLevelUp, _characterClass, level - 1);
+            }
+            
+            return 0;
+        }
 
         private int CalculateLevel()
         {
