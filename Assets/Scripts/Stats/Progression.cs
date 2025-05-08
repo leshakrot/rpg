@@ -132,10 +132,14 @@ namespace RPG.Stats
 
             foreach (ProgressionCharacterClass progressionClass in _characterClasses)
             {
+                if (progressionClass == null) continue; // Защита от null
+
                 var statLookupTable = new Dictionary<Stat, float[]>();
 
                 foreach (ProgressionStat progressionStat in progressionClass.stats)
                 {
+                    if (progressionStat == null || progressionStat.levels == null) continue; // Защита от null
+                    
                     // Создаем копию массива для предотвращения случайных изменений извне
                     float[] levelsCopy = new float[progressionStat.levels.Length];
                     System.Array.Copy(progressionStat.levels, levelsCopy, progressionStat.levels.Length);
@@ -154,6 +158,15 @@ namespace RPG.Stats
         public void ResetCache()
         {
             _lookupTable = null;
+        }
+
+        /// <summary>
+        /// Принудительно обновляет кэш данных. Полезно вызывать после внесения изменений в данные.
+        /// </summary>
+        public void ForceUpdateCache()
+        {
+            ResetCache();
+            BuildLookup();
         }
 
         [System.Serializable]

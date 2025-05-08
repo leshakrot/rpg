@@ -42,6 +42,28 @@ namespace RPG.Editor
         private CharacterClass _selectedAutoGenClass = CharacterClass.Player;
         private bool _showAutoGenSettings = false;
         
+        // Словарь множителей сложности для каждого класса
+        private Dictionary<CharacterClass, float> _difficultyMultipliers = new Dictionary<CharacterClass, float>()
+        {
+            { CharacterClass.Grunt, 1.0f },
+            { CharacterClass.Mage, 1.0f },
+            { CharacterClass.Archer, 1.0f },
+            { CharacterClass.Orc, 1.0f },
+            { CharacterClass.Wolf, 1.0f },
+            { CharacterClass.Boar, 1.0f },
+            { CharacterClass.Chest, 1.0f }
+        };
+        
+        // Аннотации для ползунков сложности
+        private string[] _difficultyLabels = { "Очень легко", "Легко", "Средне", "Сложно", "Очень сложно" };
+        private Color[] _difficultyColors = {
+            new Color(0.5f, 1.0f, 0.5f), // Зеленый - легко
+            new Color(0.7f, 1.0f, 0.7f), // Светло-зеленый
+            new Color(1.0f, 1.0f, 0.6f), // Желтый - средне
+            new Color(1.0f, 0.7f, 0.7f), // Светло-красный
+            new Color(1.0f, 0.5f, 0.5f)  // Красный - сложно
+        };
+        
         private void OnEnable()
         {
             _characterClassesProperty = serializedObject.FindProperty("_characterClasses");
@@ -407,66 +429,135 @@ namespace RPG.Editor
         
         private void ShowAutoGenerationTools()
         {
+            EditorGUILayout.Space(5);
+            GUI.backgroundColor = new Color(0.9f, 0.9f, 1.0f);
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            GUI.backgroundColor = _originalBackgroundColor;
             
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Автоматическая генерация всех статистик", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
-            _showAutoGenSettings = EditorGUILayout.Foldout(_showAutoGenSettings, 
-                _showAutoGenSettings ? "Скрыть" : "Показать настройки", true);
-            EditorGUILayout.EndHorizontal();
+            _showAutoGenSettings = EditorGUILayout.Foldout(_showAutoGenSettings, "Настройки автогенерации и сложности", true, EditorStyles.foldoutHeader);
             
             if (_showAutoGenSettings)
             {
-                EditorGUILayout.Space(5);
-                EditorGUILayout.HelpBox("Автоматически создает полный набор статистик для выбранного класса персонажа, учитывая баланс игры и типичные формулы из популярных action RPG.", MessageType.Info);
-                
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Класс персонажа:", GUILayout.Width(120));
+                EditorGUILayout.LabelField("Класс персонажа", GUILayout.Width(150));
                 _selectedAutoGenClass = (CharacterClass)EditorGUILayout.EnumPopup(_selectedAutoGenClass);
                 EditorGUILayout.EndHorizontal();
                 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Количество уровней:", GUILayout.Width(120));
-                _generationLevels = EditorGUILayout.IntField(_generationLevels);
+                EditorGUILayout.LabelField("Количество уровней", GUILayout.Width(150));
+                _generationLevels = EditorGUILayout.IntSlider(_generationLevels, 1, 100);
                 EditorGUILayout.EndHorizontal();
                 
+                EditorGUILayout.Space(10);
+                EditorGUILayout.LabelField("Настройка сложности врагов относительно игрока", EditorStyles.boldLabel);
+                EditorGUILayout.Space(5);
+                EditorGUILayout.HelpBox("Используйте ползунки для настройки сложности каждого класса врагов. Значение 1.0 - стандартный баланс, значения выше делают врагов сильнее, ниже - слабее.", MessageType.Info);
                 EditorGUILayout.Space(5);
                 
-                // Опции для существующих классов
-                int existingClassIndex = -1;
-                for (int i = 0; i < _characterClassesProperty.arraySize; i++)
+                // Ползунки сложности для каждого класса
+                foreach (CharacterClass enemyClass in System.Enum.GetValues(typeof(CharacterClass)))
                 {
-                    SerializedProperty classProperty = _characterClassesProperty.GetArrayElementAtIndex(i);
-                    SerializedProperty characterClassProperty = classProperty.FindPropertyRelative("characterClass");
+                    // Пропускаем игрока, у него нет настройки сложности
+                    if (enemyClass == CharacterClass.Player) continue;
                     
-                    if (characterClassProperty.enumValueIndex == (int)_selectedAutoGenClass)
+                    // Если значения сложности нет, устанавливаем стандартное
+                    if (!_difficultyMultipliers.ContainsKey(enemyClass))
                     {
-                        existingClassIndex = i;
-                        break;
+                        _difficultyMultipliers[enemyClass] = 1.0f;
+                    }
+                    
+                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                    
+                    EditorGUILayout.BeginHorizontal();
+                    string className = System.Enum.GetName(typeof(CharacterClass), enemyClass);
+                    EditorGUILayout.LabelField($"Сложность: {className}", GUILayout.Width(150));
+                    
+                    // Определяем цвет полосы в зависимости от сложности
+                    float difficulty = _difficultyMultipliers[enemyClass];
+                    Color sliderColor = GetDifficultyColor(difficulty);
+                    
+                    // Применяем цвет
+                    GUI.color = sliderColor;
+                    
+                    // Ползунок сложности
+                    float newDifficulty = EditorGUILayout.Slider(_difficultyMultipliers[enemyClass], 0.5f, 2.0f);
+                    
+                    // Возвращаем стандартный цвет
+                    GUI.color = Color.white;
+                    
+                    if (newDifficulty != _difficultyMultipliers[enemyClass])
+                    {
+                        _difficultyMultipliers[enemyClass] = newDifficulty;
+                        GUI.changed = true;
+                    }
+                    
+                    EditorGUILayout.EndHorizontal();
+                    
+                    // Отображаем текстовое описание сложности
+                    string difficultyLabel = GetDifficultyLabel(difficulty);
+                    EditorGUILayout.LabelField($"Уровень сложности: {difficultyLabel} ({difficulty:F2}x)", EditorStyles.miniLabel);
+                    
+                    EditorGUILayout.EndVertical();
+                    EditorGUILayout.Space(2);
+                }
+                
+                EditorGUILayout.Space(5);
+                EditorGUILayout.BeginHorizontal();
+                
+                if (GUILayout.Button("Сбросить сложность"))
+                {
+                    foreach (CharacterClass enemyClass in System.Enum.GetValues(typeof(CharacterClass)))
+                    {
+                        if (enemyClass != CharacterClass.Player)
+                        {
+                            _difficultyMultipliers[enemyClass] = 1.0f;
+                        }
+                    }
+                    GUI.changed = true;
+                }
+                
+                GUILayout.FlexibleSpace();
+                
+                if (GUILayout.Button("Сгенерировать выбранный класс"))
+                {
+                    float difficultyMultiplier = _selectedAutoGenClass == CharacterClass.Player ? 
+                        1.0f : _difficultyMultipliers[_selectedAutoGenClass];
+                    
+                    AddClassWithAutoStats(_selectedAutoGenClass, difficultyMultiplier);
+                    
+                    // Принудительно обновляем кэш
+                    Progression progression = (Progression)target;
+                    progression.ForceUpdateCache();
+                }
+                
+                if (GUILayout.Button("Сгенерировать все классы"))
+                {
+                    bool confirm = EditorUtility.DisplayDialog(
+                        "Подтверждение",
+                        "Это действие заменит прогрессию для всех классов персонажей с учетом настроек сложности. Продолжить?",
+                        "Да", "Отмена");
+                    
+                    if (confirm)
+                    {
+                        AddClassWithAutoStats(CharacterClass.Player, 1.0f);
+                        
+                        foreach (CharacterClass enemyClass in System.Enum.GetValues(typeof(CharacterClass)))
+                        {
+                            if (enemyClass != CharacterClass.Player)
+                            {
+                                AddClassWithAutoStats(enemyClass, _difficultyMultipliers[enemyClass]);
+                            }
+                        }
+                        
+                        // Принудительно обновляем кэш после генерации всех классов
+                        Progression progression = (Progression)target;
+                        progression.ForceUpdateCache();
+                        
+                        Debug.Log("Автоматически сгенерированы все классы персонажей с учетом настройки сложности");
                     }
                 }
                 
-                if (existingClassIndex != -1)
-                {
-                    EditorGUILayout.BeginHorizontal();
-                    if (GUILayout.Button("Заменить существующие статистики", GUILayout.Height(30)))
-                    {
-                        SerializedProperty classProperty = _characterClassesProperty.GetArrayElementAtIndex(existingClassIndex);
-                        SerializedProperty statsProperty = classProperty.FindPropertyRelative("stats");
-                        AutoGenerateForClass(_selectedAutoGenClass, statsProperty);
-                    }
-                    EditorGUILayout.EndHorizontal();
-                }
-                else
-                {
-                    EditorGUILayout.BeginHorizontal();
-                    if (GUILayout.Button("Добавить новый класс со статистиками", GUILayout.Height(30)))
-                    {
-                        AddClassWithAutoStats(_selectedAutoGenClass);
-                    }
-                    EditorGUILayout.EndHorizontal();
-                }
+                EditorGUILayout.EndHorizontal();
             }
             
             EditorGUILayout.EndVertical();
@@ -488,6 +579,9 @@ namespace RPG.Editor
         private void GenerateValues(SerializedProperty levelsProperty, int progressionType)
         {
             float[] values = null;
+            
+            // Сохраняем выбранный тип для будущего использования
+            _selectedProgressionType = progressionType;
             
             switch (progressionType)
             {
@@ -531,6 +625,10 @@ namespace RPG.Editor
                 }
                 
                 serializedObject.ApplyModifiedProperties();
+                
+                // Обновляем кэш в Progression после генерации
+                Progression progression = (Progression)target;
+                progression.ForceUpdateCache();
             }
         }
         
@@ -631,10 +729,10 @@ namespace RPG.Editor
             serializedObject.ApplyModifiedProperties();
         }
         
-        private void AutoGenerateForClass(CharacterClass characterClass, SerializedProperty statsProperty)
+        private void AutoGenerateForClass(CharacterClass characterClass, SerializedProperty statsProperty, float difficultyMultiplier = 1.0f)
         {
-            // Получаем полную прогрессию для класса
-            Dictionary<Stat, float[]> statProgression = ProgressionUtility.GenerateFullStatProgression(characterClass, _generationLevels);
+            // Получаем полную прогрессию для класса с учетом множителя сложности
+            Dictionary<Stat, float[]> statProgression = ProgressionUtility.GenerateFullStatProgression(characterClass, _generationLevels, difficultyMultiplier);
             
             // Очищаем существующие статистики
             statsProperty.arraySize = 0;
@@ -667,27 +765,80 @@ namespace RPG.Editor
             }
             
             serializedObject.ApplyModifiedProperties();
-            Debug.Log($"Автоматически сгенерированы статистики для класса {characterClass}");
+            
+            // Обновляем кэш в Progression
+            Progression progression = (Progression)target;
+            progression.ForceUpdateCache();
+            
+            Debug.Log($"Автоматически сгенерированы статистики для класса {characterClass} с множителем сложности {difficultyMultiplier:F2}");
         }
         
-        private void AddClassWithAutoStats(CharacterClass characterClass)
+        private void AddClassWithAutoStats(CharacterClass characterClass, float difficultyMultiplier = 1.0f)
         {
-            // Добавляем новый класс
-            _characterClassesProperty.arraySize++;
-            int newIndex = _characterClassesProperty.arraySize - 1;
-            SerializedProperty newClassProperty = _characterClassesProperty.GetArrayElementAtIndex(newIndex);
-            SerializedProperty newClassTypeProperty = newClassProperty.FindPropertyRelative("characterClass");
-            SerializedProperty newStatsProperty = newClassProperty.FindPropertyRelative("stats");
+            // Ищем существующий класс
+            bool classExists = false;
+            int existingIndex = -1;
             
-            // Устанавливаем тип класса
-            newClassTypeProperty.enumValueIndex = (int)characterClass;
+            for (int i = 0; i < _characterClassesProperty.arraySize; i++)
+            {
+                SerializedProperty classProperty = _characterClassesProperty.GetArrayElementAtIndex(i);
+                SerializedProperty characterClassProperty = classProperty.FindPropertyRelative("characterClass");
+                
+                if (characterClassProperty.enumValueIndex == (int)characterClass)
+                {
+                    classExists = true;
+                    existingIndex = i;
+                    break;
+                }
+            }
             
-            // Очищаем статистики
-            newStatsProperty.arraySize = 0;
-            serializedObject.ApplyModifiedProperties();
+            SerializedProperty newStatsProperty;
             
-            // Автоматически генерируем статистики
-            AutoGenerateForClass(characterClass, newStatsProperty);
+            if (classExists)
+            {
+                // Используем существующий класс
+                SerializedProperty classProperty = _characterClassesProperty.GetArrayElementAtIndex(existingIndex);
+                newStatsProperty = classProperty.FindPropertyRelative("stats");
+            }
+            else
+            {
+                // Добавляем новый класс
+                _characterClassesProperty.arraySize++;
+                int newIndex = _characterClassesProperty.arraySize - 1;
+                SerializedProperty newClassProperty = _characterClassesProperty.GetArrayElementAtIndex(newIndex);
+                SerializedProperty newClassTypeProperty = newClassProperty.FindPropertyRelative("characterClass");
+                newStatsProperty = newClassProperty.FindPropertyRelative("stats");
+                
+                // Устанавливаем тип класса
+                newClassTypeProperty.enumValueIndex = (int)characterClass;
+                
+                // Очищаем статистики
+                newStatsProperty.arraySize = 0;
+                serializedObject.ApplyModifiedProperties();
+            }
+            
+            // Автоматически генерируем статистики с учетом множителя сложности
+            AutoGenerateForClass(characterClass, newStatsProperty, difficultyMultiplier);
+        }
+        
+        // Метод для получения цвета в зависимости от уровня сложности
+        private Color GetDifficultyColor(float difficulty)
+        {
+            if (difficulty <= 0.7f) return _difficultyColors[0]; // Очень легко
+            if (difficulty <= 0.9f) return _difficultyColors[1]; // Легко
+            if (difficulty <= 1.1f) return _difficultyColors[2]; // Средне
+            if (difficulty <= 1.5f) return _difficultyColors[3]; // Сложно
+            return _difficultyColors[4]; // Очень сложно
+        }
+        
+        // Метод для получения текстового описания сложности
+        private string GetDifficultyLabel(float difficulty)
+        {
+            if (difficulty <= 0.7f) return _difficultyLabels[0]; // Очень легко
+            if (difficulty <= 0.9f) return _difficultyLabels[1]; // Легко
+            if (difficulty <= 1.1f) return _difficultyLabels[2]; // Средне
+            if (difficulty <= 1.5f) return _difficultyLabels[3]; // Сложно
+            return _difficultyLabels[4]; // Очень сложно
         }
     }
 } 
