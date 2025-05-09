@@ -11,6 +11,7 @@ public class CrystalPickup : MonoBehaviour
 
     private bool _isPickedUp = false;
     private AudioSource _audioSource;
+    private RandomizedAudioSource _randomizedAudioSource;
 
     private void Awake()
     {
@@ -18,6 +19,12 @@ public class CrystalPickup : MonoBehaviour
         if (_audioSource == null && _pickupSound != null)
         {
             _audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        _randomizedAudioSource = GetComponent<RandomizedAudioSource>();
+        if (_randomizedAudioSource == null && _audioSource != null)
+        {
+            _randomizedAudioSource = gameObject.AddComponent<RandomizedAudioSource>();
+            _randomizedAudioSource.audioSource = _audioSource;
         }
     }
 
@@ -52,9 +59,9 @@ public class CrystalPickup : MonoBehaviour
             _pickupEffect.Play();
         }
 
-        if (_pickupSound != null && _audioSource != null)
+        if (_pickupSound != null && _randomizedAudioSource != null)
         {
-            _audioSource.PlayOneShot(_pickupSound);
+            _randomizedAudioSource.PlayOneShot(_pickupSound);
         }
 
         // Скрываем визуальную модель кристалла

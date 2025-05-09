@@ -10,6 +10,7 @@ public class MerchantQuestCompletion : MonoBehaviour
 
     private bool _isCompleted = false;
     private AudioSource _audioSource;
+    private RandomizedAudioSource _randomizedAudioSource;
 
     private void Awake()
     {
@@ -17,6 +18,12 @@ public class MerchantQuestCompletion : MonoBehaviour
         if (_audioSource == null && _questCompletionSound != null)
         {
             _audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        _randomizedAudioSource = GetComponent<RandomizedAudioSource>();
+        if (_randomizedAudioSource == null && _audioSource != null)
+        {
+            _randomizedAudioSource = gameObject.AddComponent<RandomizedAudioSource>();
+            _randomizedAudioSource.audioSource = _audioSource;
         }
     }
 
@@ -60,9 +67,9 @@ public class MerchantQuestCompletion : MonoBehaviour
             _questCompletionEffect.SetActive(true);
         }
 
-        if (_questCompletionSound != null && _audioSource != null)
+        if (_questCompletionSound != null && _randomizedAudioSource != null)
         {
-            _audioSource.PlayOneShot(_questCompletionSound);
+            _randomizedAudioSource.PlayOneShot(_questCompletionSound);
         }
     }
 } 

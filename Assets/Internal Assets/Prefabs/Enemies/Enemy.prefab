@@ -220,6 +220,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
         type: 3}
+      propertyPath: _takeDamage.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 4009831249891783728}
+    - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
       propertyPath: _takeDamage.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
       objectReference: {fileID: 6991818344359335946}
@@ -242,6 +247,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _onDie.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: RPG.Inventories.RandomDropper, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
+      propertyPath: _takeDamage.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: RandomizedAudioSource, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4496227690451388322, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
         type: 3}
@@ -361,7 +371,33 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 6313000335727546957}
+    - targetCorrespondingSourceObject: {fileID: 591705477206598968, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4009831249891783728}
   m_SourcePrefab: {fileID: 100100000, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265, type: 3}
+--- !u!1 &1580616527334121177 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 591705477206598968, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+    type: 3}
+  m_PrefabInstance: {fileID: 2150841163275434977}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4009831249891783728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580616527334121177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 560a38a618c6b144fb86d52c96367889, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 5473090505419759510}
+  minPitch: 0.85
+  maxPitch: 1.15
+  playChance: 0.35
 --- !u!95 &2298555576970865348 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 161934672455438629, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
@@ -441,6 +477,7 @@ MonoBehaviour:
   _waypointDwellTime: 3
   _patrolSpeedFraction: 0.2
   _shoutDistance: 5
+  _maxChaseDistanceFromSpawn: 15
 --- !u!114 &6313000335727546957
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -455,6 +492,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scatterDistance: 1
   _dropLibrary: {fileID: 11400000, guid: 1648a246799301c48ae37e8cccef223e, type: 2}
+--- !u!82 &5473090505419759510 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 6209619965172671607, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+    type: 3}
+  m_PrefabInstance: {fileID: 2150841163275434977}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9136524882188010742 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7138810541904264983, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
