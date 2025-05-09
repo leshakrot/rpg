@@ -39,6 +39,19 @@ namespace RPG.Control
         private SpawnPoint _spawnPoint;
         [SerializeField] private float _maxChaseDistanceFromSpawn = 15f;
 
+        private enum State
+        {
+            Patrol,
+            Chase,
+            Suspicion,
+            ReturnToSpawn
+        }
+
+        private State _currentState = State.Patrol;
+        private float _suspicionTimer = 0f;
+        private float _suspicionDuration = 2f; // сколько секунд враг "осматривается"
+        private bool _isReturningToSpawn = false;
+
         private void Awake()
         {
             _actionScheduler = GetComponent<ActionScheduler>();
@@ -59,7 +72,10 @@ namespace RPG.Control
             _timeSinceArrivedAtWaypoint = Mathf.Infinity;
             _timeSinceAggrevated = Mathf.Infinity;
             _currentWaypointIndex = 0;
-    }
+            _currentState = State.Patrol;
+            _isReturningToSpawn = false;
+            _suspicionTimer = 0f;
+        }
 
         private Vector3 GetGuardPosition()
         {
@@ -74,26 +90,69 @@ namespace RPG.Control
         {
             if (_health.IsDead()) return;
 
-            if (IsAggrevated() && _fighter.CanAttack(_player) && !IsTooFarFromSpawn())
-            {
-                AttackBehaviour();
-            }
-            else if (IsTooFarFromSpawn())
-            {
-                _timeSinceLastSawPlayer = Mathf.Infinity;
-                _timeSinceAggrevated = Mathf.Infinity;
-                PatrolBehaviour();
-            }
-            else if (_timeSinceLastSawPlayer < _suspitionTime)
-            {
-                SuspicionBehaviour();
-            }
-            else
-            {
-                PatrolBehaviour();
-            }
-
+            // Всегда обновляем таймеры
             UpdateTimers();
+
+            // Проверяем, может ли враг атаковать игрока и находится ли игрок в зоне агрессии
+            bool canAttackPlayer = _fighter.CanAttack(_player);
+            bool isAggrevated = IsAggrevated();
+            bool tooFarFromSpawn = IsTooFarFromSpawn();
+
+            switch (_currentState)
+            {
+                case State.Chase:
+                    if (tooFarFromSpawn)
+                    {
+                        // Игрок увёл врага слишком далеко — враг теряет интерес
+                        _currentState = State.Suspicion;
+                        _suspicionTimer = 0f;
+                    }
+                    else if (isAggrevated && canAttackPlayer)
+                    {
+                        AttackBehaviour();
+                        _timeSinceLastSawPlayer = 0f;
+                    }
+                    else
+                    {
+                        // Игрок скрылся — враг начинает подозревать
+                        _currentState = State.Suspicion;
+                        _suspicionTimer = 0f;
+                    }
+                    break;
+
+                case State.Suspicion:
+                    SuspicionBehaviour();
+                    _suspicionTimer += Time.deltaTime;
+                    if (_suspicionTimer > _suspicionDuration)
+                    {
+                        _currentState = State.ReturnToSpawn;
+                    }
+                    // В этом состоянии враг не реагирует на игрока, даже если тот снова появился
+                    break;
+
+                case State.ReturnToSpawn:
+                    // Если игрок снова агрит врага и враг не слишком далеко — возвращаемся к преследованию
+                    if (isAggrevated && canAttackPlayer && !tooFarFromSpawn)
+                    {
+                        _currentState = State.Chase;
+                        break;
+                    }
+                    ReturnToSpawnBehaviour();
+                    if (AtGuardPosition())
+                    {
+                        _currentState = State.Patrol;
+                    }
+                    break;
+
+                case State.Patrol:
+                default:
+                    PatrolBehaviour();
+                    if (isAggrevated && canAttackPlayer && !tooFarFromSpawn)
+                    {
+                        _currentState = State.Chase;
+                    }
+                    break;
+            }
         }
 
         public void Aggrevate()
@@ -187,6 +246,16 @@ namespace RPG.Control
             _spawnPoint = point;
             _guardPosition = new LazyValue<Vector3>(() => _spawnPoint.transform.position);
             _guardPosition.ForceInit();
+        }
+
+        private void ReturnToSpawnBehaviour()
+        {
+            _mover.StartMoveAction(_guardPosition.value, _patrolSpeedFraction);
+        }
+
+        private bool AtGuardPosition()
+        {
+            return Vector3.Distance(transform.position, _guardPosition.value) < 0.5f;
         }
 
         private void OnDrawGizmosSelected()
