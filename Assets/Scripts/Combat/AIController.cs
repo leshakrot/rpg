@@ -36,6 +36,9 @@ namespace RPG.Control
         private float _timeSinceAggrevated = Mathf.Infinity;
         private int _currentWaypointIndex = 0;
 
+        private SpawnPoint _spawnPoint;
+        [SerializeField] private float _maxChaseDistanceFromSpawn = 15f;
+
         private void Awake()
         {
             _actionScheduler = GetComponent<ActionScheduler>();
@@ -71,9 +74,15 @@ namespace RPG.Control
         {
             if (_health.IsDead()) return;
 
-            if (IsAggrevated() && _fighter.CanAttack(_player))
+            if (IsAggrevated() && _fighter.CanAttack(_player) && !IsTooFarFromSpawn())
             {
                 AttackBehaviour();
+            }
+            else if (IsTooFarFromSpawn())
+            {
+                _timeSinceLastSawPlayer = Mathf.Infinity;
+                _timeSinceAggrevated = Mathf.Infinity;
+                PatrolBehaviour();
             }
             else if (_timeSinceLastSawPlayer < _suspitionTime)
             {
@@ -165,6 +174,19 @@ namespace RPG.Control
         {
             float distanceToPlayer = Vector3.Distance(_player.transform.position, transform.position);
             return distanceToPlayer < _chaseDistance || _timeSinceAggrevated < _agroCooldownTime;
+        }
+
+        private bool IsTooFarFromSpawn()
+        {
+            if (_spawnPoint == null) return false;
+            return Vector3.Distance(transform.position, _spawnPoint.transform.position) > _maxChaseDistanceFromSpawn;
+        }
+
+        public void SetSpawnPoint(SpawnPoint point)
+        {
+            _spawnPoint = point;
+            _guardPosition = new LazyValue<Vector3>(() => _spawnPoint.transform.position);
+            _guardPosition.ForceInit();
         }
 
         private void OnDrawGizmosSelected()

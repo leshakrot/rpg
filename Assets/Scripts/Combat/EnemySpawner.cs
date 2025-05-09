@@ -331,6 +331,7 @@ namespace RPG.Combat
             var aiController = enemy.GetComponent<RPG.Control.AIController>();
             if (aiController != null)
             {
+                aiController.SetSpawnPoint(point);
                 aiController.Reset();
             }
             
