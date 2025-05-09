@@ -215,6 +215,16 @@ namespace RPG.Combat
 
         public void EquipWeapon(WeaponConfig weapon)
         {
+            if (weapon == null)
+            {
+                Debug.LogWarning("Попытка экипировать несуществующее оружие! Экипируется оружие по умолчанию.");
+                if (defaultWeapon != null)
+                {
+                    _currentWeaponConfig = defaultWeapon;
+                    _currentWeapon.value = AttachWeapon(defaultWeapon);
+                }
+                return;
+            }
             _currentWeaponConfig = weapon;
             _currentWeapon.value = AttachWeapon(weapon);
         }
@@ -509,6 +519,11 @@ namespace RPG.Combat
 
         private Weapon AttachWeapon(WeaponConfig weapon)
         {
+            if (weapon == null)
+            {
+                Debug.LogWarning("AttachWeapon: weapon == null");
+                return null;
+            }
             return weapon.Spawn(rightHandTransform, leftHandTransform, _animator);
         }
 

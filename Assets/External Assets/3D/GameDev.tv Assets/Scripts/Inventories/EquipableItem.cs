@@ -20,7 +20,7 @@ namespace GameDevTV.Inventories
         public bool CanEquip(EquipLocation equipLocation, Equipment equipment)
         {
             if (equipLocation != allowedEquipLocation) return false;
-
+            if (equipCondition == null) return true;
             return equipCondition.Check(equipment.GetComponents<IPredicateEvaluator>());
         }
 
