@@ -5,13 +5,14 @@ using GameDevTV.Inventories;
 using RPG.Abilities;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace GameDevTV.UI.Inventories
 {
     /// <summary>
     /// The UI slot for the player action bar.
     /// </summary>
-    public class ActionSlotUI : MonoBehaviour, IItemHolder, IDragContainer<GameDevTV.Inventories.InventoryItem>
+    public class ActionSlotUI : MonoBehaviour, IItemHolder, IDragContainer<GameDevTV.Inventories.InventoryItem>, IPointerClickHandler
     {
         // CONFIG DATA
         [SerializeField] InventoryItemIcon icon = null;
@@ -21,11 +22,12 @@ namespace GameDevTV.UI.Inventories
         // CACHE
         ActionStore store;
         CooldownStore cooldownStore;
+        GameObject player;
 
         // LIFECYCLE METHODS
         private void Awake()
         {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            player = GameObject.FindGameObjectWithTag("Player");
             store = player.GetComponent<ActionStore>();
             cooldownStore = player.GetComponent<CooldownStore>();
             store.storeUpdated += UpdateIcon;
@@ -61,6 +63,24 @@ namespace GameDevTV.UI.Inventories
         public void RemoveItems(int number)
         {
             store.RemoveItems(index, number);
+        }
+        
+        // Метод для использования предмета при клике
+        public void UseItem()
+        {
+            if (store != null && player != null)
+            {
+                store.Use(index, player);
+            }
+        }
+        
+        // Обработка клика по иконке предмета
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                UseItem();
+            }
         }
 
         // PRIVATE
