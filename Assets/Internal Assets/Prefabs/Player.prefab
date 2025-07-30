@@ -1,5 +1,103 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &358443695254971121
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5769238769826680127}
+    m_Modifications:
+    - target: {fileID: 3574584202999943299, guid: f06f244824c0f13408166bee4f20f3ab,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3574584202999943299, guid: f06f244824c0f13408166bee4f20f3ab,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3574584202999943299, guid: f06f244824c0f13408166bee4f20f3ab,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3574584202999943299, guid: f06f244824c0f13408166bee4f20f3ab,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3574584202999943299, guid: f06f244824c0f13408166bee4f20f3ab,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3574584202999943299, guid: f06f244824c0f13408166bee4f20f3ab,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3574584202999943299, guid: f06f244824c0f13408166bee4f20f3ab,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3574584202999943299, guid: f06f244824c0f13408166bee4f20f3ab,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3574584202999943299, guid: f06f244824c0f13408166bee4f20f3ab,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3574584202999943299, guid: f06f244824c0f13408166bee4f20f3ab,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3990646822670960402, guid: f06f244824c0f13408166bee4f20f3ab,
+        type: 3}
+      propertyPath: m_Name
+      value: Experience Text Manager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3990646822670960402, guid: f06f244824c0f13408166bee4f20f3ab,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6195901637440276886}
+  m_SourcePrefab: {fileID: 100100000, guid: f06f244824c0f13408166bee4f20f3ab, type: 3}
+--- !u!1 &3717952939977778659 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3990646822670960402, guid: f06f244824c0f13408166bee4f20f3ab,
+    type: 3}
+  m_PrefabInstance: {fileID: 358443695254971121}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6195901637440276886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3717952939977778659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d222f6509818b4d4eb3025d79c3d2c77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _experienceTextPrefab: {fileID: 6382639610877371559, guid: 32f048af3962787419bcf503f17758ae,
+    type: 3}
+--- !u!4 &3846649953139978866 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3574584202999943299, guid: f06f244824c0f13408166bee4f20f3ab,
+    type: 3}
+  m_PrefabInstance: {fileID: 358443695254971121}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3675590703517938216
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -164,6 +262,10 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 7138810541904264983, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
         type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 3846649953139978866}
+    - targetCorrespondingSourceObject: {fileID: 7138810541904264983, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
       insertIndex: -1
       addedObject: {fileID: 6452698797258557957}
     m_AddedComponents:
@@ -286,9 +388,16 @@ MonoBehaviour:
   _maxNavmeshProjectionDistance: 1
   _raycastRadius: 1
   _numberOfAbilities: 6
+  _movementTargetIndicator: {fileID: 0}
+  _movementTargetIndicatorNoTarget: {fileID: 0}
   wasdMoveSpeedFraction: 1
   lookAheadDistance: 1
   rotationSpeed: 10
+  tapThresholdTime: 0.3
+  tapThresholdDistance: 15
+  joystickWidth: 0.3
+  joystickHeight: 0.3
+  restrictCameraSwipesToRightHalf: 1
   _isDraggingUI: 0
 --- !u!136 &181648149547853713
 CapsuleCollider:
@@ -326,6 +435,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _experiencePoints: 0
+  _gainExperience:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: RPG.UI.ExperienceText.ExperienceTextSpawner, Assembly-CSharp
+        m_MethodName: Spawn
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &347639719919131200
 MonoBehaviour:
   m_ObjectHideFlags: 0

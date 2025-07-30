@@ -9,6 +9,8 @@ namespace RPG.Control
         Pickup,
         FullPickup,
         Dialogue,
-        Shop
+        Shop,
+        Harvesting,
+        HarvestingBlocked  // Новый курсор для заблокированной добычи
     }
 }

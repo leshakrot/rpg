@@ -1,12 +1,14 @@
 using GameDevTV.Saving;
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RPG.Stats
 {
     public class Experience : MonoBehaviour, ISaveable
     {
         [SerializeField] private float _experiencePoints = 0;
+        [SerializeField] private UnityEvent<float> _gainExperience;
 
         //public delegate void ExperienceGainedDelegate();
         public event Action onExperienceGained;
@@ -22,6 +24,7 @@ namespace RPG.Stats
         public void GainExperience(float experience)
         {
             _experiencePoints += experience;
+            _gainExperience.Invoke(experience);
             onExperienceGained();
         }
 

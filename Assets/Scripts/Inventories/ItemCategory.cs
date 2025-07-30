@@ -1,4 +1,4 @@
-namespace GameDevTV.Inventories
+﻿namespace GameDevTV.Inventories
 {
     public enum ItemCategory
     {
@@ -8,6 +8,9 @@ namespace GameDevTV.Inventories
         Potions,
         Special,
         Abilities,
-        Food
+	    Food,
+	    Wood,
+	    Ore,
+	    Herb
     }
 }
