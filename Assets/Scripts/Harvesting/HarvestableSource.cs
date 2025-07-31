@@ -8,7 +8,10 @@ using GameDevTV.Inventories;
 namespace RPG.Harvesting
 {
     public abstract class HarvestableSource : MonoBehaviour, IHarvestable, IRaycastable
-    {
+	{
+		protected HarvestingToolVisualizer toolVisualizer = null;
+		protected HarvestingTool currentDisplayedTool = null;
+    	
         [Header("Ресурс")]
         [SerializeField] protected HarvestableResource resource = null;
         
@@ -102,44 +105,54 @@ namespace RPG.Harvesting
             return CanStartHarvesting(playerLevel, null);
         }
         
-        public virtual void StartHarvesting(PlayerController player)
-        {
-            var playerLevel = player.GetComponent<BaseStats>().GetLevel();
-            var inventory = player.GetComponent<GameDevTV.Inventories.Inventory>();
-            
-            if (!CanStartHarvesting(playerLevel, inventory))
-            {
-                return;
-            }
-            
-            if (isHarvesting)
-            {
-                return;
-            }
-            
-            currentPlayer = player;
-            isHarvesting = true;
-            
-            // Очищаем корутину ожидания если она была
-            if (waitForPlayerCoroutine != null)
-            {
-                StopCoroutine(waitForPlayerCoroutine);
-                waitForPlayerCoroutine = null;
-            }
-            
-            // Запускаем анимацию добычи
-            StartHarvestAnimation();
-            
-            // Запускаем процесс добычи
-            if (harvestCoroutine != null)
-            {
-                StopCoroutine(harvestCoroutine);
-            }
-            harvestCoroutine = StartCoroutine(HarvestProcess());
-            
-            // Сразу обновляем прогресс-бар с текущим состоянием
-            OnHarvestProgress?.Invoke(currentProgress);
-        }
+		public virtual void StartHarvesting(PlayerController player)
+		{
+			var playerLevel = player.GetComponent<BaseStats>().GetLevel();
+			var inventory = player.GetComponent<GameDevTV.Inventories.Inventory>();
+    
+			if (!CanStartHarvesting(playerLevel, inventory))
+			{
+				return;
+			}
+    
+			if (isHarvesting)
+			{
+				return;
+			}
+    
+			currentPlayer = player;
+			isHarvesting = true;
+    
+			// Получаем визуализатор инструментов
+			toolVisualizer = player.GetComponent<HarvestingToolVisualizer>();
+			if (toolVisualizer == null)
+			{
+				Debug.LogWarning("HarvestableSource: не найден HarvestingToolVisualizer на игроке");
+			}
+    
+			// Определяем и показываем подходящий инструмент
+			ShowHarvestingTool(inventory);
+    
+			// Очищаем корутину ожидания если она была
+			if (waitForPlayerCoroutine != null)
+			{
+				StopCoroutine(waitForPlayerCoroutine);
+				waitForPlayerCoroutine = null;
+			}
+    
+			// Запускаем анимацию добычи
+			StartHarvestAnimation();
+    
+			// Запускаем процесс добычи
+			if (harvestCoroutine != null)
+			{
+				StopCoroutine(harvestCoroutine);
+			}
+			harvestCoroutine = StartCoroutine(HarvestProcess());
+    
+			// Сразу обновляем прогресс-бар с текущим состоянием
+			OnHarvestProgress?.Invoke(currentProgress);
+		}
         
         // Проверить есть ли NavMesh в сцене
         private bool CheckNavMeshExists()
@@ -283,33 +296,81 @@ namespace RPG.Harvesting
             return "Неизвестная причина";
         }
         
-        public virtual void StopHarvesting()
-        {
-            if (!isHarvesting)
-            {
-                return;
-            }
-            
-            isHarvesting = false;
-            currentPlayer = null;
-            
-            // Останавливаем корутину добычи
-            if (harvestCoroutine != null)
-            {
-                StopCoroutine(harvestCoroutine);
-                harvestCoroutine = null;
-            }
-            
-            // Останавливаем корутину ожидания
-            if (waitForPlayerCoroutine != null)
-            {
-                StopCoroutine(waitForPlayerCoroutine);
-                waitForPlayerCoroutine = null;
-            }
-            
-            // Останавливаем анимацию
-            StopHarvestAnimation();
-        }
+		public virtual void StopHarvesting()
+		{
+			if (!isHarvesting)
+			{
+				return;
+			}
+    
+			isHarvesting = false;
+			currentPlayer = null;
+    
+			// Скрываем инструмент добычи
+			HideHarvestingTool();
+    
+			// Останавливаем корутину добычи
+			if (harvestCoroutine != null)
+			{
+				StopCoroutine(harvestCoroutine);
+				harvestCoroutine = null;
+			}
+    
+			// Останавливаем корутину ожидания
+			if (waitForPlayerCoroutine != null)
+			{
+				StopCoroutine(waitForPlayerCoroutine);
+				waitForPlayerCoroutine = null;
+			}
+    
+			// Останавливаем анимацию
+			StopHarvestAnimation();
+		}
+		
+		/// <summary>
+		/// Показывает подходящий инструмент для добычи данного ресурса
+		/// </summary>
+		private void ShowHarvestingTool(GameDevTV.Inventories.Inventory inventory)
+		{
+			if (toolVisualizer == null || resource == null)
+			{
+				return;
+			}
+    
+			// Если ресурс не требует инструмента, ничего не показываем
+			if (resource.RequiredToolType == HarvestingToolType.None)
+			{
+				Debug.Log("HarvestableSource: ресурс не требует инструмента, добыча руками");
+				return;
+			}
+    
+			// Получаем лучший инструмент для этого ресурса
+			currentDisplayedTool = resource.GetBestToolFromInventory(inventory);
+    
+			if (currentDisplayedTool != null)
+			{
+				toolVisualizer.ShowHarvestingTool(currentDisplayedTool);
+				Debug.Log($"HarvestableSource: показан инструмент {currentDisplayedTool.name}");
+			}
+			else
+			{
+				Debug.LogWarning("HarvestableSource: подходящий инструмент не найден в инвентаре");
+			}
+		}
+
+		/// <summary>
+		/// Скрывает текущий инструмент добычи
+		/// </summary>
+		private void HideHarvestingTool()
+		{
+			if (toolVisualizer != null)
+			{
+				toolVisualizer.HideHarvestingTool();
+				Debug.Log("HarvestableSource: инструмент скрыт");
+			}
+    
+			currentDisplayedTool = null;
+		}
         
         protected virtual IEnumerator HarvestProcess()
         {
