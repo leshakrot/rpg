@@ -662,45 +662,34 @@ namespace RPG.Harvesting
             waitForPlayerCoroutine = null;
         }
 
-        private IEnumerator CheckDistanceAndStartHarvest(PlayerController player)
-{
-    float timeout = 10f;
-    float elapsed = 0f;
+		private IEnumerator CheckDistanceAndStartHarvest(PlayerController player)
+		{
+			float timeout = 10f;
+			float elapsed = 0f;
 
-    var agent = player.GetComponent<UnityEngine.AI.NavMeshAgent>();
+			var agent = player.GetComponent<UnityEngine.AI.NavMeshAgent>();
 
-    while (elapsed < timeout)
-    {
-        if (isHarvesting) yield break;
+			while (elapsed < timeout)
+			{
+				if (isHarvesting) yield break;
 
-        float distance = Vector3.Distance(player.transform.position, transform.position);
+				float distance = Vector3.Distance(player.transform.position, transform.position);
 
-        // Считаем, что дошёл, если расстояние <= harvestDistance + 0.2f
-        if (distance <= harvestDistance + 0.2f)
-        {
-            if (agent != null)
-            {
-                agent.isStopped = true; // Принудительно останавливаем
-                agent.ResetPath();
-            }
-            HarvestingManager.RegisterHarvestStart(this);
-            yield break;
-        }
-        else
-        {
-            // Если игрок ушёл — отправляем к правильной точке
-            var mover = player.GetComponent<RPG.Movement.Mover>();
-            if (mover != null)
-            {
-                Vector3 dir = (player.transform.position - transform.position).normalized;
-                Vector3 targetPos = transform.position + dir * harvestDistance;
-                mover.StartMoveAction(targetPos, 1f);
-            }
-        }
+				// Считаем, что дошёл, если расстояние <= harvestDistance + 0.2f
+				if (distance <= harvestDistance + 0.2f)
+				{
+					if (agent != null)
+					{
+						agent.isStopped = true; // Принудительно останавливаем
+						agent.ResetPath();
+					}
+					HarvestingManager.RegisterHarvestStart(this);
+					yield break;
+				}
 
-        elapsed += Time.deltaTime;
-        yield return new WaitForSeconds(0.1f);
-    }
-}
+				elapsed += Time.deltaTime;
+				yield return new WaitForSeconds(0.1f);
+			}
+		}
     }
 } 
