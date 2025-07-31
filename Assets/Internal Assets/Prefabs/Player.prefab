@@ -16,7 +16,7 @@ PrefabInstance:
     - target: {fileID: 3574584202999943299, guid: f06f244824c0f13408166bee4f20f3ab,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2.004
       objectReference: {fileID: 0}
     - target: {fileID: 3574584202999943299, guid: f06f244824c0f13408166bee4f20f3ab,
         type: 3}
@@ -329,6 +329,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 3985924019936815728}
+    - targetCorrespondingSourceObject: {fileID: 3599500272086516982, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6501771676087559796}
   m_SourcePrefab: {fileID: 100100000, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265, type: 3}
 --- !u!1 &212139946877236958 stripped
 GameObject:
@@ -380,10 +384,13 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: e43eb6dc9e9ce1f47bac91c53a5246fc, type: 3}
     hotspot: {x: 0, y: 0}
   - type: 6
-    texture: {fileID: 2800000, guid: b669239a8c1b6ac4080aa3be64aefa82, type: 3}
+    texture: {fileID: 2800000, guid: b742388d2f7855d41ab77f2ffbe4e558, type: 3}
     hotspot: {x: 0, y: 0}
   - type: 7
-    texture: {fileID: 2800000, guid: b669239a8c1b6ac4080aa3be64aefa82, type: 3}
+    texture: {fileID: 2800000, guid: 6d0916f30d4a8e84c839a037bed24d2a, type: 3}
+    hotspot: {x: 0, y: 0}
+  - type: 8
+    texture: {fileID: 2800000, guid: d0d03afcba5eebe41a438f083cc0466e, type: 3}
     hotspot: {x: 0, y: 0}
   _maxNavmeshProjectionDistance: 1
   _raycastRadius: 1
@@ -613,6 +620,20 @@ MonoBehaviour:
   fadeTime: 0.2
   healthRegenPercentage: 40
   enemyHealthRegenPercentage: 60
+--- !u!114 &6501771676087559796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 212139946877236958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bee16fba7f622e841a2f5a3858c87b8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rightHandTransform: {fileID: 0}
+  leftHandTransform: {fileID: 0}
 --- !u!4 &5769238769826680127 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7138810541904264983, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
