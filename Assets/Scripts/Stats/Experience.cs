@@ -1,4 +1,4 @@
-using GameDevTV.Saving;
+﻿using GameDevTV.Saving;
 using System;
 using UnityEngine;
 using UnityEngine.Events;
@@ -17,7 +17,7 @@ namespace RPG.Stats
         {
             if (Input.GetKey(KeyCode.E))
             {
-                GainExperience(Time.deltaTime * 1000);
+	            GainExperience(Time.deltaTime * 10000);
             }
         }
 

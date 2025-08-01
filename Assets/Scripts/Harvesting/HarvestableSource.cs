@@ -4,6 +4,7 @@ using UnityEngine;
 using RPG.Control;
 using RPG.Stats;
 using GameDevTV.Inventories;
+using RPG.UI.RequirementText;
 
 namespace RPG.Harvesting
 {
@@ -269,7 +270,7 @@ namespace RPG.Harvesting
         private string GetHarvestBlockReason(int playerLevel, GameDevTV.Inventories.Inventory inventory)
         {
             if (playerLevel < resource.MinimumLevel)
-                return $"Требуется уровень {resource.MinimumLevel} (у вас {playerLevel})";
+	            return $"Требуется уровень {resource.MinimumLevel} (у Вас - {playerLevel})";
                 
             if (resource.RequiredToolType != HarvestingToolType.None)
             {
@@ -558,61 +559,61 @@ namespace RPG.Harvesting
         
         private Coroutine waitForPlayerCoroutine = null;
 
-        public virtual bool HandleRaycast(PlayerController callingController)
-        {
-            if (isDepleted)
-            {
-                return false;
-            }
-            
-            // Проверяем, не идёт ли уже добыча
-            if (isHarvesting)
-            {
-                return true;
-            }
-            
-            // Проверяем, не запущена ли уже корутина ожидания
-            if (waitForPlayerCoroutine != null)
-            {
-                return true;
-            }
-            
-            if (Input.GetMouseButtonDown(0))
-            {
-                var playerLevel = callingController.GetComponent<BaseStats>().GetLevel();
-                var inventory = callingController.GetComponent<GameDevTV.Inventories.Inventory>();
-                
-                if (CanStartHarvesting(playerLevel, inventory))
-                {
-                    float distance = Vector3.Distance(callingController.transform.position, transform.position);
+		public virtual bool HandleRaycast(PlayerController callingController)
+		{
+			if (isDepleted)
+			{
+				return false;
+			}
+    
+			if (isHarvesting)
+			{
+				return true;
+			}
+    
+			if (waitForPlayerCoroutine != null)
+			{
+				return true;
+			}
+    
+			if (Input.GetMouseButtonDown(0))
+			{
+				var playerLevel = callingController.GetComponent<BaseStats>().GetLevel();
+				var inventory = callingController.GetComponent<GameDevTV.Inventories.Inventory>();
+        
+				if (CanStartHarvesting(playerLevel, inventory))
+				{
+					float distance = Vector3.Distance(callingController.transform.position, transform.position);
 
-                    if (distance <= harvestDistance)
-                    {
-                        HarvestingManager.RegisterHarvestStart(this);
-                    }
-                    else
-                    {
-                        var mover = callingController.GetComponent<RPG.Movement.Mover>();
-                        if (mover != null)
-                        {
-                            // Вычисляем точку на окружности вокруг ресурса
-                            Vector3 dir = (callingController.transform.position - transform.position).normalized;
-                            Vector3 targetPos = transform.position + dir * harvestDistance;
+					if (distance <= harvestDistance)
+					{
+						HarvestingManager.RegisterHarvestStart(this);
+					}
+					else
+					{
+						var mover = callingController.GetComponent<RPG.Movement.Mover>();
+						if (mover != null)
+						{
+							Vector3 dir = (callingController.transform.position - transform.position).normalized;
+							Vector3 targetPos = transform.position + dir * harvestDistance;
 
-                            mover.StartMoveAction(targetPos, 1f);
-                            StartCoroutine(CheckDistanceAndStartHarvest(callingController));
-                        }
-                    }
-                }
-                else
-                {
-                    Debug.Log("Нельзя добывать - проверьте уровень и инструменты");
-                }
-            }
-            
-            // Всегда возвращаем true для источников ресурсов - это позволяет показывать курсор
-            return true;
-        }
+							mover.StartMoveAction(targetPos, 1f);
+							StartCoroutine(CheckDistanceAndStartHarvest(callingController));
+						}
+					}
+				}
+				else
+				{
+					// *** НАЧАЛО ИЗМЕНЕНИЙ ***
+					// Если добывать нельзя, получаем причину и показываем ее игроку
+					string reason = GetHarvestBlockReason(playerLevel, inventory);
+					RequirementTextManager.Show(reason);
+					// *** КОНЕЦ ИЗМЕНЕНИЙ ***
+				}
+			}
+    
+			return true;
+		}
         
                 protected virtual IEnumerator WaitForPlayerAndStartHarvest(PlayerController player)
         {
