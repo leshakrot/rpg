@@ -68,11 +68,15 @@ namespace RPG.Harvesting
             SetupUI(harvestable.GetResource().ResourceName, harvestingColor);
             yield return StartCoroutine(FadeIn());
 
-            float currentProgress = 1f; // Начинаем с полного
+            // ИСПРАВЛЕНИЕ: Получаем текущий прогресс из ресурса вместо жестко заданного 1f
+            float currentProgress = (float)harvestable.GetRemainingResources() / harvestable.GetResource().ResourceAmount;
 
             // Лямбда-функция для обновления прогресса по событию
             System.Action<float> progressUpdater = (progress) => { currentProgress = progress; };
             harvestable.OnHarvestProgress += progressUpdater;
+
+            // ИСПРАВЛЕНИЕ: Сразу обновляем бар с правильным прогрессом
+            UpdateBar(currentProgress);
 
             // Цикл обновления, пока корутина активна
             while (true)

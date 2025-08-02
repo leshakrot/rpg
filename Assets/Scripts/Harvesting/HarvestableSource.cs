@@ -57,15 +57,19 @@ namespace RPG.Harvesting
                 SetDepleted(true);
             }
         }
-        
+
         protected virtual void Start()
         {
             UpdateVisuals();
-            // Инициализируем прогресс как полный бар
-            currentProgress = 1f;
-            OnHarvestProgress?.Invoke(currentProgress);
+
+            // ИСПРАВЛЕНИЕ: Инициализируем прогресс только если не добываем
+            if (!isHarvesting)
+            {
+                currentProgress = (float)remainingResources / resource.ResourceAmount;
+                OnHarvestProgress?.Invoke(currentProgress);
+            }
         }
-        
+
         public virtual bool CanStartHarvesting(int playerLevel, GameDevTV.Inventories.Inventory inventory = null)
         {
             if (resource == null)
@@ -105,56 +109,59 @@ namespace RPG.Harvesting
         {
             return CanStartHarvesting(playerLevel, null);
         }
-        
-		public virtual void StartHarvesting(PlayerController player)
-		{
-			var playerLevel = player.GetComponent<BaseStats>().GetLevel();
-			var inventory = player.GetComponent<GameDevTV.Inventories.Inventory>();
-    
-			if (!CanStartHarvesting(playerLevel, inventory))
-			{
-				return;
-			}
-    
-			if (isHarvesting)
-			{
-				return;
-			}
-    
-			currentPlayer = player;
-			isHarvesting = true;
-    
-			// Получаем визуализатор инструментов
-			toolVisualizer = player.GetComponent<HarvestingToolVisualizer>();
-			if (toolVisualizer == null)
-			{
-				Debug.LogWarning("HarvestableSource: не найден HarvestingToolVisualizer на игроке");
-			}
-    
-			// Определяем и показываем подходящий инструмент
-			ShowHarvestingTool(inventory);
-    
-			// Очищаем корутину ожидания если она была
-			if (waitForPlayerCoroutine != null)
-			{
-				StopCoroutine(waitForPlayerCoroutine);
-				waitForPlayerCoroutine = null;
-			}
-    
-			// Запускаем анимацию добычи
-			StartHarvestAnimation();
-    
-			// Запускаем процесс добычи
-			if (harvestCoroutine != null)
-			{
-				StopCoroutine(harvestCoroutine);
-			}
-			harvestCoroutine = StartCoroutine(HarvestProcess());
-    
-			// Сразу обновляем прогресс-бар с текущим состоянием
-			OnHarvestProgress?.Invoke(currentProgress);
-		}
-        
+
+        public virtual void StartHarvesting(PlayerController player)
+        {
+            var playerLevel = player.GetComponent<BaseStats>().GetLevel();
+            var inventory = player.GetComponent<GameDevTV.Inventories.Inventory>();
+
+            if (!CanStartHarvesting(playerLevel, inventory))
+            {
+                return;
+            }
+
+            if (isHarvesting)
+            {
+                return;
+            }
+
+            currentPlayer = player;
+            isHarvesting = true;
+
+            // ИСПРАВЛЕНИЕ: Обновляем прогресс на основе оставшихся ресурсов
+            currentProgress = (float)remainingResources / resource.ResourceAmount;
+
+            // Получаем визуализатор инструментов
+            toolVisualizer = player.GetComponent<HarvestingToolVisualizer>();
+            if (toolVisualizer == null)
+            {
+                Debug.LogWarning("HarvestableSource: не найден HarvestingToolVisualizer на игроке");
+            }
+
+            // Определяем и показываем подходящий инструмент
+            ShowHarvestingTool(inventory);
+
+            // Очищаем корутину ожидания если она была
+            if (waitForPlayerCoroutine != null)
+            {
+                StopCoroutine(waitForPlayerCoroutine);
+                waitForPlayerCoroutine = null;
+            }
+
+            // Запускаем анимацию добычи
+            StartHarvestAnimation();
+
+            // Запускаем процесс добычи
+            if (harvestCoroutine != null)
+            {
+                StopCoroutine(harvestCoroutine);
+            }
+            harvestCoroutine = StartCoroutine(HarvestProcess());
+
+            // ИСПРАВЛЕНИЕ: Теперь отправляем актуальный прогресс
+            OnHarvestProgress?.Invoke(currentProgress);
+        }
+
         // Проверить есть ли NavMesh в сцене
         private bool CheckNavMeshExists()
         {
