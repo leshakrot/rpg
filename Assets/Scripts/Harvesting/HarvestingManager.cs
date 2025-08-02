@@ -107,11 +107,12 @@ namespace RPG.Harvesting
                 Debug.LogError("Player не найден!");
                 return;
             }
-            
+
             // Запускаем UI (предпочитаем новый HarvestBar)
             if (harvestBar != null)
             {
-                harvestBar.StartTracking(target);
+                // ИЗМЕНЕНИЕ: Вызываем новый метод
+                harvestBar.StartHarvesting(target);
             }
             else
             {
@@ -134,11 +135,12 @@ namespace RPG.Harvesting
                 // Вызываем событие остановки добычи
                 OnHarvestingStopped?.Invoke();
             }
-            
+
             // Останавливаем UI
             if (harvestBar != null)
             {
-                harvestBar.StopTracking();
+                // ИЗМЕНЕНИЕ: Вызываем новый метод
+                harvestBar.Stop();
             }
         }
         

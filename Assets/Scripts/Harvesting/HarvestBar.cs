@@ -1,6 +1,6 @@
-﻿using RPG.UI;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace RPG.Harvesting
 {
@@ -8,218 +8,136 @@ namespace RPG.Harvesting
     {
         [Header("UI Elements")]
         [SerializeField] private RectTransform foreground = null;
-        [SerializeField] private Canvas rootCanvas = null;
         [SerializeField] private CanvasGroup canvasGroup = null;
-        [SerializeField] private Text resourceNameText = null;
+        [SerializeField] private Text titleText = null;
         [SerializeField] private Text progressText = null;
-        [SerializeField] private Image backgroundImage = null;
-        
+        [SerializeField] private Image foregroundImage = null;
+
         [Header("Settings")]
         [SerializeField] private float smoothSpeed = 8f;
-        [SerializeField] private float hideDelay = 0.5f;
-        
-        // Состояние прогресса
-        private float currentProgressFraction = 1f;
-        private float targetProgressFraction = 1f;
-        private IHarvestable targetHarvestable = null;
-        private bool isTracking = false;
-        private float hideTimer = 0f;
-        
+        [SerializeField] private Color processingColor = new Color(0.2f, 0.6f, 1f); // Голубой цвет для крафта
+        [SerializeField] private Color harvestingColor = new Color(0.2f, 0.8f, 0.2f); // Зеленый для добычи
+
+        private Coroutine activeProcessCoroutine = null;
+
         private void Awake()
         {
-            // Получаем CanvasGroup для безопасного управления видимостью
-            if (canvasGroup == null)
-                canvasGroup = GetComponent<CanvasGroup>();
-                
-            // Если нет CanvasGroup - создаём
-            if (canvasGroup == null)
-                canvasGroup = gameObject.AddComponent<CanvasGroup>();
-            
-            // Для HUD элементов Canvas может быть родительским, не трогаем его настройки
-            if (rootCanvas == null)
-                rootCanvas = GetComponentInParent<Canvas>();
-                
-            // Скрываем UI по умолчанию
-            canvasGroup.alpha = 0f;
-            canvasGroup.interactable = false;
-            canvasGroup.blocksRaycasts = false;
+            if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
+            if (foreground != null && foregroundImage == null) foregroundImage = foreground.GetComponent<Image>();
+            canvasGroup.alpha = 0; // Скрыт по умолчанию
         }
-        
-        private void Update()
+
+        /// <summary>
+        /// Запускает отображение для процесса добычи (убывающий).
+        /// </summary>
+        public void StartHarvesting(IHarvestable harvestable)
         {
-            if (!isTracking || targetHarvestable == null)
-            {
-                // Плавное скрытие с задержкой
-                hideTimer += Time.deltaTime;
-                if (hideTimer >= hideDelay && canvasGroup != null)
-                {
-                    canvasGroup.alpha = 0f;
-                    canvasGroup.interactable = false;
-                    canvasGroup.blocksRaycasts = false;
-                }
-                return;
-            }
-            
-            hideTimer = 0f;
-            
-            // Убеждаемся что UI виден
-            if (canvasGroup != null && canvasGroup.alpha < 1f)
-            {
-                canvasGroup.alpha = 1f;
-                canvasGroup.interactable = true;
-                canvasGroup.blocksRaycasts = true;
-            }
-            
-            // Плавное изменение прогресса
-            currentProgressFraction = Mathf.Lerp(currentProgressFraction, targetProgressFraction, Time.deltaTime * smoothSpeed);
-            
-            // Если разница очень мала, просто устанавливаем равенство
-            if (Mathf.Abs(currentProgressFraction - targetProgressFraction) < 0.001f)
-            {
-                currentProgressFraction = targetProgressFraction;
-            }
-            
-            // Обновляем визуалы
-            UpdateBarVisuals();
-            
-            // Обновляем текст прогресса
-            UpdateProgressText();
+            // Останавливаем любой предыдущий процесс
+            if (activeProcessCoroutine != null) StopCoroutine(activeProcessCoroutine);
+
+            // Запускаем новую корутину для отслеживания добычи
+            activeProcessCoroutine = StartCoroutine(TrackHarvestable(harvestable));
         }
-        
-        public void StartTracking(IHarvestable harvestable)
+
+        /// <summary>
+        /// Запускает отображение для процесса переработки (возрастающий).
+        /// </summary>
+        public void StartProcessing(string title, float duration)
         {
-            if (targetHarvestable != null)
-            {
-                StopTracking();
-            }
-            
-            targetHarvestable = harvestable;
-            isTracking = true;
-            hideTimer = 0f;
-            
-            if (harvestable != null)
-            {
-                // Подписываемся на события
-                harvestable.OnHarvestProgress += OnProgressChanged;
-                harvestable.OnResourceDepleted += OnResourceDepleted;
-                
-                // Настраиваем UI для ресурса
-                SetupForResource(harvestable.GetResource());
-                
-                // Получаем текущий прогресс
-                GetCurrentProgressFromSource();
-            }
+            if (activeProcessCoroutine != null) StopCoroutine(activeProcessCoroutine);
+            activeProcessCoroutine = StartCoroutine(TrackTimedProcess(title, duration));
         }
-        
-        public void StopTracking()
+
+        /// <summary>
+        /// Немедленно останавливает отображение и скрывает бар.
+        /// </summary>
+        public void Stop()
         {
-            if (targetHarvestable != null)
+            if (activeProcessCoroutine != null)
             {
-                // Отписываемся от событий
-                targetHarvestable.OnHarvestProgress -= OnProgressChanged;
-                targetHarvestable.OnResourceDepleted -= OnResourceDepleted;
+                StopCoroutine(activeProcessCoroutine);
+                activeProcessCoroutine = null;
             }
-            
-            targetHarvestable = null;
-            isTracking = false;
+            StartCoroutine(FadeOut());
         }
-        
-        private void SetupForResource(HarvestableResource resource)
+
+        // Корутина для отслеживания добычи (убывающий прогресс)
+        private IEnumerator TrackHarvestable(IHarvestable harvestable)
         {
-            if (resource == null) return;
-            
-            // Устанавливаем название ресурса
-            if (resourceNameText != null)
+            // Настройка и отображение
+            SetupUI(harvestable.GetResource().ResourceName, harvestingColor);
+            yield return StartCoroutine(FadeIn());
+
+            float currentProgress = 1f; // Начинаем с полного
+
+            // Лямбда-функция для обновления прогресса по событию
+            System.Action<float> progressUpdater = (progress) => { currentProgress = progress; };
+            harvestable.OnHarvestProgress += progressUpdater;
+
+            // Цикл обновления, пока корутина активна
+            while (true)
             {
-                resourceNameText.text = resource.ResourceName;
+                UpdateBar(currentProgress);
+                yield return null;
             }
-            
-            // Устанавливаем цвет прогресс-бара
-            if (backgroundImage != null)
+
+            // Отписка (хотя до сюда код не дойдет, т.к. корутину остановят извне)
+            // harvestable.OnHarvestProgress -= progressUpdater;
+        }
+
+        // Корутина для отслеживания переработки (возрастающий прогресс)
+        private IEnumerator TrackTimedProcess(string title, float duration)
+        {
+            SetupUI(title, processingColor);
+            yield return StartCoroutine(FadeIn());
+
+            float timer = 0f;
+            while (timer < duration)
             {
-                backgroundImage.color = resource.ProgressBarColor;
+                timer += Time.deltaTime;
+                UpdateBar(timer / duration);
+                yield return null;
             }
-            
-            // Если есть foreground, тоже устанавливаем цвет
-            if (foreground != null)
-            {
-                var foregroundImage = foreground.GetComponent<Image>();
-                if (foregroundImage != null)
-                {
-                    foregroundImage.color = resource.ProgressBarColor;
-                }
-            }
+
+            // Процесс завершен, скрываем бар
+            yield return StartCoroutine(FadeOut());
+            activeProcessCoroutine = null;
         }
-        
-        private void OnProgressChanged(float progress)
+
+        private void SetupUI(string title, Color barColor)
         {
-            targetProgressFraction = progress;
+            if (titleText != null) titleText.text = title;
+            if (foregroundImage != null) foregroundImage.color = barColor;
         }
-        
-        private void OnResourceDepleted()
+
+        private void UpdateBar(float targetFraction)
         {
-            targetProgressFraction = 0f;
-        }
-        
-        private void SetProgress(float progress)
-        {
-            targetProgressFraction = Mathf.Clamp01(progress);
-            currentProgressFraction = targetProgressFraction;
-        }
-        
-        private void UpdateBarVisuals()
-        {
-            if (foreground != null)
-            {
-                // Устанавливаем размер foreground в зависимости от прогресса
-                foreground.anchorMax = new Vector2(currentProgressFraction, 1f);
-            }
-        }
-        
-        private void UpdateProgressText()
-        {
+            float newX = Mathf.Lerp(foreground.anchorMax.x, targetFraction, Time.deltaTime * smoothSpeed);
+            foreground.anchorMax = new Vector2(newX, 1f);
             if (progressText != null)
             {
-                int percentage = Mathf.RoundToInt(currentProgressFraction * 100f);
-                progressText.text = $"{percentage}%";
+                progressText.text = $"{Mathf.RoundToInt(newX * 100)}%";
             }
         }
-        
-        public bool IsTracking => isTracking && targetHarvestable != null;
-        
-        public void SetVisible(bool visible)
+
+        private IEnumerator FadeIn()
         {
-            if (canvasGroup != null)
+            while (canvasGroup.alpha < 1f)
             {
-                canvasGroup.alpha = visible ? 1f : 0f;
-                canvasGroup.interactable = visible;
-                canvasGroup.blocksRaycasts = visible;
+                canvasGroup.alpha += Time.deltaTime * 5f;
+                yield return null;
             }
+            canvasGroup.alpha = 1f;
         }
-        
-        public void SetWorldOffset(Vector3 offset)
+
+        private IEnumerator FadeOut()
         {
-            // Метод для позиционирования в world space (если понадобится)
-        }
-        
-        private void GetCurrentProgressFromSource()
-        {
-            if (targetHarvestable == null) return;
-            
-            // Получаем текущий прогресс из источника
-            var source = targetHarvestable as HarvestableSource;
-            if (source != null)
+            while (canvasGroup.alpha > 0f)
             {
-                // Вычисляем прогресс на основе оставшихся ресурсов
-                int remaining = source.GetRemainingResources();
-                var resource = source.GetResource();
-                
-                if (resource != null && resource.ResourceAmount > 0)
-                {
-                    float progress = (float)remaining / resource.ResourceAmount;
-                    SetProgress(progress);
-                }
+                canvasGroup.alpha -= Time.deltaTime * 5f;
+                yield return null;
             }
+            canvasGroup.alpha = 0f;
         }
     }
-} 
+}
