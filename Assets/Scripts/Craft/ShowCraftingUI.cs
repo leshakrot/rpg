@@ -8,13 +8,19 @@ namespace RPG.UI.Crafting
     public class ShowCraftingUI : MonoBehaviour, IRaycastable
     {
         [SerializeField] CraftingRecipe craftingRecipe = null;
-        [SerializeField] CraftingUI craftingItems = null;
-        [SerializeField] GameObject craftingUI = null;
         [SerializeField] float minimumCraftingDistance = 2.5f;
+
+        [Header("Настройки поиска UI")]
+        [SerializeField] string craftingUITag = "CraftingUI"; // Тег для поиска UI
+        [SerializeField] string craftingUIName = "CraftingWindow"; // Имя GameObject'а с UI
 
         PlayerController playerController;
         Mover characterMovement;
         GameObject[] craftingTables;
+
+        // Кэшированные ссылки (находятся автоматически)
+        private CraftingUI craftingItems;
+        private GameObject craftingUI;
 
         private void Awake()
         {
@@ -30,8 +36,82 @@ namespace RPG.UI.Crafting
 
         private void Start()
         {
-            // Disable the crafting UI gameobject.
-            craftingUI.SetActive(false);
+            // Находим UI компоненты при старте
+            FindCraftingUIComponents();
+
+            // Disable the crafting UI gameobject if found.
+            if (craftingUI != null)
+            {
+                craftingUI.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Автоматически находит компоненты CraftingUI в сцене.
+        /// </summary>
+        private void FindCraftingUIComponents()
+        {
+            // Способ 1: Поиск по тегу
+            if (!string.IsNullOrEmpty(craftingUITag))
+            {
+                GameObject uiObject = GameObject.FindGameObjectWithTag(craftingUITag);
+                if (uiObject != null)
+                {
+                    craftingUI = uiObject;
+                    craftingItems = uiObject.GetComponentInChildren<CraftingUI>();
+
+                    if (craftingItems != null)
+                    {
+                        Debug.Log($"[ShowCraftingUI] UI найден по тегу: {craftingUITag}");
+                        return;
+                    }
+                }
+            }
+
+            // Способ 2: Поиск по имени
+            if (!string.IsNullOrEmpty(craftingUIName))
+            {
+                GameObject uiObject = GameObject.Find(craftingUIName);
+                if (uiObject != null)
+                {
+                    craftingUI = uiObject;
+                    craftingItems = uiObject.GetComponentInChildren<CraftingUI>();
+
+                    if (craftingItems != null)
+                    {
+                        Debug.Log($"[ShowCraftingUI] UI найден по имени: {craftingUIName}");
+                        return;
+                    }
+                }
+            }
+
+            // Способ 3: Поиск по типу компонента (если другие способы не сработали)
+            CraftingUI foundCraftingUI = FindObjectOfType<CraftingUI>();
+            if (foundCraftingUI != null)
+            {
+                craftingItems = foundCraftingUI;
+                craftingUI = foundCraftingUI.transform.parent?.gameObject ?? foundCraftingUI.gameObject;
+                Debug.Log("[ShowCraftingUI] UI найден по типу компонента CraftingUI");
+                return;
+            }
+
+            // Если ничего не найдено
+            Debug.LogWarning($"[ShowCraftingUI] Не удалось найти CraftingUI! Проверьте:" +
+                $"\n- Тег '{craftingUITag}' на UI объекте" +
+                $"\n- Имя '{craftingUIName}' UI объекта" +
+                $"\n- Наличие компонента CraftingUI в сцене");
+        }
+
+        /// <summary>
+        /// Повторная попытка найти UI компоненты (вызывается при взаимодействии).
+        /// </summary>
+        private void TryRefindUIComponents()
+        {
+            if (craftingItems == null || craftingUI == null)
+            {
+                Debug.Log("[ShowCraftingUI] Повторный поиск UI компонентов...");
+                FindCraftingUIComponents();
+            }
         }
 
         private bool IsWithinDistance(PlayerController playerController)
@@ -52,7 +132,7 @@ namespace RPG.UI.Crafting
         private void Update()
         {
             // Check if IsWithinDistance returns false.
-            if (!IsWithinDistance(playerController) && craftingUI.activeSelf)
+            if (!IsWithinDistance(playerController) && craftingUI != null && craftingUI.activeSelf)
             {
                 // Disable the crafting UI gameobject.
                 craftingUI.SetActive(false);
@@ -70,6 +150,16 @@ namespace RPG.UI.Crafting
             // Check if the player clicked the left mouse button.
             if (Input.GetMouseButtonDown(0))
             {
+                // Пробуем найти UI компоненты, если они не найдены
+                TryRefindUIComponents();
+
+                // Проверяем, что UI компоненты найдены
+                if (craftingItems == null || craftingUI == null)
+                {
+                    Debug.LogError("[ShowCraftingUI] UI компоненты не найдены! Невозможно открыть интерфейс крафта.");
+                    return true;
+                }
+
                 // If the left mouse button was clicked, check if the player is not within the minimum distance to the crafting table.
                 if (!IsWithinDistance(callingController))
                 {
@@ -85,7 +175,7 @@ namespace RPG.UI.Crafting
 
                     // Setup the recipes in the crafting UI.
                     // The SetupRecipes function simply assigns craftingRecipe to the local variable in CraftingUI component (craftingItems).
-                    // We don’t do this in Awake or Start for example, because there might be more than one crafting tables that offer different recipes.
+                    // We don't do this in Awake or Start for example, because there might be more than one crafting tables that offer different recipes.
                     craftingItems.SetupRecipes(craftingRecipe);
 
                     // Enable the crafting UI gameobject.
@@ -93,6 +183,22 @@ namespace RPG.UI.Crafting
                 }
             }
             return true;
+        }
+
+        /// <summary>
+        /// Публичный метод для принудительного обновления ссылок на UI (можно вызвать извне).
+        /// </summary>
+        public void RefreshUIReferences()
+        {
+            FindCraftingUIComponents();
+        }
+
+        /// <summary>
+        /// Проверяет, найдены ли UI компоненты.
+        /// </summary>
+        public bool HasValidUIReferences()
+        {
+            return craftingItems != null && craftingUI != null;
         }
     }
 }
