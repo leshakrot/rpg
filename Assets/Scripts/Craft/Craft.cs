@@ -1,92 +1,70 @@
 using UnityEngine;
 using GameDevTV.Inventories;
+using RPG.Control;
 
 namespace RPG.Crafting
 {
+    /// <summary>
+    /// Утилитарный класс для крафта. 
+    /// Теперь используется в основном для обратной совместимости.
+    /// Основная логика перенесена в CraftingManager.
+    /// </summary>
     public class Craft : MonoBehaviour
     {
+        /// <summary>
+        /// Выполняет крафт предмета. Использует CraftingManager для централизованной логики.
+        /// </summary>
         public void CraftItem(Inventory inventory, InventoryItem inventoryItem, CraftingRecipe.Recipes recipe)
         {
-            // Check if the player has the ingredients in the inventory.
-            if (HasIngredients(inventory, recipe))
+            var player = inventory.GetComponent<PlayerController>();
+            if (player == null)
             {
-                // If true
-                // Remove the items from the inventory.
-                RemoveItems(inventory, recipe);
-                // Add the recipe result item to the first empty slot in the inventory.
-                inventory.AddToFirstEmptySlot(inventoryItem, 1);
+                // Пытаемся найти игрока по тегу, если компонент не найден на том же объекте
+                player = GameObject.FindWithTag("Player")?.GetComponent<PlayerController>();
+            }
+
+            if (player != null && CraftingManager.Instance != null)
+            {
+                CraftingManager.Instance.CraftItem(player, inventoryItem, recipe);
+            }
+            else
+            {
+                Debug.LogError("Не удалось найти PlayerController или CraftingManager для выполнения крафта!");
             }
         }
 
-        // НОВЫЙ МЕТОД: Публичная проверка доступности крафта
+        /// <summary>
+        /// Проверяет, может ли игрок скрафтить предмет.
+        /// </summary>
         public bool CanCraft(Inventory inventory, CraftingRecipe.Recipes recipe)
         {
-            return HasIngredients(inventory, recipe);
+            var player = inventory.GetComponent<PlayerController>();
+            if (player == null)
+            {
+                player = GameObject.FindWithTag("Player")?.GetComponent<PlayerController>();
+            }
+
+            if (player != null && CraftingManager.Instance != null)
+            {
+                return CraftingManager.Instance.CanCraft(player, recipe);
+            }
+
+            Debug.LogError("Не удалось найти PlayerController или CraftingManager для проверки крафта!");
+            return false;
         }
 
+        // Оставляем старые методы для обратной совместимости, но помечаем как устаревшие
+        [System.Obsolete("Используйте CraftingManager.Instance.CraftItem() вместо этого метода")]
         private void RemoveItems(Inventory inventory, CraftingRecipe.Recipes recipe)
         {
-            // Iterate through all of the ingredients in the specified recipe in the parameter.
-            foreach (CraftingRecipe.Ingredients ingredient in recipe.ingredients)
-            {
-                // Check if the current ingredient iteration's item is stackable.
-                if (ingredient.item.IsStackable())
-                {
-                    // If the item is stackable, get the slot index number the item is found in.
-                    // Assign the slot index number in a variable.
-                    int itemSlot = inventory.GetItemSlot(ingredient.item, ingredient.number);
-                    // Remove the items from the player's inventory slot with the amount number.
-                    inventory.RemoveFromSlot(itemSlot, ingredient.number);
-                }
-                else
-                {
-                    // If the item is NOT stackable, loop through the current foreach loop iteration's ingredient amount number.
-                    for (int i = 0; i < ingredient.number; i++)
-                    {
-                        // Get the slot index number that the item is found in.
-                        // Because we know that the item is not stackable, we can simply say that the amount is 1.
-                        int itemSlot = inventory.GetItemSlot(ingredient.item, 1);
-                        // Remove the items from the player's inventory slot.
-                        inventory.RemoveFromSlot(itemSlot, 1);
-                    }
-                }
-            }
+            // Логика перенесена в CraftingManager
         }
 
+        [System.Obsolete("Используйте CraftingManager.Instance.CanCraft() вместо этого метода")]
         private bool HasIngredients(Inventory inventory, CraftingRecipe.Recipes recipe)
         {
-            // Create boolean to store result.
-            bool hasItem = false;
-            // Iterate through all of the ingredients in the specified recipe in the parameter.
-            foreach (CraftingRecipe.Ingredients ingredient in recipe.ingredients)
-            {
-                // Check if the current ingredient iteration's item is stackable.
-                if (ingredient.item.IsStackable())
-                {
-                    // If the item is stackable, get the inventory slot index number that the stack is in.
-                    // We check if the returned value equals to or is greater than 0, because GetItemSlot returns -1 by default if no slot is found.
-                    // Assign the if statement value to the boolean variable.
-                    hasItem = inventory.GetItemSlot(ingredient.item, ingredient.number) >= 0;
-                }
-                else
-                {
-                    // For non-stackable items, we need to count how many instances of the item exist
-                    int itemCount = 0;
-                    for (int i = 0; i < inventory.GetSize(); i++)
-                    {
-                        if (object.ReferenceEquals(inventory.GetItemInSlot(i), ingredient.item))
-                        {
-                            itemCount += inventory.GetNumberInSlot(i);
-                        }
-                    }
-                    // Check if we have enough instances of the non-stackable item
-                    hasItem = itemCount >= ingredient.number;
-                }
-                // If the assigned value is false, the method will return false.
-                if (!hasItem) return false;
-            }
-            // The method will return true by default.
-            return true;
+            // Логика перенесена в CraftingManager
+            return CanCraft(inventory, recipe);
         }
     }
 }

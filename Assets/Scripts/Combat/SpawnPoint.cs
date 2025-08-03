@@ -80,8 +80,10 @@ namespace RPG.Combat
             {
                 infoText += "\n[ЗАНЯТО]";
             }
-            
+
+#if UNITY_EDITOR
             UnityEditor.Handles.Label(transform.position + Vector3.up * 1.5f, infoText, style);
+#endif
 
             // Отображаем направление, если используется направление точки
             if (usePointDirection && useRandomRotation)

@@ -92,8 +92,10 @@ namespace RPG.Combat
                         infoText += $"\nРежим: Диапазон ({minEnemyCount}-{maxEnemyCount})";
                         break;
                 }
-                
+
+#if UNITY_EDITOR
                 UnityEditor.Handles.Label(transform.position + Vector3.up * (zoneSize.y/2 + 1f), infoText, style);
+#endif
             }
             
             // Отображаем все точки спавна в зоне, если включено
@@ -130,7 +132,9 @@ namespace RPG.Combat
                 GUIStyle style = new GUIStyle();
                 style.normal.textColor = Color.white;
                 style.alignment = TextAnchor.MiddleCenter;
+#if UNITY_EDITOR
                 UnityEditor.Handles.Label(transform.position + Vector3.up * (zoneSize.y/2 + 0.5f), zoneName, style);
+#endif
             }
         }
 
