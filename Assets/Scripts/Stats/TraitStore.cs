@@ -9,6 +9,16 @@ namespace RPG.Stats
 	public class TraitStore : MonoBehaviour, IModifierProvider, ISaveable, IPredicateEvaluator
 	{
 		[SerializeField] TraitBonus[] bonusConfig;
+
+		/// <summary>
+		/// Определяет, как одна характеристика (Trait) влияет на один параметр (Stat).
+		/// ПРИМЕРЫ НАСТРОЙКИ В ИНСПЕКТОРЕ:
+		/// - fastness (Ловкость): trait=Dexterity, stat=MovementSpeed, percentageBonusPerPoint=5 (скорость +5% за очко)
+		/// - toughness (Выносливость): trait=Constitution, stat=Health, additiveBonusPerPoint=10 (здоровье +10 за очко)
+		/// - smartness (Интеллект):
+		///   - Элемент 1: trait=Intelligence, stat=Mana, additiveBonusPerPoint=15 (мана +15 за очко)
+		///   - Элемент 2: trait=Intelligence, stat=ManaRegenRate, percentageBonusPerPoint=10 (реген маны +10% за очко)
+		/// </summary>
 		[System.Serializable]
 		class TraitBonus
 		{
@@ -138,8 +148,8 @@ namespace RPG.Stats
 			assignedPoints = new Dictionary<Trait, int>((IDictionary<Trait, int>)state);
 		}
 
-        public bool? Evaluate(string predicate, string[] parameters)
-        {
+		public bool? Evaluate(string predicate, string[] parameters)
+		{
 			if(predicate == "MinimumTrait")
 			{
 				if (Enum.TryParse<Trait>(parameters[0], out Trait trait))
@@ -148,6 +158,6 @@ namespace RPG.Stats
 				}
 			}
 			return null;
-        }
-    }
+		}
+	}
 }
