@@ -1550,7 +1550,7 @@ PrefabInstance:
     - target: {fileID: 578189691652438176, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -314.5725
+      value: -314.57254
       objectReference: {fileID: 0}
     - target: {fileID: 580318067004747719, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -1760,7 +1760,7 @@ PrefabInstance:
     - target: {fileID: 1259794001493237979, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 1307048965095542783, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -2297,6 +2297,11 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2556214655346038642, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2677773606592352485, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2692,6 +2697,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 0.000030517578
       objectReference: {fileID: 0}
+    - target: {fileID: 3960585431120162187, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.000016212463
+      objectReference: {fileID: 0}
     - target: {fileID: 4073971126785786982, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -2720,7 +2730,7 @@ PrefabInstance:
     - target: {fileID: 4124412002752224969, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0004981275
+      value: -0.00083809637
       objectReference: {fileID: 0}
     - target: {fileID: 4127280141242659306, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -4534,11 +4544,16 @@ MonoBehaviour:
   maxEnemiesPerScene: 50
   respawnOnRevisit: 1
   respawnDelay: 1
-  useSpawnZones: 1
-  maxEnemiesPerZone: 5
+  respawnDeadEnemies: 1
+  deadEnemyRespawnTime: 10
+  maxSimultaneousRespawns: 10
+  useSpawnZones: 0
+  maxEnemiesPerZone: 1
   useAutoLeveling: 1
   minLevelOffset: -1
   maxLevelOffset: 2
+  minDistanceBetweenEnemies: 2
+  maxSpawnAttempts: 10
   showDebugInfo: 0
   drawLinesInGame: 0
   debugLineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

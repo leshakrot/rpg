@@ -1,4 +1,4 @@
-using GameDevTV.Utils;
+﻿using GameDevTV.Utils;
 using RPG.Attributes;
 using RPG.Combat;
 using RPG.Core;
@@ -23,7 +23,9 @@ namespace RPG.Control
         [SerializeField] private float _patrolSpeedFraction = 0.2f;
         [SerializeField] private float _shoutDistance = 5f;
 
-        private ActionScheduler _actionScheduler;
+	    private ActionScheduler _actionScheduler;
+        
+	    private SpawnPoint spawnPoint;
 
         private Fighter _fighter;
         private GameObject _player;
@@ -74,8 +76,26 @@ namespace RPG.Control
             _currentWaypointIndex = 0;
             _currentState = State.Patrol;
             _isReturningToSpawn = false;
-            _suspicionTimer = 0f;
+	        _suspicionTimer = 0f;
+            
+	        var fighter = GetComponent<Fighter>();
+	        if (fighter != null)
+	        {
+		        fighter.Cancel();
+	        }
+            
+	        var mover = GetComponent<Mover>();
+	        if (mover != null)
+	        {
+		        mover.Cancel();
+	        }
         }
+	    
+	    public SpawnPoint GetSpawnPoint()
+	    {
+		    return spawnPoint;
+	    }
+	    
 
         private Vector3 GetGuardPosition()
         {

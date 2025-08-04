@@ -8,7 +8,9 @@ using RPG.UI.RequirementText;
 
 namespace RPG.Harvesting
 {
-    public abstract class HarvestableSource : MonoBehaviour, IHarvestable, IRaycastable
+	using GameDevTV.Saving;
+	using System.Collections.Generic;
+	public abstract class HarvestableSource : MonoBehaviour, IHarvestable, IRaycastable, ISaveable
 	{
 		protected HarvestingToolVisualizer toolVisualizer = null;
 		protected HarvestingTool currentDisplayedTool = null;
@@ -19,7 +21,8 @@ namespace RPG.Harvesting
         [Header("Настройки")]
         [SerializeField] protected float respawnTime = 300f; // 5 минут
         [SerializeField] protected bool startDepleted = false;
-        [SerializeField] protected float harvestDistance = 2f; // Расстояние для добычи
+		[SerializeField] protected float harvestDistance = 2f; // Расстояние для добычи
+		[SerializeField] protected bool isOneTimeResource = false;
         
         [Header("Визуализация")]
         [SerializeField] protected GameObject activeModel = null;
@@ -697,6 +700,42 @@ namespace RPG.Harvesting
 
 				elapsed += Time.deltaTime;
 				yield return new WaitForSeconds(0.1f);
+			}
+		}
+		
+		public object CaptureState()
+		{
+			// Создаем словарь для хранения данных.
+			var data = new Dictionary<string, object>();
+			// Сохраняем текущее состояние "истощённости"
+			data["isDepleted"] = isDepleted;
+			// Сохраняем количество оставшихся ресурсов
+			data["remainingResources"] = remainingResources;
+
+			return data;
+		}
+		
+		public void RestoreState(object state)
+		{
+			// Восстанавливаем данные из словаря
+			var data = (Dictionary<string, object>)state;
+			isDepleted = (bool)data["isDepleted"];
+			remainingResources = (int)data["remainingResources"];
+
+			// Обновляем внешний вид ресурса
+			UpdateVisuals();
+
+			// Самое важное: если ресурс одноразовый и истощён, мы не запускаем таймер респауна.
+			if (isOneTimeResource && isDepleted)
+			{
+				// Выходим из метода, не делая ничего
+				return;
+			}
+
+			// Если ресурс истощён, но не одноразовый, запускаем таймер респауна
+			if (isDepleted)
+			{
+				StartRespawnTimer();
 			}
 		}
     }

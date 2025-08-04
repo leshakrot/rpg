@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using GameDevTV.Saving;
 using System;
@@ -6,9 +6,11 @@ using UnityEngine.SceneManagement;
 using RPG.SceneManagement;
 using System.Collections;
 using RPG.Stats;
+using RPG.Core;
 
 namespace RPG.Combat
 {
+	using RPG.Attributes;
     public class EnemySpawner : MonoBehaviour, ISaveable
     {
         [SerializeField] private int minGuaranteedSpawns = 3;
@@ -16,6 +18,14 @@ namespace RPG.Combat
         [Tooltip("Если true, то враги будут респавниться при возвращении на сцену")]
         [SerializeField] private bool respawnOnRevisit = true;
         [SerializeField] private float respawnDelay = 1f;
+        
+        [Header("Респавн убитых врагов")]
+        [Tooltip("Если true, убитые враги будут респавниться через некоторое время")]
+        [SerializeField] private bool respawnDeadEnemies = false;
+        [Tooltip("Время в секундах до респавна убитого врага")]
+        [SerializeField] private float deadEnemyRespawnTime = 60f;
+        [Tooltip("Максимальное количество одновременных респавнов мертвых врагов")]
+        [SerializeField] private int maxSimultaneousRespawns = 3;
         
         [Header("Настройки зон спавна")]
         [SerializeField] private bool useSpawnZones = true;
@@ -30,6 +40,12 @@ namespace RPG.Combat
         [Tooltip("Максимальное отклонение от уровня игрока")]
         [SerializeField] private int maxLevelOffset = 2;
         
+        [Header("Настройки спавна")]
+        [Tooltip("Минимальная дистанция между врагами при спавне")]
+        [SerializeField] private float minDistanceBetweenEnemies = 1.5f;
+        [Tooltip("Максимальное количество попыток найти подходящую позицию")]
+        [SerializeField] private int maxSpawnAttempts = 10;
+        
         [Header("Отладка и визуализация")]
         [Tooltip("Выводить отладочную информацию о спавне врагов в консоль")]
         [SerializeField] private bool showDebugInfo = false;
@@ -38,6 +54,8 @@ namespace RPG.Combat
         [SerializeField] private Color debugLineColor = Color.yellow;
         
         private List<GameObject> spawnedEnemies = new List<GameObject>();
+        private Dictionary<SpawnPoint, List<GameObject>> enemiesBySpawnPoint = new Dictionary<SpawnPoint, List<GameObject>>();
+        private Dictionary<SpawnPoint, Coroutine> respawnCoroutines = new Dictionary<SpawnPoint, Coroutine>();
         private string currentSceneName;
         private bool isInitialized = false;
         private int playerLevel = 1; // Значение по умолчанию
@@ -301,8 +319,6 @@ namespace RPG.Combat
         // Метод для спавна врага в конкретной точке
         private bool SpawnEnemyAtPoint(SpawnPoint point)
         {
-            if (point.IsOccupied()) return false;
-            
             GameObject enemyPrefab = point.GetRandomEnemyPrefab();
             if (enemyPrefab == null)
             {
@@ -310,14 +326,25 @@ namespace RPG.Combat
                 return false;
             }
             
-            Vector3 spawnPosition = point.GetSpawnPosition();
+            Vector3 spawnPosition = GetValidSpawnPosition(point);
+            if (spawnPosition == Vector3.zero)
+            {
+                if (showDebugInfo) Debug.LogWarning($"[EnemySpawner] Не удалось найти подходящую позицию для спавна в точке {point.name}");
+                return false;
+            }
+            
             // Получаем случайный поворот из точки спавна
             Quaternion randomRotation = point.GetRandomRotation();
             GameObject enemy = Instantiate(enemyPrefab, spawnPosition, randomRotation);
             
-            // Добавляем врага в список и помечаем точку как занятую
+            // Добавляем врага в списки
             spawnedEnemies.Add(enemy);
-            point.SetOccupied(true);
+            
+            if (!enemiesBySpawnPoint.ContainsKey(point))
+            {
+                enemiesBySpawnPoint[point] = new List<GameObject>();
+            }
+            enemiesBySpawnPoint[point].Add(enemy);
             
             // Устанавливаем уровень врага, если включен автолевелинг
             if (useAutoLeveling)
@@ -335,6 +362,16 @@ namespace RPG.Combat
                 aiController.Reset();
             }
             
+            // Подписываемся на событие смерти врага, если включен респавн мертвых врагов
+            if (respawnDeadEnemies)
+            {
+                var health = enemy.GetComponent<Health>();
+                if (health != null)
+                {
+                    health.onDie.AddListener(() => OnEnemyDied(enemy, point));
+                }
+            }
+            
             // Проверяем, есть ли у врага компонент SaveableEntity, если нет - добавляем
             if (enemy.GetComponent<GameDevTV.Saving.SaveableEntity>() == null)
             {
@@ -342,6 +379,102 @@ namespace RPG.Combat
             }
             
             return true;
+        }
+        
+        // Получить валидную позицию для спавна с учетом минимальной дистанции между врагами
+        private Vector3 GetValidSpawnPosition(SpawnPoint point)
+        {
+            for (int attempt = 0; attempt < maxSpawnAttempts; attempt++)
+            {
+                Vector3 candidatePosition = point.GetSpawnPosition();
+                
+                // Проверяем дистанцию до других врагов
+                bool validPosition = true;
+                foreach (GameObject enemy in spawnedEnemies)
+                {
+                    if (enemy != null)
+                    {
+                        float distance = Vector3.Distance(candidatePosition, enemy.transform.position);
+                        if (distance < minDistanceBetweenEnemies)
+                        {
+                            validPosition = false;
+                            break;
+                        }
+                    }
+                }
+                
+                if (validPosition)
+                {
+                    return candidatePosition;
+                }
+            }
+            
+            // Если не нашли подходящую позицию после всех попыток, возвращаем Vector3.zero
+            return Vector3.zero;
+        }
+        
+        // Обработка смерти врага
+        private void OnEnemyDied(GameObject deadEnemy, SpawnPoint spawnPoint)
+        {
+            if (showDebugInfo) Debug.Log($"[EnemySpawner] Враг {deadEnemy.name} умер в точке {spawnPoint.name}");
+            
+            // Удаляем врага из списков
+            spawnedEnemies.Remove(deadEnemy);
+            if (enemiesBySpawnPoint.ContainsKey(spawnPoint))
+            {
+                enemiesBySpawnPoint[spawnPoint].Remove(deadEnemy);
+            }
+            
+            // Запускаем корутину респавна, если еще не запущена для этой точки
+            if (!respawnCoroutines.ContainsKey(spawnPoint) || respawnCoroutines[spawnPoint] == null)
+            {
+                respawnCoroutines[spawnPoint] = StartCoroutine(RespawnEnemyAfterDelay(spawnPoint));
+            }
+        }
+        
+        // Корутина для респавна врага после задержки
+        private IEnumerator RespawnEnemyAfterDelay(SpawnPoint spawnPoint)
+        {
+            if (showDebugInfo) Debug.Log($"[EnemySpawner] Запущен таймер респавна для точки {spawnPoint.name} ({deadEnemyRespawnTime}с)");
+            
+            yield return new WaitForSeconds(deadEnemyRespawnTime);
+            
+            // Проверяем, не превышен ли лимит врагов на сцене
+            if (spawnedEnemies.Count >= maxEnemiesPerScene)
+            {
+                if (showDebugInfo) Debug.Log($"[EnemySpawner] Респавн отменен - достигнут лимит врагов на сцене");
+                respawnCoroutines.Remove(spawnPoint);
+                yield break;
+            }
+            
+            // Проверяем лимит одновременных респавнов
+            int currentRespawns = 0;
+            foreach (var coroutine in respawnCoroutines.Values)
+            {
+                if (coroutine != null) currentRespawns++;
+            }
+            
+            if (currentRespawns > maxSimultaneousRespawns)
+            {
+                if (showDebugInfo) Debug.Log($"[EnemySpawner] Респавн отложен - слишком много одновременных респавнов");
+                yield return new WaitForSeconds(5f); // Ждем еще немного
+            }
+            
+            // Проверяем, что точка спавна все еще существует
+            if (spawnPoint == null)
+            {
+                respawnCoroutines.Remove(spawnPoint);
+                yield break;
+            }
+            
+            // Спавним нового врага
+            if (SpawnEnemyAtPoint(spawnPoint))
+            {
+                if (showDebugInfo) Debug.Log($"[EnemySpawner] Враг респавнился в точке {spawnPoint.name}");
+            }
+            
+            // Удаляем корутину из словаря
+            respawnCoroutines.Remove(spawnPoint);
         }
         
         // Метод для установки уровня врага на основе уровня игрока
@@ -405,6 +538,16 @@ namespace RPG.Combat
         {
             if (showDebugInfo) Debug.Log($"[EnemySpawner] Очищаем список врагов, количество: {spawnedEnemies.Count}");
             
+            // Останавливаем все корутины респавна
+            foreach (var coroutine in respawnCoroutines.Values)
+            {
+                if (coroutine != null)
+                {
+                    StopCoroutine(coroutine);
+                }
+            }
+            respawnCoroutines.Clear();
+            
             foreach (GameObject enemy in spawnedEnemies)
             {
                 if (enemy != null)
@@ -414,6 +557,7 @@ namespace RPG.Combat
             }
             
             spawnedEnemies.Clear();
+            enemiesBySpawnPoint.Clear();
             
             // Сбрасываем статус занятости для всех точек
             SpawnPoint[] allPoints = FindObjectsOfType<SpawnPoint>();
@@ -473,6 +617,7 @@ namespace RPG.Combat
             
             // Очищаем существующий список врагов при загрузке
             spawnedEnemies.Clear();
+            enemiesBySpawnPoint.Clear();
             
             // Находим всех врагов на сцене с SaveableEntity
             SaveableEntity[] entities = FindObjectsOfType<SaveableEntity>();
@@ -485,7 +630,32 @@ namespace RPG.Combat
                 if (Array.Exists(saveData.enemyIds, savedId => savedId == id))
                 {
                     // Этот враг был на сцене при сохранении, добавляем его в список
-                    spawnedEnemies.Add(entity.gameObject);
+                    GameObject enemy = entity.gameObject;
+                    spawnedEnemies.Add(enemy);
+                    
+                    // Восстанавливаем подписку на событие смерти
+                    if (respawnDeadEnemies)
+                    {
+                        var aiController = enemy.GetComponent<RPG.Control.AIController>();
+                        if (aiController != null)
+                        {
+                            SpawnPoint spawnPoint = aiController.GetSpawnPoint();
+                            if (spawnPoint != null)
+                            {
+                                if (!enemiesBySpawnPoint.ContainsKey(spawnPoint))
+                                {
+                                    enemiesBySpawnPoint[spawnPoint] = new List<GameObject>();
+                                }
+                                enemiesBySpawnPoint[spawnPoint].Add(enemy);
+                                
+                                var health = enemy.GetComponent<Health>();
+                                if (health != null)
+                                {
+                                    health.onDie.AddListener(() => OnEnemyDied(enemy, spawnPoint));
+                                }
+                            }
+                        }
+                    }
                     
                     if (showDebugInfo) Debug.Log($"[EnemySpawner] Восстановлен враг с ID {id}");
                 }
@@ -503,4 +673,4 @@ namespace RPG.Combat
             public bool isInitialized;
         }
     }
-} 
+}

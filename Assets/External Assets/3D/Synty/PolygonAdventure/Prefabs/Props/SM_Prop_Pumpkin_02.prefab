@@ -11,6 +11,9 @@ GameObject:
   - component: {fileID: 450000}
   - component: {fileID: 3312118}
   - component: {fileID: 2339342}
+  - component: {fileID: 5988365993511217621}
+  - component: {fileID: 4163347393523964155}
+  - component: {fileID: 6766274813046664445}
   m_Layer: 0
   m_Name: SM_Prop_Pumpkin_02
   m_TagString: Untagged
@@ -86,3 +89,58 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!135 &5988365993511217621
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 197004}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.46252364
+  m_Center: {x: 0.000000074505806, y: 0.23810318, z: -0.00000078976154}
+--- !u!114 &4163347393523964155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 197004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f15ff5a553232284ead98ff5ddafb623, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resource: {fileID: 11400000, guid: 418f5abfaca05ed41a79285953623189, type: 2}
+  respawnTime: 300
+  startDepleted: 0
+  harvestDistance: 5
+  isOneTimeResource: 1
+  activeModel: {fileID: 197004}
+  depletedModel: {fileID: 0}
+  harvestAnimationTrigger: StartGathering
+  stopAnimationTrigger: StopGathering
+--- !u!114 &6766274813046664445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 197004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueIdentifier: 

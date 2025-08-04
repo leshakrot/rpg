@@ -10,13 +10,20 @@ public class EnemySpawnerEditor : Editor
     SerializedProperty maxEnemiesPerSceneProp;
     SerializedProperty respawnOnRevisitProp;
     SerializedProperty respawnDelayProp;
+    SerializedProperty respawnDeadEnemiesProp;
+    SerializedProperty deadEnemyRespawnTimeProp;
+    SerializedProperty maxSimultaneousRespawnsProp;
     SerializedProperty useSpawnZonesProp;
     SerializedProperty maxEnemiesPerZoneProp;
+    SerializedProperty minDistanceBetweenEnemiesProp;
+    SerializedProperty maxSpawnAttemptsProp;
     SerializedProperty showDebugInfoProp;
     SerializedProperty drawLinesInGameProp;
     SerializedProperty debugLineColorProp;
 
     private bool showZoneSettings = true;
+    private bool showRespawnSettings = false;
+    private bool showSpawnSettings = false;
     private bool showDebugSettings = false;
 
     private void OnEnable()
@@ -25,8 +32,13 @@ public class EnemySpawnerEditor : Editor
         maxEnemiesPerSceneProp = serializedObject.FindProperty("maxEnemiesPerScene");
         respawnOnRevisitProp = serializedObject.FindProperty("respawnOnRevisit");
         respawnDelayProp = serializedObject.FindProperty("respawnDelay");
+        respawnDeadEnemiesProp = serializedObject.FindProperty("respawnDeadEnemies");
+        deadEnemyRespawnTimeProp = serializedObject.FindProperty("deadEnemyRespawnTime");
+        maxSimultaneousRespawnsProp = serializedObject.FindProperty("maxSimultaneousRespawns");
         useSpawnZonesProp = serializedObject.FindProperty("useSpawnZones");
         maxEnemiesPerZoneProp = serializedObject.FindProperty("maxEnemiesPerZone");
+        minDistanceBetweenEnemiesProp = serializedObject.FindProperty("minDistanceBetweenEnemies");
+        maxSpawnAttemptsProp = serializedObject.FindProperty("maxSpawnAttempts");
         showDebugInfoProp = serializedObject.FindProperty("showDebugInfo");
         drawLinesInGameProp = serializedObject.FindProperty("drawLinesInGame");
         debugLineColorProp = serializedObject.FindProperty("debugLineColor");
@@ -51,10 +63,35 @@ public class EnemySpawnerEditor : Editor
 
         EditorGUILayout.Space();
         
+        // Настройки респавна убитых врагов
+        showRespawnSettings = EditorGUILayout.Foldout(showRespawnSettings, "Респавн убитых врагов", true);
+        if (showRespawnSettings)
+        {
+            EditorGUI.indentLevel++;
+            EditorGUILayout.PropertyField(respawnDeadEnemiesProp, new GUIContent("Респавнить убитых врагов"));
+            
+            if (respawnDeadEnemiesProp.boolValue)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(deadEnemyRespawnTimeProp, new GUIContent("Время респавна (сек)"));
+                EditorGUILayout.PropertyField(maxSimultaneousRespawnsProp, new GUIContent("Макс. одновременных респавнов"));
+                
+                EditorGUILayout.HelpBox(
+                    "Убитые враги будут автоматически респавниться через указанное время. " +
+                    "Система учитывает общий лимит врагов на сцене и ограничение одновременных респавнов.",
+                    MessageType.Info);
+                EditorGUI.indentLevel--;
+            }
+            EditorGUI.indentLevel--;
+        }
+
+        EditorGUILayout.Space();
+        
         // Настройки зон
         showZoneSettings = EditorGUILayout.Foldout(showZoneSettings, "Настройки зон спавна", true);
         if (showZoneSettings)
         {
+            EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(useSpawnZonesProp, new GUIContent("Использовать зоны спавна"));
             if (useSpawnZonesProp.boolValue)
             {
@@ -62,8 +99,34 @@ public class EnemySpawnerEditor : Editor
                 EditorGUILayout.PropertyField(maxEnemiesPerZoneProp, new GUIContent("Макс. врагов на зону"));
                 EditorGUI.indentLevel--;
             }
+            EditorGUI.indentLevel--;
         }
 
+        EditorGUILayout.Space();
+        
+        // Настройки спавна
+        showSpawnSettings = EditorGUILayout.Foldout(showSpawnSettings, "Настройки спавна", true);
+        if (showSpawnSettings)
+        {
+            EditorGUI.indentLevel++;
+            EditorGUILayout.PropertyField(minDistanceBetweenEnemiesProp, new GUIContent("Мин. дистанция между врагами"));
+            EditorGUILayout.PropertyField(maxSpawnAttemptsProp, new GUIContent("Макс. попыток спавна"));
+            
+            if (minDistanceBetweenEnemiesProp.floatValue < 0.5f)
+            {
+                EditorGUILayout.HelpBox(
+                    "Слишком малая дистанция может привести к проблемам с размещением врагов. " +
+                    "Рекомендуется значение не менее 0.5.",
+                    MessageType.Warning);
+            }
+            
+            EditorGUILayout.HelpBox(
+                "Эти настройки помогают избежать спавна врагов слишком близко друг к другу. " +
+                "Система будет пытаться найти подходящую позицию в радиусе точки спавна.",
+                MessageType.Info);
+            EditorGUI.indentLevel--;
+        }
+        
         EditorGUILayout.Space();
         
         // Настройки автолевелинга
@@ -100,6 +163,7 @@ public class EnemySpawnerEditor : Editor
         showDebugSettings = EditorGUILayout.Foldout(showDebugSettings, "Отладка и визуализация", true);
         if (showDebugSettings)
         {
+            EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(showDebugInfoProp, new GUIContent("Показывать отладочный вывод"));
             EditorGUILayout.PropertyField(drawLinesInGameProp, new GUIContent("Отрисовывать линии к врагам"));
             
@@ -109,6 +173,7 @@ public class EnemySpawnerEditor : Editor
                 EditorGUILayout.PropertyField(debugLineColorProp, new GUIContent("Цвет линий"));
                 EditorGUI.indentLevel--;
             }
+            EditorGUI.indentLevel--;
         }
 
         EditorGUILayout.Space();
@@ -263,4 +328,4 @@ public class EnemySpawnerEditor : Editor
         // Регистрируем создание для Undo
         Undo.RegisterCreatedObjectUndo(spawnerObj, "Create Enemy Spawner");
     }
-} 
+}
