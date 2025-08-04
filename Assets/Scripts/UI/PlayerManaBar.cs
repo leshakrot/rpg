@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using RPG.Attributes;
 using RPG.Stats;
 using System;
@@ -7,27 +7,14 @@ namespace RPG.UI
 {
     public class PlayerManaBar : StatusBar
     {
-        private Mana playerMana;
-        private BaseStats playerStats;
+        [SerializeField] private Mana playerMana;
+        [SerializeField] private BaseStats playerStats;
         
         protected override void Awake()
         {
             base.Awake();
             barTitle = "Мана";
             barColor = Color.blue;
-            
-            // Находим компоненты игрока
-            GameObject player = GameObject.FindWithTag("Player");
-            if (player != null)
-            {
-                playerMana = player.GetComponent<Mana>();
-                playerStats = player.GetComponent<BaseStats>();
-                
-                if (playerMana == null)
-                {
-                    Debug.LogError("PlayerManaBar: Не удалось найти компонент Mana у игрока!");
-                }
-            }
         }
         
         private void OnEnable()

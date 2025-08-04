@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using RPG.Attributes;
 using RPG.Stats;
 using System;
@@ -6,31 +6,16 @@ using System;
 namespace RPG.UI
 {
     public class PlayerHealthBar : StatusBar
-    {
-        private Health playerHealth;
-        private BaseStats playerStats;
+	{
+		[SerializeField] private Health playerHealth;
+		[SerializeField] private BaseStats playerStats;
         private float lastHealthAmount = -1; // Для отслеживания изменений здоровья
         
         protected override void Awake()
         {
             base.Awake();
             barTitle = "Здоровье";
-            barColor = Color.red;
-            
-            // Находим компоненты игрока
-            GameObject player = GameObject.FindWithTag("Player");
-            if (player != null)
-            {
-                playerHealth = player.GetComponent<Health>();
-                playerStats = player.GetComponent<BaseStats>();
-                
-                // Компоненты могут быть не инициализированы полностью в Awake,
-                // поэтому отложим инициализацию lastHealthAmount до первого Update
-            }
-            else
-            {
-                Debug.LogError("PlayerHealthBar: Не удалось найти объект игрока!");
-            }
+            barColor = Color.red;           
         }
         
         private void OnEnable()

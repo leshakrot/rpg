@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using RPG.Stats;
 using UnityEngine.UI;
 using System;
@@ -9,25 +9,50 @@ namespace RPG.UI
     {
         [SerializeField] private Text levelText;
         
-        private BaseStats playerStats;
+	    [SerializeField] private BaseStats playerStats;
         
         private void Awake()
         {
-            // Находим компонент BaseStats игрока
-            playerStats = GameObject.FindWithTag("Player").GetComponent<BaseStats>();
             if (playerStats == null)
             {
                 Debug.LogError("PlayerLevelDisplay: Не удалось найти компонент BaseStats у игрока!");
             }
         }
         
-        private void Update()
-        {
-            if (playerStats != null && levelText != null)
-            {
-                // Обновляем текст с уровнем
-                levelText.text = String.Format("Уровень: {0}", playerStats.GetLevel());
-            }
-        }
+        //private void Update()
+        //{
+        //    if (playerStats != null && levelText != null)
+        //    {
+        //        // Обновляем текст с уровнем
+        //        levelText.text = String.Format("{0}", playerStats.GetLevel());
+        //    }
+        //}
+        
+	    private void OnEnable()
+	    {
+		    if (playerStats != null)
+		    {
+			    // Подписываемся на события изменения статистики и повышения уровня
+			    playerStats.onLevelUp += RefreshLevelDisplayUI;
+		    }
+	    }
+        
+	    private void OnDisable()
+	    {
+		    if (playerStats != null)
+		    {
+			    // Отписываемся от событий
+			    playerStats.onLevelUp -= RefreshLevelDisplayUI;
+		    }
+	    }
+	    
+	    private void RefreshLevelDisplayUI()
+	    {
+		    if (playerStats != null && levelText != null)
+		    {
+			    // Обновляем текст с уровнем
+			    levelText.text = String.Format("{0}", playerStats.GetLevel());
+		    }
+	    }
     }
 } 

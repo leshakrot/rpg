@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using RPG.Stats;
 using System;
 using System.Collections;
@@ -11,8 +11,9 @@ namespace RPG.UI
         [SerializeField] private float levelUpAnimationDuration = 0.5f;
         [SerializeField] private Color levelUpFlashColor = Color.yellow;
         
-        private Experience playerExperience;
-        private BaseStats playerStats;
+	    [SerializeField] private Experience playerExperience;
+	    [SerializeField] private BaseStats playerStats;
+        
         private Color originalColor;
         private Coroutine levelUpAnimationCoroutine;
         
@@ -22,23 +23,6 @@ namespace RPG.UI
             barTitle = "Опыт";
             barColor = new Color(0.8f, 0.8f, 0.2f); // Золотисто-желтый цвет
             originalColor = barColor;
-            
-            // Находим компоненты игрока
-            GameObject player = GameObject.FindWithTag("Player");
-            if (player != null)
-            {
-                playerExperience = player.GetComponent<Experience>();
-                playerStats = player.GetComponent<BaseStats>();
-                
-                if (playerExperience == null || playerStats == null)
-                {
-                    Debug.LogError("PlayerExperienceBar: Не удалось найти необходимые компоненты у игрока!");
-                }
-            }
-            else
-            {
-                Debug.LogError("PlayerExperienceBar: Не удалось найти объект игрока!");
-            }
         }
 
         private void OnEnable()
