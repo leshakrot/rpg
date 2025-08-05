@@ -203,8 +203,8 @@ namespace RPG.Control
 
             if(_timeSinceArrivedAtWaypoint > _waypointDwellTime)
             {
-                _mover.StartMoveAction(nextPosition, _patrolSpeedFraction);
-            }          
+	            _mover.StartMoveAction(nextPosition, _patrolSpeedFraction);
+            }       
         }
 
         private Vector3 GetCurrentWaypoint()

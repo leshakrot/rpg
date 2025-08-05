@@ -331,7 +331,8 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 710716344191580049, guid: ccb9d51629d04194fbf28bc5406ee3c2,
         type: 3}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2097720894550855511, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 7138810541904264983, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
@@ -347,6 +348,10 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6452698797258557957}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3599500272086516982, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
+        type: 3}
+      insertIndex: 4
+      addedObject: {fileID: 567179970864749251}
     - targetCorrespondingSourceObject: {fileID: 3599500272086516982, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
         type: 3}
       insertIndex: 7
@@ -418,6 +423,61 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 3675590703517938216}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &567179970864749251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 212139946877236958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55a0436b0f2f5594d8699cbce74c35a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeBetweenAttacks: 1
+  autoAttackRange: 4
+  defaultWeapon: {fileID: 11400000, guid: e88d03d27df8df34489aaad669991421, type: 2}
+  rightHandTransform: {fileID: 0}
+  leftHandTransform: {fileID: 0}
+  _timeBetweenAttacks: 1
+  _autoAttackRange: 4
+  _isAutoattacking: 1
+  _bodyTransform: {fileID: 0}
+  _helmetTransform: {fileID: 0}
+  _bootsLeftTransform: {fileID: 0}
+  _bootsRightTransform: {fileID: 0}
+  _capeTransform: {fileID: 0}
+  _shieldTransform: {fileID: 0}
+  _glovesLeftTransform: {fileID: 0}
+  _glovesRightTransform: {fileID: 0}
+  _trousersTransform: {fileID: 0}
+  _upperArmLeftTransform: {fileID: 0}
+  _upperArmRightTransform: {fileID: 0}
+  _lowerArmLeftTransform: {fileID: 0}
+  _lowerArmRightTransform: {fileID: 0}
+  _defaultBodyArmor: {fileID: 11400000, guid: b1bba10c891a05b4ab7820d6fcf4abf7, type: 2}
+  _defaultCapeArmor: {fileID: 0}
+  _defaultUpperArmLeftArmor: {fileID: 11400000, guid: 81592b530bc60f54eba18d111b122d77,
+    type: 2}
+  _defaultUpperArmRightArmor: {fileID: 11400000, guid: a22d5d130d536d9408a5718b6b81c063,
+    type: 2}
+  _defaultLowerArmLeftArmor: {fileID: 11400000, guid: 8fb0a789672f4234db389e9d1c7660dd,
+    type: 2}
+  _defaultLowerArmRightArmor: {fileID: 11400000, guid: 40224a4ebb0280749884cd07e76fbb64,
+    type: 2}
+  _defaultHelmetArmor: {fileID: 11400000, guid: 525a189bfc7dce84c8d73ed00be5c92a,
+    type: 2}
+  _defaultBootLeftArmor: {fileID: 11400000, guid: 0a647796b1e85544d816153559c806bc,
+    type: 2}
+  _defaultBootRightArmor: {fileID: 11400000, guid: 714c32e4e72420b4486778fbe8ca4004,
+    type: 2}
+  _defaultGloveLeftArmor: {fileID: 11400000, guid: faf9763e9879ee34281b0f07c3f13a0e,
+    type: 2}
+  _defaultGloveRightArmor: {fileID: 11400000, guid: 616de60224609a141b94d7fbdb36e595,
+    type: 2}
+  _defaultTrousersArmor: {fileID: 11400000, guid: 2cfd90fd36ee37f4da21fcce1b526961,
+    type: 2}
 --- !u!114 &930788857574657108
 MonoBehaviour:
   m_ObjectHideFlags: 0

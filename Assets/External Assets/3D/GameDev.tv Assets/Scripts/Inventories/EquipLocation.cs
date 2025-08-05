@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace GameDevTV.Inventories
 {
@@ -8,7 +8,7 @@ namespace GameDevTV.Inventories
     public enum EquipLocation
     {
         Helmet,
-        Necklace,
+	    Cape,
         Body,
         Trousers,
         BootsLeft,

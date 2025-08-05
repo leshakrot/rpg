@@ -21,7 +21,7 @@ namespace RPG.Combat
         [SerializeField] private Transform _helmetTransform;
         [SerializeField] private Transform _bootsLeftTransform;
         [SerializeField] private Transform _bootsRightTransform;
-        [SerializeField] private Transform _necklaceTransform;
+		[SerializeField] private Transform _capeTransform;
         [SerializeField] private Transform _shieldTransform;
         [SerializeField] private Transform _glovesLeftTransform;
         [SerializeField] private Transform _glovesRightTransform;
@@ -31,7 +31,8 @@ namespace RPG.Combat
         [SerializeField] private Transform _lowerArmLeftTransform;
         [SerializeField] private Transform _lowerArmRightTransform;
 
-        [SerializeField] private BodyArmorConfig _defaultBodyArmor = null;
+		[SerializeField] private BodyArmorConfig _defaultBodyArmor = null;
+		[SerializeField] private CapeArmorConfig _defaultCapeArmor = null;
         [SerializeField] private UpperArmLeftArmorConfig _defaultUpperArmLeftArmor = null;
         [SerializeField] private UpperArmRightArmorConfig _defaultUpperArmRightArmor = null;
         [SerializeField] private LowerArmLeftArmorConfig _defaultLowerArmLeftArmor = null;
@@ -52,7 +53,8 @@ namespace RPG.Combat
         private float _timeSinceLastAttack = Mathf.Infinity;
 
         private WeaponConfig _currentWeaponConfig;
-        private BodyArmorConfig _currentBodyArmorConfig;
+		private BodyArmorConfig _currentBodyArmorConfig;
+		private CapeArmorConfig _currentCapeArmorConfig;
         private UpperArmLeftArmorConfig _currentUpperArmLeftArmorConfig;
         private UpperArmRightArmorConfig _currentUpperArmRightArmorConfig;
         private LowerArmLeftArmorConfig _currentLowerArmLeftArmorConfig;
@@ -65,7 +67,8 @@ namespace RPG.Combat
         private TrousersArmorConfig _currentTrousersArmorConfig;
 
         private LazyValue<Weapon> _currentWeapon;
-        private LazyValue<BodyArmor> _currentBodyArmor;
+		private LazyValue<BodyArmor> _currentBodyArmor;
+		private LazyValue<CapeArmor> _currentCapeArmor;
         private LazyValue<UpperArmLeftArmor> _currentUpperArmLeftArmor;
         private LazyValue<UpperArmRightArmor> _currentUpperArmRightArmor;
         private LazyValue<LowerArmLeftArmor> _currentLowerArmLeftArmor;
@@ -87,7 +90,10 @@ namespace RPG.Combat
             _currentWeapon = new LazyValue<Weapon>(SetupDefaultWeapon);
 
             _currentBodyArmorConfig = _defaultBodyArmor;
-            _currentBodyArmor = new LazyValue<BodyArmor>(SetupDefaultBodyArmor);
+	        _currentBodyArmor = new LazyValue<BodyArmor>(SetupDefaultBodyArmor);
+            
+	        _currentCapeArmorConfig = _defaultCapeArmor;
+	        _currentCapeArmor = new LazyValue<CapeArmor>(SetupDefaultCapeArmor);
 
             _currentUpperArmLeftArmorConfig = _defaultUpperArmLeftArmor;
             _currentUpperArmLeftArmor = new LazyValue<UpperArmLeftArmor>(SetupDefaultUpperArmLeftArmor);
@@ -123,7 +129,8 @@ namespace RPG.Combat
             if (_equipment)
             {
                 _equipment.equipmentUpdated += UpdateWeapon;
-                _equipment.equipmentUpdated += UpdateBodyArmor;
+	            _equipment.equipmentUpdated += UpdateBodyArmor;
+	            _equipment.equipmentUpdated += UpdateCapeArmor;
                 _equipment.equipmentUpdated += UpdateUpperArmLeftArmor;
                 _equipment.equipmentUpdated += UpdateUpperArmRightArmor;
                 _equipment.equipmentUpdated += UpdateLowerArmLeftArmor;
@@ -146,6 +153,11 @@ namespace RPG.Combat
         {
             return AttachArmor(_defaultBodyArmor);
         }
+        
+		private CapeArmor SetupDefaultCapeArmor()
+		{
+			return AttachArmor(_defaultCapeArmor);
+		}
 
         private UpperArmLeftArmor SetupDefaultUpperArmLeftArmor()
         {
@@ -200,7 +212,8 @@ namespace RPG.Combat
         private void Start()
         {
             _currentWeapon.ForceInit();  
-            _currentBodyArmor.ForceInit();
+	        _currentBodyArmor.ForceInit();
+	        _currentCapeArmor.ForceInit();
             _currentUpperArmLeftArmor.ForceInit();
             _currentUpperArmRightArmor.ForceInit();
             _currentLowerArmLeftArmor.ForceInit();
@@ -234,6 +247,11 @@ namespace RPG.Combat
             _currentBodyArmorConfig = armor;
             _currentBodyArmor.value = AttachArmor(armor);
         }
+		public void EquipArmor(CapeArmorConfig armor)
+		{
+			_currentCapeArmorConfig = armor;
+			_currentCapeArmor.value = AttachArmor(armor);
+		}
         public void EquipArmor(UpperArmLeftArmorConfig armor)
         {
             _currentUpperArmLeftArmorConfig = armor;
@@ -302,6 +320,10 @@ namespace RPG.Combat
         {
             CheckArmor(EquipLocation.Body);
         }
+		private void UpdateCapeArmor()
+		{
+			CheckArmor(EquipLocation.Cape);
+		}
         private void UpdateUpperArmLeftArmor()
         {
             CheckArmor(EquipLocation.UpperArmLeft);
@@ -371,6 +393,20 @@ namespace RPG.Combat
                         }
                         break;
                     }
+                case EquipLocation.Cape:
+	            {
+		            var armor = _equipment.GetItemInSlot(equipLocation) as CapeArmorConfig;
+		            _defaultCapeArmor.SetupEquipLocation(equipLocation);
+		            if (armor == null)
+		            {
+			            EquipArmor(_defaultCapeArmor);
+		            }
+		            else
+		            {
+			            EquipArmor(armor);
+		            }
+		            break;
+	            }
                 case EquipLocation.UpperArmLeft:
                     {
                         var armor = _equipment.GetItemInSlot(equipLocation) as UpperArmLeftArmorConfig;
@@ -531,6 +567,11 @@ namespace RPG.Combat
         {
             return armor.Spawn(_bodyTransform);
         }
+        
+		private CapeArmor AttachArmor(CapeArmorConfig armor)
+		{
+			return armor.Spawn(_capeTransform);
+		}
 
         private UpperArmLeftArmor AttachArmor(UpperArmLeftArmorConfig armor)
         {
@@ -701,6 +742,7 @@ namespace RPG.Combat
 			{
 				{ "Weapon", _currentWeaponConfig.name },
 				{ "BodyArmor", _currentBodyArmorConfig?.name },
+				{ "CapeArmor", _currentCapeArmorConfig?.name },
 				{ "UpperArmLeftArmor", _currentUpperArmLeftArmorConfig?.name },
 				{ "UpperArmRightArmor", _currentUpperArmRightArmorConfig?.name },
 				{ "LowerArmLeftArmor", _currentLowerArmLeftArmorConfig?.name },
@@ -734,6 +776,13 @@ namespace RPG.Combat
 			{
 				string armorName = savedState["BodyArmor"];
 				BodyArmorConfig armor = UnityEngine.Resources.Load<BodyArmorConfig>(armorName);
+				EquipArmor(armor);
+			}
+			
+			if (savedState.ContainsKey("CapeArmor"))
+			{
+				string armorName = savedState["CapeArmor"];
+				CapeArmorConfig armor = UnityEngine.Resources.Load<CapeArmorConfig>(armorName);
 				EquipArmor(armor);
 			}
 

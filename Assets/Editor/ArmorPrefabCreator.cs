@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System;
@@ -261,7 +261,8 @@ public class ArmorPrefabCreator : EditorWindow
         armorTypeMapping.Clear();
         
         // Сопоставление типа брони с путем для сохранения префаба
-        armorPathMapping.Add("BodyArmor", "Assets/Internal Assets/Armor/Body");
+	    armorPathMapping.Add("BodyArmor", "Assets/Internal Assets/Armor/Body");
+	    armorPathMapping.Add("CapeArmor", "Assets/Internal Assets/Armor/Cape");
         armorPathMapping.Add("HelmetArmor", "Assets/Internal Assets/Armor/Helmet");
         armorPathMapping.Add("UpperArmLeftArmor", "Assets/Internal Assets/Armor/UpperArms");
         armorPathMapping.Add("UpperArmRightArmor", "Assets/Internal Assets/Armor/UpperArms");
@@ -274,7 +275,8 @@ public class ArmorPrefabCreator : EditorWindow
         armorPathMapping.Add("BootRightArmor", "Assets/Internal Assets/Armor/Boots");
         
         // Сопоставление строковых имен с типами компонентов
-        armorTypeMapping.Add("BodyArmor", typeof(BodyArmor));
+	    armorTypeMapping.Add("BodyArmor", typeof(BodyArmor));
+	    armorTypeMapping.Add("CapeArmor", typeof(CapeArmor));
         armorTypeMapping.Add("HelmetArmor", typeof(HelmetArmor));
         armorTypeMapping.Add("UpperArmLeftArmor", typeof(UpperArmLeftArmor));
         armorTypeMapping.Add("UpperArmRightArmor", typeof(UpperArmRightArmor));
