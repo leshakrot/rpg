@@ -11,6 +11,7 @@
 	    Food,
 	    Wood,
 	    Ore,
-	    Herb
+	    Herb,
+	    Stone
     }
 }
