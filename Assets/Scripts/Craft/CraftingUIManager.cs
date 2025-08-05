@@ -1,203 +1,198 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using RPG.Crafting;
 using RPG.Control;
 using GameDevTV.Inventories;
-using System.Collections.Generic; // <-- ДОБАВЬТЕ ЭТОТ USING
+using System.Collections.Generic;
 
 namespace RPG.UI.Crafting
 {
-    public class CraftingUIManager : MonoBehaviour
-    {
-        [Header("Основные компоненты")]
-        [SerializeField] private GameObject uiContainer;
-        [SerializeField] private Button closeButton;
+	public class CraftingUIManager : MonoBehaviour
+	{
+		[Header("РћСЃРЅРѕРІРЅС‹Рµ РєРѕРјРїРѕРЅРµРЅС‚С‹")]
+		[SerializeField] private GameObject uiContainer;
+		[SerializeField] private Button closeButton;
 
-        [Header("Заголовок")]
-        [SerializeField] private TextMeshProUGUI stationNameText;
+		[Header("Р—Р°РіРѕР»РѕРІРѕРє")]
+		[SerializeField] private TextMeshProUGUI stationNameText;
 
-        [Header("Настройки рецептов")]
-        [SerializeField] private GameObject recipePrefab = null;
-        [SerializeField] private CraftingSlotUI itemSlot = null;
-        [SerializeField] private GameObject recipeArrow = null;
-        [SerializeField] private Button craftButton = null;
+		[Header("РќР°СЃС‚СЂРѕР№РєРё СЂРµС†РµРїС‚РѕРІ")]
+		[SerializeField] private GameObject recipePrefab = null;
+		[SerializeField] private CraftingSlotUI itemSlot = null;
+		[SerializeField] private GameObject recipeArrow = null;
+		[SerializeField] private Button craftButton = null;
 
-        [Header("Контейнер для рецептов")]
-        [SerializeField] private Transform recipeContainer;
+		[Header("РљРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ СЂРµС†РµРїС‚РѕРІ")]
+		[SerializeField] private Transform recipeContainer;
 
-        private PlayerController playerController;
-        private CraftingStation currentStation;
-        private Inventory playerInventory;
+		private PlayerController playerController;
+		private CraftingStation currentStation;
+		private Inventory playerInventory;
 
-        // НОВОЕ: Список для хранения созданных UI-элементов рецептов
-        private List<GameObject> recipeUIList = new List<GameObject>();
+		private List<GameObject> recipeUIList = new List<GameObject>();
 
-        public static CraftingUIManager Instance { get; private set; }
+		public static CraftingUIManager Instance { get; private set; }
 
-        private void Awake()
-        {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
+		private void Awake()
+		{
+			if (Instance != null && Instance != this)
+			{
+				Destroy(gameObject);
+				return;
+			}
+			Instance = this;
 
-            if (closeButton != null)
-            {
-                closeButton.onClick.AddListener(Hide);
-            }
-        }
+			if (closeButton != null)
+			{
+				closeButton.onClick.AddListener(Hide);
+			}
+		}
 
-        private void Start()
-        {
-            playerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
-            playerInventory = playerController.GetComponent<Inventory>();
+		private void Start()
+		{
+			playerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
+			playerInventory = playerController.GetComponent<Inventory>();
 
-            if (playerInventory != null)
-            {
-                // Эта подписка гарантирует, что UI обновится при ЛЮБОМ изменении инвентаря.
-                playerInventory.inventoryUpdated += UpdateAllUI;
-            }
+			if (playerInventory != null)
+			{
+				playerInventory.inventoryUpdated += UpdateAllUI;
+			}
 
-            Hide();
-        }
+			Hide();
+		}
 
-        private void OnDestroy()
-        {
-            if (playerInventory != null)
-            {
-                playerInventory.inventoryUpdated -= UpdateAllUI;
-            }
-        }
+		private void OnDestroy()
+		{
+			if (playerInventory != null)
+			{
+				playerInventory.inventoryUpdated -= UpdateAllUI;
+			}
+		}
 
-        private void Update()
-        {
-            if (currentStation != null && uiContainer.activeSelf)
-            {
-                if (!currentStation.IsPlayerInRange(playerController))
-                {
-                    Hide();
-                }
-            }
-        }
+		private void Update()
+		{
+			if (currentStation != null && uiContainer.activeSelf)
+			{
+				if (!currentStation.IsPlayerInRange(playerController))
+				{
+					Hide();
+				}
+			}
+		}
 
-        public void Show(CraftingStation station)
-        {
-            this.currentStation = station;
-            uiContainer.SetActive(true);
+		public void Show(CraftingStation station)
+		{
+			this.currentStation = station;
+			uiContainer.SetActive(true);
 
-            if (stationNameText != null) stationNameText.text = station.StationName;
+			if (stationNameText != null) stationNameText.text = station.StationName;
 
-            Redraw();
-        }
+			Redraw();
+		}
 
-        public void Hide()
-        {
-            uiContainer.SetActive(false);
-            currentStation = null;
-        }
+		public void Hide()
+		{
+			uiContainer.SetActive(false);
+			currentStation = null;
+		}
 
-        // Переименовали, чтобы было понятнее, что обновляется все
-        private void UpdateAllUI()
-        {
-            // Этот метод теперь вызывается автоматически при изменении инвентаря,
-            // поэтому нам просто нужно перерисовать всё, если окно открыто.
-            if (uiContainer.activeSelf)
-            {
-                Redraw();
-            }
-        }
+		private void UpdateAllUI()
+		{
+			if (uiContainer.activeSelf)
+			{
+				Redraw();
+			}
+		}
 
-        private void Redraw()
-        {
-            if (currentStation?.CraftingRecipe == null) return;
+		private void Redraw()
+		{
+			// РР—РњР•РќР•РќРћ: РџСЂРѕРІРµСЂРєСѓ РЅР° CraftingRecipe РјРѕР¶РЅРѕ СѓР±СЂР°С‚СЊ, С‚Р°Рє РєР°Рє GetAllRecipes РІРµСЂРЅРµС‚ РїСѓСЃС‚РѕР№ РјР°СЃСЃРёРІ, РµСЃР»Рё СЂРµС†РµРїС‚РѕРІ РЅРµС‚.
+			if (currentStation == null) return;
 
-            // Очищаем старые UI-элементы
-            foreach (var item in recipeUIList)
-            {
-                Destroy(item);
-            }
-            recipeUIList.Clear();
+			foreach (var item in recipeUIList)
+			{
+				Destroy(item);
+			}
+			recipeUIList.Clear();
 
-            var recipes = currentStation.CraftingRecipe.GetCraftingRecipes();
+			// РР—РњР•РќР•РќРћ: Р’С‹Р·С‹РІР°РµРј РЅРѕРІС‹Р№ РјРµС‚РѕРґ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РІСЃРµС… СЂРµС†РµРїС‚РѕРІ СЃРѕ СЃС‚Р°РЅС†РёРё.
+			var recipes = currentStation.GetAllRecipes();
 
-            // Создаем UI для каждого рецепта
-            foreach (var recipe in recipes)
-            {
-                var recipeHolder = Instantiate(recipePrefab, recipeContainer);
-                recipeUIList.Add(recipeHolder); // Сохраняем ссылку
+			foreach (var recipe in recipes)
+			{
+				var recipeHolder = Instantiate(recipePrefab, recipeContainer);
+				recipeUIList.Add(recipeHolder);
 
-                ClearContainer(recipeHolder.transform);
+				ClearContainer(recipeHolder.transform);
 
-                CreateRecipeIngredients(recipe, recipeHolder.transform);
-                CreateRecipeResult(recipe, recipeHolder.transform);
-            }
-        }
+				CreateRecipeIngredients(recipe, recipeHolder.transform);
+				CreateRecipeResult(recipe, recipeHolder.transform);
+			}
+		}
 
-        private void CreateRecipeIngredients(CraftingRecipe.Recipes recipe, Transform parent)
-        {
-            foreach (var ingredient in recipe.ingredients)
-            {
-                var ingredientSlot = Instantiate(itemSlot, parent);
-                int available = GetTotalItemCount(playerInventory, ingredient.item);
-                bool hasEnough = available >= ingredient.number;
-                ingredientSlot.Setup(ingredient.item, ingredient.number, available);
-                ingredientSlot.SetResourceState(hasEnough);
-            }
-        }
+		// ... РѕСЃС‚Р°Р»СЊРЅРѕР№ РєРѕРґ РєР»Р°СЃСЃР° CraftingUIManager РѕСЃС‚Р°РµС‚СЃСЏ Р±РµР· РёР·РјРµРЅРµРЅРёР№ ...
+        
+		private void CreateRecipeIngredients(CraftingRecipe.Recipes recipe, Transform parent)
+		{
+			foreach (var ingredient in recipe.ingredients)
+			{
+				var ingredientSlot = Instantiate(itemSlot, parent);
+				int available = GetTotalItemCount(playerInventory, ingredient.item);
+				bool hasEnough = available >= ingredient.number;
+				ingredientSlot.Setup(ingredient.item, ingredient.number, available);
+				ingredientSlot.SetResourceState(hasEnough);
+			}
+		}
 
-        private void CreateRecipeResult(CraftingRecipe.Recipes recipe, Transform parent)
-        {
-            if (recipeArrow != null) Instantiate(recipeArrow, parent);
+		private void CreateRecipeResult(CraftingRecipe.Recipes recipe, Transform parent)
+		{
+			if (recipeArrow != null) Instantiate(recipeArrow, parent);
 
-            var resultSlot = Instantiate(itemSlot, parent);
-            resultSlot.Setup(recipe.item, 1);
-            resultSlot.SetResourceState(true);
+			var resultSlot = Instantiate(itemSlot, parent);
+			resultSlot.Setup(recipe.item, 1);
+			resultSlot.SetResourceState(true);
 
-            var button = Instantiate(craftButton, parent);
-            bool canCraft = CraftingManager.Instance.CanCraft(playerController, recipe);
-            UpdateCraftButton(button, canCraft);
+			var button = Instantiate(craftButton, parent);
+			bool canCraft = CraftingManager.Instance.CanCraft(playerController, recipe);
+			UpdateCraftButton(button, canCraft);
 
-            button.onClick.AddListener(() => {
-                // Мы больше не вызываем здесь обновление явно.
-                // Оно произойдет автоматически через событие inventoryUpdated.
-                CraftingManager.Instance.CraftItem(playerController, recipe.item, recipe);
-            });
-        }
+			button.onClick.AddListener(() => {
+				CraftingManager.Instance.CraftItem(playerController, recipe.item, recipe);
+			});
+		}
 
-        private void UpdateCraftButton(Button button, bool canCraft)
-        {
-            button.interactable = canCraft;
-            Text buttonText = button.GetComponentInChildren<Text>();
-            if (buttonText != null)
-            {
-                buttonText.text = canCraft ? "Создать" : "Недостаточно материалов";
-            }
-            var buttonImage = button.GetComponent<Image>();
-            if (buttonImage != null)
-            {
-                buttonImage.color = canCraft ? Color.white : new Color(0.8f, 0.8f, 0.8f, 0.7f);
-            }
-        }
+		private void UpdateCraftButton(Button button, bool canCraft)
+		{
+			button.interactable = canCraft;
+			Text buttonText = button.GetComponentInChildren<Text>();
+			if (buttonText != null)
+			{
+				buttonText.text = canCraft ? "РЎРѕР·РґР°С‚СЊ" : "РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РјР°С‚РµСЂРёР°Р»РѕРІ";
+			}
+			var buttonImage = button.GetComponent<Image>();
+			if (buttonImage != null)
+			{
+				buttonImage.color = canCraft ? Color.white : new Color(0.8f, 0.8f, 0.8f, 0.7f);
+			}
+		}
 
-        private void ClearContainer(Transform container)
-        {
-            foreach (Transform child in container) Destroy(child.gameObject);
-        }
+		private void ClearContainer(Transform container)
+		{
+			foreach (Transform child in container) Destroy(child.gameObject);
+		}
 
-        private int GetTotalItemCount(Inventory inventory, InventoryItem item)
-        {
-            int total = 0;
-            for (int i = 0; i < inventory.GetSize(); i++)
-            {
-                if (object.ReferenceEquals(inventory.GetItemInSlot(i), item))
-                {
-                    total += inventory.GetNumberInSlot(i);
-                }
-            }
-            return total;
-        }
-    }
+		private int GetTotalItemCount(Inventory inventory, InventoryItem item)
+		{
+			int total = 0;
+			for (int i = 0; i < inventory.GetSize(); i++)
+			{
+				if (object.ReferenceEquals(inventory.GetItemInSlot(i), item))
+				{
+					total += inventory.GetNumberInSlot(i);
+				}
+			}
+			return total;
+		}
+	}
 }
