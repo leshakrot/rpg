@@ -1,10 +1,12 @@
 ﻿using GameDevTV.Utils;
 using System;
 using UnityEngine;
+using GameDevTV.Saving; // <-- 1. ДОБАВЛЕНО
 
 namespace RPG.Stats
 {
-	public class BaseStats : MonoBehaviour
+	// 2. ДОБАВЛЕН ИНТЕРФЕЙС ISaveable
+	public class BaseStats : MonoBehaviour, ISaveable 
 	{
 		[Range(1, 99)]
 		[SerializeField] private int _startingLevel = 1;
@@ -252,6 +254,42 @@ namespace RPG.Stats
 
 			// Если опыт превышает последний известный уровень, возвращаем следующий
 			return penultimateLevel + 1;
+		}
+
+		/// <summary>
+		/// Принудительно обновляет расчетные характеристики и уведомляет UI.
+		/// Вызывается после загрузки сохранения.
+		/// </summary>
+		public void RefreshStats()
+		{
+			// Принудительно пересчитываем уровень на основе восстановленного опыта.
+			_currentLevel.value = CalculateLevel();
+			
+			// Вызываем событие onLevelUp.
+			// Это событие - сигнал для всех UI-элементов (здоровье, мана, опыт, уровень)
+			// о необходимости обновить свои значения.
+			onLevelUp?.Invoke();
+		}
+		
+		// 3. РЕАЛИЗАЦИЯ ISaveable
+		public object CaptureState()
+		{
+			// Уровень является производным от опыта, поэтому нам не нужно сохранять здесь какое-либо состояние.
+			return null;
+		}
+
+		public void RestoreState(object state)
+		{
+			// Этот метод вызывается системой сохранения ПОСЛЕ того, как все данные были загружены.
+			// К этому моменту компонент Experience уже должен был восстановить свое значение опыта.
+			
+			// Принудительно пересчитываем уровень на основе восстановленного опыта.
+			_currentLevel.value = CalculateLevel();
+			
+			// Вызываем событие onLevelUp. Хоть уровень и не "повысился" только что,
+			// это событие - идеальный способ уведомить все UI-элементы (здоровье, мана, опыт, уровень)
+			// о необходимости обновить свои значения.
+			onLevelUp?.Invoke();
 		}
 	}
 }
