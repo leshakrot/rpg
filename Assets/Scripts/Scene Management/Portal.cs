@@ -5,20 +5,23 @@ using GameDevTV.Saving;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 namespace RPG.SceneManagement
 {
+	using UnityEngine.UI;
     public class Portal : MonoBehaviour, ISaveable
     {
         enum DestinationIdentifier
         {
-	        Pond_PondPath, 
-	        Pond_PondCave,
+            Pond_PondPath, 
+            Pond_PondCave,
 	        PondPath_MainTown,
-	        B, 
-	        C, 
-	        D, 
-	        E,   
+	        MainTown_PlayerHouse1,
+            B, 
+            C, 
+            D, 
+            E,   
         }
 
         [SerializeField] int sceneToLoad = -1;
@@ -30,6 +33,13 @@ namespace RPG.SceneManagement
 
         [SerializeField] bool isAvailable = true;
 
+        [Header("Interaction")]
+        [SerializeField] private InteractButton interactButton;
+        [SerializeField] private Sprite interactIcon;
+	    [SerializeField] private string interactText = "Переход";
+
+        private bool isPlayerInRange = false;
+
         public void ToggleAvailability(bool b)
         {
             isAvailable = b;
@@ -38,7 +48,32 @@ namespace RPG.SceneManagement
         private void OnTriggerEnter(Collider other)
         {
             if (!isAvailable) return;
-            if (other.tag == "Player")
+            if (other.CompareTag("Player") && interactButton != null)
+            {
+                isPlayerInRange = true;
+                interactButton.SetIcon(interactIcon);
+                interactButton.SetInteractionText(interactText);
+                interactButton.gameObject.SetActive(true);
+
+                // Add listener for the button click if not already added
+                Button button = interactButton.GetComponent<Button>();
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(OnInteractButtonClicked);
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.CompareTag("Player") && interactButton != null)
+            {
+                isPlayerInRange = false;
+                interactButton.gameObject.SetActive(false);
+            }
+        }
+
+        private void OnInteractButtonClicked()
+        {
+            if (isPlayerInRange && isAvailable)
             {
                 StartCoroutine(Transition());
             }
@@ -103,16 +138,21 @@ namespace RPG.SceneManagement
             return null;
         }
 
+        private void OnDisable()
+        {
+            if (interactButton != null)
+            {
+                interactButton.gameObject.SetActive(false);
+            }
+        }
 
         public object CaptureState()
         {
-            // Возвращаем текущее значение isAvailable
             return isAvailable;
         }
 
         public void RestoreState(object state)
         {
-            // Проверяем, что сохраненное состояние является булевым значением
             if (state is bool)
             {
                 isAvailable = (bool)state;

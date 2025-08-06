@@ -342,13 +342,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   foreground: {fileID: 4003514072758045721}
-  rootCanvas: {fileID: 8028757634813086694}
   canvasGroup: {fileID: 0}
-  resourceNameText: {fileID: 8808297270844626880}
+  titleText: {fileID: 0}
   progressText: {fileID: 6008549303004232710}
-  backgroundImage: {fileID: 8012744601268304255}
+  foregroundImage: {fileID: 0}
   smoothSpeed: 8
-  hideDelay: 0.5
+  processingColor: {r: 0.2, g: 0.6, b: 1, a: 1}
+  harvestingColor: {r: 0.2, g: 0.8, b: 0.2, a: 1}
 --- !u!1 &2516521422256818326
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,6 +407,8 @@ MonoBehaviour:
   smoothSpeed: 5
   hideWhenFull: 0
   hideWhenEmpty: 0
+  playerHealth: {fileID: 0}
+  playerStats: {fileID: 0}
 --- !u!114 &4596765424289421239
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,7 +466,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.102598414, y: 0.32166138}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 6.1637573, y: -4.768299}
+  m_AnchoredPosition: {x: 6.1636963, y: -4.7682953}
   m_SizeDelta: {x: -12.3277, y: 9.3519}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7977955350011886364
@@ -680,7 +682,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 3.508194, y: -0.0000076293945}
+  m_AnchoredPosition: {x: 3.5081787, y: -0.0000076293945}
   m_SizeDelta: {x: -7.1786003, y: -1.9738998}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &8838058499895755838
@@ -953,7 +955,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 2
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
@@ -1775,6 +1777,8 @@ MonoBehaviour:
   hideWhenEmpty: 0
   levelUpAnimationDuration: 0.5
   levelUpFlashColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  playerExperience: {fileID: 0}
+  playerStats: {fileID: 0}
 --- !u!114 &4800187420972593985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1853,6 +1857,8 @@ MonoBehaviour:
   smoothSpeed: 5
   hideWhenFull: 0
   hideWhenEmpty: 0
+  playerMana: {fileID: 0}
+  playerStats: {fileID: 0}
 --- !u!114 &2290167926188805663
 MonoBehaviour:
   m_ObjectHideFlags: 0

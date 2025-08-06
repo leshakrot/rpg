@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.EventSystems; // Для проверки UI
 using GameDevTV.Saving;         // Опционально, если используется ISaveable
 
@@ -116,17 +116,27 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
         if (!target) return;
         IsInputUsedByCamera = false; // Сбрасываем флаг в начале кадра
 
-        bool isOverUI = IsPointerOverUIObject();
-        if (!isOverUI) { HandleInput(); }
-        else
+        // Проверяем, нажата ли правая кнопка мыши для вращения
+        bool isRightMouseButtonDown = Input.GetMouseButton(1);
+        
+        // Если начато вращение (зажата ПКМ), то игнорируем проверку на UI
+        if (!isRightMouseButtonDown)
         {
-            if (_isDragging || _isPinching)
+            bool isOverUI = IsPointerOverUIObject();
+            if (isOverUI)
             {
-                if (enableDebugLogs) Debug.Log($"[{gameObject.name}] Input interaction stopped: Pointer over UI.");
-                ResetInputState();
+                if (_isDragging || _isPinching)
+                {
+                    if (enableDebugLogs) Debug.Log($"[{gameObject.name}] Input interaction stopped: Pointer over UI.");
+                    ResetInputState();
+                }
+                CalculateCameraTransform();
+                return;
             }
         }
 
+        // Обрабатываем ввод в любом случае, если зажата ПКМ
+        HandleInput();
         CalculateCameraTransform();
     }
 
