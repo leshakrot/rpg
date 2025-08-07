@@ -83,6 +83,7 @@ namespace RPG.Quests.Editor // Используйте ваше простран�
 					if (EditorUtility.DisplayDialog("Remove AND Group?", "Are you sure you want to remove this entire AND group and all its OR conditions?", "Yes", "Cancel"))
 					{
 						_andProperty.DeleteArrayElementAtIndex(i);
+						property.serializedObject.ApplyModifiedProperties();
 						GUIUtility.ExitGUI(); // Важно для предотвращения ошибок GUI
 						break; // Выходим из цикла, т.к. массив изменился
 					}
@@ -169,6 +170,7 @@ namespace RPG.Quests.Editor // Используйте ваше простран�
 				if (orArrayProp != null && orArrayProp.isArray)
 				{
 					orArrayProp.DeleteArrayElementAtIndex(indexToRemove);
+					predicateProperty.serializedObject.ApplyModifiedProperties();
 				}
 				GUIUtility.ExitGUI(); // Важно
 				return;

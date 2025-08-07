@@ -22,8 +22,8 @@ MonoBehaviour:
     y: 241
     width: 200
     height: 100
-  onEnterAction: 
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and: []
 --- !u!114 &-7058128770102897917
@@ -50,8 +50,8 @@ MonoBehaviour:
     y: 106
     width: 200
     height: 100
-  onEnterAction: 
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and: []
 --- !u!114 &-6015572086712858156
@@ -74,11 +74,13 @@ MonoBehaviour:
   rect:
     serializedVersion: 2
     x: 989
-    y: 112
+    y: 113
     width: 200
     height: 100
-  onEnterAction: GiveQuest
-  onExitAction: 
+  onEnterActions:
+  - cave1_open
+  - talk_to_fishers
+  onExitActions: []
   condition:
     _and: []
 --- !u!114 &-5337205794094302015
@@ -106,8 +108,8 @@ MonoBehaviour:
     y: 112
     width: 200
     height: 100
-  onEnterAction: talk_to_fishers_complete
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and:
     - _or:
@@ -119,7 +121,7 @@ MonoBehaviour:
       - _predicate: HasQuest
         _parameters:
         - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 1
+        _negate: 0
     - _or:
       - _predicate: CompletedQuest
         _parameters:
@@ -162,8 +164,8 @@ MonoBehaviour:
     y: 112
     width: 200
     height: 100
-  onEnterAction: 
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and: []
 --- !u!114 &11400000
@@ -210,8 +212,8 @@ MonoBehaviour:
     y: 252
     width: 200
     height: 100
-  onEnterAction: 
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and: []
 --- !u!114 &4326414573742476184
@@ -236,8 +238,8 @@ MonoBehaviour:
     y: 269
     width: 200
     height: 100
-  onEnterAction: 
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and: []
 --- !u!114 &8224013382916581909
@@ -261,8 +263,8 @@ MonoBehaviour:
     y: 112
     width: 200
     height: 100
-  onEnterAction: 
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and: []
 --- !u!114 &8900474716396829493
@@ -289,7 +291,7 @@ MonoBehaviour:
     y: 239
     width: 200
     height: 100
-  onEnterAction: 
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and: []

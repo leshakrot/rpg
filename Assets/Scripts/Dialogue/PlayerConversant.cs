@@ -147,7 +147,10 @@ namespace RPG.Dialogue
         {
             if(_currentNode != null)
             {
-                TriggerAction(_currentNode.GetOnEnterAction());
+                foreach (var action in _currentNode.GetOnEnterActions())
+                {
+                    TriggerAction(action);
+                }
             }
         }
 
@@ -155,7 +158,10 @@ namespace RPG.Dialogue
         {
             if (_currentNode != null)
             {
-                TriggerAction(_currentNode.GetOnExitAction());
+                foreach (var action in _currentNode.GetOnExitActions())
+                {
+                    TriggerAction(action);
+                }
             }
         }
 
