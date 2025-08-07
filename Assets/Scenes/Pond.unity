@@ -4437,7 +4437,7 @@ PrefabInstance:
     - target: {fileID: 3182546067588808471, guid: 28c02ed72f7aec4499ea90d5e3287f91,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3699878238114446085, guid: 28c02ed72f7aec4499ea90d5e3287f91,
         type: 3}
@@ -8683,9 +8683,19 @@ PrefabInstance:
       objectReference: {fileID: 860229822}
     - target: {fileID: 1147082332458336910, guid: 8590e108f95cfa542a8c648ad7aa511f,
         type: 3}
+      propertyPath: isAvailable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1147082332458336910, guid: 8590e108f95cfa542a8c648ad7aa511f,
+        type: 3}
       propertyPath: sceneToLoad
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 1147082332458336910, guid: 8590e108f95cfa542a8c648ad7aa511f,
+        type: 3}
+      propertyPath: interactButton
+      value: 
+      objectReference: {fileID: 1238303226}
     - target: {fileID: 5049961946591271319, guid: 8590e108f95cfa542a8c648ad7aa511f,
         type: 3}
       propertyPath: m_Name
@@ -8767,7 +8777,11 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 829753435}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5049961946591271319, guid: 8590e108f95cfa542a8c648ad7aa511f,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 809828670}
   m_SourcePrefab: {fileID: 100100000, guid: 8590e108f95cfa542a8c648ad7aa511f, type: 3}
 --- !u!4 &761118547 stripped
 Transform:
@@ -9236,6 +9250,37 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 672501758}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &809828666 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5049961946591271319, guid: 8590e108f95cfa542a8c648ad7aa511f,
+    type: 3}
+  m_PrefabInstance: {fileID: 761118546}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &809828667 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1147082332458336910, guid: 8590e108f95cfa542a8c648ad7aa511f,
+    type: 3}
+  m_PrefabInstance: {fileID: 761118546}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 809828666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36e072c51b29e914d9974423d5d94719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &809828670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 809828666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueIdentifier: dc85e614-a5bf-4a18-8957-35b2276a2836
 --- !u!1 &814245767
 GameObject:
   m_ObjectHideFlags: 0
@@ -9722,6 +9767,86 @@ Transform:
   - {fileID: 410530831}
   m_Father: {fileID: 1788203516}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &883701409
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 883701410}
+  - component: {fileID: 883701413}
+  - component: {fileID: 883701412}
+  - component: {fileID: 883701411}
+  m_Layer: 2
+  m_Name: StartQuestTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &883701410
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883701409}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.93992674, z: -0, w: -0.34137627}
+  m_LocalPosition: {x: 12.070311, y: -5.3781204, z: -6.8863297}
+  m_LocalScale: {x: 0.62877, y: 0.62877, z: 0.62877}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1759039204}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &883701411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883701409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf2fa6ed94845004ca26344aa7987970, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _quest: {fileID: 11400000, guid: c9239af6b51be8e43b6ba0f0d9980091, type: 2}
+--- !u!114 &883701412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883701409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 001484fbce38c354c9fda75af327c037, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!65 &883701413
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883701409}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 6.0027757, y: 3.9495595, z: 7.366074}
+  m_Center: {x: 0.0000035830974, y: 1.4747798, z: 3.1830385}
 --- !u!4 &884958807 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5758415072973726802, guid: 4af9528d7fc0ee54da6f75afcc711a3c,
@@ -10579,7 +10704,7 @@ PrefabInstance:
     - target: {fileID: 578189691652438176, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -314.57242
+      value: -314.5725
       objectReference: {fileID: 0}
     - target: {fileID: 683142751084556466, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -11804,7 +11929,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.7498
+      value: -570.74976
       objectReference: {fileID: 0}
     - target: {fileID: 5572362029290283794, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -12803,6 +12928,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1270793992}
+  - {fileID: 1759039204}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1039154147
@@ -14726,13 +14852,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   questName: "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-  objectiveReference: kill
+  objectiveReference: find_lift
   onObjectiveCompleted:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1195665435}
         m_TargetAssemblyTypeName: UnityEngine.Collider, UnityEngine
         m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 809828667}
+        m_TargetAssemblyTypeName: RPG.SceneManagement.Portal, Assembly-CSharp
+        m_MethodName: ToggleAvailability
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -15237,6 +15375,18 @@ Animator:
     type: 3}
   m_PrefabInstance: {fileID: 1677620494}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1238303226 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6507696443549655703, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+    type: 3}
+  m_PrefabInstance: {fileID: 992968711}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acaf28b23d2b51649ba3413e1235f8e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1238746860
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15300,6 +15450,11 @@ PrefabInstance:
       propertyPath: sceneToLoad
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1147082332458336910, guid: 8590e108f95cfa542a8c648ad7aa511f,
+        type: 3}
+      propertyPath: interactButton
+      value: 
+      objectReference: {fileID: 1238303226}
     - target: {fileID: 5049961946591271319, guid: 8590e108f95cfa542a8c648ad7aa511f,
         type: 3}
       propertyPath: m_Name
@@ -15545,7 +15700,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1270793992
 Transform:
   m_ObjectHideFlags: 0
@@ -17212,7 +17367,7 @@ PrefabInstance:
     - target: {fileID: 8419322417996559672, guid: 42e550d4059322349a11630e6a22383e,
         type: 3}
       propertyPath: m_PathPosition
-      value: 0.9806148
+      value: 0.5286654
       objectReference: {fileID: 0}
     - target: {fileID: 8419322417996559672, guid: 42e550d4059322349a11630e6a22383e,
         type: 3}
@@ -20703,6 +20858,38 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 28c02ed72f7aec4499ea90d5e3287f91, type: 3}
+--- !u!1 &1759039203
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1759039204}
+  m_Layer: 0
+  m_Name: TalkWiseTree
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1759039204
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1759039203}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 883701410}
+  m_Father: {fileID: 1028240706}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1760023968
 GameObject:
   m_ObjectHideFlags: 0
@@ -26570,7 +26757,9 @@ GameObject:
   - component: {fileID: 8936454178749755502}
   - component: {fileID: 8936454178749755503}
   - component: {fileID: 8936454178749755505}
+  - component: {fileID: 8936454178749755507}
   - component: {fileID: 8936454178749755504}
+  - component: {fileID: 8936454178749755506}
   m_Layer: 0
   m_Name: Wise Tree
   m_TagString: Untagged
@@ -27609,6 +27798,48 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 8936454178749755504}
+        m_TargetAssemblyTypeName: RPG.Quests.QuestCompletion, Assembly-CSharp
+        m_MethodName: CompleteObjective
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &8936454178749755506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7423152413449687487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b2c198cb9425a41901f830166d18c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _quest: {fileID: 11400000, guid: c9239af6b51be8e43b6ba0f0d9980091, type: 2}
+  _objective: talk_to_wise_tree
+--- !u!114 &8936454178749755507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7423152413449687487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f74e76fd4ea4a5b4584c07880ed4fb1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _action: TalkWiseTree
+  _onTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8936454178749755506}
         m_TargetAssemblyTypeName: RPG.Quests.QuestCompletion, Assembly-CSharp
         m_MethodName: CompleteObjective
         m_Mode: 1
