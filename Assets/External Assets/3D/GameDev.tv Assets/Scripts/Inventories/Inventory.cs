@@ -57,13 +57,13 @@ namespace GameDevTV.Inventories
             List<InventoryItem> stackedItems = new List<InventoryItem>();
             foreach (var item in items)
             {
-                if(item.IsStackable())
+                if (item.IsStackable())
                 {
                     if (HasItem(item)) continue;
-                    if(stackedItems.Contains(item)) continue;
+                    if (stackedItems.Contains(item)) continue;
                     stackedItems.Add(item);
                 }
-                if(freeSlots <= 0) return false;
+                if (freeSlots <= 0) return false;
                 freeSlots--;
             }
             return true;
@@ -74,7 +74,7 @@ namespace GameDevTV.Inventories
             int count = 0;
             foreach (InventorySlot slot in slots)
             {
-                if(slot.number == 0)
+                if (slot.number == 0)
                 {
                     count++;
                 }
@@ -218,6 +218,20 @@ namespace GameDevTV.Inventories
             return true;
         }
 
+        public int GetItemCount(InventoryItem item)
+        {
+            if (item == null) return 0;
+            int total = 0;
+            foreach (var slot in slots)
+            {
+                if (object.ReferenceEquals(slot.item, item))
+                {
+                    total += slot.number;
+                }
+            }
+            return total;
+        }
+
         // PRIVATE
 
         private void Awake()
@@ -282,7 +296,7 @@ namespace GameDevTV.Inventories
             public string itemID;
             public int number;
         }
-    
+
         object ISaveable.CaptureState()
         {
             var slotStrings = new InventorySlotRecord[inventorySize];
@@ -316,9 +330,24 @@ namespace GameDevTV.Inventories
             switch (predicate)
             {
                 case "HasInventoryItem":
-                    return HasItem(InventoryItem.GetFromID(parameters[0]));
-            }
+                    {
+                        if (parameters.Length < 1) return false;
+                        InventoryItem item = InventoryItem.GetFromID(parameters[0]);
+                        if (item == null) return false;
 
+                        // Если есть второй параметр (количество) и он является числом
+                        if (parameters.Length > 1 && int.TryParse(parameters[1], out int requiredAmount))
+                        {
+                            // Используем новый метод для проверки точного количества
+                            return GetItemCount(item) >= requiredAmount;
+                        }
+                        // Иначе просто проверяем наличие хотя бы одного предмета
+                        else
+                        {
+                            return HasItem(item);
+                        }
+                    }
+            }
             return null;
         }
     }

@@ -9,8 +9,8 @@ namespace RPG.Quests
     public class QuestStatus
     {
         private Quest _quest;
-	    private List<string> _completedObjectives = new List<string>();
-	    private List<string> _revealedObjectives = new List<string>();
+        private List<string> _completedObjectives = new List<string>();
+        private List<string> _revealedObjectives = new List<string>();
 
         // Добавляем прогресс по количеству
         private Dictionary<string, int> _objectiveProgress = new Dictionary<string, int>();
@@ -19,8 +19,8 @@ namespace RPG.Quests
         class QuestStatusRecord
         {
             public string questName;
-	        public List<string> completedObjectives;
-	        public List<string> revealedObjectives;
+            public List<string> completedObjectives;
+            public List<string> revealedObjectives;
             public Dictionary<string, int> objectiveProgress;
         }
 
@@ -42,20 +42,20 @@ namespace RPG.Quests
             _objectiveProgress = state.objectiveProgress ?? new Dictionary<string, int>();
         }
 
-	    public void RevealObjective(string objectiveRef)
-	    {
-		    if (!_revealedObjectives.Contains(objectiveRef))
-		    {
-			    _revealedObjectives.Add(objectiveRef);
-		    }
-	    }
-	    
-	    public bool IsObjectiveRevealed(string reference)
-	    {
-		    var objective = _quest.GetObjectives().FirstOrDefault(o => o.reference == reference);
-		    if (objective == null) return false;
-		    return !objective.hiddenInitially || _revealedObjectives.Contains(reference);
-	    }
+        public void RevealObjective(string objectiveRef)
+        {
+            if (!_revealedObjectives.Contains(objectiveRef))
+            {
+                _revealedObjectives.Add(objectiveRef);
+            }
+        }
+
+        public bool IsObjectiveRevealed(string reference)
+        {
+            var objective = _quest.GetObjectives().FirstOrDefault(o => o.reference == reference);
+            if (objective == null) return false;
+            return !objective.hiddenInitially || _revealedObjectives.Contains(reference);
+        }
 
         public Quest GetQuest()
         {
@@ -76,12 +76,12 @@ namespace RPG.Quests
         {
             if (_quest.HasObjective(objective) && !_completedObjectives.Contains(objective))
             {
-	            _completedObjectives.Add(objective);
-                
-	            if (QuestEvents.Instance != null)
-	            {
-		            QuestEvents.Instance.ObjectiveCompleted(_quest, objective);
-	            }
+                _completedObjectives.Add(objective);
+
+                if (QuestEvents.Instance != null)
+                {
+                    QuestEvents.Instance.ObjectiveCompleted(_quest, objective);
+                }
             }
         }
 
@@ -107,12 +107,21 @@ namespace RPG.Quests
             return _objectiveProgress.ContainsKey(objective) ? _objectiveProgress[objective] : 0;
         }
 
+        public void SetProgress(string objectiveRef, int count)
+        {
+            if (!_objectiveProgress.ContainsKey(objectiveRef)) return;
+
+            // Получаем, сколько всего нужно собрать, чтобы не засчитать лишнего
+            int required = GetQuest().GetObjective(objectiveRef).requiredCount;
+            _objectiveProgress[objectiveRef] = Mathf.Min(count, required);
+        }
+
         public object CaptureState()
         {
             QuestStatusRecord state = new QuestStatusRecord();
             state.questName = _quest.name;
-	        state.completedObjectives = _completedObjectives;
-	        state.revealedObjectives = _revealedObjectives;
+            state.completedObjectives = _completedObjectives;
+            state.revealedObjectives = _revealedObjectives;
             state.objectiveProgress = _objectiveProgress;
             return state;
         }
@@ -120,7 +129,7 @@ namespace RPG.Quests
         public bool IsComplete()
         {
             if (_quest == null) return false;
-            
+
             foreach (var objective in _quest.GetObjectives())
             {
                 if (!_completedObjectives.Contains(objective.reference))

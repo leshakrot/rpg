@@ -13,6 +13,57 @@ namespace RPG.Quests
 
 		public event Action onUpdate;
 
+		private Inventory _inventory;
+
+		private void Awake()
+		{
+			_inventory = GetComponent<Inventory>();
+		}
+
+		private void OnEnable()
+		{
+			if (_inventory != null)
+			{
+				// Подписываемся на событие "инвентарь обновился"
+				_inventory.inventoryUpdated += CheckItemCollectionObjectives;
+			}
+		}
+
+		private void OnDisable()
+		{
+			if (_inventory != null)
+			{
+				// Всегда отписываемся, чтобы избежать утечек памяти
+				_inventory.inventoryUpdated -= CheckItemCollectionObjectives;
+			}
+		}
+
+		// Этот метод будет автоматически вызываться при любом изменении инвентаря.
+		private void CheckItemCollectionObjectives()
+		{
+			foreach (var status in _statuses)
+			{
+				if (status.IsComplete()) continue;
+
+				foreach (var objective in status.GetQuest().GetObjectives())
+				{
+					// Нас интересуют только активные цели по сбору предметов
+					if (!objective.isCollectionObjective || objective.itemToCollect == null) continue;
+
+					// Получаем актуальное количество предметов из инвентаря
+					int currentItemCount = _inventory.GetItemCount(objective.itemToCollect);
+
+					// Устанавливаем прогресс квеста равным количеству предметов
+					status.SetProgress(objective.reference, currentItemCount);
+				}
+			}
+			// Вызываем общее событие обновления, чтобы UI и другие системы отреагировали
+			if (onUpdate != null)
+			{
+				onUpdate();
+			}
+		}
+
 		private void Update()
 		{
 			CompleteObjectivesByPredicates();
@@ -24,10 +75,10 @@ namespace RPG.Quests
 			if (HasQuest(quest)) return;
 			QuestStatus newStatus = new QuestStatus(quest);
 			_statuses.Add(newStatus);
-			if(onUpdate != null)
+			if (onUpdate != null)
 			{
 				onUpdate();
-			}              
+			}
 		}
 
 		public bool HasQuest(Quest quest)
@@ -84,7 +135,7 @@ namespace RPG.Quests
 
 		private void GiveReward(Quest quest)
 		{
-			foreach(var reward in quest.GetRewards())
+			foreach (var reward in quest.GetRewards())
 			{
 				bool success = GetComponent<Inventory>().AddToFirstEmptySlot(reward.item, reward.number);
 				if (!success)
@@ -111,7 +162,7 @@ namespace RPG.Quests
 				}
 			}
 		}
-        
+
 		private void RevealObjectivesByConditions()
 		{
 			foreach (QuestStatus status in _statuses)
@@ -124,7 +175,7 @@ namespace RPG.Quests
 				{
 					if (!objective.hiddenInitially) continue;
 					if (status.IsObjectiveRevealed(objective.reference)) continue;
-					if (objective.revealCondition != null && 
+					if (objective.revealCondition != null &&
 						objective.revealCondition.Check(GetComponents<IPredicateEvaluator>()))
 					{
 						status.RevealObjective(objective.reference);
@@ -137,7 +188,7 @@ namespace RPG.Quests
 		public object CaptureState()
 		{
 			List<object> state = new List<object>();
-			foreach(QuestStatus status in _statuses)
+			foreach (QuestStatus status in _statuses)
 			{
 				state.Add(status.CaptureState());
 			}
@@ -153,7 +204,7 @@ namespace RPG.Quests
 
 			foreach (object objectState in stateList)
 			{
-				_statuses.Add(new QuestStatus(objectState));               
+				_statuses.Add(new QuestStatus(objectState));
 			}
 		}
 
@@ -161,25 +212,25 @@ namespace RPG.Quests
 		{
 			switch (predicate)
 			{
-			case "HasQuest":
-				Quest questHas = Quest.GetByName(parameters[0]);
-				return questHas != null && HasQuest(questHas);
+				case "HasQuest":
+					Quest questHas = Quest.GetByName(parameters[0]);
+					return questHas != null && HasQuest(questHas);
 
-			case "CompletedQuest":
-				Quest questCompleted = Quest.GetByName(parameters[0]);
-				if (questCompleted == null) return false;
+				case "CompletedQuest":
+					Quest questCompleted = Quest.GetByName(parameters[0]);
+					if (questCompleted == null) return false;
 
-				QuestStatus status = GetQuestStatus(questCompleted);
-				return status != null && status.IsComplete();
-			case "CompletedObjective":
-				if (parameters.Length < 1) return false;
-				string objectiveRef = parameters[0];
-				foreach (var objectiveStatus in GetComponent<QuestList>().GetStatuses())
-				{
-					if (objectiveStatus.IsObjectiveComplete(objectiveRef))
-						return true;
-				}
-				return false;
+					QuestStatus status = GetQuestStatus(questCompleted);
+					return status != null && status.IsComplete();
+				case "CompletedObjective":
+					if (parameters.Length < 1) return false;
+					string objectiveRef = parameters[0];
+					foreach (var objectiveStatus in GetComponent<QuestList>().GetStatuses())
+					{
+						if (objectiveStatus.IsObjectiveComplete(objectiveRef))
+							return true;
+					}
+					return false;
 			}
 			return null;
 		}

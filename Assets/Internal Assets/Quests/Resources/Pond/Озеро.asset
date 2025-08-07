@@ -24,4 +24,24 @@ MonoBehaviour:
     hiddenInitially: 0
     revealCondition:
       _and: []
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  - reference: fish
+    description: "\u0420\u044B\u0431\u0430"
+    usesCondition: 1
+    completionCondition:
+      _and:
+      - _or:
+        - _predicate: HasInventoryItem
+          _parameters:
+          - db11a1d9-b82e-4457-87c5-59a152466c21
+          - 2
+          _negate: 0
+    hasProgress: 1
+    requiredCount: 2
+    hiddenInitially: 0
+    revealCondition:
+      _and: []
+    isCollectionObjective: 1
+    itemToCollect: {fileID: 11400000, guid: e9cfbb43c64f93247b05aee713c4b855, type: 2}
   _rewards: []

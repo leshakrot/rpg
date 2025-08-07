@@ -31,10 +31,16 @@ namespace RPG.Quests
             public Condition completionCondition;
 
             public bool hasProgress = false;
-	        public int requiredCount = 1;
-            
-	        public bool hiddenInitially = false;
-	        public Condition revealCondition;
+            public int requiredCount = 1;
+
+            public bool hiddenInitially = false;
+            public Condition revealCondition;
+
+            [Header("Item Collection")]
+            [Tooltip("Отметьте, если эта цель заключается в сборе предметов.")]
+            public bool isCollectionObjective = false;
+            [Tooltip("Какой предмет необходимо собрать.")]
+            public InventoryItem itemToCollect;
         }
 
 
@@ -66,9 +72,9 @@ namespace RPG.Quests
 
         public bool HasObjective(string objectiveRef)
         {
-            foreach(var objective in _objectives)
+            foreach (var objective in _objectives)
             {
-                if(objective.reference == objectiveRef)
+                if (objective.reference == objectiveRef)
                 {
                     return true;
                 }
@@ -78,9 +84,9 @@ namespace RPG.Quests
 
         public static Quest GetByName(string questName)
         {
-            foreach(Quest quest in Resources.LoadAll<Quest>(""))
+            foreach (Quest quest in Resources.LoadAll<Quest>(""))
             {
-                if(quest.name == questName)
+                if (quest.name == questName)
                 {
                     return quest;
                 }

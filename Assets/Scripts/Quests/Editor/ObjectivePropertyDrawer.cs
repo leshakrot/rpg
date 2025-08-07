@@ -46,7 +46,7 @@ namespace RPG.Quests.Editor
 			if (property.isExpanded)
 			{
 				EditorGUI.indentLevel++; // Увеличиваем отступ для вложенных полей
-				// Начинаем рисовать со следующей строки
+										 // Начинаем рисовать со следующей строки
 				Rect currentRect = new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing, position.width, EditorGUIUtility.singleLineHeight);
 
 				// Рисуем все дочерние свойства по очереди
@@ -63,6 +63,14 @@ namespace RPG.Quests.Editor
 				if (property.FindPropertyRelative("hasProgress")?.boolValue ?? false)
 				{
 					DrawProperty(ref currentRect, property.FindPropertyRelative("requiredCount"));
+				}
+				DrawProperty(ref currentRect, property.FindPropertyRelative("isCollectionObjective"));
+				// Показываем поле с предметом, только если галочка isCollectionObjective включена
+				if (property.FindPropertyRelative("isCollectionObjective")?.boolValue ?? false)
+				{
+					EditorGUI.indentLevel++;
+					DrawProperty(ref currentRect, property.FindPropertyRelative("itemToCollect"));
+					EditorGUI.indentLevel--;
 				}
 				DrawProperty(ref currentRect, property.FindPropertyRelative("hiddenInitially"));
 				// Показываем revealCondition только если галочка hiddenInitially включена
@@ -106,6 +114,11 @@ namespace RPG.Quests.Editor
 				if (property.FindPropertyRelative("hasProgress")?.boolValue ?? false)
 				{
 					totalHeight += GetChildPropertyHeight(property.FindPropertyRelative("requiredCount"));
+				}
+				totalHeight += GetChildPropertyHeight(property.FindPropertyRelative("isCollectionObjective"));
+				if (property.FindPropertyRelative("isCollectionObjective")?.boolValue ?? false)
+				{
+					totalHeight += GetChildPropertyHeight(property.FindPropertyRelative("itemToCollect"));
 				}
 				totalHeight += GetChildPropertyHeight(property.FindPropertyRelative("hiddenInitially"));
 				if (property.FindPropertyRelative("hiddenInitially")?.boolValue ?? false)
