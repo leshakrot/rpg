@@ -1,0 +1,139 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b887383adfa29fd47b5b333aba08945b, type: 3}
+  m_Name: "\u041F\u0440\u043E\u043A\u043B\u044F\u0442\u044B\u0439 \u0440\u0443\u0447\u0435\u0439"
+  m_EditorClassIdentifier: 
+  _objectives:
+  - reference: investigate_creek
+    description: "\u041F\u0440\u043E\u0439\u0442\u0438 \u0432\u0432\u0435\u0440\u0445
+      \u043F\u043E \u0442\u0435\u0447\u0435\u043D\u0438\u044E \u0440\u0443\u0447\u044C\u044F
+      \u0438 \u043D\u0430\u0439\u0442\u0438 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A
+      \u0437\u0430\u0433\u0440\u044F\u0437\u043D\u0435\u043D\u0438\u044F."
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 0
+    hiddenInitially: 0
+    revealCondition:
+      _and: []
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  - reference: find_mine_entrance
+    description: "\u0418\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u0437\u0430\u0433\u0440\u044F\u0437\u043D\u0435\u043D\u0438\u044F
+      - \u0441\u0442\u0430\u0440\u0430\u044F \u0448\u0430\u0445\u0442\u0430. \u041D\u0443\u0436\u043D\u043E
+      \u043D\u0430\u0439\u0442\u0438 \u0432\u0445\u043E\u0434."
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 0
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - investigate_creek
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  - reference: solve_goblin_problem
+    description: "\u0420\u0435\u0448\u0438\u0442\u044C \u043A\u0430\u043A \u043F\u043E\u0441\u0442\u0443\u043F\u0438\u0442\u044C
+      \u0441 \u0433\u043E\u0431\u043B\u0438\u043D\u0430\u043C\u0438"
+    usesCondition: 0
+    completionCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - peaceful_solution
+          _negate: 0
+        - _predicate: CompletedObjective
+          _parameters:
+          - aggressive_solution
+          _negate: 0
+    hasProgress: 0
+    requiredCount: 0
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - find_mine_entrance
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  - reference: aggressive_solution
+    description: "\u041F\u0435\u0440\u0435\u0431\u0438\u0442\u044C \u0433\u043E\u0431\u043B\u0438\u043D\u043E\u0432
+      \u0432 \u0448\u0430\u0445\u0442\u0435 (5)."
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 1
+    requiredCount: 3
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - find_mine_entrance
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  - reference: peaceful_solution
+    description: "\u041D\u0430\u0439\u0442\u0438 \u0434\u043B\u044F \u0433\u043E\u0431\u043B\u0438\u043D\u043E\u0432
+      \u0435\u0434\u0443 (5 \u0433\u0440\u0438\u0431\u043E\u0432)."
+    usesCondition: 0
+    completionCondition:
+      _and:
+      - _or:
+        - _predicate: HasInventoryItem
+          _parameters:
+          - 
+          _negate: 0
+    hasProgress: 1
+    requiredCount: 5
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - find_mine_entrance
+          _negate: 0
+    isCollectionObjective: 1
+    itemToCollect: {fileID: 11400000, guid: dc02662db496e3f4ca46493ad79cc143, type: 2}
+  - reference: return_to_peasant
+    description: "\u041F\u0440\u043E\u0431\u043B\u0435\u043C\u0430 \u0440\u0435\u0448\u0435\u043D\u0430.
+      \u041D\u0443\u0436\u043D\u043E \u0441\u043E\u043E\u0431\u0449\u0438\u0442\u044C
+      \u043E\u0431 \u044D\u0442\u043E\u043C \u043A\u0440\u0435\u0441\u0442\u044C\u044F\u043D\u0438\u043D\u0443."
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 0
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - solve_goblin_problem
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  _rewards:
+  - number: 250
+    item: {fileID: 11400000, guid: 14c9d40d213c40d43b1755b25c673e9b, type: 2}

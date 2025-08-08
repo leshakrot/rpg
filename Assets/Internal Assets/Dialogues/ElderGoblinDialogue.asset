@@ -1,0 +1,305 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9223372036854775808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: d4e5f6a7-b8c9-d0e1-f2a3-b4c5d6e7f8a9
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 1
+  text: "[\u041E\u0442\u0434\u0430\u0442\u044C \u0433\u0440\u0438\u0431\u044B] \u042F
+    \u043F\u0440\u0438\u043D\u0435\u0441 \u0432\u0430\u043C \u0435\u0434\u0443. \u0422\u0435\u043F\u0435\u0440\u044C
+    \u0437\u0430\u0434\u0435\u043B\u0430\u0439\u0442\u0435 \u0441\u0442\u0435\u043D\u0443."
+  children:
+  - 2935671248653901245
+  rect:
+    serializedVersion: 2
+    x: 700
+    y: 99
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: HasInventoryItem
+        _parameters:
+        - 3a1da933-737b-4d05-9d27-acb97a1e5b94
+        - 5
+        _negate: 0
+--- !u!114 &-8900474716396829493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: b8c9d0e1-f2a3-b4c5-d6e7-f8a9b0c1d2e3
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u0422\u044B... \u0434\u043E\u0431\u0440\u044B\u0439. \u041F\u0440\u0430\u0432\u0434\u0430
+    \u0434\u043E\u0431\u0440\u044B\u0439. \u041C\u044B \u0436\u0434\u0430\u0442\u044C.
+    \u041C\u044B \u0432\u0441\u0435 \u0441\u0434\u0435\u043B\u0430\u0442\u044C, \u043A\u0430\u043A
+    \u0431\u0443\u0434\u0435\u0442 \u0435\u0434\u0430."
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 1272
+    y: 470
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &-7058128770102897917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u041D\u0435-\u043D\u0435 \u0431\u0435\u0439! \u041C\u043E\u044F \u043D\u0435
+    \u0445\u043E\u0442\u0435\u043B\u0430! \u0421\u0442\u0435\u043D\u0430 \u0443\u043F\u0430\u043B\u0430,
+    \u043F\u043B\u043E\u0445\u0438\u0435 \u043A\u0430\u043C\u043D\u0438-\u044F\u0434\u044B
+    \u0432 \u0432\u043E\u0434\u0443 \u043F\u043E\u043F\u0430\u043B\u0438. \u041C\u044B
+    \u043D\u0435 \u0432\u0438\u043D\u043E\u0432\u0430\u0442\u044B!"
+  children:
+  - b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7
+  - c3d4e5f6-a7b8-c9d0-e1f2-a3b4c5d6e7f8
+  - d4e5f6a7-b8c9-d0e1-f2a3-b4c5d6e7f8a9
+  rect:
+    serializedVersion: 2
+    x: 14
+    y: 208
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: CompletedObjective
+        _parameters:
+        - find_mine_entrance
+        _negate: 0
+    - _or:
+      - _predicate: CompletedObjective
+        _parameters:
+        - solve_goblin_problem
+        _negate: 1
+--- !u!114 &-6344562082286711836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 2935671248653901245
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u0415\u0414\u0410! \u0415\u0414\u0410! \u0421\u043F\u0430\u0441\u0438\u0431\u043E,
+    \u0434\u043E\u0431\u0440\u044B\u0439 \u0432\u0435\u043B\u0438\u043A\u0430\u043D!
+    \u041C\u044B \u0441\u0435\u0439\u0447\u0430\u0441 \u0436\u0435 \u043D\u0430\u0447\u0430\u0442\u044C
+    \u0440\u0430\u0431\u043E\u0442\u0443! \u0414\u044B\u0440\u043A\u0430 \u0431\u0443\u0434\u0435\u0442
+    \u0437\u0430\u043A\u0440\u044B\u0442! \u0412 \u0431\u043B\u0430\u0433\u043E\u0434\u0430\u0440\u043D\u043E\u0441\u0442\u044C,
+    \u043C\u044B \u0438\u043D\u043E\u0433\u0434\u0430 \u043E\u0441\u0442\u0430\u0432\u043B\u044F\u0442\u044C
+    \u0431\u043B\u0435\u0441\u0442\u044F\u0448\u043A\u0438 \u0443 \u0432\u0445\u043E\u0434\u0430.
+    \u0414\u043B\u044F \u0442\u0435\u0431\u044F."
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 931
+    y: 100
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &-6015572086712858156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: e5f6a7b8-c9d0-e1f2-a3b4-c5d6e7f8a9b0
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u041C\u044B \u043A\u043E\u043F\u0430\u043B\u0438... \u0418\u0441\u043A\u0430\u043B\u0438
+    \u0431\u043B\u0435\u0441\u0442\u044F\u0448\u043A\u0438. \u0421\u0442\u0435\u043D\u0430
+    \u0442\u0440\u0435\u0441\u043D\u0443\u043B\u0430, \u043A\u0430\u043C\u043D\u0438-\u044F\u0434\u044B
+    \u0432 \u0432\u043E\u0434\u0443. \u041C\u044B \u0441\u0430\u043C\u0438 \u0431\u043E\u044F\u0442\u044C\u0441\u044F!
+    \u041D\u043E \u0435\u0434\u044B \u043D\u0435\u0442, \u0441\u0438\u043B \u043D\u0435\u0442.
+    \u041D\u0430\u0434\u043E \u0433\u0440\u0438\u0431\u044B, \u0431\u043E\u043B\u044C\u0448\u0438\u0435
+    \u0433\u0440\u0438\u0431\u044B. \u0422\u043E\u0433\u0434\u0430 \u043C\u044B \u0437\u0430\u0432\u0430\u043B\u0438\u0442\u044C
+    \u0434\u044B\u0440\u043A\u0443!"
+  children:
+  - a7b8c9d0-e1f2-a3b4-c5d6-e7f8a9b0c1d2
+  rect:
+    serializedVersion: 2
+    x: 740
+    y: 466
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &-5337205794094302015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 1
+  text: "\u0423\u0441\u043F\u043E\u043A\u043E\u0439\u0441\u044F. \u041E\u0431\u044A\u044F\u0441\u043D\u0438,
+    \u0447\u0442\u043E \u043F\u0440\u043E\u0438\u0437\u043E\u0448\u043B\u043E."
+  children:
+  - e5f6a7b8-c9d0-e1f2-a3b4-c5d6e7f8a9b0
+  rect:
+    serializedVersion: 2
+    x: 481
+    y: 460
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &-4997813797341376164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: a7b8c9d0-e1f2-a3b4-c5d6-e7f8a9b0c1d2
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 1
+  text: "\u0425\u043E\u0440\u043E\u0448\u043E. \u042F \u043F\u0440\u0438\u043D\u0435\u0441\u0443
+    \u0432\u0430\u043C \u0433\u0440\u0438\u0431\u044B. \u041D\u043E \u0435\u0441\u043B\u0438
+    \u0432\u044B \u043D\u0435 \u0437\u0430\u0434\u0435\u043B\u0430\u0435\u0442\u0435
+    \u043F\u0440\u043E\u0445\u043E\u0434, \u044F \u0432\u0435\u0440\u043D\u0443\u0441\u044C."
+  children:
+  - b8c9d0e1-f2a3-b4c5-d6e7-f8a9b0c1d2e3
+  rect:
+    serializedVersion: 2
+    x: 975
+    y: 464
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &-4326414573742476184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: c3d4e5f6-a7b8-c9d0-e1f2-a3b4c5d6e7f8
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 1
+  text: "\u041C\u0435\u043D\u044F \u043D\u0435 \u0432\u043E\u043B\u043D\u0443\u044E\u0442
+    \u0432\u0430\u0448\u0438 \u043E\u043F\u0440\u0430\u0432\u0434\u0430\u043D\u0438\u044F.
+    \u0412\u044B \u0437\u0430 \u044D\u0442\u043E \u0437\u0430\u043F\u043B\u0430\u0442\u0438\u0442\u0435."
+  children:
+  - f6a7b8c9-d0e1-f2a3-b4c5-d6e7f8a9b0c1
+  rect:
+    serializedVersion: 2
+    x: 605
+    y: 743
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &-4178516888601997027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: f6a7b8c9-d0e1-f2a3-b4c5-d6e7f8a9b0c1
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u0417\u043D\u0430\u0447\u0438\u0442... \u0431\u043E\u0439! \u0417\u0430
+    \u043F\u043B\u0435\u043C\u044F! \u0410-\u0430-\u0430\u0440\u0433\u0445!"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 854
+    y: 738
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions:
+  - aggrevate
+  condition:
+    _and: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cb41413d0f918744b4655afe6c9f18f, type: 3}
+  m_Name: ElderGoblinDialogue
+  m_EditorClassIdentifier: 
+  nodes:
+  - {fileID: -7058128770102897917}
+  - {fileID: -5337205794094302015}
+  - {fileID: -4326414573742476184}
+  - {fileID: -9223372036854775808}
+  - {fileID: -6015572086712858156}
+  - {fileID: -4178516888601997027}
+  - {fileID: -4997813797341376164}
+  - {fileID: -8900474716396829493}
+  - {fileID: -6344562082286711836}
+  newNodeOffset: {x: 250, y: 0}
