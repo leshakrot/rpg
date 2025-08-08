@@ -1,4 +1,4 @@
-﻿using GameDevTV.Inventories;
+using GameDevTV.Inventories;
 using GameDevTV.Saving;
 using GameDevTV.Utils;
 using System;
@@ -41,6 +41,8 @@ namespace RPG.Quests
 		// Этот метод будет автоматически вызываться при любом изменении инвентаря.
 		private void CheckItemCollectionObjectives()
 		{
+			bool hasChanges = false;
+			
 			foreach (var status in _statuses)
 			{
 				if (status.IsComplete()) continue;
@@ -49,16 +51,35 @@ namespace RPG.Quests
 				{
 					// Нас интересуют только активные цели по сбору предметов
 					if (!objective.isCollectionObjective || objective.itemToCollect == null) continue;
+					if (status.IsObjectiveComplete(objective.reference)) continue;
 
 					// Получаем актуальное количество предметов из инвентаря
 					int currentItemCount = _inventory.GetItemCount(objective.itemToCollect);
+					int previousProgress = status.GetCurrentProgress(objective.reference);
 
 					// Устанавливаем прогресс квеста равным количеству предметов
 					status.SetProgress(objective.reference, currentItemCount);
+					
+					// Проверяем, изменился ли прогресс
+					if (currentItemCount != previousProgress)
+					{
+						hasChanges = true;
+					}
+
+					// Проверяем завершение цели
+					if (objective.hasProgress && currentItemCount >= objective.requiredCount)
+					{
+						if (!status.IsObjectiveComplete(objective.reference))
+						{
+							status.CompleteObjective(objective.reference);
+							hasChanges = true;
+						}
+					}
 				}
 			}
-			// Вызываем общее событие обновления, чтобы UI и другие системы отреагировали
-			if (onUpdate != null)
+			
+			// Вызываем общее событие обновления только если что-то изменилось
+			if (hasChanges && onUpdate != null)
 			{
 				onUpdate();
 			}
@@ -68,6 +89,33 @@ namespace RPG.Quests
 		{
 			CompleteObjectivesByPredicates();
 			RevealObjectivesByConditions();
+			
+			// Также проверяем прогресс сбора предметов в Update для обновления UI
+			UpdateCollectionProgress();
+		}
+		
+		// Новый метод для обновления прогресса без дублирования логики
+		private void UpdateCollectionProgress()
+		{
+			foreach (var status in _statuses)
+			{
+				if (status.IsComplete()) continue;
+
+				foreach (var objective in status.GetQuest().GetObjectives())
+				{
+					if (!objective.isCollectionObjective || objective.itemToCollect == null) continue;
+					if (status.IsObjectiveComplete(objective.reference)) continue;
+
+					int currentItemCount = _inventory.GetItemCount(objective.itemToCollect);
+					int currentProgress = status.GetCurrentProgress(objective.reference);
+					
+					// Обновляем прогресс если он отличается от количества предметов в инвентаре
+					if (currentItemCount != currentProgress)
+					{
+						status.SetProgress(objective.reference, currentItemCount);
+					}
+				}
+			}
 		}
 
 		public void AddQuest(Quest quest)

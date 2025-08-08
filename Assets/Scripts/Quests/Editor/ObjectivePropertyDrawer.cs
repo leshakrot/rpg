@@ -1,4 +1,4 @@
-﻿// Поместите этот скрипт в папку "Editor"
+// Поместите этот скрипт в папку "Editor"
 using UnityEngine;
 using UnityEditor;
 using RPG.Quests; // Ваше пространство имен
@@ -64,6 +64,8 @@ namespace RPG.Quests.Editor
 				{
 					DrawProperty(ref currentRect, property.FindPropertyRelative("requiredCount"));
 				}
+				
+				// ИСПРАВЛЕНИЕ: Добавляем отрисовку полей для сбора предметов
 				DrawProperty(ref currentRect, property.FindPropertyRelative("isCollectionObjective"));
 				// Показываем поле с предметом, только если галочка isCollectionObjective включена
 				if (property.FindPropertyRelative("isCollectionObjective")?.boolValue ?? false)
@@ -72,6 +74,7 @@ namespace RPG.Quests.Editor
 					DrawProperty(ref currentRect, property.FindPropertyRelative("itemToCollect"));
 					EditorGUI.indentLevel--;
 				}
+				
 				DrawProperty(ref currentRect, property.FindPropertyRelative("hiddenInitially"));
 				// Показываем revealCondition только если галочка hiddenInitially включена
 				if (property.FindPropertyRelative("hiddenInitially")?.boolValue ?? false)
@@ -115,11 +118,14 @@ namespace RPG.Quests.Editor
 				{
 					totalHeight += GetChildPropertyHeight(property.FindPropertyRelative("requiredCount"));
 				}
+				
+				// ИСПРАВЛЕНИЕ: Добавляем высоту полей для сбора предметов
 				totalHeight += GetChildPropertyHeight(property.FindPropertyRelative("isCollectionObjective"));
 				if (property.FindPropertyRelative("isCollectionObjective")?.boolValue ?? false)
 				{
 					totalHeight += GetChildPropertyHeight(property.FindPropertyRelative("itemToCollect"));
 				}
+				
 				totalHeight += GetChildPropertyHeight(property.FindPropertyRelative("hiddenInitially"));
 				if (property.FindPropertyRelative("hiddenInitially")?.boolValue ?? false)
 				{

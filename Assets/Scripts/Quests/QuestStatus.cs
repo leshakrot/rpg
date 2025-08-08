@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -109,11 +109,22 @@ namespace RPG.Quests
 
         public void SetProgress(string objectiveRef, int count)
         {
-            if (!_objectiveProgress.ContainsKey(objectiveRef)) return;
+            // Инициализируем прогресс, если его нет
+            if (!_objectiveProgress.ContainsKey(objectiveRef))
+            {
+                _objectiveProgress[objectiveRef] = 0;
+            }
 
-            // Получаем, сколько всего нужно собрать, чтобы не засчитать лишнего
-            int required = GetQuest().GetObjective(objectiveRef).requiredCount;
-            _objectiveProgress[objectiveRef] = Mathf.Min(count, required);
+            // Получаем цель для проверки требований
+            var objective = GetQuest().GetObjective(objectiveRef);
+            if (objective == null) return;
+
+            // Ограничиваем прогресс требуемым количеством
+            int required = objective.hasProgress ? objective.requiredCount : 1;
+            int newProgress = Mathf.Min(count, required);
+            
+            // Устанавливаем новый прогресс
+            _objectiveProgress[objectiveRef] = newProgress;
         }
 
         public object CaptureState()

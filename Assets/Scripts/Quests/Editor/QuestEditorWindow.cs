@@ -218,7 +218,7 @@ namespace RPG.Quests.Editor
 					Rect propRect = new Rect(startX, currentY, fieldWidth, propHeight);
 
 					// Небольшой отступ для вложенных блоков
-					if (propName.Contains("Condition") || propName == "requiredCount")
+					if (propName.Contains("Condition") || propName == "requiredCount" || propName == "itemToCollect")
 					{
 						propRect.x += 15f;
 						propRect.width -= 15f;
@@ -255,6 +255,13 @@ namespace RPG.Quests.Editor
 				if (element.FindPropertyRelative("hasProgress").boolValue)
 				{
 					currentY += DrawPropertyField("requiredCount", false);
+				}
+
+				// ИСПРАВЛЕНИЕ: Добавляем поля для сбора предметов
+				currentY += DrawPropertyField("isCollectionObjective", false);
+				if (element.FindPropertyRelative("isCollectionObjective").boolValue)
+				{
+					currentY += DrawPropertyField("itemToCollect", true);
 				}
 
 				currentY += DrawPropertyField("hiddenInitially", false);
@@ -316,7 +323,6 @@ namespace RPG.Quests.Editor
 					return prop != null ? EditorGUI.GetPropertyHeight(prop, true) + EditorGUIUtility.standardVerticalSpacing : 0f;
 				};
 
-
 				totalHeight += GetPropHeight("reference");
 				totalHeight += GetPropHeight("description");
 				totalHeight += GetPropHeight("usesCondition");
@@ -329,6 +335,14 @@ namespace RPG.Quests.Editor
 				{
 					totalHeight += GetPropHeight("requiredCount");
 				}
+				
+				// ИСПРАВЛЕНИЕ: Добавляем высоту для полей сбора предметов
+				totalHeight += GetPropHeight("isCollectionObjective");
+				if (element.FindPropertyRelative("isCollectionObjective")?.boolValue ?? false) // Добавим проверку на null
+				{
+					totalHeight += GetPropHeight("itemToCollect");
+				}
+				
 				totalHeight += GetPropHeight("hiddenInitially");
 				if (element.FindPropertyRelative("hiddenInitially")?.boolValue ?? false) // Добавим проверку на null
 				{

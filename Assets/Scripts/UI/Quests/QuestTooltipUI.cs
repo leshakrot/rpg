@@ -1,4 +1,4 @@
-﻿using RPG.Quests;
+using RPG.Quests;
 using System;
 using TMPro;
 using UnityEngine;
@@ -12,6 +12,7 @@ namespace RPG.UI.Quests
         [SerializeField] private GameObject _objectivePrefab;
         [SerializeField] private GameObject _objectiveIncompletePrefab;
         [SerializeField] private TextMeshProUGUI _rewardText;
+        
         public void Setup(QuestStatus status)
         {
             Quest quest = status.GetQuest();
@@ -30,10 +31,25 @@ namespace RPG.UI.Quests
                 TextMeshProUGUI objectiveText = objectiveInstance.GetComponentInChildren<TextMeshProUGUI>();
 
                 string progressText = "";
-                if (objective.hasProgress && !status.IsObjectiveComplete(objective.reference))
+                
+                // Показываем прогресс если:
+                // 1. Цель имеет обычный прогресс (hasProgress = true)
+                // 2. Цель на сбор предметов (isCollectionObjective = true)
+                bool shouldShowProgress = (objective.hasProgress || objective.isCollectionObjective) && 
+                                        !status.IsObjectiveComplete(objective.reference);
+                
+                if (shouldShowProgress)
                 {
                     int current = status.GetCurrentProgress(objective.reference);
-                    progressText = $" ({current}/{objective.requiredCount})";
+                    int required = objective.requiredCount;
+                    
+                    // Для целей сбора предметов, если requiredCount не установлен, используем 1
+                    if (objective.isCollectionObjective && required <= 0)
+                    {
+                        required = 1;
+                    }
+                    
+                    progressText = $" ({current}/{required})";
                 }
 
                 objectiveText.text = objective.description + progressText;
@@ -59,7 +75,7 @@ namespace RPG.UI.Quests
             }
             if(rewardText == "")
             {
-                rewardText = "��� �������";
+                rewardText = "Нет наград";
             }
             rewardText += ".";
             return rewardText;

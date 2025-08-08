@@ -4,14 +4,6 @@ using UnityEngine;
 
 namespace GameDevTV.Inventories
 {
-    /// <summary>
-    /// A ScriptableObject that represents any item that can be put in an
-    /// inventory.
-    /// </summary>
-    /// <remarks>
-    /// In practice, you are likely to use a subclass such as `ActionItem` or
-    /// `EquipableItem`.
-    /// </remarks>
     public abstract class InventoryItem : ScriptableObject, ISerializationCallbackReceiver
     {
         // CONFIG DATA
@@ -30,20 +22,8 @@ namespace GameDevTV.Inventories
         [SerializeField] float price;
         [SerializeField] ItemCategory category = ItemCategory.None;
 
-        // STATE
         static Dictionary<string, InventoryItem> itemLookupCache;
 
-        // PUBLIC
-
-        /// <summary>
-        /// Get the inventory item instance from its UUID.
-        /// </summary>
-        /// <param name="itemID">
-        /// String UUID that persists between game instances.
-        /// </param>
-        /// <returns>
-        /// Inventory item instance corresponding to the ID.
-        /// </returns>
         public static InventoryItem GetFromID(string itemID)
         {
             if (itemLookupCache == null)
@@ -66,12 +46,6 @@ namespace GameDevTV.Inventories
             return itemLookupCache[itemID];
         }
         
-        /// <summary>
-        /// Spawn the pickup gameobject into the world.
-        /// </summary>
-        /// <param name="position">Where to spawn the pickup.</param>
-        /// <param name="number">How many instances of the item does the pickup represent.</param>
-        /// <returns>Reference to the pickup object spawned.</returns>
         public Pickup SpawnPickup(Vector3 position, int number)
         {
             var pickup = Instantiate(this.pickup);
@@ -113,12 +87,9 @@ namespace GameDevTV.Inventories
         {
             return category;
         }
-
-        // PRIVATE
-        
+      
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
-            // Generate and save a new UUID if this is blank.
             if (string.IsNullOrWhiteSpace(itemID))
             {
                 itemID = System.Guid.NewGuid().ToString();
@@ -127,8 +98,7 @@ namespace GameDevTV.Inventories
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            // Require by the ISerializationCallbackReceiver but we don't need
-            // to do anything with it.
+
         }
     }
 }
