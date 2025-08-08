@@ -1067,6 +1067,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 52704766}
+  - component: {fileID: 52704769}
+  - component: {fileID: 52704768}
+  - component: {fileID: 52704767}
   m_Layer: 0
   m_Name: Cursed Brook
   m_TagString: Untagged
@@ -1093,6 +1096,63 @@ Transform:
   - {fileID: 1685781985}
   m_Father: {fileID: 1823174419}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &52704767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 52704765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b2c198cb9425a41901f830166d18c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _quest: {fileID: 11400000, guid: 2b7c11b34028c4f40aed3f9d36a6f7e2, type: 2}
+  _objective: peaceful_solution
+--- !u!114 &52704768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 52704765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b2c198cb9425a41901f830166d18c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _quest: {fileID: 11400000, guid: 2b7c11b34028c4f40aed3f9d36a6f7e2, type: 2}
+  _objective: solve_goblin_problem
+--- !u!114 &52704769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 52704765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7187e006da2431940aa169237e969daa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  questName: "\u041F\u0440\u043E\u043A\u043B\u044F\u0442\u044B\u0439 \u0440\u0443\u0447\u0435\u0439"
+  objectiveReference: aggressive_solution
+  onObjectiveCompleted:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 52704768}
+        m_TargetAssemblyTypeName: RPG.Quests.QuestCompletion, Assembly-CSharp
+        m_MethodName: CompleteObjective
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &55633870 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2538538711090367908, guid: 1d2b35d5d35250847bffaf229efcca88,
@@ -7082,7 +7142,7 @@ PrefabInstance:
     - target: {fileID: 578189691652438176, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -31.456509
+      value: -31.456705
       objectReference: {fileID: 0}
     - target: {fileID: 683142751084556466, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -22121,10 +22181,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5246880847962846557, guid: 02a3cd4ce8544ca49b3c4c34634dbd61,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1370807672}
-    - targetCorrespondingSourceObject: {fileID: 5246880847962846557, guid: 02a3cd4ce8544ca49b3c4c34634dbd61,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1370807675}
   m_SourcePrefab: {fileID: 100100000, guid: 02a3cd4ce8544ca49b3c4c34634dbd61, type: 3}
 --- !u!4 &1370807670 stripped
@@ -22139,20 +22195,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1370807669}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1370807672
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1370807671}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b2c198cb9425a41901f830166d18c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _quest: {fileID: 11400000, guid: 2b7c11b34028c4f40aed3f9d36a6f7e2, type: 2}
-  _objective: 
 --- !u!114 &1370807673
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22181,6 +22223,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _actions:
   - rid: 1583675162114130038
+  - rid: 1583675162114130115
   references:
     version: 2
     RefIds:
@@ -22202,6 +22245,37 @@ MonoBehaviour:
                 m_FloatArgument: 0
                 m_StringArgument: 
                 m_BoolArgument: 1
+              m_CallState: 2
+    - rid: 1583675162114130115
+      type: {class: TriggerAction, ns: RPG.Dialogue, asm: Assembly-CSharp}
+      data:
+        actionName: peaceful_solution_done
+        onTrigger:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 52704768}
+              m_TargetAssemblyTypeName: RPG.Quests.QuestCompletion, Assembly-CSharp
+              m_MethodName: CompleteObjective
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 52704767}
+              m_TargetAssemblyTypeName: RPG.Quests.QuestCompletion, Assembly-CSharp
+              m_MethodName: CompleteObjective
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
               m_CallState: 2
 --- !u!114 &1370807675
 MonoBehaviour:

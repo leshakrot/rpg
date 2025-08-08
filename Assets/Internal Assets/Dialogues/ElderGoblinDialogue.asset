@@ -24,7 +24,8 @@ MonoBehaviour:
     y: 99
     width: 200
     height: 100
-  onEnterActions: []
+  onEnterActions:
+  - peaceful_solution_done
   onExitActions: []
   condition:
     _and:
@@ -104,6 +105,11 @@ MonoBehaviour:
         _parameters:
         - solve_goblin_problem
         _negate: 1
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - "\u041F\u0440\u043E\u043A\u043B\u044F\u0442\u044B\u0439 \u0440\u0443\u0447\u0435\u0439"
+        _negate: 0
 --- !u!114 &-6344562082286711836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -302,4 +308,61 @@ MonoBehaviour:
   - {fileID: -4997813797341376164}
   - {fileID: -8900474716396829493}
   - {fileID: -6344562082286711836}
+  - {fileID: 3066950144742907487}
+  - {fileID: 705740862822669635}
   newNodeOffset: {x: 250, y: 0}
+--- !u!114 &705740862822669635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: f87d305c-c863-43ae-a650-100f452f242c
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u0410\u0411\u041E\u0411\u0410"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 49
+    y: 590
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &3066950144742907487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: a7222d8c-870b-4825-94e6-76ae27b977b9
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u041F\u0440\u0438\u0432\u0435\u0442!"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 36
+    y: 411
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - "\u041F\u0440\u043E\u043A\u043B\u044F\u0442\u044B\u0439 \u0440\u0443\u0447\u0435\u0439"
+        _negate: 1
