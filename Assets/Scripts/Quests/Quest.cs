@@ -1,4 +1,4 @@
-﻿using GameDevTV.Inventories;
+using GameDevTV.Inventories;
 using GameDevTV.Utils;
 using System;
 using System.Collections;
@@ -13,6 +13,9 @@ namespace RPG.Quests
     {
         [SerializeField] private List<Objective> _objectives = new List<Objective>();
         [SerializeField] private List<Reward> _rewards = new List<Reward>();
+
+        [Tooltip("How many objectives must be completed to complete the quest. If 0, all are required.")]
+        [SerializeField] private int _objectivesToComplete = 0;
 
         [System.Serializable]
         public class Reward
@@ -52,6 +55,11 @@ namespace RPG.Quests
         public int GetObjectiveCount()
         {
             return _objectives.Count;
+        }
+
+        public int GetObjectivesToComplete()
+        {
+            return _objectivesToComplete;
         }
 
         public IEnumerable<Objective> GetObjectives()

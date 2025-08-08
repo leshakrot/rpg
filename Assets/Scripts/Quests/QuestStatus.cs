@@ -141,14 +141,15 @@ namespace RPG.Quests
         {
             if (_quest == null) return false;
 
-            foreach (var objective in _quest.GetObjectives())
+            int objectivesToComplete = _quest.GetObjectivesToComplete();
+            int completedCount = GetCompletedCount();
+
+            if (objectivesToComplete == 0)
             {
-                if (!_completedObjectives.Contains(objective.reference))
-                {
-                    return false;
-                }
+                return completedCount >= _quest.GetObjectiveCount();
             }
-            return true;
+            
+            return completedCount >= objectivesToComplete;
         }
     }
 }

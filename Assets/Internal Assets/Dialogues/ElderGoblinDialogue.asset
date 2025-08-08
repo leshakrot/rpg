@@ -165,10 +165,11 @@ MonoBehaviour:
     \u0434\u044B\u0440\u043A\u0443!"
   children:
   - a7b8c9d0-e1f2-a3b4-c5d6-e7f8a9b0c1d2
+  - c3d4e5f6-a7b8-c9d0-e1f2-a3b4c5d6e7f8
   rect:
     serializedVersion: 2
-    x: 740
-    y: 466
+    x: 655
+    y: 486
     width: 200
     height: 100
   onEnterActions: []
@@ -194,8 +195,8 @@ MonoBehaviour:
   - e5f6a7b8-c9d0-e1f2-a3b4-c5d6e7f8a9b0
   rect:
     serializedVersion: 2
-    x: 481
-    y: 460
+    x: 354
+    y: 468
     width: 200
     height: 100
   onEnterActions: []
@@ -227,7 +228,8 @@ MonoBehaviour:
     y: 464
     width: 200
     height: 100
-  onEnterActions: []
+  onEnterActions:
+  - talk_to_goblins
   onExitActions: []
   condition:
     _and: []
@@ -251,11 +253,12 @@ MonoBehaviour:
   - f6a7b8c9-d0e1-f2a3-b4c5-d6e7f8a9b0c1
   rect:
     serializedVersion: 2
-    x: 605
-    y: 743
+    x: 953
+    y: 732
     width: 200
     height: 100
-  onEnterActions: []
+  onEnterActions:
+  - talk_to_goblins
   onExitActions: []
   condition:
     _and: []
@@ -277,8 +280,8 @@ MonoBehaviour:
   children: []
   rect:
     serializedVersion: 2
-    x: 854
-    y: 738
+    x: 1299
+    y: 737
     width: 200
     height: 100
   onEnterActions: []
@@ -324,18 +327,24 @@ MonoBehaviour:
   m_Name: f87d305c-c863-43ae-a650-100f452f242c
   m_EditorClassIdentifier: 
   isPlayerSpeaking: 0
-  text: "\u0410\u0411\u041E\u0411\u0410"
+  text: "\u041F\u0440\u0438\u0432\u0435\u0442, \u0434\u043E\u0431\u0440\u044B\u0439
+    \u0447\u0435\u043B\u043E\u0432\u0435\u043A!"
   children: []
   rect:
     serializedVersion: 2
-    x: 49
-    y: 590
+    x: 35
+    y: 578
     width: 200
     height: 100
   onEnterActions: []
   onExitActions: []
   condition:
-    _and: []
+    _and:
+    - _or:
+      - _predicate: CompletedObjective
+        _parameters:
+        - peaceful_solution
+        _negate: 0
 --- !u!114 &3066950144742907487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349,12 +358,13 @@ MonoBehaviour:
   m_Name: a7222d8c-870b-4825-94e6-76ae27b977b9
   m_EditorClassIdentifier: 
   isPlayerSpeaking: 0
-  text: "\u041F\u0440\u0438\u0432\u0435\u0442!"
+  text: "\u0422\u0435\u0431\u0435 \u0437\u0434\u0435\u0441\u044C \u043D\u0435 \u0440\u0430\u0434\u044B!
+    \u0423\u0445\u043E\u0434\u0438!"
   children: []
   rect:
     serializedVersion: 2
-    x: 36
-    y: 411
+    x: 27
+    y: 392
     width: 200
     height: 100
   onEnterActions: []
@@ -365,4 +375,8 @@ MonoBehaviour:
       - _predicate: HasQuest
         _parameters:
         - "\u041F\u0440\u043E\u043A\u043B\u044F\u0442\u044B\u0439 \u0440\u0443\u0447\u0435\u0439"
+        _negate: 1
+      - _predicate: CompletedObjective
+        _parameters:
+        - talk_to_goblins
         _negate: 1
