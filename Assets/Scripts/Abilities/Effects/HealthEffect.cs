@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System;
 using RPG.Attributes;
+using RPG.Combat;
 
 namespace RPG.Abilities.Effects
 {	
@@ -13,6 +14,10 @@ namespace RPG.Abilities.Effects
 		{
 			foreach (var target in data.GetTargets())
 			{
+				if(target.TryGetComponent(out Fighter fighter))
+				{
+					if(!fighter.enabled) return;
+				}			
 				var health = target.GetComponent<Health>();
 				if(health)
 				{

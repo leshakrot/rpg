@@ -34,13 +34,19 @@ MonoBehaviour:
     usesCondition: 0
     completionCondition:
       _and: []
-    hasProgress: 0
-    requiredCount: 1
-    hiddenInitially: 0
+    hasProgress: 1
+    requiredCount: 5
+    hiddenInitially: 1
     revealCondition:
-      _and: []
-    isCollectionObjective: 0
-    itemToCollect: {fileID: 0}
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - go_home
+          _negate: 0
+    isCollectionObjective: 1
+    itemToCollect: {fileID: 11400000, guid: f47025d4e2e10ea4a8de94140c6b7dbd, type: 2}
   _rewards:
   - number: 50
     item: {fileID: 11400000, guid: 14c9d40d213c40d43b1755b25c673e9b, type: 2}
+  _objectivesToComplete: 0
