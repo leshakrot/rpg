@@ -2,12 +2,24 @@ Shader "Custom/ProceduralSkybox"
 {
     Properties
     {
+        [Header(Sky Colors)]
         _SkyColor ("Sky Color", Color) = (0.4, 0.6, 0.9, 1.0)
         _HorizonColor ("Horizon Color", Color) = (0.9, 0.85, 0.8, 1.0)
         _GroundColor ("Ground Color", Color) = (0.3, 0.25, 0.2, 1.0)
-        _StarBrightness ("Star Brightness", Range(0, 1)) = 0.5
-        _StarDensity ("Star Density", Range(10, 500)) = 100
-        _HorizonBlend ("Horizon Blend", Range(0.1, 10)) = 1.0
+        
+        [Header(Atmospheric Settings)]
+        _HorizonBlend ("Horizon Blend", Range(0.1, 5)) = 1.5
+        _AtmospherePower ("Atmosphere Power", Range(0.5, 3)) = 1.2
+        
+        [Header(Stars Night Only)]
+        _StarBrightness ("Star Brightness", Range(0, 1)) = 0.8
+        _StarDensity ("Star Density", Range(20, 200)) = 80
+        _StarSize ("Star Size", Range(0.01, 0.1)) = 0.03
+        _StarTwinkle ("Star Twinkle", Range(0, 2)) = 0.5
+        
+        [Header(Night Sky Enhancement)]
+        _NightSkyIntensity ("Night Sky Intensity", Range(0, 2)) = 1.2
+        _MilkyWayIntensity ("Milky Way Intensity", Range(0, 1)) = 0.3
     }
     
     SubShader
@@ -25,7 +37,6 @@ Shader "Custom/ProceduralSkybox"
             struct appdata
             {
                 float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
             };
             
             struct v2f
@@ -34,12 +45,19 @@ Shader "Custom/ProceduralSkybox"
                 float3 worldPos : TEXCOORD0;
             };
             
+            // Properties
             fixed4 _SkyColor;
             fixed4 _HorizonColor;
             fixed4 _GroundColor;
+            
+            float _HorizonBlend;
+            float _AtmospherePower;
             float _StarBrightness;
             float _StarDensity;
-            float _HorizonBlend;
+            float _StarSize;
+            float _StarTwinkle;
+            float _NightSkyIntensity;
+            float _MilkyWayIntensity;
             
             v2f vert (appdata v)
             {
@@ -49,7 +67,7 @@ Shader "Custom/ProceduralSkybox"
                 return o;
             }
             
-            // Хэш-функция для генерации псевдослучайных чисел
+            // пїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
             float hash(float3 p)
             {
                 p = frac(p * 0.3183099 + 0.1);
@@ -57,7 +75,7 @@ Shader "Custom/ProceduralSkybox"
                 return frac(p.x * p.y * p.z * (p.x + p.y + p.z));
             }
             
-            // Функция для создания звезд
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
             float stars(float3 dir)
             {
                 float3 p = dir * _StarDensity;
@@ -66,7 +84,7 @@ Shader "Custom/ProceduralSkybox"
                 
                 float minDist = 1.0;
                 
-                // Проверяем текущую и соседние ячейки
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                 for (int x = -1; x <= 1; x++)
                 {
                     for (int y = -1; y <= 1; y++)
@@ -76,7 +94,7 @@ Shader "Custom/ProceduralSkybox"
                             float3 offset = float3(x, y, z);
                             float3 cell = cellPos + offset;
                             
-                            // Используем хэш для создания случайной позиции звезды в ячейке
+                            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                             float3 starPos = cell + hash(cell) * 0.9 + 0.05;
                             float dist = length(p - starPos);
                             
@@ -85,10 +103,10 @@ Shader "Custom/ProceduralSkybox"
                     }
                 }
                 
-                // Создаем звезду с мягким краем
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
                 float starVal = 1.0 - smoothstep(0.0, 0.3, minDist);
                 
-                // Случайная яркость
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                 float brightness = hash(cellCenter) * 0.8 + 0.2;
                 
                 return starVal * brightness * _StarBrightness;
@@ -98,29 +116,29 @@ Shader "Custom/ProceduralSkybox"
             {
                 float3 dir = normalize(i.worldPos);
                 
-                // Определение направления: вверх или вниз
-                float upFactor = dir.y * 0.5 + 0.5; // Преобразуем [-1,1] в [0,1]
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+                float upFactor = dir.y * 0.5 + 0.5; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ [-1,1] пїЅ [0,1]
                 
-                // Маска для горизонта
+                // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                 float horizonMask = 1.0 - pow(abs(dir.y), _HorizonBlend);
                 
-                // Основные цвета неба и земли
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
                 fixed4 skyGround = lerp(_GroundColor, _SkyColor, upFactor);
                 
-                // Смешивание с горизонтом
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                 fixed4 baseColor = lerp(skyGround, _HorizonColor, horizonMask);
                 
-                // Добавление звезд только для верхней части (небо)
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅ)
                 float star = 0;
-                if (dir.y > 0.0) // Только на верхней полусфере
+                if (dir.y > 0.0) // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                 {
                     star = stars(dir);
                 }
                 
-                // Цвет звезд
+                // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
                 fixed4 starColor = fixed4(1.0, 1.0, 1.0, 1.0);
                 
-                // Финальный цвет с добавлением звезд
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
                 fixed4 finalColor = lerp(baseColor, starColor, star);
                 
                 return finalColor;

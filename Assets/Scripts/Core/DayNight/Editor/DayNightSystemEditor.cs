@@ -8,17 +8,20 @@ public class DayNightSystemEditor : Editor
 {
     private SerializedProperty currentTime, timeSpeed, currentDay;
     private SerializedProperty dawnStart, duskStart, transitionSpeed;
+    private SerializedProperty atmosphericSettings;
     private SerializedProperty skyboxMaterial, skyColor, horizonColor, groundColor;
-    private SerializedProperty sunLight, moonLight, sunColor, moonColor, sunIntensity, moonIntensity;
+    private SerializedProperty sunLight, moonLight, sunColor, moonColor;
+    private SerializedProperty maxSunIntensity, maxMoonIntensity, sunShadowSoftness, moonShadowSoftness;
     private SerializedProperty starsBrightness;
-    private SerializedProperty enableFog, fogColor, fogDensityDay, fogDensityNight;
+    private SerializedProperty enableFog, fogColor, fogDensityDay, fogDensityNight, fogStartDistance, fogEndDistance;
     private SerializedProperty timeEvents, onDayCompleted;
 
     private bool showTimeSettings = true;
-    private bool showSkySettings = true;
+    private bool showAtmosphericSettings = true;
+    private bool showSkySettings = false;
     private bool showLightSettings = true;
     private bool showFogSettings = true;
-    private bool showEventSettings = true;
+    private bool showEventSettings = false;
 
     private int newEventHour = 6;
     private int newEventMinute = 0;
@@ -32,21 +35,32 @@ public class DayNightSystemEditor : Editor
         dawnStart = serializedObject.FindProperty("dawnStart");
         duskStart = serializedObject.FindProperty("duskStart");
         transitionSpeed = serializedObject.FindProperty("transitionSpeed");
+        
+        atmosphericSettings = serializedObject.FindProperty("atmosphericSettings");
+        
         skyboxMaterial = serializedObject.FindProperty("skyboxMaterial");
         skyColor = serializedObject.FindProperty("skyColor");
         horizonColor = serializedObject.FindProperty("horizonColor");
         groundColor = serializedObject.FindProperty("groundColor");
+        
         sunLight = serializedObject.FindProperty("sunLight");
         moonLight = serializedObject.FindProperty("moonLight");
         sunColor = serializedObject.FindProperty("sunColor");
         moonColor = serializedObject.FindProperty("moonColor");
-        sunIntensity = serializedObject.FindProperty("sunIntensity");
-        moonIntensity = serializedObject.FindProperty("moonIntensity");
+        maxSunIntensity = serializedObject.FindProperty("maxSunIntensity");
+        maxMoonIntensity = serializedObject.FindProperty("maxMoonIntensity");
+        sunShadowSoftness = serializedObject.FindProperty("sunShadowSoftness");
+        moonShadowSoftness = serializedObject.FindProperty("moonShadowSoftness");
+        
         starsBrightness = serializedObject.FindProperty("starsBrightness");
+        
         enableFog = serializedObject.FindProperty("enableFog");
         fogColor = serializedObject.FindProperty("fogColor");
         fogDensityDay = serializedObject.FindProperty("fogDensityDay");
         fogDensityNight = serializedObject.FindProperty("fogDensityNight");
+        fogStartDistance = serializedObject.FindProperty("fogStartDistance");
+        fogEndDistance = serializedObject.FindProperty("fogEndDistance");
+        
         timeEvents = serializedObject.FindProperty("timeEvents");
         onDayCompleted = serializedObject.FindProperty("onDayCompleted");
     }
@@ -57,13 +71,61 @@ public class DayNightSystemEditor : Editor
         DayNightSystem system = (DayNightSystem)target;
 
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Текущее время:", system.GetTimeString(), EditorStyles.boldLabel);
+        
+        // Информационная панель
+        DrawInfoPanel(system);
+        
         EditorGUILayout.Space();
 
-        showTimeSettings = EditorGUILayout.Foldout(showTimeSettings, "Время", true);
+        // Основные настройки времени
+        DrawTimeSettings();
+        
+        // Атмосферные настройки
+        DrawAtmosphericSettings();
+
+        // Настройки освещения
+        DrawLightSettings();
+
+        // Настройки тумана
+        DrawFogSettings();
+
+        // Настройки неба (опциональные)
+        DrawSkySettings();
+
+        // События
+        DrawEventSettings(system);
+
+        // Кнопки быстрых действий
+        DrawQuickActions(system);
+
+        serializedObject.ApplyModifiedProperties();
+    }
+    
+    private void DrawInfoPanel(DayNightSystem system)
+    {
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        EditorGUILayout.LabelField("Информация о системе", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Текущее время:", system.GetTimeString());
+        
+        float dayProgress = 0f;
+        if (system.currentTime >= system.dawnStart && system.currentTime <= system.duskStart)
+        {
+            dayProgress = (system.currentTime - system.dawnStart) / (system.duskStart - system.dawnStart);
+        }
+        
+        EditorGUILayout.LabelField("Прогресс дня:", $"{dayProgress * 100:F1}%");
+        EditorGUILayout.LabelField("День:", system.currentDay.ToString());
+        EditorGUILayout.EndVertical();
+    }
+
+    private void DrawTimeSettings()
+    {
+        showTimeSettings = EditorGUILayout.Foldout(showTimeSettings, "⏰ Время", true, EditorStyles.foldoutHeader);
         if (showTimeSettings)
         {
             EditorGUI.indentLevel++;
+            
+            // Удобный контроль времени
             float time = currentTime.floatValue;
             int hours = Mathf.FloorToInt(time);
             int minutes = Mathf.FloorToInt((time - hours) * 60);
@@ -81,51 +143,105 @@ public class DayNightSystemEditor : Editor
             EditorGUILayout.LabelField("Границы дня/ночи", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(dawnStart, new GUIContent("Начало рассвета (часы)"));
             EditorGUILayout.PropertyField(duskStart, new GUIContent("Начало заката (часы)"));
-            EditorGUILayout.PropertyField(transitionSpeed, new GUIContent("Скорость сглаживания"));
+            EditorGUILayout.PropertyField(transitionSpeed, new GUIContent("Скорость переходов"));
 
             EditorGUI.indentLevel--;
         }
-
-        showSkySettings = EditorGUILayout.Foldout(showSkySettings, "Небо", true);
-        if (showSkySettings)
+    }
+    
+    private void DrawAtmosphericSettings()
+    {
+        showAtmosphericSettings = EditorGUILayout.Foldout(showAtmosphericSettings, "🌅 Атмосферные настройки", true, EditorStyles.foldoutHeader);
+        if (showAtmosphericSettings)
         {
-            EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(skyboxMaterial);
-            EditorGUILayout.PropertyField(skyColor);
-            EditorGUILayout.PropertyField(horizonColor);
-            EditorGUILayout.PropertyField(groundColor);
-            EditorGUILayout.PropertyField(starsBrightness);
-            EditorGUI.indentLevel--;
+            if (atmosphericSettings != null)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(atmosphericSettings, true);
+                EditorGUI.indentLevel--;
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("Атмосферные настройки не инициализированы. Нажмите 'Инициализировать' для создания.", MessageType.Warning);
+            }
         }
+    }
 
-        showLightSettings = EditorGUILayout.Foldout(showLightSettings, "Свет", true);
+    private void DrawLightSettings()
+    {
+        showLightSettings = EditorGUILayout.Foldout(showLightSettings, "💡 Освещение", true, EditorStyles.foldoutHeader);
         if (showLightSettings)
         {
             EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(sunLight);
-            EditorGUILayout.PropertyField(moonLight);
-            EditorGUILayout.PropertyField(sunColor);
-            EditorGUILayout.PropertyField(moonColor);
-            EditorGUILayout.PropertyField(sunIntensity);
-            EditorGUILayout.PropertyField(moonIntensity);
+            EditorGUILayout.PropertyField(sunLight, new GUIContent("Солнечный свет"));
+            EditorGUILayout.PropertyField(moonLight, new GUIContent("Лунный свет"));
+            
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Цвета света", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(sunColor, new GUIContent("Цвета солнца"));
+            EditorGUILayout.PropertyField(moonColor, new GUIContent("Цвета луны"));
+            
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Интенсивность", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(maxSunIntensity, new GUIContent("Макс. интенсивность солнца"));
+            EditorGUILayout.PropertyField(maxMoonIntensity, new GUIContent("Макс. интенсивность луны"));
+            
+            if (sunShadowSoftness != null && moonShadowSoftness != null)
+            {
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("Тени", EditorStyles.boldLabel);
+                EditorGUILayout.PropertyField(sunShadowSoftness, new GUIContent("Мягкость теней солнца"));
+                EditorGUILayout.PropertyField(moonShadowSoftness, new GUIContent("Мягкость теней луны"));
+            }
+            
             EditorGUI.indentLevel--;
         }
+    }
 
-        showFogSettings = EditorGUILayout.Foldout(showFogSettings, "Туман", true);
+    private void DrawSkySettings()
+    {
+        showSkySettings = EditorGUILayout.Foldout(showSkySettings, "🌌 Небо (опционально)", true, EditorStyles.foldoutHeader);
+        if (showSkySettings)
+        {
+            EditorGUI.indentLevel++;
+            EditorGUILayout.HelpBox("Эти настройки используются только если у вас есть Skybox материал", MessageType.Info);
+            EditorGUILayout.PropertyField(skyboxMaterial);
+            
+            if (skyColor != null) EditorGUILayout.PropertyField(skyColor);
+            if (horizonColor != null) EditorGUILayout.PropertyField(horizonColor);
+            if (groundColor != null) EditorGUILayout.PropertyField(groundColor);
+            if (starsBrightness != null) EditorGUILayout.PropertyField(starsBrightness);
+            
+            EditorGUI.indentLevel--;
+        }
+    }
+
+    private void DrawFogSettings()
+    {
+        showFogSettings = EditorGUILayout.Foldout(showFogSettings, "🌫️ Туман", true, EditorStyles.foldoutHeader);
         if (showFogSettings)
         {
             EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(enableFog);
+            EditorGUILayout.PropertyField(enableFog, new GUIContent("Включить туман"));
             if (enableFog.boolValue)
             {
-                EditorGUILayout.PropertyField(fogColor);
-                EditorGUILayout.PropertyField(fogDensityDay);
-                EditorGUILayout.PropertyField(fogDensityNight);
+                EditorGUILayout.PropertyField(fogColor, new GUIContent("Цвет тумана"));
+                EditorGUILayout.PropertyField(fogDensityDay, new GUIContent("Плотность днем"));
+                EditorGUILayout.PropertyField(fogDensityNight, new GUIContent("Плотность ночью"));
+                
+                if (fogStartDistance != null && fogEndDistance != null)
+                {
+                    EditorGUILayout.PropertyField(fogStartDistance, new GUIContent("Начальное расстояние"));
+                    EditorGUILayout.PropertyField(fogEndDistance, new GUIContent("Конечное расстояние"));
+                }
             }
             EditorGUI.indentLevel--;
         }
+    }
 
-        showEventSettings = EditorGUILayout.Foldout(showEventSettings, "События", true);
+    private void DrawEventSettings(DayNightSystem system)
+    {
+        showEventSettings = EditorGUILayout.Foldout(showEventSettings, "⚡ События", true, EditorStyles.foldoutHeader);
         if (showEventSettings)
         {
             EditorGUI.indentLevel++;
@@ -138,7 +254,7 @@ public class DayNightSystemEditor : Editor
             newEventMinute = EditorGUILayout.IntSlider("Минуты", newEventMinute, 0, 59);
             newEventName = EditorGUILayout.TextField("Название", newEventName);
 
-            if (GUILayout.Button("Добавить"))
+            if (GUILayout.Button("Добавить событие"))
             {
                 TimeEvent newEvent = new TimeEvent
                 {
@@ -152,8 +268,47 @@ public class DayNightSystemEditor : Editor
             }
             EditorGUI.indentLevel--;
         }
-
-        serializedObject.ApplyModifiedProperties();
+    }
+    
+    private void DrawQuickActions(DayNightSystem system)
+    {
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Быстрые действия", EditorStyles.boldLabel);
+        
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Установить рассвет"))
+        {
+            currentTime.floatValue = dawnStart.floatValue;
+        }
+        if (GUILayout.Button("Установить полдень"))
+        {
+            currentTime.floatValue = (dawnStart.floatValue + duskStart.floatValue) / 2f;
+        }
+        if (GUILayout.Button("Установить закат"))
+        {
+            currentTime.floatValue = duskStart.floatValue;
+        }
+        if (GUILayout.Button("Установить полночь"))
+        {
+            currentTime.floatValue = 0f;
+        }
+        EditorGUILayout.EndHorizontal();
+        
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Инициализировать систему"))
+        {
+            // Принудительная инициализация
+            if (Application.isPlaying)
+            {
+                system.SetTime(system.currentTime);
+            }
+        }
+        
+        if (GUILayout.Button("Открыть Setup Helper"))
+        {
+            EditorWindow.GetWindow(System.Type.GetType("DayNightSetupHelper"), false, "Day/Night Setup");
+        }
+        EditorGUILayout.EndHorizontal();
     }
 }
 #endif
