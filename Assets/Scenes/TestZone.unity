@@ -4659,7 +4659,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87509d17afd884c479f3a93cf9adbaa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dialogue: {fileID: 11400000, guid: 50f31581139ad8641a18b35f9e631bbb, type: 2}
+  _dialogue: {fileID: 11400000, guid: 044ac05eb2e5d2b488bb2cd73c6fddcc, type: 2}
   _conversantName: "\u0421\u0442\u0430\u0440\u043E\u0441\u0442\u0430 \u0438 \u041A\u0443\u0437\u043D\u0435\u0446"
 --- !u!136 &272868663
 CapsuleCollider:
@@ -6615,8 +6615,6 @@ GameObject:
   m_Component:
   - component: {fileID: 355530964}
   - component: {fileID: 355530968}
-  - component: {fileID: 355530967}
-  - component: {fileID: 355530966}
   - component: {fileID: 355530965}
   m_Layer: 0
   m_Name: GoSleep
@@ -6660,34 +6658,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _quest: {fileID: 11400000, guid: 2b7c11b34028c4f40aed3f9d36a6f7e2, type: 2}
   _objective: talk_to_goblins
---- !u!114 &355530966
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 355530963}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b2c198cb9425a41901f830166d18c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _quest: {fileID: 11400000, guid: 2b7c11b34028c4f40aed3f9d36a6f7e2, type: 2}
-  _objective: peaceful_solution
---- !u!114 &355530967
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 355530963}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b2c198cb9425a41901f830166d18c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _quest: {fileID: 11400000, guid: 2b7c11b34028c4f40aed3f9d36a6f7e2, type: 2}
-  _objective: solve_goblin_problem
 --- !u!114 &355530968
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6705,7 +6675,7 @@ MonoBehaviour:
   onObjectiveCompleted:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 355530967}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: RPG.Quests.QuestCompletion, Assembly-CSharp
         m_MethodName: CompleteObjective
         m_Mode: 1
@@ -11041,7 +11011,7 @@ PrefabInstance:
     - target: {fileID: 578189691652438176, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -31.457067
+      value: -31.457151
       objectReference: {fileID: 0}
     - target: {fileID: 683142751084556466, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -14416,7 +14386,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.7499
+      value: -570.75
       objectReference: {fileID: 0}
     - target: {fileID: 5560568489890141519, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
