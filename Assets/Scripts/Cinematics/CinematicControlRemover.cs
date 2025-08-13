@@ -2,7 +2,7 @@
 using RPG.Core;
 using UnityEngine;
 using UnityEngine.Playables;
-using Cinemachine;
+using Unity.Cinemachine;
 
 namespace RPG.Cinematics
 {

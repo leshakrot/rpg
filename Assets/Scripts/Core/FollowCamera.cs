@@ -1,37 +1,37 @@
 using UnityEngine;
-using Cinemachine;
+using Unity.Cinemachine;
 
 namespace RPG.Core
 {
     public class FollowCamera : MonoBehaviour
     {
-        [Tooltip("Цель, за которой следует камера")]
+        [Tooltip("пїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ")]
         public Transform target;
 
-        [Tooltip("Слои, которые должны становиться прозрачными при пересечении с рейкастом")]
+        [Tooltip("пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")]
         public LayerMask layersToTransparent;
 
-        [Tooltip("Включить/выключить эффект прозрачности")]
+        [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ/пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")]
         [SerializeField] private bool fadeObjects;
 
-        [Tooltip("Уровень прозрачности (0 - полностью прозрачный, 1 - полностью непрозрачный)")]
+        [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (0 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, 1 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)")]
         [Range(0f, 1f)]
         [SerializeField] private float alpha = 0.3f;
 
-        [Tooltip("Скорость вращения камеры по горизонтали")]
+        [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")]
         [SerializeField] private float rotationSpeed = 5f;
 
-        [Tooltip("Минимальный угол наклона камеры (в градусах)")]
+        [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)")]
         [SerializeField] private float minVerticalAngle = -45f;
 
-        [Tooltip("Максимальный угол наклона камеры (в градусах)")]
+        [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)")]
         [SerializeField] private float maxVerticalAngle = 45f;
 
         private CinemachineFreeLook freeLookCamera;
-        private Transform prevHit; // Предыдущий объект, который стал прозрачным
-        private Renderer prevRenderer; // Кэшированный Renderer предыдущего объекта
-        private Color originalColor; // Исходный цвет материала
-        private int layerMaskValue; // Значение битовой маски для слоев
+        private Transform prevHit; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        private Renderer prevRenderer; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Renderer пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        private Color originalColor; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        private int layerMaskValue; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 
         private void Start()
         {
@@ -41,10 +41,10 @@ namespace RPG.Core
                 return;
             }
 
-            // Преобразуем LayerMask в целочисленное значение для быстрого сравнения
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ LayerMask пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             layerMaskValue = layersToTransparent.value;
 
-            // Находим компонент CinemachineFreeLook на камере
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ CinemachineFreeLook пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             freeLookCamera = GetComponent<CinemachineBrain>()?.ActiveVirtualCamera as CinemachineFreeLook;
             if (freeLookCamera == null)
             {
@@ -60,18 +60,18 @@ namespace RPG.Core
 
         private void HandleMouseOrbit()
         {
-            if (freeLookCamera == null || !Input.GetMouseButton(1)) // Проверяем, зажата ли ПКМ
+            if (freeLookCamera == null || !Input.GetMouseButton(1)) // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ
                 return;
 
-            // Получаем входные данные от мыши
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
             float mouseX = Input.GetAxis("Mouse X") * rotationSpeed;
             float mouseY = Input.GetAxis("Mouse Y") * rotationSpeed;
 
-            // Обновляем углы поворота Cinemachine FreeLook
-            freeLookCamera.m_YAxis.Value -= mouseY * Time.deltaTime; // Вертикальный угол
-            freeLookCamera.m_XAxis.Value += mouseX * Time.deltaTime; // Горизонтальный угол
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Cinemachine FreeLook
+            freeLookCamera.m_YAxis.Value -= mouseY * Time.deltaTime; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+            freeLookCamera.m_XAxis.Value += mouseX * Time.deltaTime; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
-            // Ограничиваем вертикальный угол
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
             freeLookCamera.m_YAxis.Value = Mathf.Clamp(freeLookCamera.m_YAxis.Value, minVerticalAngle / 90f, maxVerticalAngle / 90f);
         }
 
@@ -80,7 +80,7 @@ namespace RPG.Core
             if (!fadeObjects || target == null)
                 return;
 
-            // Создаем луч от камеры к цели
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
             Ray ray = new Ray(transform.position, (target.position - transform.position).normalized);
             RaycastHit hit;
 
@@ -88,21 +88,21 @@ namespace RPG.Core
             {
                 Transform objectHit = hit.transform;
 
-                // Проверяем, принадлежит ли объект к нужным слоям
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
                 if (((1 << objectHit.gameObject.layer) & layerMaskValue) != 0)
                 {
-                    // Если объект отличается от предыдущего
+                    // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                     if (prevHit != objectHit)
                     {
                         RestorePreviousObject();
 
-                        // Сохраняем новый объект и его Renderer
+                        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ Renderer
                         prevHit = objectHit;
                         prevRenderer = objectHit.GetComponent<Renderer>();
 
                         if (prevRenderer != null && prevRenderer.sharedMaterial != null)
                         {
-                            // Кэшируем исходный цвет
+                            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
                             originalColor = prevRenderer.sharedMaterial.color;
                             prevRenderer.material.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
                         }
@@ -123,10 +123,10 @@ namespace RPG.Core
         {
             if (prevRenderer != null)
             {
-                // Восстанавливаем исходный цвет
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
                 prevRenderer.material.color = originalColor;
 
-                // Очищаем ссылки
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                 prevHit = null;
                 prevRenderer = null;
             }
@@ -134,7 +134,7 @@ namespace RPG.Core
 
         private void OnDisable()
         {
-            // При отключении скрипта восстанавливаем все объекты
+            // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             RestorePreviousObject();
         }
     }

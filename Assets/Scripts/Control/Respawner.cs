@@ -1,4 +1,4 @@
-﻿using Cinemachine;
+﻿using Unity.Cinemachine;
 using RPG.Attributes;
 using RPG.SceneManagement;
 using System;
