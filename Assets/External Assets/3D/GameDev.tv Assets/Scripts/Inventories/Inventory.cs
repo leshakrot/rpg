@@ -252,6 +252,39 @@ namespace GameDevTV.Inventories
             return CanTransferItem(item, quantity);
         }
 
+        // Дополнительные методы для совместимости с UnityEvent
+        /// <summary>
+        /// Передает предмет по ID (упрощенная версия для UnityEvent)
+        /// </summary>
+        public void GiveItemToNPC(string itemID, int quantity)
+        {
+            TransferItemByID(itemID, quantity);
+        }
+
+        /// <summary>
+        /// Передает предмет по ID с количеством 1 (для UnityEvent)
+        /// </summary>
+        public void GiveItemToNPC(string itemID)
+        {
+            TransferItemByID(itemID, 1);
+        }
+
+        /// <summary>
+        /// Проверяет наличие предмета для передачи (для UnityEvent)
+        /// </summary>
+        public bool HasItemForTransfer(string itemID, int quantity)
+        {
+            return CanTransferItemByID(itemID, quantity);
+        }
+
+        /// <summary>
+        /// Проверяет наличие предмета для передачи с количеством 1 (для UnityEvent)
+        /// </summary>
+        public bool HasItemForTransfer(string itemID)
+        {
+            return CanTransferItemByID(itemID, 1);
+        }
+
         private void Awake()
         {
             slots = new InventorySlot[inventorySize];

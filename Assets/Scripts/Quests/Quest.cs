@@ -23,6 +23,9 @@ namespace RPG.Quests
             [Min(1)]
             public int number;
             public InventoryItem item;
+            
+            [Tooltip("Если отмечено, награда будет скрыта от игрока до завершения квеста")]
+            public bool isSecret = false;
         }
 
         [System.Serializable]
@@ -76,6 +79,16 @@ namespace RPG.Quests
         public IEnumerable<Reward> GetRewards()
         {
             return _rewards;
+        }
+
+        public IEnumerable<Reward> GetVisibleRewards()
+        {
+            return _rewards.Where(reward => !reward.isSecret);
+        }
+
+        public IEnumerable<Reward> GetSecretRewards()
+        {
+            return _rewards.Where(reward => reward.isSecret);
         }
 
         public bool HasObjective(string objectiveRef)

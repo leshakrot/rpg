@@ -61,7 +61,9 @@ namespace RPG.UI.Quests
         private string GetRewardText(Quest quest)
         {
             string rewardText = "";
-            foreach(var reward in quest.GetRewards())
+            
+            // Показываем только видимые награды (не тайные)
+            foreach(var reward in quest.GetVisibleRewards())
             {
                 if(rewardText != "")
                 {
@@ -73,6 +75,17 @@ namespace RPG.UI.Quests
                 }
                 rewardText += reward.item.GetDisplayName();
             }
+            
+            // Добавляем подсказку о тайных наградах, если они есть
+            if(QuestRewardHelper.HasSecretRewards(quest))
+            {
+                if(rewardText != "")
+                {
+                    rewardText += ", ";
+                }
+                rewardText += "???";
+            }
+            
             if(rewardText == "")
             {
                 rewardText = "Нет наград";
