@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using GameDevTV.Saving;
 using System.Collections.Generic;
@@ -177,6 +177,79 @@ namespace GameDevTV.Inventories
                 }
             }
             return total;
+        }
+
+        /// <summary>
+        /// Передает (удаляет) предмет определенного количества из инвентаря.
+        /// Возвращает true если операция прошла успешно.
+        /// </summary>
+        public bool TransferItem(InventoryItem item, int quantity)
+        {
+            if (item == null || quantity <= 0)
+            {
+                Debug.LogWarning("Invalid item or quantity for transfer");
+                return false;
+            }
+
+            int currentItemCount = GetItemCount(item);
+            
+            if (currentItemCount < quantity)
+            {
+                Debug.LogWarning($"Not enough items! Have {currentItemCount}, need {quantity} of {item.GetDisplayName()}");
+                return false;
+            }
+
+            int remainingToRemove = quantity;
+            
+            // Удаляем предметы из слотов
+            for (int slotIndex = 0; slotIndex < slots.Length && remainingToRemove > 0; slotIndex++)
+            {
+                if (slots[slotIndex].item != null && object.ReferenceEquals(slots[slotIndex].item, item))
+                {
+                    int numberInSlot = slots[slotIndex].number;
+                    int toRemoveFromSlot = Mathf.Min(remainingToRemove, numberInSlot);
+                    
+                    RemoveFromSlot(slotIndex, toRemoveFromSlot);
+                    remainingToRemove -= toRemoveFromSlot;
+                }
+            }
+
+            Debug.Log($"Successfully transferred {quantity} of {item.GetDisplayName()}");
+            return true;
+        }
+
+        /// <summary>
+        /// Передает предмет по ID.
+        /// </summary>
+        public bool TransferItemByID(string itemID, int quantity)
+        {
+            var item = InventoryItem.GetFromID(itemID);
+            if (item == null)
+            {
+                Debug.LogError($"Item with ID '{itemID}' not found!");
+                return false;
+            }
+
+            return TransferItem(item, quantity);
+        }
+
+        /// <summary>
+        /// Проверяет, достаточно ли предметов для передачи.
+        /// </summary>
+        public bool CanTransferItem(InventoryItem item, int quantity)
+        {
+            if (item == null || quantity <= 0) return false;
+            return GetItemCount(item) >= quantity;
+        }
+
+        /// <summary>
+        /// Проверяет, достаточно ли предметов для передачи по ID.
+        /// </summary>
+        public bool CanTransferItemByID(string itemID, int quantity)
+        {
+            var item = InventoryItem.GetFromID(itemID);
+            if (item == null) return false;
+            return CanTransferItem(item, quantity);
         }
 
         private void Awake()

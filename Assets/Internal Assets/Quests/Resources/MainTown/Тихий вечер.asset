@@ -69,6 +69,28 @@ MonoBehaviour:
           _negate: 0
     isCollectionObjective: 0
     itemToCollect: {fileID: 0}
+  - reference: 
+    description: 
+    usesCondition: 0
+    completionCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - close_gates
+          _negate: 0
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 0
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - close_gates
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
   - reference: catch_pig
     description: "\u041F\u043E\u043C\u043E\u0447\u044C \u043B\u0430\u0432\u043E\u0447\u043D\u0438\u0446\u0435
       \u043F\u043E\u0439\u043C\u0430\u0442\u044C \u043F\u043E\u0440\u043E\u0441\u0451\u043D\u043A\u0430"
