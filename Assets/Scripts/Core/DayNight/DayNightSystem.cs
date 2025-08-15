@@ -88,7 +88,7 @@ public class DayNightSystem : MonoBehaviour
     [Tooltip("Максимальная интенсивность солнца")]
     [Range(0, 3)] public float maxSunIntensity = 1.8f;
     [Tooltip("Максимальная интенсивность луны")]
-    [Range(0, 1)] public float maxMoonIntensity = 0.6f;
+    [Range(0, 1)] public float maxMoonIntensity = 0.8f;
     [Space]
     [Tooltip("Мягкость теней солнца")]
     [Range(0, 1)] public float sunShadowSoftness = 0.3f;
@@ -102,7 +102,7 @@ public class DayNightSystem : MonoBehaviour
     public bool enableFog = true;
     public Gradient fogColor;
     [Range(0, 0.1f)] public float fogDensityDay = 0.01f;
-    [Range(0, 0.1f)] public float fogDensityNight = 0.025f;
+    [Range(0, 0.1f)] public float fogDensityNight = 0.035f;
     [Tooltip("Начальное расстояние тумана")]
     [Range(10f, 200f)] public float fogStartDistance = 50f;
     [Tooltip("Конечное расстояние тумана")]
@@ -140,6 +140,9 @@ public class DayNightSystem : MonoBehaviour
     {
         // Инициализация настроек освещения
         InitializeLightingSettings();
+        
+        // Инициализация атмосферных настроек для лунной голубой ночи
+        InitializeAtmosphericSettings();
         
         // Если используется Skybox материал
         if (skyboxMaterial != null)
@@ -188,6 +191,24 @@ public class DayNightSystem : MonoBehaviour
         InitializeDefaultGradients();
     }
 
+    private void InitializeAtmosphericSettings()
+    {
+        // Инициализация атмосферных настроек для лунной голубой ночи (как в Ведьмак 3)
+        if (atmosphericSettings == null)
+        {
+            atmosphericSettings = new AtmosphericSettings();
+        }
+
+        // Настройки для создания атмосферы лунной ночи
+        atmosphericSettings.ambientIntensity = 1.2f;
+        atmosphericSettings.dawnDuration = 1.5f;
+        atmosphericSettings.duskDuration = 1.5f;
+        atmosphericSettings.daySaturation = 1.1f;
+        atmosphericSettings.nightSaturation = 0.7f; // Приглушенная насыщенность ночью
+        atmosphericSettings.dayTemperature = 0.1f;
+        atmosphericSettings.nightTemperature = -0.2f; // Более холодная температура для голубого оттенка
+    }
+
     private void InitializeDefaultGradients()
     {
         if (atmosphericSettings.ambientLightColor == null || atmosphericSettings.ambientLightColor.colorKeys.Length == 0)
@@ -217,16 +238,16 @@ public class DayNightSystem : MonoBehaviour
         GradientColorKey[] colorKeys = new GradientColorKey[5];
         GradientAlphaKey[] alphaKeys = new GradientAlphaKey[2];
 
-        // Ночь (0:00) - темно-синий
-        colorKeys[0] = new GradientColorKey(new Color(0.15f, 0.2f, 0.35f), 0f);
+        // Ночь (0:00) - глубокий лунный голубой (как в Ведьмак 3)
+        colorKeys[0] = new GradientColorKey(new Color(0.08f, 0.15f, 0.28f), 0f);
         // Рассвет (6:00) - теплый оранжевый
         colorKeys[1] = new GradientColorKey(new Color(0.8f, 0.6f, 0.4f), 0.25f);
         // День (12:00) - яркий теплый белый
         colorKeys[2] = new GradientColorKey(new Color(0.95f, 0.9f, 0.8f), 0.5f);
         // Закат (18:00) - теплый оранжево-розовый
         colorKeys[3] = new GradientColorKey(new Color(0.9f, 0.5f, 0.3f), 0.75f);
-        // Ночь (24:00) - темно-синий
-        colorKeys[4] = new GradientColorKey(new Color(0.15f, 0.2f, 0.35f), 1f);
+        // Ночь (24:00) - глубокий лунный голубой
+        colorKeys[4] = new GradientColorKey(new Color(0.08f, 0.15f, 0.28f), 1f);
 
         alphaKeys[0] = new GradientAlphaKey(1f, 0f);
         alphaKeys[1] = new GradientAlphaKey(1f, 1f);
@@ -260,9 +281,10 @@ public class DayNightSystem : MonoBehaviour
         GradientColorKey[] colorKeys = new GradientColorKey[3];
         GradientAlphaKey[] alphaKeys = new GradientAlphaKey[2];
 
-        colorKeys[0] = new GradientColorKey(new Color(0.8f, 0.9f, 1f), 0f);       // Холодный белый
-        colorKeys[1] = new GradientColorKey(new Color(0.7f, 0.8f, 1f), 0.5f);     // Слегка синеватый
-        colorKeys[2] = new GradientColorKey(new Color(0.8f, 0.9f, 1f), 1f);       // Холодный белый
+        // Холодный лунный свет с голубоватым оттенком (как в Ведьмак 3: Каменные сердца)
+        colorKeys[0] = new GradientColorKey(new Color(0.6f, 0.75f, 1f), 0f);       // Более насыщенный голубой
+        colorKeys[1] = new GradientColorKey(new Color(0.5f, 0.7f, 1f), 0.5f);      // Глубокий лунный голубой
+        colorKeys[2] = new GradientColorKey(new Color(0.6f, 0.75f, 1f), 1f);       // Холодный голубоватый
 
         alphaKeys[0] = new GradientAlphaKey(1f, 0f);
         alphaKeys[1] = new GradientAlphaKey(1f, 1f);
@@ -277,11 +299,12 @@ public class DayNightSystem : MonoBehaviour
         GradientColorKey[] colorKeys = new GradientColorKey[5];
         GradientAlphaKey[] alphaKeys = new GradientAlphaKey[2];
 
-        colorKeys[0] = new GradientColorKey(new Color(0.2f, 0.25f, 0.4f), 0f);    // Ночной туман
-        colorKeys[1] = new GradientColorKey(new Color(0.9f, 0.7f, 0.5f), 0.25f);  // Утренний туман
-        colorKeys[2] = new GradientColorKey(new Color(0.8f, 0.85f, 0.9f), 0.5f);  // Дневной туман
-        colorKeys[3] = new GradientColorKey(new Color(0.8f, 0.6f, 0.4f), 0.75f);  // Вечерний туман
-        colorKeys[4] = new GradientColorKey(new Color(0.2f, 0.25f, 0.4f), 1f);    // Ночной туман
+        // Ночной туман с лунным голубоватым оттенком (атмосфера Ведьмак 3)
+        colorKeys[0] = new GradientColorKey(new Color(0.12f, 0.18f, 0.35f), 0f);   // Глубокий лунный туман
+        colorKeys[1] = new GradientColorKey(new Color(0.9f, 0.7f, 0.5f), 0.25f);   // Утренний туман
+        colorKeys[2] = new GradientColorKey(new Color(0.8f, 0.85f, 0.9f), 0.5f);   // Дневной туман
+        colorKeys[3] = new GradientColorKey(new Color(0.8f, 0.6f, 0.4f), 0.75f);   // Вечерний туман
+        colorKeys[4] = new GradientColorKey(new Color(0.12f, 0.18f, 0.35f), 1f);   // Глубокий лунный туман
 
         alphaKeys[0] = new GradientAlphaKey(1f, 0f);
         alphaKeys[1] = new GradientAlphaKey(1f, 1f);

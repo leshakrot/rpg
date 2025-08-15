@@ -45,6 +45,8 @@ MonoBehaviour:
     \u0440\u0430\u0432\u043D\u043E \u043D\u0435\u0442\u0443.."
   children:
   - 8077080e-5175-4e40-9d1b-eabfa6c27c87
+  - c6e4eec1-4d35-4ec1-a483-1c8239e82f27
+  - 5cd65022-5407-4ec6-87ae-323b092d5d1c
   rect:
     serializedVersion: 2
     x: 2066
@@ -223,14 +225,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
   m_Name: 8077080e-5175-4e40-9d1b-eabfa6c27c87
   m_EditorClassIdentifier: 
-  isPlayerSpeaking: 0
+  isPlayerSpeaking: 1
   text: "\u0421\u043F\u043B\u0435\u0442\u0435\u043C? \u0418\u0437 \u0447\u0435\u0433\u043E?"
   children:
   - 8be7677a-1f6f-4504-ba85-e7fda944acee
   rect:
     serializedVersion: 2
-    x: 2316
-    y: 111
+    x: 2323
+    y: 62
     width: 200
     height: 100
   onEnterActions: []
@@ -464,7 +466,8 @@ MonoBehaviour:
     y: 205
     width: 200
     height: 100
-  onEnterActions: []
+  onEnterActions:
+  - decline_help_finn_flags
   onExitActions: []
   condition:
     _and: []
@@ -553,8 +556,8 @@ MonoBehaviour:
   children: []
   rect:
     serializedVersion: 2
-    x: 2404
-    y: 321
+    x: 2377
+    y: 408
     width: 200
     height: 100
   onEnterActions:
@@ -711,8 +714,8 @@ MonoBehaviour:
   - 1f8a9a08-c218-4f0d-91e3-11b55bffa03b
   rect:
     serializedVersion: 2
-    x: 2816
-    y: 111
+    x: 2795
+    y: 305
     width: 200
     height: 100
   onEnterActions:
@@ -797,8 +800,8 @@ MonoBehaviour:
   - aa5f23ab-3338-420f-9e20-f13b1e223afa
   rect:
     serializedVersion: 2
-    x: 2812
-    y: 205
+    x: 2822
+    y: 428
     width: 200
     height: 100
   onEnterActions: []
