@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using TMPro;
 
 namespace RPG.Harvesting
 {
@@ -9,8 +10,8 @@ namespace RPG.Harvesting
         [Header("UI Elements")]
         [SerializeField] private RectTransform foreground = null;
         [SerializeField] private CanvasGroup canvasGroup = null;
-        [SerializeField] private Text titleText = null;
-        [SerializeField] private Text progressText = null;
+        [SerializeField] private TextMeshProUGUI titleText = null;
+        [SerializeField] private TextMeshProUGUI progressText = null;
         [SerializeField] private Image foregroundImage = null;
 
         [Header("Settings")]

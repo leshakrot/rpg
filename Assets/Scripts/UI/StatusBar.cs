@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace RPG.UI
 {
@@ -7,8 +8,8 @@ namespace RPG.UI
     {
         [Header("UI Elements")]
         [SerializeField] protected RectTransform foreground = null;
-        [SerializeField] protected Text valueText = null;
-        [SerializeField] protected Text titleText = null;
+        [SerializeField] protected TextMeshProUGUI valueText = null;
+        [SerializeField] protected TextMeshProUGUI titleText = null;
         
         [Header("Settings")]
         [SerializeField] protected string barTitle = "Status";

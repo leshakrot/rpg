@@ -1,12 +1,12 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 namespace RPG.UI.DamageText
 {
     public class DamageText : MonoBehaviour
     {
-        [SerializeField] private Text _damageText = null;
+        [SerializeField] private TextMeshProUGUI _damageText = null;
 
         public void DestroyText()
         {

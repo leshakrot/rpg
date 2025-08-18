@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 namespace RPG.UI.RequirementText
 {
 	public class RequirementText : MonoBehaviour
 	{
-		[SerializeField] private Text _requirementText = null;
+		[SerializeField] private TextMeshProUGUI _requirementText = null;
 
 		// Этот метод будет вызываться анимацией в конце, чтобы уничтожить объект
 		public void DestroyText()

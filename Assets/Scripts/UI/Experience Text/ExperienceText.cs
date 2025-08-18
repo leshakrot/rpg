@@ -1,12 +1,12 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 namespace RPG.UI.ExperienceText
 {
     public class ExperienceText : MonoBehaviour
     {
-        [SerializeField] private Text _experienceText = null;
+        [SerializeField] private TextMeshProUGUI _experienceText = null;
 
         public void DestroyText()
         {
