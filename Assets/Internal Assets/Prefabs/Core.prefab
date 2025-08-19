@@ -4881,7 +4881,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 4073971126785786982}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -11050,8 +11050,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7594023678767419581}
   m_HandleRect: {fileID: 1655830253426786613}
   m_Direction: 2
-  m_Value: 0.99999833
-  m_Size: 0.94246745
+  m_Value: 0
+  m_Size: 0.94257903
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -12429,7 +12429,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000091552734, y: -314.57257}
+  m_AnchoredPosition: {x: 0.000091552734, y: -314.57236}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7764154432024125765
@@ -20007,8 +20007,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foreground: {fileID: 2354715507303266200}
   canvasGroup: {fileID: 7778982571028340795}
-  titleText: {fileID: 2534667903945425681}
-  progressText: {fileID: 3766589418075417335}
+  titleText: {fileID: 0}
+  progressText: {fileID: 0}
   foregroundImage: {fileID: 4107662721148387124}
   smoothSpeed: 8
   processingColor: {r: 0.2, g: 0.6, b: 1, a: 1}
@@ -35232,7 +35232,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00012207031, y: -644.8}
+  m_AnchoredPosition: {x: 0.00012207031, y: -570.75}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &913256138531843848
@@ -36400,7 +36400,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2556214655346038642}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.9998818
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -37782,6 +37782,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _takeDamage.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: RandomizedAudioSource, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2126714176695546572, guid: 0e87d96c781a1c6498b2ac20eb1d6f08,
+        type: 3}
+      propertyPath: uniqueIdentifier
+      value: ea849b11-467b-44f7-8fd1-fae6272fdd92
       objectReference: {fileID: 0}
     - target: {fileID: 2830654001548459419, guid: 0e87d96c781a1c6498b2ac20eb1d6f08,
         type: 3}
@@ -41345,7 +41350,7 @@ PrefabInstance:
         type: 3}
       propertyPath: titleText
       value: 
-      objectReference: {fileID: 4079249557990500933}
+      objectReference: {fileID: 0}
     - target: {fileID: 8786537250134233314, guid: 6533ce64620b17d49a206d3b0b125c44,
         type: 3}
       propertyPath: canvasGroup
@@ -41472,7 +41477,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccafa1f31a682634c8801777c985b563, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelText: {fileID: 5534853825469530371}
+  levelText: {fileID: 8839825052880597171}
   playerStats: {fileID: 5036140686711868709}
 --- !u!114 &2395179070375485096 stripped
 MonoBehaviour:
@@ -41486,18 +41491,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4079249557990500933 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8808297270844626880, guid: 6533ce64620b17d49a206d3b0b125c44,
-    type: 3}
-  m_PrefabInstance: {fileID: 4801185125839535493}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4274251931229154663 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8786537250134233314, guid: 6533ce64620b17d49a206d3b0b125c44,
@@ -41508,18 +41501,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 070017d55c5c4f14d90dd86dd3fa43ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5534853825469530371 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1040046008393743494, guid: 6533ce64620b17d49a206d3b0b125c44,
-    type: 3}
-  m_PrefabInstance: {fileID: 4801185125839535493}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 116668526342525699}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &5756252471301224969 stripped
@@ -41546,6 +41527,18 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!114 &8839825052880597171 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4038711147464363318, guid: 6533ce64620b17d49a206d3b0b125c44,
+    type: 3}
+  m_PrefabInstance: {fileID: 4801185125839535493}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 116668526342525699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &4837115623929731502
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -45151,7 +45144,7 @@ PrefabInstance:
     - target: {fileID: 3309438571972591765, guid: 07dc30b6f1bbb4147acd5fd5555a18f5,
         type: 3}
       propertyPath: m_Size
-      value: 0.9997895
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3309438571972591765, guid: 07dc30b6f1bbb4147acd5fd5555a18f5,
         type: 3}
@@ -45846,12 +45839,12 @@ PrefabInstance:
     - target: {fileID: 4596580958868763155, guid: 07dc30b6f1bbb4147acd5fd5555a18f5,
         type: 3}
       propertyPath: m_Size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4596580958868763155, guid: 07dc30b6f1bbb4147acd5fd5555a18f5,
         type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4633776361978480577, guid: 07dc30b6f1bbb4147acd5fd5555a18f5,
         type: 3}
@@ -50767,7 +50760,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uniqueIdentifier: 74cae2c7-af7d-4fb5-87ec-4ceed9cdb160
+  uniqueIdentifier: 7f80d683-dcc5-4db5-a596-71fb898de110
 --- !u!4 &7541929060055778030 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 436863932241933019, guid: f55c2195f9236864ea1848fe2c855f35,

@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using RPG.Stats;
-using UnityEngine.UI;
+using TMPro;
 using System;
 
 namespace RPG.UI
 {
     public class PlayerLevelDisplay : MonoBehaviour
     {
-        [SerializeField] private Text levelText;
+        [SerializeField] private TextMeshProUGUI levelText;
         
 	    [SerializeField] private BaseStats playerStats;
         
