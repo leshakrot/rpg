@@ -1,10 +1,11 @@
-﻿using GameDevTV.Saving;
+using GameDevTV.Saving;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using System.Collections.Generic;
-using RPG.Stats; // <-- ДОБАВЛЕНО
+using RPG.Stats;
+using RPG.UI; // <-- ДОБАВЛЕНО для UIManager
 
 namespace RPG.SceneManagement
 {
@@ -66,6 +67,10 @@ namespace RPG.SceneManagement
 			{
 				playerStats.RefreshStats();
 			}
+			
+			// Дополнительно обновляем UI через UIManager
+			yield return new WaitForSeconds(0.1f); // Небольшая задержка для инициализации
+			UIManager.RefreshUIFromAnywhere();
 			// <-- КОНЕЦ ИЗМЕНЕНИЙ
 		    
 			yield return fader.FadeIn(_fadeInTime);
@@ -116,6 +121,9 @@ namespace RPG.SceneManagement
 			{
 				playerStats.RefreshStats();
 			}
+			
+			// Дополнительно обновляем UI через UIManager
+			UIManager.RefreshUIFromAnywhere();
 			// <-- КОНЕЦ ИЗМЕНЕНИЙ
 		}
 

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using RPG.Attributes;
 using RPG.Stats;
 using System;
@@ -15,6 +15,25 @@ namespace RPG.UI
             base.Awake();
             barTitle = "Мана";
             barColor = Color.blue;
+            
+            // Автоматически находим компоненты игрока
+            FindPlayerComponents();
+        }
+        
+        private void FindPlayerComponents()
+        {
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null)
+            {
+                if (playerMana == null)
+                    playerMana = player.GetComponent<Mana>();
+                if (playerStats == null)
+                    playerStats = player.GetComponent<BaseStats>();
+            }
+            else
+            {
+                Debug.LogWarning("PlayerManaBar: Игрок не найден! Убедитесь, что игрок имеет тег 'Player'.");
+            }
         }
         
         private void OnEnable()
@@ -62,6 +81,14 @@ namespace RPG.UI
                 // Обновляем текст со значением
                 SetValueText(String.Format("{0:0}/{1:0}", currentMana, maxMana));
             }
+        }
+        
+        // Публичный метод для принудительного обновления UI
+        public void ForceRefresh()
+        {
+            // Повторно находим компоненты игрока на случай, если они изменились
+            FindPlayerComponents();
+            RefreshBar();
         }
         
         protected override void Update()

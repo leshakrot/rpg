@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using RPG.Stats;
 using System;
 using System.Collections;
@@ -23,6 +23,25 @@ namespace RPG.UI
             barTitle = "Опыт";
             barColor = new Color(0.8f, 0.8f, 0.2f); // Золотисто-желтый цвет
             originalColor = barColor;
+            
+            // Автоматически находим компоненты игрока
+            FindPlayerComponents();
+        }
+        
+        private void FindPlayerComponents()
+        {
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null)
+            {
+                if (playerExperience == null)
+                    playerExperience = player.GetComponent<Experience>();
+                if (playerStats == null)
+                    playerStats = player.GetComponent<BaseStats>();
+            }
+            else
+            {
+                Debug.LogWarning("PlayerExperienceBar: Игрок не найден! Убедитесь, что игрок имеет тег 'Player'.");
+            }
         }
 
         private void OnEnable()
@@ -125,6 +144,14 @@ namespace RPG.UI
             {
                 UpdateExperienceDisplay();
             }
+        }
+        
+        // Публичный метод для принудительного обновления UI
+        public void ForceRefresh()
+        {
+            // Повторно находим компоненты игрока на случай, если они изменились
+            FindPlayerComponents();
+            UpdateExperienceBar();
         }
         
         protected override void Update()

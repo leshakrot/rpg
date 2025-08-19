@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -41,7 +41,19 @@ namespace RPG.UI
             }
         }
         
+        protected virtual void Start()
+        {
+            // Принудительно обновляем UI при старте
+            ForceUpdate();
+        }
+        
         protected virtual void Update()
+        {
+            ForceUpdate();
+        }
+        
+        // Метод для принудительного обновления визуала
+        protected virtual void ForceUpdate()
         {
             // Плавное изменение текущей фракции до целевой
             currentFraction = Mathf.Lerp(currentFraction, targetFraction, Time.deltaTime * smoothSpeed);

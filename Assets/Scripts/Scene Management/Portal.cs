@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using RPG.Control;
 using GameDevTV.Saving;
@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using TMPro;
+using RPG.UI; // <-- ДОБАВЛЕНО для UIManager
 
 namespace RPG.SceneManagement
 {
@@ -110,6 +111,10 @@ namespace RPG.SceneManagement
             savingWrapper.Save();
 
             yield return new WaitForSeconds(fadeWaitTime);
+            
+            // Обновляем UI после перехода между сценами
+            UIManager.RefreshUIFromAnywhere();
+            
             fader.FadeIn(fadeInTime);
 
             newPlayerController.enabled = true;

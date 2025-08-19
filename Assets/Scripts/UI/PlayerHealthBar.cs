@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using RPG.Attributes;
 using RPG.Stats;
 using System;
@@ -15,7 +15,26 @@ namespace RPG.UI
         {
             base.Awake();
             barTitle = "Здоровье";
-            barColor = Color.red;           
+            barColor = Color.red;
+            
+            // Автоматически находим компоненты игрока
+            FindPlayerComponents();
+        }
+        
+        private void FindPlayerComponents()
+        {
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null)
+            {
+                if (playerHealth == null)
+                    playerHealth = player.GetComponent<Health>();
+                if (playerStats == null)
+                    playerStats = player.GetComponent<BaseStats>();
+            }
+            else
+            {
+                Debug.LogWarning("PlayerHealthBar: Игрок не найден! Убедитесь, что игрок имеет тег 'Player'.");
+            }
         }
         
         private void OnEnable()
@@ -71,6 +90,14 @@ namespace RPG.UI
                     Debug.LogError($"PlayerHealthBar: NullReferenceException в RefreshBar: {e.Message}");
                 }
             }
+        }
+        
+        // Публичный метод для принудительного обновления UI
+        public void ForceRefresh()
+        {
+            // Повторно находим компоненты игрока на случай, если они изменились
+            FindPlayerComponents();
+            RefreshBar();
         }
         
         protected override void Update()
