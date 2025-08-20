@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using GameDevTV.Saving;
 using System;
@@ -7,6 +7,7 @@ using RPG.SceneManagement;
 using System.Collections;
 using RPG.Stats;
 using RPG.Core;
+using Newtonsoft.Json;
 
 namespace RPG.Combat
 {
@@ -668,9 +669,9 @@ namespace RPG.Combat
         [Serializable]
         private struct SpawnerSaveData
         {
-            public string[] enemyIds;
-            public string sceneName;
-            public bool isInitialized;
+            [JsonProperty] public string[] enemyIds;
+            [JsonProperty] public string sceneName;
+            [JsonProperty] public bool isInitialized;
         }
     }
 }

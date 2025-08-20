@@ -1,7 +1,8 @@
-﻿using GameDevTV.Saving;
+using GameDevTV.Saving;
 using System;
 using UnityEngine;
 using UnityEngine.Events;
+using Newtonsoft.Json;
 
 namespace RPG.Stats
 {
@@ -35,7 +36,7 @@ namespace RPG.Stats
 
         public void RestoreState(object state)
         {
-            _experiencePoints = (float)state;
+            _experiencePoints = JsonSaveHelper.ToFloat(state);
         }
 
         public float GetPoints()

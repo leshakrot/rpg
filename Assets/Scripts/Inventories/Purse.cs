@@ -40,7 +40,7 @@ namespace RPG.Inventories
 
         public void RestoreState(object state)
         {
-            balance = (float)state;
+            balance = JsonSaveHelper.ToFloat(state);
         }
 
         public int AddItems(InventoryItem item, int number)

@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Newtonsoft.Json;
 
 namespace GameDevTV.Saving
 {
@@ -28,7 +28,7 @@ namespace GameDevTV.Saving
             int buildIndex = SceneManager.GetActiveScene().buildIndex;
             if (state.ContainsKey("lastSceneBuildIndex"))
             {
-                buildIndex = (int)state["lastSceneBuildIndex"];
+                buildIndex = JsonSaveHelper.ToInt(state["lastSceneBuildIndex"]);
             }
             yield return SceneManager.LoadSceneAsync(buildIndex);
             RestoreState(state);
@@ -67,7 +67,7 @@ namespace GameDevTV.Saving
 	    {
 	    	foreach (string path in Directory.EnumerateFiles(Application.persistentDataPath))
 	    	{
-	    		if(Path.GetExtension(path) == ".sav")
+	    		if(Path.GetExtension(path) == ".json")
 	    		{
 	    			yield return Path.GetFileNameWithoutExtension(path);
 	    		}
@@ -83,10 +83,26 @@ namespace GameDevTV.Saving
             {
                 return new Dictionary<string, object>();
             }
-            using (FileStream stream = File.Open(path, FileMode.Open))
+            
+            try
             {
-                BinaryFormatter formatter = new BinaryFormatter();
-                return (Dictionary<string, object>)formatter.Deserialize(stream);
+                string json = File.ReadAllText(path, Encoding.UTF8);
+                var settings = new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto,
+                    Converters = new JsonConverter[]
+                    {
+                        new Vector3JsonConverter(),
+                        new QuaternionJsonConverter(),
+                        new ColorJsonConverter()
+                    }
+                };
+                return JsonConvert.DeserializeObject<Dictionary<string, object>>(json, settings) ?? new Dictionary<string, object>();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Failed to load save file {saveFile}: {e.Message}");
+                return new Dictionary<string, object>();
             }
         }
 
@@ -94,10 +110,26 @@ namespace GameDevTV.Saving
         {
             string path = GetPathFromSaveFile(saveFile);
             print("Saving to " + path);
-            using (FileStream stream = File.Open(path, FileMode.Create))
+            
+            try
             {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(stream, state);
+                var settings = new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto,
+                    Formatting = Formatting.Indented,
+                    Converters = new JsonConverter[]
+                    {
+                        new Vector3JsonConverter(),
+                        new QuaternionJsonConverter(),
+                        new ColorJsonConverter()
+                    }
+                };
+                string json = JsonConvert.SerializeObject(state, settings);
+                File.WriteAllText(path, json, Encoding.UTF8);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Failed to save file {saveFile}: {e.Message}");
             }
         }
 
@@ -125,7 +157,7 @@ namespace GameDevTV.Saving
 
         private string GetPathFromSaveFile(string saveFile)
         {
-            return Path.Combine(Application.persistentDataPath, saveFile + ".sav");
+            return Path.Combine(Application.persistentDataPath, saveFile + ".json");
         }
     }
 }

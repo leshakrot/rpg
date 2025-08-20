@@ -1,9 +1,10 @@
-﻿using RPG.Attributes;
+using RPG.Attributes;
 using RPG.Core;
 using RPG.Stats;
 using GameDevTV.Saving;
 using UnityEngine;
 using UnityEngine.AI;
+using Newtonsoft.Json;
 
 namespace RPG.Movement
 {
@@ -88,17 +89,17 @@ namespace RPG.Movement
 		}
 
 		[System.Serializable]
-		struct MoverSaveData
+		public struct MoverSaveData
 		{
-			public SerializableVector3 position;
-			public SerializableVector3 rotation;
+			[JsonProperty] public SerializableVector3 position;
+			[JsonProperty] public SerializableQuaternion rotation;
 		}
 
 		public object CaptureState()
 		{
 			MoverSaveData data = new MoverSaveData();
 			data.position = new SerializableVector3(transform.position);
-			data.rotation = new SerializableVector3(transform.eulerAngles);
+			data.rotation = new SerializableQuaternion(transform.rotation);
 			return data;
 		}
 
@@ -107,7 +108,7 @@ namespace RPG.Movement
 			MoverSaveData data = (MoverSaveData)state;
 			_navMeshAgent.enabled = false;
 			transform.position = data.position.ToVector();
-			transform.eulerAngles = data.rotation.ToVector();
+			transform.rotation = data.rotation.ToQuaternion();
 			_navMeshAgent.enabled = true;
             
 			// ДОБАВЛЕНО: Обновляем скорость NavMeshAgent на основе сохраненных характеристик.

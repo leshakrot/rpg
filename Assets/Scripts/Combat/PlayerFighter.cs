@@ -1,4 +1,4 @@
-﻿using GameDevTV.Utils;
+using GameDevTV.Utils;
 using RPG.Attributes;
 using RPG.Core;
 using RPG.Movement;
@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using GameDevTV.Inventories;
+using Newtonsoft.Json;
 
 namespace RPG.Combat
 {

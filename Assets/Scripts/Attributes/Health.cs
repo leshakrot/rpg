@@ -134,8 +134,7 @@ namespace RPG.Attributes
 
         public void RestoreState(object state)
         {
-            _healthPoints.value = (float)state;
-
+            _healthPoints.value = JsonSaveHelper.ToFloat(state);
             UpdateState();
         }
     }

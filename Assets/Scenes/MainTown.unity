@@ -2611,7 +2611,7 @@ PrefabInstance:
     - target: {fileID: 578189691652438176, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -314.57214
+      value: -314.5724
       objectReference: {fileID: 0}
     - target: {fileID: 625896486219221792, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -6252,7 +6252,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.7493
+      value: -570.7499
       objectReference: {fileID: 0}
     - target: {fileID: 5551642854549289169, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -14955,7 +14955,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uniqueIdentifier: 
+  uniqueIdentifier: faf7166a-c761-4239-b2a6-d77f8bdda958
 --- !u!4 &787547226 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: a6a1e8d8605f1ee45bfebaf6f04f3d62,
@@ -20890,6 +20890,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1147082332458336910, guid: 8590e108f95cfa542a8c648ad7aa511f,
         type: 3}
+      propertyPath: isAvailable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1147082332458336910, guid: 8590e108f95cfa542a8c648ad7aa511f,
+        type: 3}
       propertyPath: sceneToLoad
       value: 5
       objectReference: {fileID: 0}
@@ -21012,7 +21017,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5049961946591271319, guid: 8590e108f95cfa542a8c648ad7aa511f,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1482566059}
   m_SourcePrefab: {fileID: 100100000, guid: 8590e108f95cfa542a8c648ad7aa511f, type: 3}
 --- !u!4 &1482566057 stripped
 Transform:
@@ -21020,6 +21029,37 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1482566056}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1482566058 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5049961946591271319, guid: 8590e108f95cfa542a8c648ad7aa511f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1482566056}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1482566059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482566058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameDevTV.Saving.SaveableEntity
+  uniqueIdentifier: 25d02218-04e6-4ed7-a63d-fbd05f801abd
+--- !u!114 &1482566060 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1147082332458336910, guid: 8590e108f95cfa542a8c648ad7aa511f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1482566056}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482566058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36e072c51b29e914d9974423d5d94719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1497400448 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4393624143182270, guid: 5b01fd3b901675e40ad01ae7689222aa,
@@ -25544,7 +25584,11 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 1227220827593206, guid: f9d0bec09311bef48aa1fb044570e5de, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1682917823560798, guid: f9d0bec09311bef48aa1fb044570e5de,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1923430771}
   m_SourcePrefab: {fileID: 100100000, guid: f9d0bec09311bef48aa1fb044570e5de, type: 3}
 --- !u!4 &1923430770 stripped
 Transform:
@@ -25552,6 +25596,19 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1923430769}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1923430771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1822133104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameDevTV.Saving.SaveableEntity
+  uniqueIdentifier: 68c70257-a6c5-48c4-b4b6-bdcf673ec03e
 --- !u!1001 &1923438836
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26504,6 +26561,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2017642954}
+    - targetCorrespondingSourceObject: {fileID: 1682917823560798, guid: f9d0bec09311bef48aa1fb044570e5de,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2017642956}
   m_SourcePrefab: {fileID: 100100000, guid: f9d0bec09311bef48aa1fb044570e5de, type: 3}
 --- !u!1 &2017642949 stripped
 GameObject:
@@ -26648,6 +26709,19 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
+--- !u!114 &2017642956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017642949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameDevTV.Saving.SaveableEntity
+  uniqueIdentifier: 83d9ddf4-4b62-437c-bc58-b490ffc1161f
 --- !u!1001 &2023222887
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38697,6 +38771,18 @@ MonoBehaviour:
                 m_FloatArgument: 0
                 m_StringArgument: 
                 m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 1482566060}
+              m_TargetAssemblyTypeName: RPG.SceneManagement.Portal, Assembly-CSharp
+              m_MethodName: ToggleAvailability
+              m_Mode: 6
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 1
               m_CallState: 2
     - rid: 1583675298255470710
       type: {class: TriggerAction, ns: RPG.Dialogue, asm: Assembly-CSharp}

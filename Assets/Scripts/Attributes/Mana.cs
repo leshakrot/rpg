@@ -59,7 +59,7 @@ namespace RPG.Attributes
 
         public void RestoreState(object state)
         {
-            mana.value = (float)state;
+            mana.value = JsonSaveHelper.ToFloat(state);
         }
     }
 }

@@ -3,6 +3,7 @@ using UnityEngine;
 using GameDevTV.Saving;
 using System.Collections.Generic;
 using GameDevTV.Utils;
+using Newtonsoft.Json;
 
 namespace GameDevTV.Inventories
 {
@@ -332,8 +333,8 @@ namespace GameDevTV.Inventories
         [System.Serializable]
         private struct InventorySlotRecord
         {
-            public string itemID;
-            public int number;
+            [JsonProperty] public string itemID;
+            [JsonProperty] public int number;
         }
 
         object ISaveable.CaptureState()

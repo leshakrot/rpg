@@ -1,14 +1,19 @@
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace GameDevTV.Saving
 {
     /// <summary>
-    /// A `System.Serializable` wrapper for the `Vector3` class.
+    /// A `System.Serializable` wrapper for the `Vector3` class that works with JSON.
     /// </summary>
     [System.Serializable]
     public class SerializableVector3
     {
-        float x, y, z;
+        [JsonProperty] public float x;
+        [JsonProperty] public float y;
+        [JsonProperty] public float z;
+
+        public SerializableVector3() { }
 
         /// <summary>
         /// Copy over the state from an existing Vector3.

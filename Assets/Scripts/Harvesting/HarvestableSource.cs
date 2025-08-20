@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using RPG.Control;
@@ -719,8 +719,8 @@ namespace RPG.Harvesting
 		{
 			// Восстанавливаем данные из словаря
 			var data = (Dictionary<string, object>)state;
-			isDepleted = (bool)data["isDepleted"];
-			remainingResources = (int)data["remainingResources"];
+			isDepleted = JsonSaveHelper.ToBool(data["isDepleted"]);
+			remainingResources = JsonSaveHelper.ToInt(data["remainingResources"]);
 
 			// Обновляем внешний вид ресурса
 			UpdateVisuals();

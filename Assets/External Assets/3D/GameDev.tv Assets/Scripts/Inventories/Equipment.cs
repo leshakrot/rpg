@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using GameDevTV.Saving;
 using GameDevTV.Utils;
+using Newtonsoft.Json;
 
 namespace GameDevTV.Inventories
 {

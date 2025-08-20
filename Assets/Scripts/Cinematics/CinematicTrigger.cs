@@ -3,6 +3,7 @@ using GameDevTV.Saving;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Events;
+using Newtonsoft.Json;
 
 namespace RPG.Cinematics
 {
@@ -27,7 +28,7 @@ namespace RPG.Cinematics
 
         public void RestoreState(object state)
         {
-            _isTriggered = (bool)state;
+            _isTriggered = JsonSaveHelper.ToBool(state);
         }
     }
 }

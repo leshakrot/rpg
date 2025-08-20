@@ -1,7 +1,8 @@
-﻿using GameDevTV.Utils;
+using GameDevTV.Utils;
 using System;
 using UnityEngine;
 using GameDevTV.Saving; // <-- 1. ДОБАВЛЕНО
+using Newtonsoft.Json;
 
 namespace RPG.Stats
 {
