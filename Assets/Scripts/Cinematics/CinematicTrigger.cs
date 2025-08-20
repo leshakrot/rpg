@@ -3,7 +3,6 @@ using GameDevTV.Saving;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Events;
-using Newtonsoft.Json;
 
 namespace RPG.Cinematics
 {

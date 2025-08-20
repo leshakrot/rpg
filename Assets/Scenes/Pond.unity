@@ -3820,6 +3820,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 357506125}
+  - component: {fileID: 357506127}
+  - component: {fileID: 357506126}
   m_Layer: 0
   m_Name: CS2
   m_TagString: Untagged
@@ -3849,6 +3851,31 @@ Transform:
   - {fileID: 1515443180}
   m_Father: {fileID: 1305352406}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &357506126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357506124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6005de8fd2c915448829d62f9e3be83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TriggeredQuestObject
+--- !u!114 &357506127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357506124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameDevTV.Saving.SaveableEntity
+  uniqueIdentifier: 9864478a-1395-4081-93b9-eaafa6116d6c
 --- !u!1 &363344034
 GameObject:
   m_ObjectHideFlags: 0
@@ -12192,7 +12219,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.75
+      value: -570.74994
       objectReference: {fileID: 0}
     - target: {fileID: 5572362029290283794, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -14907,6 +14934,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1195665438}
+    - targetCorrespondingSourceObject: {fileID: 3116407042566533776, guid: 7d7dfa08bf41cfe46a5c4798dbbec65b,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1195665440}
   m_SourcePrefab: {fileID: 100100000, guid: 7d7dfa08bf41cfe46a5c4798dbbec65b, type: 3}
 --- !u!1 &1195665428 stripped
 GameObject:
@@ -15025,6 +15056,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Quests.QuestGiver
   _quests:
   - {fileID: 11400000, guid: 4271bd00d14667549867a1250d14cca4, type: 2}
+--- !u!114 &1195665440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1195665428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7187e006da2431940aa169237e969daa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectiveReactor
+  questName: "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
+  objectiveReference: go_to_fishers
+  onObjectiveCompleted:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 357506126}
+        m_TargetAssemblyTypeName: TriggeredQuestObject, Assembly-CSharp
+        m_MethodName: SelfDestroy
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1196905323
 GameObject:
   m_ObjectHideFlags: 0

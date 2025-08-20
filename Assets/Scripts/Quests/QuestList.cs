@@ -45,6 +45,7 @@ namespace RPG.Quests
 			
 			foreach (var status in _statuses)
 			{
+				if (status == null || status.GetQuest() == null) continue;
 				if (status.IsComplete()) continue;
 
 				foreach (var objective in status.GetQuest().GetObjectives())
@@ -99,6 +100,7 @@ namespace RPG.Quests
 		{
 			foreach (var status in _statuses)
 			{
+				if (status == null || status.GetQuest() == null) continue;
 				if (status.IsComplete()) continue;
 
 				foreach (var objective in status.GetQuest().GetObjectives())
@@ -197,6 +199,7 @@ namespace RPG.Quests
 		{
 			foreach (QuestStatus status in _statuses)
 			{
+				if (status == null || status.GetQuest() == null) continue;
 				if (status.IsComplete()) continue;
 				Quest quest = status.GetQuest();
 				foreach (var objective in quest.GetObjectives())
@@ -215,6 +218,7 @@ namespace RPG.Quests
 		{
 			foreach (QuestStatus status in _statuses)
 			{
+				if (status == null || status.GetQuest() == null) continue;
 				if (status.IsComplete()) continue;
 
 				Quest quest = status.GetQuest();
@@ -238,7 +242,14 @@ namespace RPG.Quests
 			List<object> state = new List<object>();
 			foreach (QuestStatus status in _statuses)
 			{
-				state.Add(status.CaptureState());
+				if (status != null && status.GetQuest() != null)
+				{
+					object statusState = status.CaptureState();
+					if (statusState != null)
+					{
+						state.Add(statusState);
+					}
+				}
 			}
 			return state;
 		}
@@ -252,7 +263,12 @@ namespace RPG.Quests
 
 			foreach (object objectState in stateList)
 			{
-				_statuses.Add(new QuestStatus(objectState));
+				QuestStatus questStatus = new QuestStatus(objectState);
+				// Добавляем только валидные квесты
+				if (questStatus != null && questStatus.GetQuest() != null)
+				{
+					_statuses.Add(questStatus);
+				}
 			}
 		}
 

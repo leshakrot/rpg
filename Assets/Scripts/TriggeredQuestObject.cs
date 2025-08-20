@@ -18,6 +18,11 @@ public class TriggeredQuestObject : MonoBehaviour, ISaveable
 			_isTriggered = true; 
 		}           
 	}
+
+	public void SetTriggered()
+    {
+		_isTriggered = true;
+	}
 	
 	public void SelfDestroy()
 	{

@@ -52,6 +52,7 @@ namespace RPG.Quests
 
         public bool IsObjectiveRevealed(string reference)
         {
+            if (_quest == null) return false;
             var objective = _quest.GetObjectives().FirstOrDefault(o => o.reference == reference);
             if (objective == null) return false;
             return !objective.hiddenInitially || _revealedObjectives.Contains(reference);
@@ -74,6 +75,7 @@ namespace RPG.Quests
 
         public void CompleteObjective(string objective)
         {
+            if (_quest == null) return;
             if (_quest.HasObjective(objective) && !_completedObjectives.Contains(objective))
             {
                 _completedObjectives.Add(objective);
@@ -109,6 +111,8 @@ namespace RPG.Quests
 
         public void SetProgress(string objectiveRef, int count)
         {
+            if (_quest == null) return;
+            
             // Инициализируем прогресс, если его нет
             if (!_objectiveProgress.ContainsKey(objectiveRef))
             {
@@ -129,6 +133,12 @@ namespace RPG.Quests
 
         public object CaptureState()
         {
+            if (_quest == null)
+            {
+                Debug.LogWarning("QuestStatus.CaptureState: _quest is null, skipping save");
+                return null;
+            }
+
             QuestStatusRecord state = new QuestStatusRecord();
             state.questName = _quest.name;
             state.completedObjectives = _completedObjectives;

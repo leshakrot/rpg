@@ -2611,7 +2611,7 @@ PrefabInstance:
     - target: {fileID: 578189691652438176, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -314.5724
+      value: -314.57236
       objectReference: {fileID: 0}
     - target: {fileID: 625896486219221792, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -6252,7 +6252,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.7499
+      value: -570.74976
       objectReference: {fileID: 0}
     - target: {fileID: 5551642854549289169, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -8992,6 +8992,10 @@ PrefabInstance:
     - target: {fileID: 1022646015542486, guid: 5b01fd3b901675e40ad01ae7689222aa, type: 3}
       propertyPath: m_Layer
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1022646015542486, guid: 5b01fd3b901675e40ad01ae7689222aa, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4393624143182270, guid: 5b01fd3b901675e40ad01ae7689222aa, type: 3}
       propertyPath: m_LocalScale.x
@@ -14912,6 +14916,7 @@ GameObject:
   m_Component:
   - component: {fileID: 785688009}
   - component: {fileID: 785688010}
+  - component: {fileID: 785688011}
   m_Layer: 2
   m_Name: Ready
   m_TagString: Untagged
@@ -14956,6 +14961,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uniqueIdentifier: faf7166a-c761-4239-b2a6-d77f8bdda958
+--- !u!114 &785688011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 785688008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c22fa58f8b62b04696df2f0e9b03a10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Saving.ObjectVisibilitySaver
 --- !u!4 &787547226 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: a6a1e8d8605f1ee45bfebaf6f04f3d62,
@@ -15859,6 +15876,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1200372977240580, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4216879495217190, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.888938
@@ -16450,6 +16471,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1200372977240580, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4216879495217190, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
       propertyPath: m_LocalScale.x
       value: 2.5420504
@@ -16523,6 +16548,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1056935563}
   - component: {fileID: 1056935564}
+  - component: {fileID: 1056935565}
   m_Layer: 2
   m_Name: Unrepaired
   m_TagString: Untagged
@@ -16561,6 +16587,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uniqueIdentifier: 4c66a0d0-e75c-4570-b95d-c691a7e79ffc
+--- !u!114 &1056935565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1056935562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6005de8fd2c915448829d62f9e3be83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TriggeredQuestObject
 --- !u!1 &1066215713
 GameObject:
   m_ObjectHideFlags: 0
@@ -20493,6 +20531,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1200372977240580, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4216879495217190, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.0950092
@@ -23488,6 +23530,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1200372977240580, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4216879495217190, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.4039105
@@ -25589,6 +25635,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1923430771}
+    - targetCorrespondingSourceObject: {fileID: 1682917823560798, guid: f9d0bec09311bef48aa1fb044570e5de,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1923430772}
   m_SourcePrefab: {fileID: 100100000, guid: f9d0bec09311bef48aa1fb044570e5de, type: 3}
 --- !u!4 &1923430770 stripped
 Transform:
@@ -25609,6 +25659,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameDevTV.Saving.SaveableEntity
   uniqueIdentifier: 68c70257-a6c5-48c4-b4b6-bdcf673ec03e
+--- !u!114 &1923430772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1822133104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c22fa58f8b62b04696df2f0e9b03a10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Saving.ObjectVisibilitySaver
 --- !u!1001 &1923438836
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26565,6 +26627,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2017642956}
+    - targetCorrespondingSourceObject: {fileID: 1682917823560798, guid: f9d0bec09311bef48aa1fb044570e5de,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2017642957}
   m_SourcePrefab: {fileID: 100100000, guid: f9d0bec09311bef48aa1fb044570e5de, type: 3}
 --- !u!1 &2017642949 stripped
 GameObject:
@@ -26678,9 +26744,9 @@ MonoBehaviour:
         onTrigger:
           m_PersistentCalls:
             m_Calls:
-            - m_Target: {fileID: 1822133104}
-              m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-              m_MethodName: SetActive
+            - m_Target: {fileID: 1923430772}
+              m_TargetAssemblyTypeName: RPG.Saving.ObjectVisibilitySaver, Assembly-CSharp
+              m_MethodName: SetVisible
               m_Mode: 6
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
@@ -26697,9 +26763,9 @@ MonoBehaviour:
         onTrigger:
           m_PersistentCalls:
             m_Calls:
-            - m_Target: {fileID: 2017642949}
-              m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-              m_MethodName: SetActive
+            - m_Target: {fileID: 2017642957}
+              m_TargetAssemblyTypeName: RPG.Saving.ObjectVisibilitySaver, Assembly-CSharp
+              m_MethodName: SetVisible
               m_Mode: 6
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
@@ -26722,6 +26788,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameDevTV.Saving.SaveableEntity
   uniqueIdentifier: 83d9ddf4-4b62-437c-bc58-b490ffc1161f
+--- !u!114 &2017642957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017642949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c22fa58f8b62b04696df2f0e9b03a10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Saving.ObjectVisibilitySaver
 --- !u!1001 &2023222887
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26815,6 +26893,10 @@ PrefabInstance:
     - target: {fileID: 1200372977240580, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
       propertyPath: m_Layer
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1200372977240580, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4216879495217190, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
       propertyPath: m_LocalScale.x
@@ -27002,6 +27084,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1200372977240580, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4216879495217190, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5717093
@@ -27074,6 +27160,10 @@ PrefabInstance:
     - target: {fileID: 1200372977240580, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
       propertyPath: m_Layer
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1200372977240580, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4216879495217190, guid: 6617bebc3a689ee45ab6ae185a507ed2, type: 3}
       propertyPath: m_LocalScale.x
@@ -38791,9 +38881,9 @@ MonoBehaviour:
         onTrigger:
           m_PersistentCalls:
             m_Calls:
-            - m_Target: {fileID: 785688008}
-              m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-              m_MethodName: SetActive
+            - m_Target: {fileID: 785688011}
+              m_TargetAssemblyTypeName: RPG.Saving.ObjectVisibilitySaver, Assembly-CSharp
+              m_MethodName: SetVisible
               m_Mode: 6
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
@@ -38803,10 +38893,10 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 1
               m_CallState: 2
-            - m_Target: {fileID: 1056935562}
-              m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-              m_MethodName: SetActive
-              m_Mode: 6
+            - m_Target: {fileID: 1056935565}
+              m_TargetAssemblyTypeName: TriggeredQuestObject, Assembly-CSharp
+              m_MethodName: SelfDestroy
+              m_Mode: 1
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
                 m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

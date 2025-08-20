@@ -10,9 +10,19 @@ public class TriggerMarkerCompleteQuest : MonoBehaviour
         {
             if (TryGetComponent(out QuestCompletion questCompletion))
             {
-                questCompletion.CompleteObjective();
+                try
+                {
+                    questCompletion.CompleteObjective();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"TriggerMarkerCompleteQuest: Error completing objective - {e.Message}");
+                }
             }
-
+            else
+            {
+                Debug.LogWarning("TriggerMarkerCompleteQuest: QuestCompletion component not found!");
+            }
         }
     }
 }
