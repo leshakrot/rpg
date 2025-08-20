@@ -1,4 +1,4 @@
-﻿using GameDevTV.Utils;
+using GameDevTV.Utils;
 using RPG.Attributes;
 using RPG.Combat;
 using RPG.Core;
@@ -11,17 +11,22 @@ namespace RPG.Control
 {
     public class AIController : MonoBehaviour
     {
+        [Header("AI Type")]
+        [SerializeField] private bool _isHostile = true;
+        
+        [Header("Combat Settings")]
         [SerializeField] private float _chaseDistance = 5f;
         [SerializeField] private float _suspitionTime = 3f;
         [SerializeField] private float _agroCooldownTime = 5f;
+        [SerializeField] private float _shoutDistance = 5f;
 
+        [Header("Patrol Settings")]
         [SerializeField] private PatrolPath _patrolPath;
         [SerializeField] private float _waypointTolerance = 1f;
         [SerializeField] private float _waypointDwellTime = 3f;
 
         [Range(0,1)]
         [SerializeField] private float _patrolSpeedFraction = 0.2f;
-        [SerializeField] private float _shoutDistance = 5f;
 
 	    private ActionScheduler _actionScheduler;
         
@@ -31,6 +36,9 @@ namespace RPG.Control
         private GameObject _player;
         private Health _health;
         private Mover _mover;
+
+        // Кэшированное состояние для оптимизации
+        private bool _isDead = false;
 
         private LazyValue<Vector3> _guardPosition;
         private float _timeSinceLastSawPlayer = Mathf.Infinity;
@@ -59,12 +67,38 @@ namespace RPG.Control
             _actionScheduler = GetComponent<ActionScheduler>();
             _fighter = GetComponent<Fighter>();
             _player = GameObject.FindWithTag("Player");
-            _health = GetComponent<Health>();
+            _health = GetComponent<Health>(); // Может быть null для мирных NPC
             _mover = GetComponent<Mover>();
 
             _guardPosition = new LazyValue<Vector3>(GetGuardPosition);
             _guardPosition.ForceInit();
         }
+
+        private void Start()
+        {
+            // Подписываемся на события смерти если есть Health
+            if (_health != null)
+            {
+                _health.onDie.AddListener(OnDied);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            // Отписываемся от событий
+            if (_health != null)
+            {
+                _health.onDie.RemoveListener(OnDied);
+            }
+        }
+
+        private void OnDied()
+        {
+            _isDead = true;
+        }
+
+        public bool IsHostile => _isHostile;
+        public bool IsDead => _isDead;
 
         public void Reset()
         {
@@ -102,13 +136,19 @@ namespace RPG.Control
             return transform.position;
         }
 
-        private void Start()
-        {
-        }
 
         private void Update()
         {
-            if (_health.IsDead()) return;
+            // Проверяем смерть через кэшированное состояние
+            if (_isDead) return;
+
+            // Мирные NPC только патрулируют
+            if (!_isHostile)
+            {
+                UpdateTimers();
+                PatrolBehaviour();
+                return;
+            }
 
             // Всегда обновляем таймеры
             UpdateTimers();

@@ -19,19 +19,67 @@ namespace RPG.Movement
 		private Health _health;
 		private BaseStats _baseStats;
 
+		// Кэшированное состояние для оптимизации
+		private bool _isDead = false;
+		private bool _wasEnabledLastFrame = true;
+		
+		// Дефолтная скорость для NPC без BaseStats
+		[SerializeField] private float _defaultMovementSpeed = 3.5f;
+
 		private void Awake()
 		{
 			_navMeshAgent = GetComponent<NavMeshAgent>();
-			_health = GetComponent<Health>();
+			_health = GetComponent<Health>(); // Может быть null
 			_actionScheduler = GetComponent<ActionScheduler>();           
 			_animator = GetComponent<Animator>();        
 			_baseStats = GetComponent<BaseStats>();
 		}
 
+		private void Start()
+		{
+			// Подписываемся на события смерти если есть Health
+			if (_health != null)
+			{
+				_health.onDie.AddListener(OnDied);
+			}
+			
+			// Устанавливаем начальное состояние NavMeshAgent
+			UpdateNavMeshAgentState();
+		}
+
+		private void OnDestroy()
+		{
+			// Отписываемся от событий
+			if (_health != null)
+			{
+				_health.onDie.RemoveListener(OnDied);
+			}
+		}
+
+		private void OnDied()
+		{
+			_isDead = true;
+			UpdateNavMeshAgentState();
+		}
+
 		private void Update()
 		{
-			_navMeshAgent.enabled = !_health.IsDead();
-			UpdateAnimator();
+			// Обновляем анимацию только если нужно (когда NavMeshAgent активен)
+			if (_navMeshAgent.enabled && !_isDead)
+			{
+				UpdateAnimator();
+			}
+		}
+
+		private void UpdateNavMeshAgentState()
+		{
+			bool shouldBeEnabled = !_isDead;
+			
+			// Обновляем состояние только если оно изменилось
+			if (_navMeshAgent.enabled != shouldBeEnabled)
+			{
+				_navMeshAgent.enabled = shouldBeEnabled;
+			}
 		}
 
 		public void StartMoveAction(Vector3 destination, float speedFraction)
@@ -53,28 +101,53 @@ namespace RPG.Movement
 
 		public void MoveTo(Vector3 destination, float speedFraction)
 		{
-			if (_navMeshAgent.enabled && _navMeshAgent.isOnNavMesh)
+			// Не двигаемся если мертвы
+			if (_isDead) return;
+			
+			// Проверяем что NavMeshAgent не null и корректно настроен
+			if (_navMeshAgent != null && _navMeshAgent.enabled && _navMeshAgent.isOnNavMesh)
 			{
 				_navMeshAgent.destination = destination;
-				_navMeshAgent.speed = _baseStats.GetStat(Stat.MovementSpeed) * Mathf.Clamp01(speedFraction);
+				
+				// Получаем скорость из BaseStats или используем дефолтную
+				float baseSpeed = _baseStats != null ? _baseStats.GetStat(Stat.MovementSpeed) : _defaultMovementSpeed;
+				_navMeshAgent.speed = baseSpeed * Mathf.Clamp01(speedFraction);
 				_navMeshAgent.isStopped = false;
 			}
 		}
 
 		public void Cancel()
 		{
-			if (_navMeshAgent.enabled && _navMeshAgent.isOnNavMesh)
+			if (_navMeshAgent != null && _navMeshAgent.enabled && _navMeshAgent.isOnNavMesh)
 			{
 				_navMeshAgent.isStopped = true;
 			}
 		}
 
+		// Публичные методы для внешнего управления состоянием
+		public bool IsDead => _isDead;
+		public bool IsMoving => _navMeshAgent != null && _navMeshAgent.enabled && !_navMeshAgent.isStopped && _navMeshAgent.hasPath;
+		
+		// Методы для настройки скорости мирных NPC
+		public void SetDefaultMovementSpeed(float speed)
+		{
+			_defaultMovementSpeed = Mathf.Max(0.1f, speed);
+		}
+		
+		public float GetCurrentSpeed()
+		{
+			return _baseStats != null ? _baseStats.GetStat(Stat.MovementSpeed) : _defaultMovementSpeed;
+		}
+
 		private void UpdateAnimator()
 		{
-			Vector3 velocity = _navMeshAgent.velocity;
-			Vector3 localVelocity = transform.InverseTransformDirection(velocity);
-			float speed = localVelocity.z;
-			_animator.SetFloat("forwardSpeed", speed);
+			if (_navMeshAgent != null && _animator != null)
+			{
+				Vector3 velocity = _navMeshAgent.velocity;
+				Vector3 localVelocity = transform.InverseTransformDirection(velocity);
+				float speed = localVelocity.z;
+				_animator.SetFloat("forwardSpeed", speed);
+			}
 		}
 
 		private float GetPathLength(NavMeshPath path)
