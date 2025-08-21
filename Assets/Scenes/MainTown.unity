@@ -1566,6 +1566,73 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64cc0d8adc92b7d499c15d1e8aae4e60, type: 3}
+--- !u!1 &112680830
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 112680832}
+  - component: {fileID: 112680831}
+  - component: {fileID: 112680833}
+  m_Layer: 0
+  m_Name: Saver
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &112680831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 112680830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65170c461b9041241864be43443f5b9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectStateSaver
+  managedObjects:
+  - {fileID: 2017642949}
+  - {fileID: 1822133104}
+  - {fileID: 3494935312175695009}
+  - {fileID: 785688008}
+  - {fileID: 1056935562}
+  autoSaveOnStateChange: 1
+  autoLoadOnStart: 1
+  debugMode: 0
+--- !u!4 &112680832
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 112680830}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.06268, y: 11.99414, z: -24.5831}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &112680833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 112680830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameDevTV.Saving.SaveableEntity
+  uniqueIdentifier: 22a79aee-950a-43a9-bee9-08159bee377b
 --- !u!1001 &118239698
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2611,7 +2678,7 @@ PrefabInstance:
     - target: {fileID: 578189691652438176, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -314.57236
+      value: -314.57193
       objectReference: {fileID: 0}
     - target: {fileID: 625896486219221792, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -6252,7 +6319,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.74976
+      value: -570.7489
       objectReference: {fileID: 0}
     - target: {fileID: 5551642854549289169, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -14915,8 +14982,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 785688009}
-  - component: {fileID: 785688010}
-  - component: {fileID: 785688011}
   m_Layer: 2
   m_Name: Ready
   m_TagString: Untagged
@@ -14948,31 +15013,6 @@ Transform:
   - {fileID: 1497400448}
   m_Father: {fileID: 2003326135}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &785688010
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 785688008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uniqueIdentifier: faf7166a-c761-4239-b2a6-d77f8bdda958
---- !u!114 &785688011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 785688008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c22fa58f8b62b04696df2f0e9b03a10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RPG.Saving.ObjectVisibilitySaver
 --- !u!4 &787547226 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: a6a1e8d8605f1ee45bfebaf6f04f3d62,
@@ -16547,8 +16587,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1056935563}
-  - component: {fileID: 1056935564}
-  - component: {fileID: 1056935565}
   m_Layer: 2
   m_Name: Unrepaired
   m_TagString: Untagged
@@ -16574,31 +16612,6 @@ Transform:
   - {fileID: 1680586854}
   m_Father: {fileID: 2003326135}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1056935564
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1056935562}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uniqueIdentifier: 4c66a0d0-e75c-4570-b95d-c691a7e79ffc
---- !u!114 &1056935565
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1056935562}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6005de8fd2c915448829d62f9e3be83, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TriggeredQuestObject
 --- !u!1 &1066215713
 GameObject:
   m_ObjectHideFlags: 0
@@ -25630,15 +25643,7 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 1227220827593206, guid: f9d0bec09311bef48aa1fb044570e5de, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1682917823560798, guid: f9d0bec09311bef48aa1fb044570e5de,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1923430771}
-    - targetCorrespondingSourceObject: {fileID: 1682917823560798, guid: f9d0bec09311bef48aa1fb044570e5de,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1923430772}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f9d0bec09311bef48aa1fb044570e5de, type: 3}
 --- !u!4 &1923430770 stripped
 Transform:
@@ -25646,31 +25651,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1923430769}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1923430771
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1822133104}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameDevTV.Saving.SaveableEntity
-  uniqueIdentifier: 68c70257-a6c5-48c4-b4b6-bdcf673ec03e
---- !u!114 &1923430772
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1822133104}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c22fa58f8b62b04696df2f0e9b03a10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RPG.Saving.ObjectVisibilitySaver
 --- !u!1001 &1923438836
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26623,14 +26603,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2017642954}
-    - targetCorrespondingSourceObject: {fileID: 1682917823560798, guid: f9d0bec09311bef48aa1fb044570e5de,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2017642956}
-    - targetCorrespondingSourceObject: {fileID: 1682917823560798, guid: f9d0bec09311bef48aa1fb044570e5de,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2017642957}
   m_SourcePrefab: {fileID: 100100000, guid: f9d0bec09311bef48aa1fb044570e5de, type: 3}
 --- !u!1 &2017642949 stripped
 GameObject:
@@ -26744,9 +26716,9 @@ MonoBehaviour:
         onTrigger:
           m_PersistentCalls:
             m_Calls:
-            - m_Target: {fileID: 1923430772}
-              m_TargetAssemblyTypeName: RPG.Saving.ObjectVisibilitySaver, Assembly-CSharp
-              m_MethodName: SetVisible
+            - m_Target: {fileID: 1822133104}
+              m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+              m_MethodName: SetActive
               m_Mode: 6
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
@@ -26763,9 +26735,9 @@ MonoBehaviour:
         onTrigger:
           m_PersistentCalls:
             m_Calls:
-            - m_Target: {fileID: 2017642957}
-              m_TargetAssemblyTypeName: RPG.Saving.ObjectVisibilitySaver, Assembly-CSharp
-              m_MethodName: SetVisible
+            - m_Target: {fileID: 2017642949}
+              m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+              m_MethodName: SetActive
               m_Mode: 6
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
@@ -26775,31 +26747,6 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
---- !u!114 &2017642956
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2017642949}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameDevTV.Saving.SaveableEntity
-  uniqueIdentifier: 83d9ddf4-4b62-437c-bc58-b490ffc1161f
---- !u!114 &2017642957
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2017642949}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c22fa58f8b62b04696df2f0e9b03a10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RPG.Saving.ObjectVisibilitySaver
 --- !u!1001 &2023222887
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28279,19 +28226,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &124082402394053045
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3494935312175695009}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uniqueIdentifier: c3a84783-8250-42c0-ba00-45bf0751440b
 --- !u!33 &130179833936942468
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -36236,7 +36170,6 @@ GameObject:
   - component: {fileID: 2446726791313571356}
   - component: {fileID: 5452486685506472786}
   - component: {fileID: 1592781309557872170}
-  - component: {fileID: 124082402394053045}
   - component: {fileID: 5598505719715671186}
   - component: {fileID: 7787345863446749769}
   - component: {fileID: 7843710984527683618}
@@ -38881,9 +38814,9 @@ MonoBehaviour:
         onTrigger:
           m_PersistentCalls:
             m_Calls:
-            - m_Target: {fileID: 785688011}
-              m_TargetAssemblyTypeName: RPG.Saving.ObjectVisibilitySaver, Assembly-CSharp
-              m_MethodName: SetVisible
+            - m_Target: {fileID: 785688008}
+              m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+              m_MethodName: SetActive
               m_Mode: 6
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
@@ -38893,10 +38826,10 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 1
               m_CallState: 2
-            - m_Target: {fileID: 1056935565}
-              m_TargetAssemblyTypeName: TriggeredQuestObject, Assembly-CSharp
-              m_MethodName: SelfDestroy
-              m_Mode: 1
+            - m_Target: {fileID: 1056935562}
+              m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+              m_MethodName: SetActive
+              m_Mode: 6
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
                 m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -44316,3 +44249,4 @@ SceneRoots:
   - {fileID: 1467859543}
   - {fileID: 574856462}
   - {fileID: 496951818}
+  - {fileID: 112680832}

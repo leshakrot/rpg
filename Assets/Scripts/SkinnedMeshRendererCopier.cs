@@ -33,6 +33,6 @@ public static class SkinnedMeshRendererCopier
 		target.allowOcclusionWhenDynamic = source.allowOcclusionWhenDynamic;
 		target.motionVectorGenerationMode = source.motionVectorGenerationMode;
 
-		Debug.Log("SkinnedMeshRenderer успешно скопирован!");
+		//Debug.Log("SkinnedMeshRenderer успешно скопирован!");
 	}
 }

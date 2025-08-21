@@ -41,7 +41,7 @@ public class FishingMiniGame : MonoBehaviour
 		minY = fishingBar.rect.yMin;
 		maxY = fishingBar.rect.yMax;
 
-		Debug.Log($"Границы движения: minY = {minY}, maxY = {maxY}");
+		//Debug.Log($"Границы движения: minY = {minY}, maxY = {maxY}");
 
 		// Устанавливаем начальную позицию целевой зоны
 		targetZone.anchoredPosition = new Vector2(targetZone.anchoredPosition.x, minY);

@@ -6,64 +6,67 @@ namespace RPG.Saving
     public class ObjectVisibilitySaver : MonoBehaviour, ISaveable
     {
         [SerializeField] private bool _isVisible = true;
+        
+        private Renderer[] _renderers;
+        private Collider[] _colliders;
         private bool _hasBeenInitialized = false;
 
         private void Awake()
         {
-            // Устанавливаем начальное состояние только если состояние еще не было восстановлено
-            if (!_hasBeenInitialized)
-            {
-                _isVisible = gameObject.activeSelf;
-                _hasBeenInitialized = true;
-            }
+            // Кэшируем компоненты один раз
+            _renderers = GetComponentsInChildren<Renderer>();
+            _colliders = GetComponentsInChildren<Collider>();
+            
+            _hasBeenInitialized = true;
+            Debug.Log($"ObjectVisibilitySaver.Awake: {gameObject.name} initialized with {_renderers.Length} renderers and {_colliders.Length} colliders");
         }
 
         private void Start()
         {
-            // Убеждаемся, что GameObject соответствует сохраненному состоянию
-            UpdateGameObjectState();
+            // Применяем сохраненное состояние при запуске
+            ApplyVisibilityState();
+            Debug.Log($"ObjectVisibilitySaver.Start: {gameObject.name} visibility state applied: {_isVisible}");
         }
 
         public void SetVisible(bool visible)
         {
+            Debug.Log($"ObjectVisibilitySaver.SetVisible: {gameObject.name} setting visibility to: {visible}");
             _isVisible = visible;
-            UpdateGameObjectState();
+            ApplyVisibilityState();
         }
 
-        public void ToggleVisibility()
+        private void ApplyVisibilityState()
         {
-            SetVisible(!_isVisible);
-        }
-
-        public bool IsVisible()
-        {
-            return _isVisible;
-        }
-
-        private void UpdateGameObjectState()
-        {
-            if (gameObject.activeSelf != _isVisible)
+            // Включаем/выключаем рендереры вместо самого объекта
+            foreach (var renderer in _renderers)
             {
-                gameObject.SetActive(_isVisible);
+                if (renderer != null)
+                    renderer.enabled = _isVisible;
             }
+
+            // Включаем/выключаем коллайдеры для взаимодействия
+            foreach (var collider in _colliders)
+            {
+                if (collider != null)
+                    collider.enabled = _isVisible;
+            }
+            
+            Debug.Log($"ObjectVisibilitySaver.ApplyVisibilityState: {gameObject.name} applied visibility: {_isVisible}");
         }
 
         public object CaptureState()
         {
-            // Сохраняем текущее состояние видимости
-            _isVisible = gameObject.activeSelf;
+            Debug.Log($"ObjectVisibilitySaver.CaptureState: {gameObject.name} saving visibility state: {_isVisible}");
             return _isVisible;
         }
 
         public void RestoreState(object state)
         {
-            if (state != null)
-            {
-                _isVisible = (bool)state;
-                _hasBeenInitialized = true;
-                // Применяем состояние сразу после восстановления
-                UpdateGameObjectState();
-            }
+            bool newVisibility = JsonSaveHelper.ToBool(state);
+            Debug.Log($"ObjectVisibilitySaver.RestoreState: {gameObject.name} restoring visibility state: {newVisibility}");
+            
+            _isVisible = newVisibility;
+            ApplyVisibilityState();
         }
     }
 }
