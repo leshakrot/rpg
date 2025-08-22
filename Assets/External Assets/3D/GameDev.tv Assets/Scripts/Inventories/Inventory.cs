@@ -267,6 +267,32 @@ namespace GameDevTV.Inventories
         /// </summary>
         public void GiveItemToNPC(string itemID)
         {
+            // Проверяем, содержит ли строка запятую (формат "itemID,quantity")
+            if (itemID.Contains(","))
+            {
+                string[] parts = itemID.Split(',');
+                if (parts.Length == 2)
+                {
+                    string actualItemID = parts[0].Trim();
+                    if (int.TryParse(parts[1].Trim(), out int quantity))
+                    {
+                        TransferItemByID(actualItemID, quantity);
+                        return;
+                    }
+                    else
+                    {
+                        Debug.LogError($"Invalid quantity format in '{itemID}'. Expected format: 'itemID,quantity'");
+                        return;
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"Invalid format in '{itemID}'. Expected format: 'itemID,quantity'");
+                    return;
+                }
+            }
+            
+            // Если запятой нет, используем количество 1
             TransferItemByID(itemID, 1);
         }
 
