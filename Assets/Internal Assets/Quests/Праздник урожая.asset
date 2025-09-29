@@ -29,5 +29,40 @@ MonoBehaviour:
       _and: []
     isCollectionObjective: 1
     itemToCollect: {fileID: 11400000, guid: f47025d4e2e10ea4a8de94140c6b7dbd, type: 2}
+  - reference: bring_fish_harvest_festival
+    description: "\u041F\u0440\u0438\u043D\u0435\u0441\u0438\u0442\u0435 \u0436\u0430\u0440\u0435\u043D\u0443\u044E
+      \u0440\u044B\u0431\u0443 \u043D\u0430 \u043F\u0440\u0430\u0437\u0434\u043D\u0438\u043A"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - cook_fish
+          _negate: 0
+    isCollectionObjective: 1
+    itemToCollect: {fileID: 11400000, guid: f47025d4e2e10ea4a8de94140c6b7dbd, type: 2}
+  - reference: go_outdoor
+    description: "\u0432\u044B\u0439\u0442\u0438 \u043D\u0430 \u0443\u043B\u0438\u0446\u0443"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - cook_fish
+          _negate: 0
+    isCollectionObjective: 1
+    itemToCollect: {fileID: 11400000, guid: f47025d4e2e10ea4a8de94140c6b7dbd, type: 2}
   _rewards: []
   _objectivesToComplete: 0
