@@ -12219,7 +12219,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.74976
+      value: -570.7496
       objectReference: {fileID: 0}
     - target: {fileID: 5572362029290283794, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -14984,7 +14984,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1195665428}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7187e006da2431940aa169237e969daa, type: 3}
   m_Name: 
@@ -15073,10 +15073,10 @@ MonoBehaviour:
   onObjectiveCompleted:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 357506126}
-        m_TargetAssemblyTypeName: TriggeredQuestObject, Assembly-CSharp
-        m_MethodName: SelfDestroy
-        m_Mode: 1
+      - m_Target: {fileID: 1195665435}
+        m_TargetAssemblyTypeName: UnityEngine.BoxCollider, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
