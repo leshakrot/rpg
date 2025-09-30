@@ -2023,7 +2023,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 154032123}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 154032126}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19fc28a888c18ce4a82d521912c49df1, type: 3}
@@ -2679,7 +2679,7 @@ PrefabInstance:
     - target: {fileID: 578189691652438176, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -314.57245
+      value: -314.57193
       objectReference: {fileID: 0}
     - target: {fileID: 625896486219221792, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -6320,7 +6320,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.74976
+      value: -570.7493
       objectReference: {fileID: 0}
     - target: {fileID: 5551642854549289169, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -8965,12 +8965,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acaf28b23d2b51649ba3413e1235f8e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &154032126 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1919588241746799136, guid: 1345df2c3cd9cbd40a817776750bb2f4,
-    type: 3}
-  m_PrefabInstance: {fileID: 154032123}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &168943258
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15762,7 +15756,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &844745538
 Transform:
   m_ObjectHideFlags: 0
@@ -15837,8 +15831,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _actions:
   - rid: 6515991375511027896
-  - rid: 6515991375511027911
-  - rid: 6515991375511027925
+  - rid: 6515991375511027984
   references:
     version: 2
     RefIds:
@@ -15861,13 +15854,6 @@ MonoBehaviour:
                 m_StringArgument: 41c48624-c88b-4cd6-9407-858bfdd948ec,5
                 m_BoolArgument: 0
               m_CallState: 2
-    - rid: 6515991375511027911
-      type: {class: TriggerAction, ns: RPG.Dialogue, asm: Assembly-CSharp}
-      data:
-        actionName: complete_objective_bring_fish_harvest_festival
-        onTrigger:
-          m_PersistentCalls:
-            m_Calls:
             - m_Target: {fileID: 844745541}
               m_TargetAssemblyTypeName: RPG.Quests.QuestCompletion, Assembly-CSharp
               m_MethodName: CompleteObjective
@@ -15877,22 +15863,22 @@ MonoBehaviour:
                 m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
                 m_IntArgument: 0
                 m_FloatArgument: 0
-                m_StringArgument: 
+                m_StringArgument: 41c48624-c88b-4cd6-9407-858bfdd948ec,5
                 m_BoolArgument: 0
               m_CallState: 2
-            - m_Target: {fileID: 154032126}
-              m_TargetAssemblyTypeName: RPG.Quests.QuestCompletion, Assembly-CSharp
-              m_MethodName: 
-              m_Mode: 1
+            - m_Target: {fileID: 138516486}
+              m_TargetAssemblyTypeName: GameDevTV.Inventories.Inventory, Assembly-CSharp
+              m_MethodName: AddItemByID
+              m_Mode: 5
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
                 m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
                 m_IntArgument: 0
                 m_FloatArgument: 0
-                m_StringArgument: 
+                m_StringArgument: 39c5d615-62a2-4db3-afdf-ccd842ee45ee,75
                 m_BoolArgument: 0
               m_CallState: 2
-    - rid: 6515991375511027925
+    - rid: 6515991375511027984
       type: {class: TriggerAction, ns: RPG.Dialogue, asm: Assembly-CSharp}
       data:
         actionName: artie_take_fish_leave

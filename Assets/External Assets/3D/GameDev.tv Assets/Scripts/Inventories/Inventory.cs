@@ -312,6 +312,65 @@ namespace GameDevTV.Inventories
             return CanTransferItemByID(itemID, 1);
         }
 
+        /// <summary>
+        /// Добавляет предмет в первый доступный слот по ID (для UnityEvent)
+        /// Принимает формат: "itemID,quantity" или просто "itemID" (количество = 1)
+        /// </summary>
+        public void AddItemByID(string itemIDWithQuantity)
+        {
+            if (string.IsNullOrEmpty(itemIDWithQuantity))
+            {
+                Debug.LogError("Item ID cannot be null or empty");
+                return;
+            }
+
+            string itemID;
+            int quantity = 1;
+
+            // Проверяем, содержит ли строка запятую (формат "itemID,quantity")
+            if (itemIDWithQuantity.Contains(","))
+            {
+                string[] parts = itemIDWithQuantity.Split(',');
+                if (parts.Length == 2)
+                {
+                    itemID = parts[0].Trim();
+                    if (!int.TryParse(parts[1].Trim(), out quantity))
+                    {
+                        Debug.LogError($"Invalid quantity format in '{itemIDWithQuantity}'. Expected format: 'itemID,quantity'");
+                        return;
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"Invalid format in '{itemIDWithQuantity}'. Expected format: 'itemID,quantity'");
+                    return;
+                }
+            }
+            else
+            {
+                itemID = itemIDWithQuantity.Trim();
+            }
+
+            // Находим предмет по ID
+            InventoryItem item = InventoryItem.GetFromID(itemID);
+            if (item == null)
+            {
+                Debug.LogError($"Item with ID '{itemID}' not found!");
+                return;
+            }
+
+            // Добавляем предмет в первый доступный слот
+            bool success = AddToFirstEmptySlot(item, quantity);
+            if (success)
+            {
+                Debug.Log($"Added {quantity} of {item.GetDisplayName()} to inventory");
+            }
+            else
+            {
+                Debug.LogWarning($"Failed to add {quantity} of {item.GetDisplayName()} - no space in inventory");
+            }
+        }
+
         private void Awake()
         {
             slots = new InventorySlot[inventorySize];
