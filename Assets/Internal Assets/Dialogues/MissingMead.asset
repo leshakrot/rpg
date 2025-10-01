@@ -16,7 +16,7 @@ MonoBehaviour:
   text: "\u0425\u043E\u0440\u043E\u0448\u043E! \u0416\u0434\u0443 \u0442\u0435\u0431\u044F
     \u0441 \u0445\u043E\u0440\u043E\u0448\u0438\u043C\u0438 \u043D\u043E\u0432\u043E\u0441\u0442\u044F\u043C\u0438!
     \u041C\u0435\u0434\u043E\u0432\u0443\u0445\u0430 \u043D\u0443\u0436\u043D\u0430
-    \u043A \u0437\u0430\u0432\u0442\u0440\u0430\u0448\u043D\u0435\u043C\u0443 \u0432\u0435\u0447\u0435\u0440\u0443!"
+    \u0441\u0435\u0433\u043E\u0434\u043D\u044F \u043A \u0432\u0435\u0447\u0435\u0440\u0443!"
   children: []
   rect:
     serializedVersion: 2
@@ -24,8 +24,8 @@ MonoBehaviour:
     y: 112
     width: 200
     height: 100
-  onEnterAction: 
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and: []
 --- !u!114 &-7058128770102897917
@@ -42,12 +42,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPlayerSpeaking: 0
   text: "\u041F\u0440\u0438\u0432\u0435\u0442, \u0434\u0440\u0443\u0436\u0438\u0449\u0435!
-    \u041A\u0430\u043A \u0432\u0438\u0434\u0438\u0448\u044C, \u0432\u0441\u0435 \u0433\u043E\u0442\u043E\u0432\u044F\u0442\u0441\u044F
-    \u043A \u043F\u0440\u0430\u0437\u0434\u043D\u0438\u043A\u0443 \u0443\u0440\u043E\u0436\u0430\u044F.
+    \u041A\u0430\u043A \u0432\u0438\u0434\u0438\u0448\u044C, \u0432\u0441\u0435 \u0443\u0436\u0435
+    \u043D\u0430\u0447\u0430\u043B\u0438 \u043E\u0442\u043C\u0435\u0447\u0430\u0442\u044C
+    \u043F\u0440\u0430\u0437\u0434\u043D\u0438\u043A \u0443\u0440\u043E\u0436\u0430\u044F.
     \u0427\u0435\u043C \u043C\u043E\u0433\u0443 \u043F\u043E\u043C\u043E\u0447\u044C?"
   children:
   - dd57f9ee-492c-4a84-b844-4260baf297f5
-  - e7a1a599-2fb1-4859-9aaa-ca4e4d03b926
   - f1de0446-af08-4d79-b65b-364183cc4dba
   rect:
     serializedVersion: 2
@@ -55,8 +55,8 @@ MonoBehaviour:
     y: 106
     width: 200
     height: 100
-  onEnterAction: 
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and: []
 --- !u!114 &-6015572086712858156
@@ -78,12 +78,13 @@ MonoBehaviour:
   - 5a7b9c15-29f4-4b5d-a1a9-6d1f85bc7e1f
   rect:
     serializedVersion: 2
-    x: 989
-    y: 112
+    x: 966
+    y: 114
     width: 200
     height: 100
-  onEnterAction: GiveQuest
-  onExitAction: 
+  onEnterActions:
+  - start_quest_missing_mead
+  onExitActions: []
   condition:
     _and: []
 --- !u!114 &-5337205794094302015
@@ -109,8 +110,8 @@ MonoBehaviour:
     y: 112
     width: 200
     height: 100
-  onEnterAction: 
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and: []
 --- !u!114 &-4997813797341376164
@@ -127,12 +128,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPlayerSpeaking: 0
   text: "\u0410\u0445, \u0434\u0440\u0443\u0436\u0438\u0449\u0435, \u0431\u0435\u0434\u0430
-    \u0443 \u043C\u0435\u043D\u044F! \u0417\u0430\u0432\u0442\u0440\u0430 \u043F\u0440\u0430\u0437\u0434\u043D\u0438\u043A
-    \u0443\u0440\u043E\u0436\u0430\u044F, \u0430 \u043C\u043E\u044F \u043B\u0443\u0447\u0448\u0430\u044F
+    \u0443 \u043C\u0435\u043D\u044F! \u041C\u043E\u044F \u043B\u0443\u0447\u0448\u0430\u044F
     \u043C\u0435\u0434\u043E\u0432\u0443\u0445\u0430 \u043F\u0440\u043E\u043F\u0430\u043B\u0430!
     \u0422\u0440\u0438 \u0431\u043E\u0447\u043A\u0438 \u043E\u0442\u0431\u043E\u0440\u043D\u043E\u0433\u043E
     \u043D\u0430\u043F\u0438\u0442\u043A\u0430, \u043A\u043E\u0442\u043E\u0440\u044B\u0439
-    \u044F \u0445\u0440\u0430\u043D\u0438\u043B \u0432 \u043F\u043E\u0434\u0432\u0430\u043B\u0435.\n\u041F\u043E\u0434\u043E\u0437\u0440\u0435\u0432\u0430\u044E,
+    \u044F \u0445\u0440\u0430\u043D\u0438\u043B \u0432 \u043F\u043E\u0434\u0432\u0430\u043B\u0435
+    \u0441\u043F\u0435\u0446\u0438\u0430\u043B\u044C\u043D\u043E \u0434\u043B\u044F
+    \u0441\u0435\u0433\u043E\u0434\u043D\u044F\u0448\u043D\u0435\u0433\u043E \u0434\u043D\u044F.\n\u041F\u043E\u0434\u043E\u0437\u0440\u0435\u0432\u0430\u044E,
     \u0447\u0442\u043E \u044D\u0442\u043E \u043F\u0440\u043E\u0434\u0435\u043B\u043A\u0438
     \u043A\u0440\u044B\u0441 \u0438\u043B\u0438 \u043A\u0430\u043A\u0438\u0445-\u0442\u043E
     \u0432\u0440\u0435\u0434\u0438\u0442\u0435\u043B\u0435\u0439, \u0447\u0442\u043E
@@ -140,15 +142,14 @@ MonoBehaviour:
     \u043F\u043E\u0434\u0432\u0430\u043B\u0435."
   children:
   - 0f9f6623-f48b-44d7-bb28-8c9bd10dc799
-  - c690e4ee-c1d2-4e48-8ce4-4598cb348100
   rect:
     serializedVersion: 2
-    x: 656
-    y: 112
+    x: 657
+    y: 114
     width: 200
     height: 100
-  onEnterAction: 
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and: []
 --- !u!114 &-4812266101687202449
@@ -173,8 +174,8 @@ MonoBehaviour:
     y: 380
     width: 200
     height: 100
-  onEnterAction: 
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and:
     - _or:
@@ -207,104 +208,12 @@ MonoBehaviour:
   nodes:
   - {fileID: -7058128770102897917}
   - {fileID: -5337205794094302015}
-  - {fileID: 4326414573742476184}
-  - {fileID: 4178516888601997027}
   - {fileID: -4997813797341376164}
   - {fileID: -6015572086712858156}
-  - {fileID: 8900474716396829493}
   - {fileID: -7612845181319598657}
-  - {fileID: 8224013382916581909}
-  - {fileID: 6724982164516782354}
-  - {fileID: 2935671248653901245}
   - {fileID: -4812266101687202449}
   - {fileID: 6344562082286711836}
   newNodeOffset: {x: 250, y: 0}
---- !u!114 &2935671248653901245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
-  m_Name: 5fde9281-94ce-47ac-b3ff-0e7d4a5f2b7e
-  m_EditorClassIdentifier: 
-  isPlayerSpeaking: 0
-  text: "\u0414\u0430 \u043D\u0435\u0442, \u0431\u0435\u0437 \u043F\u0440\u0430\u0437\u0434\u043D\u0438\u0447\u043D\u043E\u0439
-    \u043C\u0435\u0434\u043E\u0432\u0443\u0445\u0438 \u0441\u0442\u0430\u0440\u043E\u0441\u0442\u0430
-    \u043C\u0435\u043D\u044F \u043F\u043E \u0433\u043E\u043B\u043E\u0432\u0435 \u043F\u043E\u0433\u043B\u0430\u0434\u0438\u0442...
-    \u043C\u0435\u0442\u043B\u043E\u0439! \u0418 \u0432\u0441\u044F \u0434\u0435\u0440\u0435\u0432\u043D\u044F
-    \u0431\u0443\u0434\u0435\u0442 \u0440\u0430\u0437\u043E\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u0430.
-    \u041F\u043E\u043C\u043E\u0433\u0438, \u043F\u043E\u0436\u0430\u043B\u0443\u0439\u0441\u0442\u0430!"
-  children: []
-  rect:
-    serializedVersion: 2
-    x: 1206
-    y: 366
-    width: 200
-    height: 100
-  onEnterAction: 
-  onExitAction: 
-  condition:
-    _and: []
---- !u!114 &4178516888601997027
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
-  m_Name: a2f1b39a-7f90-4c84-923b-87c060a3d2cd
-  m_EditorClassIdentifier: 
-  isPlayerSpeaking: 0
-  text: "\u0425\u043E\u0440\u043E\u0448\u043E! \u0417\u0430\u0445\u043E\u0434\u0438,
-    \u0435\u0441\u043B\u0438 \u043F\u0435\u0440\u0435\u0434\u0443\u043C\u0430\u0435\u0448\u044C.
-    \u041D\u0430\u043C \u0432\u0441\u0435\u0433\u0434\u0430 \u043D\u0443\u0436\u043D\u044B
-    \u0443\u043C\u0435\u043B\u044B\u0435 \u0440\u0443\u043A\u0438!"
-  children: []
-  rect:
-    serializedVersion: 2
-    x: 698
-    y: 256
-    width: 200
-    height: 100
-  onEnterAction: 
-  onExitAction: 
-  condition:
-    _and: []
---- !u!114 &4326414573742476184
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
-  m_Name: e7a1a599-2fb1-4859-9aaa-ca4e4d03b926
-  m_EditorClassIdentifier: 
-  isPlayerSpeaking: 1
-  text: "\u041F\u0440\u043E\u0441\u0442\u043E \u0437\u0430\u0448\u0451\u043B \u043F\u043E\u0441\u043C\u043E\u0442\u0440\u0435\u0442\u044C,
-    \u043A\u0430\u043A \u0438\u0434\u0451\u0442 \u043F\u043E\u0434\u0433\u043E\u0442\u043E\u0432\u043A\u0430
-    \u043A \u043F\u0440\u0430\u0437\u0434\u043D\u0438\u043A\u0443."
-  children:
-  - a2f1b39a-7f90-4c84-923b-87c060a3d2cd
-  rect:
-    serializedVersion: 2
-    x: 417
-    y: 269
-    width: 200
-    height: 100
-  onEnterAction: 
-  onExitAction: 
-  condition:
-    _and: []
 --- !u!114 &6344562082286711836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -328,92 +237,7 @@ MonoBehaviour:
     y: 380
     width: 200
     height: 100
-  onEnterAction: CompleteQuest
-  onExitAction: 
-  condition:
-    _and: []
---- !u!114 &6724982164516782354
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
-  m_Name: b73d9c43-c1ff-4d97-9c16-7f33e2d5ae15
-  m_EditorClassIdentifier: 
-  isPlayerSpeaking: 1
-  text: "\u0414\u0430\u0432\u0430\u0439 \u044F \u0441\u043D\u0430\u0447\u0430\u043B\u0430
-    \u043F\u043E\u0434\u0443\u043C\u0430\u044E. \u042D\u0442\u043E \u043E\u043F\u0430\u0441\u043D\u043E?"
-  children:
-  - 5fde9281-94ce-47ac-b3ff-0e7d4a5f2b7e
-  rect:
-    serializedVersion: 2
-    x: 958
-    y: 355
-    width: 200
-    height: 100
-  onEnterAction: 
-  onExitAction: 
-  condition:
-    _and: []
---- !u!114 &8224013382916581909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
-  m_Name: 6fd3e7d8-a45c-4f17-b362-0c2b452a1c7f
-  m_EditorClassIdentifier: 
-  isPlayerSpeaking: 0
-  text: "\u0412 \u043F\u043E\u0434\u0432\u0430\u043B\u0435 \u0442\u0435\u043C\u043D\u043E
-    \u0438 \u0441\u044B\u0440\u043E, \u043E\u0441\u0442\u043E\u0440\u043E\u0436\u043D\u0435\u0435
-    \u0442\u0430\u043C! \u0412\u043E\u0437\u044C\u043C\u0438 \u0444\u0430\u043A\u0435\u043B
-    \u0443 \u0432\u0445\u043E\u0434\u0430. \u0418 \u0431\u0443\u0434\u044C \u043E\u0441\u0442\u043E\u0440\u043E\u0436\u0435\u043D
-    \u0441 \u043A\u0440\u044B\u0441\u0430\u043C\u0438!"
-  children: []
-  rect:
-    serializedVersion: 2
-    x: 1239
-    y: 241
-    width: 200
-    height: 100
-  onEnterAction: 
-  onExitAction: 
-  condition:
-    _and: []
---- !u!114 &8900474716396829493
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
-  m_Name: c690e4ee-c1d2-4e48-8ce4-4598cb348100
-  m_EditorClassIdentifier: 
-  isPlayerSpeaking: 1
-  text: "\u0410 \u0447\u0442\u043E \u0432\u043E\u043E\u0431\u0449\u0435 \u043F\u0440\u043E\u0438\u0441\u0445\u043E\u0434\u0438\u0442
-    \u0432 \u043F\u043E\u0434\u0432\u0430\u043B\u0435? \u041A\u0430\u043A \u0438\u0441\u0447\u0435\u0437\u043B\u0438
-    \u0446\u0435\u043B\u044B\u0435 \u0431\u043E\u0447\u043A\u0438?"
-  children:
-  - 6fd3e7d8-a45c-4f17-b362-0c2b452a1c7f
-  - b73d9c43-c1ff-4d97-9c16-7f33e2d5ae15
-  rect:
-    serializedVersion: 2
-    x: 989
-    y: 241
-    width: 200
-    height: 100
-  onEnterAction: 
-  onExitAction: 
+  onEnterActions: []
+  onExitActions: []
   condition:
     _and: []
