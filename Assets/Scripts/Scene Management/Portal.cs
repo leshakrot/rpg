@@ -19,9 +19,9 @@ namespace RPG.SceneManagement
             Pond_PondCave,
 	        PondPath_MainTown,
 	        MainTown_PlayerHouse1,
-            B, 
-            C, 
-            D, 
+            MainTown_Tavern,
+            MainTownTavern_Cellar,
+            MainTownTavernCellar_Tunnel, 
             E,   
         }
 
