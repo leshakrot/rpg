@@ -9,6 +9,7 @@
 	    Orc,
 	    Wolf,
 	    Boar,
-        Chest
+        Chest,
+        Spider
     }
 }
