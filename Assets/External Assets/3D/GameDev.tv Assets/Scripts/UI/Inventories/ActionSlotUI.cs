@@ -42,6 +42,12 @@ namespace GameDevTV.UI.Inventories
 
         public void AddItems(InventoryItem item, int number)
         {
+            // Проверяем, можно ли переместить предмет в ActionSlot
+            if (item != null && !item.CanBeDropped())
+            {
+                return; // Предмет вернется обратно в исходный слот
+            }
+
             store.AddAction(item, index, number);
         }
 
@@ -57,6 +63,11 @@ namespace GameDevTV.UI.Inventories
 
         public int MaxAcceptable(InventoryItem item)
         {
+            // Если предмет нельзя выбросить, не принимаем его в ActionSlot
+            if (item != null && !item.CanBeDropped())
+            {
+                return 0;
+            }
             return store.MaxAcceptable(item, index);
         }
 
@@ -64,7 +75,7 @@ namespace GameDevTV.UI.Inventories
         {
             store.RemoveItems(index, number);
         }
-        
+
         // Метод для использования предмета при клике
         public void UseItem()
         {
@@ -73,7 +84,7 @@ namespace GameDevTV.UI.Inventories
                 store.Use(index, player);
             }
         }
-        
+
         // Обработка клика по иконке предмета
         public void OnPointerClick(PointerEventData eventData)
         {

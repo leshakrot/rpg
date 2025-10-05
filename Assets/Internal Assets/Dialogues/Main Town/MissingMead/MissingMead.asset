@@ -51,7 +51,6 @@ MonoBehaviour:
     \u043C\u043D\u0435?"
   children:
   - dd57f9ee-492c-4a84-b844-4260baf297f5
-  - f1de0446-af08-4d79-b65b-364183cc4dba
   rect:
     serializedVersion: 2
     x: 134
@@ -61,7 +60,17 @@ MonoBehaviour:
   onEnterActions: []
   onExitActions: []
   condition:
-    _and: []
+    _and:
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - "\u041C\u0435\u0434\u043E\u0432\u0443\u0445\u0430"
+        _negate: 1
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - "\u041C\u0435\u0434\u043E\u0432\u0443\u0445\u0430"
+        _negate: 1
 --- !u!114 &-6015572086712858156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,8 +203,34 @@ MonoBehaviour:
     - _or:
       - _predicate: HasInventoryItem
         _parameters:
-        - b348c320-c549-466e-bdf9-cbb35f273f85
+        - a315dec8-21eb-4623-bd6c-844b64f72e32
         _negate: 0
+--- !u!114 &-2077008762427409852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: fc17fee6-af98-4648-8146-71e43063fd0e
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "\u041F\u043E\u043A\u0430 \u043D\u0438\u043A\u0430\u043A\u0438\u0445 \u0437\u0430\u0446\u0435\u043F\u043E\u043A.."
+  children:
+  - 19ed3242-aef8-4b14-909c-25cad44be915
+  rect:
+    serializedVersion: 2
+    x: 427
+    y: 476
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,7 +251,76 @@ MonoBehaviour:
   - {fileID: -7612845181319598657}
   - {fileID: -4812266101687202449}
   - {fileID: 6344562082286711836}
+  - {fileID: 2042793538237976357}
+  - {fileID: -2077008762427409852}
+  - {fileID: 1910151276242436429}
   newNodeOffset: {x: 250, y: 0}
+--- !u!114 &1910151276242436429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 19ed3242-aef8-4b14-909c-25cad44be915
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u0427\u0442\u043E \u0436, \u043B\u0430\u0434\u043D\u043E.. \u0416\u0434\u0443
+    \u0442\u0435\u0431\u044F \u0441 \u0445\u043E\u0440\u043E\u0448\u0438\u043C\u0438
+    \u043D\u043E\u0432\u043E\u0441\u0442\u044F\u043C\u0438! \u041C\u0435\u0434\u043E\u0432\u0443\u0445\u0430
+    \u043D\u0443\u0436\u043D\u0430 \u0441\u0435\u0433\u043E\u0434\u043D\u044F \u043A
+    \u0432\u0435\u0447\u0435\u0440\u0443!"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 679
+    y: 483
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &2042793538237976357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 51b5cbee-797a-4278-b074-d2855a16cd52
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u041A\u0430\u043A \u0443\u0441\u043F\u0435\u0445\u0438 \u0432 \u043F\u043E\u0438\u0441\u043A\u0430\u0445?"
+  children:
+  - f1de0446-af08-4d79-b65b-364183cc4dba
+  - fc17fee6-af98-4648-8146-71e43063fd0e
+  rect:
+    serializedVersion: 2
+    x: 140
+    y: 372
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - "\u041C\u0435\u0434\u043E\u0432\u0443\u0445\u0430"
+        _negate: 0
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - "\u041C\u0435\u0434\u043E\u0432\u0443\u0445\u0430"
+        _negate: 1
 --- !u!114 &6344562082286711836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,7 +344,8 @@ MonoBehaviour:
     y: 380
     width: 200
     height: 100
-  onEnterActions: []
+  onEnterActions:
+  - complete_quest_missing_mead
   onExitActions: []
   condition:
     _and: []

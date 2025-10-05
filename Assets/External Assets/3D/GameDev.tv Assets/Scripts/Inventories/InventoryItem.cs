@@ -21,6 +21,8 @@ namespace GameDevTV.Inventories
         [SerializeField] bool stackable = false;
         [SerializeField] float price;
         [SerializeField] ItemCategory category = ItemCategory.None;
+        [Tooltip("If true, this item cannot be dropped or moved to action slots.")]
+        [SerializeField] bool cannotBeDropped = false;
 
         static Dictionary<string, InventoryItem> itemLookupCache;
 
@@ -45,7 +47,7 @@ namespace GameDevTV.Inventories
             if (itemID == null || !itemLookupCache.ContainsKey(itemID)) return null;
             return itemLookupCache[itemID];
         }
-        
+
         public Pickup SpawnPickup(Vector3 position, int number)
         {
             var pickup = Instantiate(this.pickup);
@@ -68,7 +70,7 @@ namespace GameDevTV.Inventories
         {
             return stackable;
         }
-        
+
         public string GetDisplayName()
         {
             return displayName;
@@ -79,7 +81,8 @@ namespace GameDevTV.Inventories
             return description;
         }
 
-        public float GetPrice(){
+        public float GetPrice()
+        {
             return price;
         }
 
@@ -87,7 +90,12 @@ namespace GameDevTV.Inventories
         {
             return category;
         }
-      
+
+        public bool CanBeDropped()
+        {
+            return !cannotBeDropped;
+        }
+
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             if (string.IsNullOrWhiteSpace(itemID))
