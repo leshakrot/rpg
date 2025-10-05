@@ -14,6 +14,9 @@ namespace RPG.Quests
 
         // Добавляем прогресс по количеству
         private Dictionary<string, int> _objectiveProgress = new Dictionary<string, int>();
+        
+        // Отслеживание сработавших ObjectiveReactor-ов
+        private HashSet<string> _firedReactors = new HashSet<string>();
 
         [System.Serializable]
         class QuestStatusRecord
@@ -22,6 +25,7 @@ namespace RPG.Quests
             public List<string> completedObjectives;
             public List<string> revealedObjectives;
             public Dictionary<string, int> objectiveProgress;
+            public List<string> firedReactors;
         }
 
         public QuestStatus(Quest quest)
@@ -40,6 +44,16 @@ namespace RPG.Quests
             _completedObjectives = state.completedObjectives;
             _revealedObjectives = state.revealedObjectives;
             _objectiveProgress = state.objectiveProgress ?? new Dictionary<string, int>();
+            
+            // Загружаем список сработавших реакторов
+            if (state.firedReactors != null)
+            {
+                _firedReactors = new HashSet<string>(state.firedReactors);
+            }
+            else
+            {
+                _firedReactors = new HashSet<string>();
+            }
         }
 
         public void RevealObjective(string objectiveRef)
@@ -131,6 +145,16 @@ namespace RPG.Quests
             _objectiveProgress[objectiveRef] = newProgress;
         }
 
+        public bool IsReactorFired(string reactorKey)
+        {
+            return _firedReactors.Contains(reactorKey);
+        }
+
+        public void MarkReactorFired(string reactorKey)
+        {
+            _firedReactors.Add(reactorKey);
+        }
+
         public object CaptureState()
         {
             if (_quest == null)
@@ -144,6 +168,7 @@ namespace RPG.Quests
             state.completedObjectives = _completedObjectives;
             state.revealedObjectives = _revealedObjectives;
             state.objectiveProgress = _objectiveProgress;
+            state.firedReactors = new List<string>(_firedReactors);
             return state;
         }
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using RPG.Quests;
 
 public class ObjectiveReactor : MonoBehaviour
@@ -11,11 +12,20 @@ public class ObjectiveReactor : MonoBehaviour
 	[Header("Что произойдет при выполнении")]
 	public UnityEvent onObjectiveCompleted;
 
+	[Header("Идентификатор реактора")]
+	[SerializeField] private string reactorId;
+
 	private bool hasFired = false;
 	private QuestList questList;
 
 	void Start()
 	{
+		// Генерируем уникальный ID если его нет
+		if (string.IsNullOrEmpty(reactorId))
+		{
+			reactorId = GenerateReactorId();
+		}
+
 		questList = FindObjectOfType<QuestList>();
 		if (questList == null)
 		{
@@ -39,6 +49,14 @@ public class ObjectiveReactor : MonoBehaviour
 			return;
 		}
 
+		// Проверяем, уже ли этот реактор срабатывал
+		if (status.IsReactorFired(reactorId))
+		{
+			hasFired = true;
+			Debug.Log($"ObjectiveReactor на {gameObject.name}: Реактор {reactorId} уже срабатывал ранее, пропускаем.");
+			return;
+		}
+
 		// Проверяем, уже ли выполнена цель
 		if (status.IsObjectiveComplete(objectiveReference))
 		{
@@ -48,6 +66,13 @@ public class ObjectiveReactor : MonoBehaviour
 
 		// Подписываемся на события
 		SubscribeToUpdates();
+	}
+
+	private string GenerateReactorId()
+	{
+		// Создаем уникальный ID на основе имени объекта, квеста и цели
+		string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+		return $"{sceneName}_{gameObject.name}_{questName}_{objectiveReference}";
 	}
 
 	private void SubscribeToUpdates()
@@ -75,6 +100,14 @@ public class ObjectiveReactor : MonoBehaviour
 		QuestStatus status = questList.GetQuestStatus(quest);
 		if (status == null) return;
 
+		// Проверяем, не срабатывал ли уже этот реактор
+		if (status.IsReactorFired(reactorId))
+		{
+			hasFired = true;
+			UnsubscribeFromUpdates();
+			return;
+		}
+
 		if (status.IsObjectiveComplete(objectiveReference))
 		{
 			Trigger();
@@ -85,7 +118,11 @@ public class ObjectiveReactor : MonoBehaviour
 	{
 		if (!hasFired && quest.name == questName && objRef == objectiveReference)
 		{
-			Trigger();
+			QuestStatus status = questList.GetQuestStatus(quest);
+			if (status != null && !status.IsReactorFired(reactorId))
+			{
+				Trigger();
+			}
 		}
 	}
 
@@ -94,9 +131,21 @@ public class ObjectiveReactor : MonoBehaviour
 		if (hasFired) return;
 		
 		hasFired = true;
+		
+		// Отмечаем реактор как сработавший в QuestStatus
+		Quest quest = Quest.GetByName(questName);
+		if (quest != null)
+		{
+			QuestStatus status = questList.GetQuestStatus(quest);
+			if (status != null)
+			{
+				status.MarkReactorFired(reactorId);
+			}
+		}
+		
 		onObjectiveCompleted.Invoke();
 		
-		Debug.Log($"ObjectiveReactor на {gameObject.name}: Цель '{objectiveReference}' квеста '{questName}' выполнена!");
+		Debug.Log($"ObjectiveReactor на {gameObject.name}: Цель '{objectiveReference}' квеста '{questName}' выполнена! ID реактора: {reactorId}");
 		
 		// Отписываемся от событий
 		UnsubscribeFromUpdates();
@@ -119,4 +168,13 @@ public class ObjectiveReactor : MonoBehaviour
 	{
 		UnsubscribeFromUpdates();
 	}
+
+#if UNITY_EDITOR
+	[ContextMenu("Сгенерировать новый ID реактора")]
+	private void RegenerateReactorId()
+	{
+		reactorId = GenerateReactorId();
+		Debug.Log($"Новый ID реактора: {reactorId}");
+	}
+#endif
 }
