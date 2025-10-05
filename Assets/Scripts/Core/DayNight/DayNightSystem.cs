@@ -3,6 +3,7 @@ using UnityEngine.Events;
 using UnityEngine.Rendering;
 using System;
 using System.Collections.Generic;
+using GameDevTV.Saving;
 
 [Serializable]
 public class TimeEvent
@@ -52,7 +53,7 @@ public class AtmosphericSettings
     [Range(-0.3f, 0.3f)] public float nightTemperature = -0.15f;
 }
 
-public class DayNightSystem : MonoBehaviour
+public class DayNightSystem : MonoBehaviour, ISaveable
 {
     [Header("Время")]
     [Range(0, 24)] public float currentTime = 8.0f;
@@ -138,6 +139,30 @@ public class DayNightSystem : MonoBehaviour
 
     private void Start()
     {
+        // Автоматически добавляем SaveableEntity если его нет
+        if (GetComponent<GameDevTV.Saving.SaveableEntity>() == null)
+        {
+            gameObject.AddComponent<GameDevTV.Saving.SaveableEntity>();
+        }
+        
+        // Сохраняем объект при переходе между сценами
+        DontDestroyOnLoad(gameObject);
+        
+        // Проверяем, не существует ли уже другой экземпляр DayNightSystem
+        DayNightSystem[] existingSystems = FindObjectsOfType<DayNightSystem>();
+        if (existingSystems.Length > 1)
+        {
+            // Если есть другой экземпляр, уничтожаем текущий
+            foreach (var system in existingSystems)
+            {
+                if (system != this)
+                {
+                    Destroy(gameObject);
+                    return;
+                }
+            }
+        }
+
         // Инициализация настроек освещения
         InitializeLightingSettings();
         
@@ -642,5 +667,34 @@ public class DayNightSystem : MonoBehaviour
         int hour = Mathf.FloorToInt(currentTime);
         int minute = Mathf.FloorToInt((currentTime - hour) * 60);
         return string.Format("{0:00}:{1:00}", hour, minute);
+    }
+
+    // Реализация ISaveable
+    [System.Serializable]
+    public struct DayNightSaveData
+    {
+        public float currentTime;
+        public int currentDay;
+    }
+
+    public object CaptureState()
+    {
+        return new DayNightSaveData
+        {
+            currentTime = this.currentTime,
+            currentDay = this.currentDay
+        };
+    }
+
+    public void RestoreState(object state)
+    {
+        if (state is DayNightSaveData saveData)
+        {
+            currentTime = saveData.currentTime;
+            currentDay = saveData.currentDay;
+            
+            // Принудительно обновляем время после загрузки
+            UpdateTime(true);
+        }
     }
 }
