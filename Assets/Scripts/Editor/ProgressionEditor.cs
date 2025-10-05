@@ -8,7 +8,7 @@ namespace RPG.Editor
     [CustomEditor(typeof(Progression))]
     public class ProgressionEditor : UnityEditor.Editor
     {
-        private SerializedProperty _characterClassesProperty;
+        private SerializedProperty progressionDataProperty;
         private Dictionary<string, bool> _foldoutStates = new Dictionary<string, bool>();
         private Vector2 _scrollPosition;
         private GUIStyle _headerStyle;
@@ -84,7 +84,7 @@ namespace RPG.Editor
         
         private void OnEnable()
         {
-            _characterClassesProperty = serializedObject.FindProperty("_characterClasses");
+            progressionDataProperty = serializedObject.FindProperty("progressionData");
         }
         
         public override void OnInspectorGUI()
@@ -105,170 +105,101 @@ namespace RPG.Editor
             
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
             
-            for (int classIndex = 0; classIndex < _characterClassesProperty.arraySize; classIndex++)
+            // Отображаем все записи прогрессии
+            for (int i = 0; i < progressionDataProperty.arraySize; i++)
             {
-                SerializedProperty classProperty = _characterClassesProperty.GetArrayElementAtIndex(classIndex);
-                SerializedProperty characterClassProperty = classProperty.FindPropertyRelative("characterClass");
-                SerializedProperty statsProperty = classProperty.FindPropertyRelative("stats");
+                SerializedProperty entryProperty = progressionDataProperty.GetArrayElementAtIndex(i);
+                SerializedProperty characterClassProperty = entryProperty.FindPropertyRelative("characterClass");
+                SerializedProperty statProperty = entryProperty.FindPropertyRelative("stat");
+                SerializedProperty valuesProperty = entryProperty.FindPropertyRelative("values");
                 
                 string className = characterClassProperty.enumDisplayNames[characterClassProperty.enumValueIndex];
+                string statName = statProperty.enumDisplayNames[statProperty.enumValueIndex];
                 
                 // Создаем уникальный ключ для foldout
-                string foldoutKey = $"Class_{classIndex}_{className}";
+                string foldoutKey = $"Entry_{i}_{className}_{statName}";
                 if (!_foldoutStates.ContainsKey(foldoutKey))
                 {
                     _foldoutStates[foldoutKey] = false;
                 }
                 
-                // Рисуем заголовок класса с цветом фона
+                // Рисуем заголовок записи с цветом фона
                 GUI.backgroundColor = GetClassColor(characterClassProperty.enumValueIndex);
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 GUI.backgroundColor = _originalBackgroundColor;
                 
-                // Добавляем кнопки управления справа от заголовка
                 EditorGUILayout.BeginHorizontal();
                 
-                // Используем стиль для заголовка
                 _foldoutStates[foldoutKey] = EditorGUILayout.Foldout(
                     _foldoutStates[foldoutKey], 
-                    $"Класс: {className}", 
+                    $"{className} - {statName}", 
                     true, 
                     _headerStyle);
                 
                 GUILayout.FlexibleSpace();
                 
-                // Добавляем кнопку автогенерации для конкретного класса
-                if (GUILayout.Button("Автогенерация", GUILayout.Width(100)))
+                // Кнопка генерации значений
+                if (GUILayout.Button("Сгенерировать", GUILayout.Width(100)))
                 {
-                    CharacterClass charClass = (CharacterClass)characterClassProperty.enumValueIndex;
-                    float difficulty = charClass == CharacterClass.Player ? 1.0f : _difficultyMultipliers[charClass];
-                    AutoGenerateForClass(charClass, statsProperty, difficulty);
+                    ShowGenerateValuesContextMenu(valuesProperty);
                 }
                 
                 if (GUILayout.Button("+", GUILayout.Width(25)))
                 {
-                    InsertClassAt(classIndex);
+                    InsertEntryAt(i);
                     break;
                 }
                 
                 if (GUILayout.Button("-", GUILayout.Width(25)))
                 {
-                    RemoveClassAt(classIndex);
+                    RemoveEntryAt(i);
                     break;
                 }
                 
                 EditorGUILayout.EndHorizontal();
                 
-                // Если заголовок развернут, показываем содержимое
                 if (_foldoutStates[foldoutKey])
                 {
-                    // Редактирование класса персонажа
+                    // Редактирование класса персонажа и статистики
                     EditorGUILayout.PropertyField(characterClassProperty);
+                    EditorGUILayout.PropertyField(statProperty);
                     
                     EditorGUILayout.Space(5);
                     
-                    // Отображаем статистики
-                    for (int statIndex = 0; statIndex < statsProperty.arraySize; statIndex++)
+                    // Отображаем значения для разных уровней
+                    EditorGUILayout.LabelField("Значения по уровням:");
+                    
+                    EditorGUILayout.BeginVertical(_levelStyle);
+                    
+                    // Кнопка добавления уровня
+                    if (GUILayout.Button("Добавить уровень"))
                     {
-                        SerializedProperty statProperty = statsProperty.GetArrayElementAtIndex(statIndex);
-                        SerializedProperty statTypeProperty = statProperty.FindPropertyRelative("stat");
-                        SerializedProperty levelsProperty = statProperty.FindPropertyRelative("levels");
-                        
-                        string statName = statTypeProperty.enumDisplayNames[statTypeProperty.enumValueIndex];
-                        
-                        // Создаем уникальный ключ для foldout статистики
-                        string statFoldoutKey = $"{foldoutKey}_Stat_{statIndex}_{statName}";
-                        if (!_foldoutStates.ContainsKey(statFoldoutKey))
-                        {
-                            _foldoutStates[statFoldoutKey] = false;
-                        }
-                        
-                        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                        valuesProperty.arraySize++;
+                        serializedObject.ApplyModifiedProperties();
+                    }
+                    
+                    EditorGUILayout.Space(5);
+                    
+                    // Поля для ввода значений
+                    for (int levelIndex = 0; levelIndex < valuesProperty.arraySize; levelIndex++)
+                    {
+                        SerializedProperty levelProperty = valuesProperty.GetArrayElementAtIndex(levelIndex);
                         
                         EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.LabelField($"Уровень {levelIndex + 1}:", GUILayout.Width(80));
+                        levelProperty.floatValue = EditorGUILayout.FloatField(levelProperty.floatValue);
                         
-                        // Используем стиль для статистики
-                        _foldoutStates[statFoldoutKey] = EditorGUILayout.Foldout(
-                            _foldoutStates[statFoldoutKey], 
-                            $"Статистика: {statName}", 
-                            true, 
-                            _statStyle);
-                        
-                        GUILayout.FlexibleSpace();
-                        
-                        // Кнопка генерации шаблона значений
-                        if (GUILayout.Button("Сгенерировать", GUILayout.Width(100)))
+                        if (GUILayout.Button("Х", GUILayout.Width(25)))
                         {
-                            ShowGenerateValuesContextMenu(levelsProperty);
-                        }
-                        
-                        if (GUILayout.Button("+", GUILayout.Width(25)))
-                        {
-                            InsertStatAt(statsProperty, statIndex);
-                            break;
-                        }
-                        
-                        if (GUILayout.Button("-", GUILayout.Width(25)))
-                        {
-                            RemoveStatAt(statsProperty, statIndex);
+                            valuesProperty.DeleteArrayElementAtIndex(levelIndex);
+                            serializedObject.ApplyModifiedProperties();
                             break;
                         }
                         
                         EditorGUILayout.EndHorizontal();
-                        
-                        if (_foldoutStates[statFoldoutKey])
-                        {
-                            // Редактирование типа статистики
-                            EditorGUILayout.PropertyField(statTypeProperty);
-                            
-                            EditorGUILayout.Space(5);
-                            
-                            // Отображаем значения для разных уровней
-                            EditorGUILayout.LabelField("Значения по уровням:");
-                            
-                            EditorGUILayout.BeginVertical(_levelStyle);
-                            
-                            // Кнопка добавления уровня
-                            if (GUILayout.Button("Добавить уровень"))
-                            {
-                                levelsProperty.arraySize++;
-                                serializedObject.ApplyModifiedProperties();
-                            }
-                            
-                            EditorGUILayout.Space(5);
-                            
-                            // Поля для ввода значений
-                            for (int levelIndex = 0; levelIndex < levelsProperty.arraySize; levelIndex++)
-                            {
-                                SerializedProperty levelProperty = levelsProperty.GetArrayElementAtIndex(levelIndex);
-                                
-                                EditorGUILayout.BeginHorizontal();
-                                EditorGUILayout.LabelField($"Уровень {levelIndex + 1}:", GUILayout.Width(80));
-                                levelProperty.floatValue = EditorGUILayout.FloatField(levelProperty.floatValue);
-                                
-                                if (GUILayout.Button("Х", GUILayout.Width(25)))
-                                {
-                                    levelsProperty.DeleteArrayElementAtIndex(levelIndex);
-                                    serializedObject.ApplyModifiedProperties();
-                                    break;
-                                }
-                                
-                                EditorGUILayout.EndHorizontal();
-                            }
-                            
-                            EditorGUILayout.EndVertical();
-                        }
-                        
-                        EditorGUILayout.EndVertical();
                     }
                     
-                    EditorGUILayout.Space(5);
-                    
-                    // Кнопка добавления новой статистики
-                    if (GUILayout.Button("Добавить статистику"))
-                    {
-                        AddStatToClass(statsProperty);
-                    }
+                    EditorGUILayout.EndVertical();
                 }
                 
                 EditorGUILayout.EndVertical();
@@ -278,10 +209,10 @@ namespace RPG.Editor
             
             EditorGUILayout.Space(10);
             
-            // Кнопка добавления нового класса
-            if (GUILayout.Button("Добавить класс персонажа"))
+            // Кнопка добавления новой записи
+            if (GUILayout.Button("Добавить запись прогрессии"))
             {
-                AddCharacterClass();
+                AddProgressionEntry();
             }
             
             serializedObject.ApplyModifiedProperties();
@@ -619,92 +550,74 @@ namespace RPG.Editor
             }
         }
         
-        private void AddCharacterClass()
+        private void AddProgressionEntry()
         {
-            _characterClassesProperty.arraySize++;
-            int newIndex = _characterClassesProperty.arraySize - 1;
-            SerializedProperty newClassProperty = _characterClassesProperty.GetArrayElementAtIndex(newIndex);
-            SerializedProperty newClassTypeProperty = newClassProperty.FindPropertyRelative("characterClass");
-            SerializedProperty newStatsProperty = newClassProperty.FindPropertyRelative("stats");
+            progressionDataProperty.arraySize++;
+            int newIndex = progressionDataProperty.arraySize - 1;
+            SerializedProperty newEntryProperty = progressionDataProperty.GetArrayElementAtIndex(newIndex);
+            SerializedProperty newClassProperty = newEntryProperty.FindPropertyRelative("characterClass");
+            SerializedProperty newStatProperty = newEntryProperty.FindPropertyRelative("stat");
+            SerializedProperty newValuesProperty = newEntryProperty.FindPropertyRelative("values");
             
-            // Устанавливаем тип по умолчанию и очищаем массив статистик
-            newClassTypeProperty.enumValueIndex = 0;
-            newStatsProperty.arraySize = 0;
-            
-            serializedObject.ApplyModifiedProperties();
-        }
-        
-        private void InsertClassAt(int index)
-        {
-            _characterClassesProperty.InsertArrayElementAtIndex(index);
-            serializedObject.ApplyModifiedProperties();
-        }
-        
-        private void RemoveClassAt(int index)
-        {
-            _characterClassesProperty.DeleteArrayElementAtIndex(index);
-            serializedObject.ApplyModifiedProperties();
-        }
-        
-        private void AddStatToClass(SerializedProperty statsProperty)
-        {
-            statsProperty.arraySize++;
-            int newIndex = statsProperty.arraySize - 1;
-            SerializedProperty newStatProperty = statsProperty.GetArrayElementAtIndex(newIndex);
-            SerializedProperty newStatTypeProperty = newStatProperty.FindPropertyRelative("stat");
-            SerializedProperty newLevelsProperty = newStatProperty.FindPropertyRelative("levels");
-            
-            // Устанавливаем тип по умолчанию и начальный размер массива уровней
-            newStatTypeProperty.enumValueIndex = 0;
-            newLevelsProperty.arraySize = 1;
+            // Устанавливаем значения по умолчанию
+            newClassProperty.enumValueIndex = 0;
+            newStatProperty.enumValueIndex = 0;
+            newValuesProperty.arraySize = 1;
+            newValuesProperty.GetArrayElementAtIndex(0).floatValue = 10f;
             
             serializedObject.ApplyModifiedProperties();
         }
         
-        private void InsertStatAt(SerializedProperty statsProperty, int index)
+        private void InsertEntryAt(int index)
         {
-            statsProperty.InsertArrayElementAtIndex(index);
+            progressionDataProperty.InsertArrayElementAtIndex(index);
             serializedObject.ApplyModifiedProperties();
         }
         
-        private void RemoveStatAt(SerializedProperty statsProperty, int index)
+        private void RemoveEntryAt(int index)
         {
-            statsProperty.DeleteArrayElementAtIndex(index);
+            progressionDataProperty.DeleteArrayElementAtIndex(index);
             serializedObject.ApplyModifiedProperties();
         }
         
-        private void AutoGenerateForClass(CharacterClass characterClass, SerializedProperty statsProperty, float difficultyMultiplier = 1.0f)
+        private void AutoGenerateForClass(CharacterClass characterClass, float difficultyMultiplier = 1.0f)
         {
             // Получаем полную прогрессию для класса с учетом множителя сложности
             Dictionary<Stat, float[]> statProgression = ProgressionUtility.GenerateFullStatProgression(characterClass, _generationLevels, difficultyMultiplier);
             
-            // Очищаем существующие статистики
-            statsProperty.arraySize = 0;
-            serializedObject.ApplyModifiedProperties();
+            // Удаляем существующие записи для этого класса
+            for (int i = progressionDataProperty.arraySize - 1; i >= 0; i--)
+            {
+                SerializedProperty entryProperty = progressionDataProperty.GetArrayElementAtIndex(i);
+                SerializedProperty entryClassProperty = entryProperty.FindPropertyRelative("characterClass");
+                
+                if (entryClassProperty.enumValueIndex == (int)characterClass)
+                {
+                    progressionDataProperty.DeleteArrayElementAtIndex(i);
+                }
+            }
             
-            // Добавляем новые статистики
+            // Добавляем новые записи
             foreach (var pair in statProgression)
             {
-                // Пропускаем пустые массивы
                 if (pair.Value == null || pair.Value.Length == 0)
                     continue;
                 
-                // Добавляем новую статистику
-                statsProperty.arraySize++;
-                int newIndex = statsProperty.arraySize - 1;
-                SerializedProperty newStatProperty = statsProperty.GetArrayElementAtIndex(newIndex);
-                SerializedProperty newStatTypeProperty = newStatProperty.FindPropertyRelative("stat");
-                SerializedProperty newLevelsProperty = newStatProperty.FindPropertyRelative("levels");
+                progressionDataProperty.arraySize++;
+                int newIndex = progressionDataProperty.arraySize - 1;
+                SerializedProperty newEntryProperty = progressionDataProperty.GetArrayElementAtIndex(newIndex);
+                SerializedProperty newClassProperty = newEntryProperty.FindPropertyRelative("characterClass");
+                SerializedProperty newStatProperty = newEntryProperty.FindPropertyRelative("stat");
+                SerializedProperty newValuesProperty = newEntryProperty.FindPropertyRelative("values");
                 
-                // Устанавливаем тип статистики
-                newStatTypeProperty.enumValueIndex = (int)pair.Key;
+                // Устанавливаем значения
+                newClassProperty.enumValueIndex = (int)characterClass;
+                newStatProperty.enumValueIndex = (int)pair.Key;
                 
-                // Устанавливаем значения по уровням
-                newLevelsProperty.arraySize = pair.Value.Length;
+                newValuesProperty.arraySize = pair.Value.Length;
                 for (int i = 0; i < pair.Value.Length; i++)
                 {
-                    SerializedProperty levelProperty = newLevelsProperty.GetArrayElementAtIndex(i);
-                    levelProperty.floatValue = pair.Value[i];
+                    newValuesProperty.GetArrayElementAtIndex(i).floatValue = pair.Value[i];
                 }
             }
             
@@ -719,50 +632,8 @@ namespace RPG.Editor
         
         private void AddClassWithAutoStats(CharacterClass characterClass, float difficultyMultiplier = 1.0f)
         {
-            // Ищем существующий класс
-            bool classExists = false;
-            int existingIndex = -1;
-            
-            for (int i = 0; i < _characterClassesProperty.arraySize; i++)
-            {
-                SerializedProperty classProperty = _characterClassesProperty.GetArrayElementAtIndex(i);
-                SerializedProperty characterClassProperty = classProperty.FindPropertyRelative("characterClass");
-                
-                if (characterClassProperty.enumValueIndex == (int)characterClass)
-                {
-                    classExists = true;
-                    existingIndex = i;
-                    break;
-                }
-            }
-            
-            SerializedProperty newStatsProperty;
-            
-            if (classExists)
-            {
-                // Используем существующий класс
-                SerializedProperty classProperty = _characterClassesProperty.GetArrayElementAtIndex(existingIndex);
-                newStatsProperty = classProperty.FindPropertyRelative("stats");
-            }
-            else
-            {
-                // Добавляем новый класс
-                _characterClassesProperty.arraySize++;
-                int newIndex = _characterClassesProperty.arraySize - 1;
-                SerializedProperty newClassProperty = _characterClassesProperty.GetArrayElementAtIndex(newIndex);
-                SerializedProperty newClassTypeProperty = newClassProperty.FindPropertyRelative("characterClass");
-                newStatsProperty = newClassProperty.FindPropertyRelative("stats");
-                
-                // Устанавливаем тип класса
-                newClassTypeProperty.enumValueIndex = (int)characterClass;
-                
-                // Очищаем статистики
-                newStatsProperty.arraySize = 0;
-                serializedObject.ApplyModifiedProperties();
-            }
-            
             // Автоматически генерируем статистики с учетом множителя сложности
-            AutoGenerateForClass(characterClass, newStatsProperty, difficultyMultiplier);
+            AutoGenerateForClass(characterClass, difficultyMultiplier);
         }
         
         // Метод для получения цвета в зависимости от уровня сложности

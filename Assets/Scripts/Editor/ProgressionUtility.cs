@@ -770,6 +770,51 @@ namespace RPG.Stats
                 statProgression[Stat.BuyingDiscountPercentage] = discountValues;
             }
             
+            // Скорость движения - разные значения для разных классов
+            float baseMovementSpeed = GetRecommendedBaseValue(Stat.MovementSpeed, characterClass);
+            
+            if (characterClass != CharacterClass.Player)
+            {
+                // Применяем множитель сложности для врагов, но меньший чем для других статистик
+                baseMovementSpeed *= enemyMultiplier * 0.5f + 0.5f; // Более мягкое влияние сложности на скорость
+            }
+            
+            if (characterClass == CharacterClass.Player)
+            {
+                // Игрок получает умеренное увеличение скорости с уровнем
+                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.02f, levels);
+            }
+            else if (characterClass == CharacterClass.Wolf)
+            {
+                // Волки быстрые и становятся еще быстрее
+                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.03f, levels);
+            }
+            else if (characterClass == CharacterClass.Archer)
+            {
+                // Лучники быстрые и мобильные
+                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.025f, levels);
+            }
+            else if (characterClass == CharacterClass.Mage)
+            {
+                // Маги средней скорости
+                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.015f, levels);
+            }
+            else if (characterClass == CharacterClass.Orc)
+            {
+                // Орки медленные, но немного ускоряются с уровнем
+                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.01f, levels);
+            }
+            else if (characterClass == CharacterClass.Boar)
+            {
+                // Кабаны могут быть быстрыми при атаке
+                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.02f, levels);
+            }
+            else
+            {
+                // Стандартная прогрессия скорости для остальных классов
+                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.015f, levels);
+            }
+            
             return statProgression;
         }
     }

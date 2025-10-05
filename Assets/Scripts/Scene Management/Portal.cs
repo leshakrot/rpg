@@ -21,7 +21,7 @@ namespace RPG.SceneManagement
 	        MainTown_PlayerHouse1,
             MainTown_Tavern,
             MainTownTavern_Cellar,
-            MainTownTavernCellar_Tunnel, 
+            MainTownTavernCellar_Cave, 
             E,   
         }
 

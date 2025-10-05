@@ -8,8 +8,9 @@ OcclusionCullingSettings:
     smallestOccluder: 5
     smallestHole: 0.25
     backfaceThreshold: 100
-  m_SceneGUID: 00000000000000000000000000000000
-  m_OcclusionCullingData: {fileID: 0}
+  m_SceneGUID: cc644983954e4fc488d0c3f971deaba3
+  m_OcclusionCullingData: {fileID: 36300000, guid: 5f951fa5944aa38499d1793b76fc5f49,
+    type: 2}
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
@@ -1686,6 +1687,7 @@ MonoBehaviour:
   - {fileID: 785688008}
   - {fileID: 1056935562}
   - {fileID: 844745537}
+  - {fileID: 4270542083266879386}
   autoSaveOnStateChange: 1
   autoLoadOnStart: 1
   debugMode: 0
@@ -7555,6 +7557,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6190578607772716692, guid: 193673e6eb50bf2488197904f43cf1af,
         type: 2}
+    - target: {fileID: 6942468646721537109, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: far clip plane
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 6981236850331055015, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -15215,7 +15222,7 @@ PrefabInstance:
     - target: {fileID: 1147082332458336910, guid: 8590e108f95cfa542a8c648ad7aa511f,
         type: 3}
       propertyPath: isAvailable
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1147082332458336910, guid: 8590e108f95cfa542a8c648ad7aa511f,
         type: 3}
@@ -15372,6 +15379,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameDevTV.Saving.SaveableEntity
   uniqueIdentifier: 00775c57-0518-4577-9878-c0815e852206
+--- !u!114 &757856420 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1147082332458336910, guid: 8590e108f95cfa542a8c648ad7aa511f,
+    type: 3}
+  m_PrefabInstance: {fileID: 757856416}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 757856417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36e072c51b29e914d9974423d5d94719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &760684185
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22126,6 +22145,18 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 844745537}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 4270542083266879386}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
@@ -29710,6 +29741,18 @@ MonoBehaviour:
                 m_FloatArgument: 0
                 m_StringArgument: 
                 m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 757856420}
+              m_TargetAssemblyTypeName: RPG.SceneManagement.Portal, Assembly-CSharp
+              m_MethodName: ToggleAvailability
+              m_Mode: 6
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 1
               m_CallState: 2
 --- !u!114 &29088856563990419
 MonoBehaviour:
@@ -41319,7 +41362,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!222 &4274945894370943352
 CanvasRenderer:
   m_ObjectHideFlags: 0

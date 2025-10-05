@@ -1,23 +1,26 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace RPG.Stats
 {
     /// <summary>
-    /// Класс для управления прогрессией и статистикой персонажей разных классов на разных уровнях.
-    /// Обеспечивает эффективную работу со StatusBar и другими системами статистики.
+    /// Система прогрессии персонажей - унифицированная, эффективная и расширяемая.
+    /// Обеспечивает быстрый доступ к статистикам персонажей на разных уровнях.
     /// </summary>
     [CreateAssetMenu(fileName = "Progression", menuName = "RPG/ Stats/ New Progression", order = 0)]
     public class Progression : ScriptableObject
     {
-        [Tooltip("Настройки прогрессии для различных классов персонажей")]
-        [SerializeField] private ProgressionCharacterClass[] _characterClasses = null;
+        private const int MAX_LEVEL = 100;
+        private const int DEFAULT_LEVEL = 1;
+        
+        [SerializeField] private StatProgressionEntry[] progressionData = new StatProgressionEntry[0];
+        
+        private Dictionary<ProgressionKey, float[]> statCache;
+        private Dictionary<CharacterClass, Stat[]> classStatsCache;
+        private Dictionary<Stat, CharacterClass[]> statClassesCache;
+        private bool isInitialized = false;
 
-        // Кэш данных для быстрого доступа
-        private Dictionary<CharacterClass, Dictionary<Stat, float[]>> _lookupTable = null;
-
-        // События для отслеживания изменений в прогрессии
         public event Action<CharacterClass, Stat> OnStatProgressionChanged;
 
         #region Публичные методы
@@ -25,162 +28,116 @@ namespace RPG.Stats
         /// <summary>
         /// Получает значение статистики для указанного класса персонажа и уровня.
         /// </summary>
-        /// <param name="stat">Тип статистики</param>
-        /// <param name="characterClass">Класс персонажа</param>
-        /// <param name="level">Уровень персонажа (начиная с 1)</param>
-        /// <returns>Значение статистики или 0, если данные отсутствуют</returns>
         public float GetStat(Stat stat, CharacterClass characterClass, int level)
         {
-            BuildLookupIfNeeded();
+            Initialize();
             
-            if (!HasStatForClass(stat, characterClass))
-            {
-                return 0;
-            }
+            var key = new ProgressionKey(characterClass, stat);
             
-            float[] levels = _lookupTable[characterClass][stat];
-            
-            if (levels.Length == 0)
-            {
-                return 0;
-            }
-            
-            if (levels.Length < level)
-            {
-                return levels[levels.Length - 1];
-            }
-
-            return levels[level - 1];
+            if (!statCache.TryGetValue(key, out float[] values))
+                return 0f;
+                
+            int clampedLevel = Mathf.Clamp(level, 1, values.Length);
+            return values[clampedLevel - 1];
         }
 
         /// <summary>
         /// Получает максимальное количество уровней для указанной статистики и класса персонажа.
         /// </summary>
-        /// <param name="stat">Тип статистики</param>
-        /// <param name="characterClass">Класс персонажа</param>
-        /// <returns>Количество уровней или 0, если данные отсутствуют</returns>
         public int GetLevels(Stat stat, CharacterClass characterClass)
         {
-            BuildLookupIfNeeded();
+            Initialize();
             
-            if (!HasStatForClass(stat, characterClass))
-            {
-                return 0;
-            }
-
-            return _lookupTable[characterClass][stat].Length;
+            var key = new ProgressionKey(characterClass, stat);
+            return statCache.TryGetValue(key, out float[] values) ? values.Length : 0;
         }
 
         /// <summary>
         /// Проверяет, существует ли статистика для указанного класса персонажа.
         /// </summary>
-        /// <param name="stat">Тип статистики</param>
-        /// <param name="characterClass">Класс персонажа</param>
-        /// <returns>true, если статистика существует</returns>
         public bool HasStat(Stat stat, CharacterClass characterClass)
         {
-            BuildLookupIfNeeded();
-            return HasStatForClass(stat, characterClass);
+            Initialize();
+            return statCache.ContainsKey(new ProgressionKey(characterClass, stat));
         }
 
         /// <summary>
         /// Получает все доступные статистики для указанного класса персонажа.
         /// </summary>
-        /// <param name="characterClass">Класс персонажа</param>
-        /// <returns>Список статистик или пустой список, если класс не найден</returns>
         public IEnumerable<Stat> GetAvailableStats(CharacterClass characterClass)
         {
-            BuildLookupIfNeeded();
+            Initialize();
             
-            if (!_lookupTable.ContainsKey(characterClass))
-            {
-                Debug.LogWarning($"Класс персонажа {characterClass} не найден в таблице прогрессии");
-                return new List<Stat>();
-            }
-            
-            return _lookupTable[characterClass].Keys;
+            if (classStatsCache.TryGetValue(characterClass, out Stat[] stats))
+                return stats;
+                
+            return new Stat[0];
         }
 
         /// <summary>
         /// Получает все доступные классы персонажей.
         /// </summary>
-        /// <returns>Список классов персонажей</returns>
         public IEnumerable<CharacterClass> GetAvailableClasses()
         {
-            BuildLookupIfNeeded();
-            return _lookupTable.Keys;
+            Initialize();
+            return classStatsCache.Keys;
         }
 
         /// <summary>
         /// Сбрасывает кэш данных, заставляя его перестроиться при следующем обращении.
-        /// Полезно при изменении данных во время выполнения.
         /// </summary>
         public void ResetCache()
         {
-            _lookupTable = null;
+            isInitialized = false;
+            statCache = null;
+            classStatsCache = null;
+            statClassesCache = null;
         }
 
         /// <summary>
-        /// Принудительно обновляет кэш данных. Полезно вызывать после внесения изменений в данные.
+        /// Принудительно обновляет кэш данных.
         /// </summary>
         public void ForceUpdateCache()
         {
             ResetCache();
-            BuildLookup();
+            Initialize();
         }
 
         /// <summary>
         /// Устанавливает новое значение для статистики указанного класса персонажа и уровня.
         /// </summary>
-        /// <param name="stat">Тип статистики</param>
-        /// <param name="characterClass">Класс персонажа</param>
-        /// <param name="level">Уровень персонажа (начиная с 1)</param>
-        /// <param name="value">Новое значение</param>
-        /// <returns>true, если значение было успешно установлено</returns>
         public bool SetStat(Stat stat, CharacterClass characterClass, int level, float value)
         {
-            BuildLookupIfNeeded();
+            Initialize();
             
-            if (!HasStatForClass(stat, characterClass))
-            {
-                Debug.LogWarning($"Статистика {stat} для класса {characterClass} не найдена");
+            var key = new ProgressionKey(characterClass, stat);
+            
+            if (!statCache.TryGetValue(key, out float[] values))
                 return false;
-            }
-            
-            float[] levels = _lookupTable[characterClass][stat];
-            
-            if (level < 1 || level > levels.Length)
-            {
-                Debug.LogWarning($"Уровень {level} выходит за пределы допустимого диапазона для {stat}");
+                
+            if (level < 1 || level > values.Length)
                 return false;
-            }
-            
-            levels[level - 1] = value;
-            
-            // Оповещаем об изменении статистики
+                
+            values[level - 1] = value;
             OnStatProgressionChanged?.Invoke(characterClass, stat);
-            
             return true;
         }
 
         /// <summary>
         /// Получает значения статистики для всех классов персонажей на указанном уровне.
         /// </summary>
-        /// <param name="stat">Тип статистики</param>
-        /// <param name="level">Уровень персонажа (начиная с 1)</param>
-        /// <returns>Словарь со значениями для каждого класса</returns>
         public Dictionary<CharacterClass, float> GetStatForAllClasses(Stat stat, int level)
         {
-            BuildLookupIfNeeded();
+            Initialize();
             
-            Dictionary<CharacterClass, float> result = new Dictionary<CharacterClass, float>();
+            var result = new Dictionary<CharacterClass, float>();
             
-            foreach (CharacterClass characterClass in GetAvailableClasses())
+            if (!statClassesCache.TryGetValue(stat, out CharacterClass[] classes))
+                return result;
+                
+            foreach (var characterClass in classes)
             {
-                if (HasStat(stat, characterClass))
-                {
-                    result[characterClass] = GetStat(stat, characterClass, level);
-                }
+                result[characterClass] = GetStat(stat, characterClass, level);
             }
             
             return result;
@@ -190,80 +147,97 @@ namespace RPG.Stats
 
         #region Приватные методы
 
-        /// <summary>
-        /// Строит таблицу поиска, если она ещё не построена.
-        /// </summary>
-        private void BuildLookupIfNeeded()
+        private void Initialize()
         {
-            if (_lookupTable == null)
-            {
-                BuildLookup();
-            }
+            if (isInitialized && statCache != null)
+                return;
+                
+            BuildCaches();
+            isInitialized = true;
         }
 
-        /// <summary>
-        /// Инициализирует таблицу поиска для быстрого доступа к данным.
-        /// </summary>
-        private void BuildLookup()
+        private void BuildCaches()
         {
-            _lookupTable = new Dictionary<CharacterClass, Dictionary<Stat, float[]>>();
-
-            foreach (ProgressionCharacterClass progressionClass in _characterClasses)
+            statCache = new Dictionary<ProgressionKey, float[]>();
+            var tempClassStats = new Dictionary<CharacterClass, List<Stat>>();
+            var tempStatClasses = new Dictionary<Stat, List<CharacterClass>>();
+            
+            foreach (var entry in progressionData)
             {
-                if (progressionClass == null) continue; // Защита от null
-
-                var statLookupTable = new Dictionary<Stat, float[]>();
-
-                foreach (ProgressionStat progressionStat in progressionClass.stats)
-                {
-                    if (progressionStat == null || progressionStat.levels == null) continue; // Защита от null
+                if (entry?.values == null || entry.values.Length == 0)
+                    continue;
                     
-                    // Создаем копию массива для предотвращения случайных изменений извне
-                    float[] levelsCopy = new float[progressionStat.levels.Length];
-                    Array.Copy(progressionStat.levels, levelsCopy, progressionStat.levels.Length);
-                    
-                    statLookupTable[progressionStat.stat] = levelsCopy;
-                }
-
-                _lookupTable[progressionClass.characterClass] = statLookupTable;
-            }
-        }
-
-        /// <summary>
-        /// Проверяет наличие статистики для указанного класса персонажа.
-        /// </summary>
-        private bool HasStatForClass(Stat stat, CharacterClass characterClass)
-        {
-            if (!_lookupTable.ContainsKey(characterClass))
-            {
-                return false;
+                var key = new ProgressionKey(entry.characterClass, entry.stat);
+                var values = new float[entry.values.Length];
+                Array.Copy(entry.values, values, entry.values.Length);
+                
+                statCache[key] = values;
+                
+                if (!tempClassStats.ContainsKey(entry.characterClass))
+                    tempClassStats[entry.characterClass] = new List<Stat>();
+                tempClassStats[entry.characterClass].Add(entry.stat);
+                
+                if (!tempStatClasses.ContainsKey(entry.stat))
+                    tempStatClasses[entry.stat] = new List<CharacterClass>();
+                tempStatClasses[entry.stat].Add(entry.characterClass);
             }
             
-            return _lookupTable[characterClass].ContainsKey(stat);
+            classStatsCache = new Dictionary<CharacterClass, Stat[]>();
+            foreach (var kvp in tempClassStats)
+            {
+                classStatsCache[kvp.Key] = kvp.Value.ToArray();
+            }
+            
+            statClassesCache = new Dictionary<Stat, CharacterClass[]>();
+            foreach (var kvp in tempStatClasses)
+            {
+                statClassesCache[kvp.Key] = kvp.Value.ToArray();
+            }
         }
 
         #endregion
 
-        #region Вложенные классы
+        #region Структуры данных
 
         [Serializable]
-        private class ProgressionCharacterClass
+        private struct ProgressionKey : IEquatable<ProgressionKey>
+        {
+            public CharacterClass characterClass;
+            public Stat stat;
+            
+            public ProgressionKey(CharacterClass characterClass, Stat stat)
+            {
+                this.characterClass = characterClass;
+                this.stat = stat;
+            }
+            
+            public bool Equals(ProgressionKey other)
+            {
+                return characterClass == other.characterClass && stat == other.stat;
+            }
+            
+            public override bool Equals(object obj)
+            {
+                return obj is ProgressionKey other && Equals(other);
+            }
+            
+            public override int GetHashCode()
+            {
+                return ((int)characterClass << 16) | (int)stat;
+            }
+        }
+
+        [Serializable]
+        private class StatProgressionEntry
         {
             [Tooltip("Класс персонажа")]
             public CharacterClass characterClass;
             
-            [Tooltip("Настройки статистики для данного класса")]
-            public ProgressionStat[] stats;            
-        }
-
-        [Serializable]
-        private class ProgressionStat
-        {
             [Tooltip("Тип статистики")]
             public Stat stat;
             
-            [Tooltip("Значения для каждого уровня (начиная с 1)")]
-            public float[] levels;
+            [Tooltip("Значения для каждого уровня")]
+            public float[] values = new float[0];
         }
 
         #endregion

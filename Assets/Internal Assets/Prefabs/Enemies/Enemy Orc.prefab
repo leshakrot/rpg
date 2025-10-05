@@ -1,5 +1,67 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &296343317111858411
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7888332326459747842}
+  m_Layer: 0
+  m_Name: RightHandTransform (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7888332326459747842
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 296343317111858411}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.11926934, y: -0.42690483, z: 0.0000006121115, w: 0.8963968}
+  m_LocalPosition: {x: -0.002, y: 0, z: 0.099}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4393542489466288168}
+  m_LocalEulerAnglesHint: {x: -12.347, y: -51.58, z: 5.984}
+--- !u!1 &2970373949537505943
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7922821171555179554}
+  m_Layer: 0
+  m_Name: LeftHandTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7922821171555179554
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2970373949537505943}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.19010632, y: 0.903683, z: -0.00857579, w: 0.38359234}
+  m_LocalPosition: {x: 0.020186543, y: -0.036303874, z: -0.11187522}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4393677166252866184}
+  m_LocalEulerAnglesHint: {x: 9.285, y: 135.638, z: 19.967}
 --- !u!1001 &4388799480620016146
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -54,7 +116,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4890375675795610, guid: 0d42bc61d684259409d481c6f5dd5d5c,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7922821171555179554}
+    - targetCorrespondingSourceObject: {fileID: 4743577955424826, guid: 0d42bc61d684259409d481c6f5dd5d5c,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7888332326459747842}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0d42bc61d684259409d481c6f5dd5d5c, type: 3}
 --- !u!4 &4393542489466288168 stripped
@@ -123,11 +193,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: faf29e5021a36834fad9706a8903ba45, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 3182546067588808471, guid: 28c02ed72f7aec4499ea90d5e3287f91,
         type: 3}
       propertyPath: m_Name
       value: Enemy Orc
+      objectReference: {fileID: 0}
+    - target: {fileID: 3699878238114446085, guid: 28c02ed72f7aec4499ea90d5e3287f91,
+        type: 3}
+      propertyPath: uniqueIdentifier
+      value: 007768ba-2eab-461e-81ec-a3b4ed862b6e
       objectReference: {fileID: 0}
     - target: {fileID: 5473090505419759510, guid: 28c02ed72f7aec4499ea90d5e3287f91,
         type: 3}
@@ -138,7 +213,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: c876b37bda4314848a9c41077bb84950, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 8316711283122346002, guid: 28c02ed72f7aec4499ea90d5e3287f91,
         type: 3}
       propertyPath: _characterClass
