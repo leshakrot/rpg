@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using System;
 using System.Collections.Generic;
 using RPG.Stats;
-using RPG.UI; // <-- ДОБАВЛЕНО для UIManager
+using RPG.UI;
 
 namespace RPG.SceneManagement
 {
@@ -19,28 +19,115 @@ namespace RPG.SceneManagement
 		[SerializeField] private int firstLevelBuildIndex = 1;
 		[SerializeField] private int menuLevelBuildIndex = 0;
 
+		[Header("Веб-интеграция")]
+		[SerializeField] private bool useWebAdapter = true;
+
+		private bool isWebPlatform
+		{
+			get
+			{
+#if UNITY_WEBGL && !UNITY_EDITOR
+				return true;
+#else
+				return false;
+#endif
+			}
+		}
+
+		private void OnEnable()
+		{
+			if (isWebPlatform && useWebAdapter)
+			{
+				WebSavingAdapter.OnSaveLoaded += OnWebSaveLoaded;
+				WebSavingAdapter.OnSaveSaved += OnWebSaveSaved;
+			}
+		}
+
+		private void OnDisable()
+		{
+			if (isWebPlatform && useWebAdapter)
+			{
+				WebSavingAdapter.OnSaveLoaded -= OnWebSaveLoaded;
+				WebSavingAdapter.OnSaveSaved -= OnWebSaveSaved;
+			}
+		}
+
+		private void OnWebSaveLoaded()
+		{
+			Debug.Log("Веб-сохранения загружены через YandexSDK");
+		}
+
+		private void OnWebSaveSaved()
+		{
+			Debug.Log("Веб-сохранения записаны через YandexSDK");
+		}
+
 		public void ContinueGame()
 		{
-			if(!PlayerPrefs.HasKey(currentSaveKey)) return;
-			if(!GetComponent<SavingSystem>().SaveFileExists(GetCurrentSave())) return;
-			StartCoroutine(LoadLastScene());
+			if (isWebPlatform)
+			{
+				// В веб-версии используем слот по умолчанию если не задан
+				string currentSave = GetCurrentSave();
+				if (string.IsNullOrEmpty(currentSave))
+				{
+					currentSave = "slot1"; // Слот по умолчанию для веб-версии
+					SetCurrentSave(currentSave);
+				}
+				
+				if (!GetComponent<SavingSystem>().SaveFileExists(currentSave)) return;
+				StartCoroutine(LoadLastScene());
+			}
+			else
+			{
+				if(!PlayerPrefs.HasKey(currentSaveKey)) return;
+				if(!GetComponent<SavingSystem>().SaveFileExists(GetCurrentSave())) return;
+				StartCoroutine(LoadLastScene());
+			}
 		}
         
 		public void NewGame(string saveFile)
 		{
-			if(String.IsNullOrEmpty(saveFile)) return;
+			if(String.IsNullOrEmpty(saveFile))
+			{
+				// Для веб-версии используем слот по умолчанию
+				if (isWebPlatform)
+				{
+					saveFile = "slot1";
+				}
+				else
+				{
+					return;
+				}
+			}
 			SetCurrentSave(saveFile);
 			StartCoroutine(LoadFirstScene());
 		}
 	    
 		private void SetCurrentSave(string saveFile)
 		{
-			PlayerPrefs.SetString(currentSaveKey, saveFile);
+			if (isWebPlatform)
+			{
+				// В веб-версии также сохраняем в PlayerPrefs для совместимости
+				PlayerPrefs.SetString(currentSaveKey, saveFile);
+			}
+			else
+			{
+				PlayerPrefs.SetString(currentSaveKey, saveFile);
+			}
 		}
 	    
 		private string GetCurrentSave()
 		{
-			return PlayerPrefs.GetString(currentSaveKey);
+			if (isWebPlatform)
+			{
+				// В веб-версии возвращаем слот по умолчанию если ничего не задано
+				string save = PlayerPrefs.GetString(currentSaveKey, "slot1");
+				return save;
+			}
+			else
+			{
+				return PlayerPrefs.GetString(currentSaveKey);
+			}
 		}
 	    
 		public void LoadGame(string saveFile)
@@ -60,7 +147,6 @@ namespace RPG.SceneManagement
 			yield return fader.FadeOut(_fadeOutTime);
 			yield return GetComponent<SavingSystem>().LoadLastScene(GetCurrentSave());
 		    
-			// <-- НАЧАЛО ИЗМЕНЕНИЙ
 			// Принудительно обновляем UI после загрузки сцены и восстановления состояния
 			BaseStats playerStats = GameObject.FindWithTag("Player").GetComponent<BaseStats>();
 			if (playerStats != null)
@@ -71,7 +157,6 @@ namespace RPG.SceneManagement
 			// Дополнительно обновляем UI через UIManager
 			yield return new WaitForSeconds(0.1f); // Небольшая задержка для инициализации
 			UIManager.RefreshUIFromAnywhere();
-			// <-- КОНЕЦ ИЗМЕНЕНИЙ
 		    
 			yield return fader.FadeIn(_fadeInTime);
 		}
@@ -114,7 +199,6 @@ namespace RPG.SceneManagement
 		{
 			GetComponent<SavingSystem>().Load(GetCurrentSave());
             
-			// <-- НАЧАЛО ИЗМЕНЕНИЙ
 			// Принудительно обновляем UI после быстрой загрузки
 			BaseStats playerStats = GameObject.FindWithTag("Player").GetComponent<BaseStats>();
 			if (playerStats != null)
@@ -124,7 +208,6 @@ namespace RPG.SceneManagement
 			
 			// Дополнительно обновляем UI через UIManager
 			UIManager.RefreshUIFromAnywhere();
-			// <-- КОНЕЦ ИЗМЕНЕНИЙ
 		}
 
 		public void Save()

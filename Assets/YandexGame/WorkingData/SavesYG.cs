@@ -1,4 +1,4 @@
-﻿
+
 namespace YG
 {
     [System.Serializable]
@@ -18,7 +18,10 @@ namespace YG
 
         // Ваши сохранения
 
-        // ...
+        // Слоты для сохранения игровых данных (интеграция с основной системой сохранений)
+        public string gameSaveSlot1 = "";
+        public string gameSaveSlot2 = "";
+        public string gameSaveSlot3 = "";
 
         // Поля (сохранения) можно удалять и создавать новые. При обновлении игры сохранения ломаться не должны
 

@@ -14,9 +14,25 @@ namespace GameDevTV.Saving
     /// methods to save and restore a scene.
     ///
     /// This component should be created once and shared between all subsequent scenes.
+    /// Интегрирован с YandexSDK для корректной работы в веб-билдах.
     /// </summary>
     public class SavingSystem : MonoBehaviour
     {
+        [Header("Веб-интеграция")]
+        [SerializeField] private bool waitForYandexSDK = true;
+        [SerializeField] private float maxWaitTime = 10f;
+
+        private bool isWebPlatform
+        {
+            get
+            {
+#if UNITY_WEBGL && !UNITY_EDITOR
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
         /// <summary>
         /// Will load the last scene that was saved and restore the state. This
         /// must be run as a coroutine.
@@ -24,6 +40,11 @@ namespace GameDevTV.Saving
         /// <param name="saveFile">The save file to consult for loading.</param>
         public IEnumerator LoadLastScene(string saveFile)
         {
+            if (isWebPlatform && waitForYandexSDK)
+            {
+                yield return WaitForYandexSDK();
+            }
+
             Dictionary<string, object> state = LoadFile(saveFile);
             int buildIndex = SceneManager.GetActiveScene().buildIndex;
             if (state.ContainsKey("lastSceneBuildIndex"))
@@ -49,7 +70,14 @@ namespace GameDevTV.Saving
         /// </summary>
         public void Delete(string saveFile)
         {
-            File.Delete(GetPathFromSaveFile(saveFile));
+            if (isWebPlatform)
+            {
+                WebSavingAdapter.DeleteSave(saveFile);
+            }
+            else
+            {
+                File.Delete(GetPathFromSaveFile(saveFile));
+            }
         }
 
         public void Load(string saveFile)
@@ -57,79 +85,164 @@ namespace GameDevTV.Saving
             RestoreState(LoadFile(saveFile));
         }
         
-	    public bool SaveFileExists(string saveFile)
-	    {
-	    	string path = GetPathFromSaveFile(saveFile);
-		    return File.Exists(path);
-	    }
-	    
-	    public IEnumerable<string> ListSaves()
-	    {
-	    	foreach (string path in Directory.EnumerateFiles(Application.persistentDataPath))
-	    	{
-	    		if(Path.GetExtension(path) == ".json")
-	    		{
-	    			yield return Path.GetFileNameWithoutExtension(path);
-	    		}
-	    	}
-	    }
+        public bool SaveFileExists(string saveFile)
+        {
+            if (isWebPlatform)
+            {
+                return WebSavingAdapter.SaveExists(saveFile);
+            }
+            else
+            {
+                string path = GetPathFromSaveFile(saveFile);
+                return File.Exists(path);
+            }
+        }
+        
+        public IEnumerable<string> ListSaves()
+        {
+            if (isWebPlatform)
+            {
+                foreach (string slot in WebSavingAdapter.GetAvailableSlots())
+                {
+                    if (WebSavingAdapter.SaveExists(slot))
+                    {
+                        yield return slot;
+                    }
+                }
+            }
+            else
+            {
+                foreach (string path in Directory.EnumerateFiles(Application.persistentDataPath))
+                {
+                    if(Path.GetExtension(path) == ".json")
+                    {
+                        yield return Path.GetFileNameWithoutExtension(path);
+                    }
+                }
+            }
+        }
 
         // PRIVATE
 
-        private Dictionary<string, object> LoadFile(string saveFile)
+        private IEnumerator WaitForYandexSDK()
         {
-            string path = GetPathFromSaveFile(saveFile);
-            if (!File.Exists(path))
+            float timer = 0f;
+            
+#if UNITY_WEBGL && !UNITY_EDITOR
+            while (!YG.YandexGame.SDKEnabled && timer < maxWaitTime)
             {
-                return new Dictionary<string, object>();
+                timer += Time.unscaledDeltaTime;
+                yield return null;
             }
             
-            try
+            if (!YG.YandexGame.SDKEnabled)
             {
-                string json = File.ReadAllText(path, Encoding.UTF8);
-                var settings = new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.Auto,
-                    Converters = new JsonConverter[]
-                    {
-                        new Vector3JsonConverter(),
-                        new QuaternionJsonConverter(),
-                        new ColorJsonConverter()
-                    }
-                };
-                return JsonConvert.DeserializeObject<Dictionary<string, object>>(json, settings) ?? new Dictionary<string, object>();
+                Debug.LogWarning("YandexSDK не загрузился в течение отведенного времени. Продолжаем без SDK.");
             }
-            catch (System.Exception e)
+            else
             {
-                Debug.LogError($"Failed to load save file {saveFile}: {e.Message}");
-                return new Dictionary<string, object>();
+                Debug.Log("YandexSDK успешно загружен.");
+            }
+#endif
+            yield return null;
+        }
+
+        private Dictionary<string, object> LoadFile(string saveFile)
+        {
+            if (isWebPlatform)
+            {
+                var webData = WebSavingAdapter.LoadGameData(saveFile);
+                if (webData != null)
+                {
+                    Debug.Log($"Загружено из веб-хранилища: {saveFile}");
+                    return webData.saveData ?? new Dictionary<string, object>();
+                }
+                else
+                {
+                    Debug.Log($"Нет данных в веб-хранилище для: {saveFile}");
+                    return new Dictionary<string, object>();
+                }
+            }
+            else
+            {
+                string path = GetPathFromSaveFile(saveFile);
+                if (!File.Exists(path))
+                {
+                    return new Dictionary<string, object>();
+                }
+                
+                try
+                {
+                    string json = File.ReadAllText(path, Encoding.UTF8);
+                    var settings = new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.Auto,
+                        Converters = new JsonConverter[]
+                        {
+                            new Vector3JsonConverter(),
+                            new QuaternionJsonConverter(),
+                            new ColorJsonConverter()
+                        }
+                    };
+                    return JsonConvert.DeserializeObject<Dictionary<string, object>>(json, settings) ?? new Dictionary<string, object>();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Failed to load save file {saveFile}: {e.Message}");
+                    return new Dictionary<string, object>();
+                }
             }
         }
 
         private void SaveFile(string saveFile, object state)
         {
-            string path = GetPathFromSaveFile(saveFile);
-            print("Saving to " + path);
-            
-            try
+            if (isWebPlatform)
             {
-                var settings = new JsonSerializerSettings
+                try
                 {
-                    TypeNameHandling = TypeNameHandling.Auto,
-                    Formatting = Formatting.Indented,
-                    Converters = new JsonConverter[]
+                    var stateDict = state as Dictionary<string, object>;
+                    if (stateDict != null)
                     {
-                        new Vector3JsonConverter(),
-                        new QuaternionJsonConverter(),
-                        new ColorJsonConverter()
+                        int sceneIndex = 0;
+                        if (stateDict.ContainsKey("lastSceneBuildIndex"))
+                        {
+                            sceneIndex = JsonSaveHelper.ToInt(stateDict["lastSceneBuildIndex"]);
+                        }
+                        
+                        WebSavingAdapter.SaveGameData(saveFile, stateDict, sceneIndex);
+                        Debug.Log($"Сохранено в веб-хранилище: {saveFile}");
                     }
-                };
-                string json = JsonConvert.SerializeObject(state, settings);
-                File.WriteAllText(path, json, Encoding.UTF8);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Failed to save to web storage {saveFile}: {e.Message}");
+                }
             }
-            catch (System.Exception e)
+            else
             {
-                Debug.LogError($"Failed to save file {saveFile}: {e.Message}");
+                string path = GetPathFromSaveFile(saveFile);
+                print("Saving to " + path);
+                
+                try
+                {
+                    var settings = new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.Auto,
+                        Formatting = Formatting.Indented,
+                        Converters = new JsonConverter[]
+                        {
+                            new Vector3JsonConverter(),
+                            new QuaternionJsonConverter(),
+                            new ColorJsonConverter()
+                        }
+                    };
+                    string json = JsonConvert.SerializeObject(state, settings);
+                    File.WriteAllText(path, json, Encoding.UTF8);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Failed to save file {saveFile}: {e.Message}");
+                }
             }
         }
 

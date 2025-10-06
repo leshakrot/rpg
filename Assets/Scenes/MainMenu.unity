@@ -342,8 +342,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2211564899198745197, guid: caf9732433f4dc044845763962493607,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 489702711}
   m_SourcePrefab: {fileID: 100100000, guid: caf9732433f4dc044845763962493607, type: 3}
+--- !u!1 &489702710 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2211564899198745197, guid: caf9732433f4dc044845763962493607,
+    type: 3}
+  m_PrefabInstance: {fileID: 489702709}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &489702711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489702710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bf6703e9e5a1ec4a9df911c2f87000a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameDevTV.Saving.WebSavingInitializer
+  initializeOnStart: 1
+  waitForSDK: 1
+  maxWaitTime: 60
+  enableDebugLogs: 1
 --- !u!224 &504775718 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4605668656295097043, guid: d385f61a91ac06045954a383fd39273e,
