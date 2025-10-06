@@ -102,12 +102,10 @@ namespace GameDevTV.Saving
         {
             if (isWebPlatform)
             {
-                foreach (string slot in WebSavingAdapter.GetAvailableSlots())
+                var saves = WebSavingAdapter.GetAvailableSaves();
+                foreach (string save in saves)
                 {
-                    if (WebSavingAdapter.SaveExists(slot))
-                    {
-                        yield return slot;
-                    }
+                    yield return save;
                 }
             }
             else
@@ -152,14 +150,14 @@ namespace GameDevTV.Saving
             if (isWebPlatform)
             {
                 var webData = WebSavingAdapter.LoadGameData(saveFile);
-                if (webData != null)
+                if (webData != null && webData.Count > 0)
                 {
-                    Debug.Log($"Загружено из веб-хранилища: {saveFile}");
-                    return webData.saveData ?? new Dictionary<string, object>();
+                    Debug.Log($"SavingSystem: Загружено из веб-хранилища: {saveFile}");
+                    return webData;
                 }
                 else
                 {
-                    Debug.Log($"Нет данных в веб-хранилище для: {saveFile}");
+                    Debug.Log($"SavingSystem: Нет данных в веб-хранилище для: {saveFile}");
                     return new Dictionary<string, object>();
                 }
             }
@@ -210,7 +208,7 @@ namespace GameDevTV.Saving
                         }
                         
                         WebSavingAdapter.SaveGameData(saveFile, stateDict, sceneIndex);
-                        Debug.Log($"Сохранено в веб-хранилище: {saveFile}");
+                        Debug.Log($"SavingSystem: Сохранено в веб-хранилище: {saveFile}");
                     }
                 }
                 catch (System.Exception e)

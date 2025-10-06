@@ -66,16 +66,15 @@ namespace RPG.SceneManagement
 		{
 			if (isWebPlatform)
 			{
-				// В веб-версии используем слот по умолчанию если не задан
-				string currentSave = GetCurrentSave();
-				if (string.IsNullOrEmpty(currentSave))
+				// В веб-версии проверяем наличие любого сохранения
+				if (!string.IsNullOrEmpty(WebSavingAdapter.GetCurrentSaveFileName()))
 				{
-					currentSave = "slot1"; // Слот по умолчанию для веб-версии
-					SetCurrentSave(currentSave);
+					StartCoroutine(LoadLastScene());
 				}
-				
-				if (!GetComponent<SavingSystem>().SaveFileExists(currentSave)) return;
-				StartCoroutine(LoadLastScene());
+				else
+				{
+					Debug.Log("SavingWrapper: Нет сохранений для продолжения игры в веб-версии");
+				}
 			}
 			else
 			{
@@ -89,15 +88,8 @@ namespace RPG.SceneManagement
 		{
 			if(String.IsNullOrEmpty(saveFile))
 			{
-				// Для веб-версии используем слот по умолчанию
-				if (isWebPlatform)
-				{
-					saveFile = "slot1";
-				}
-				else
-				{
-					return;
-				}
+				// Используем имя по умолчанию если не указано
+				saveFile = "AutoSave";
 			}
 			SetCurrentSave(saveFile);
 			StartCoroutine(LoadFirstScene());
@@ -105,24 +97,22 @@ namespace RPG.SceneManagement
 	    
 		private void SetCurrentSave(string saveFile)
 		{
-			if (isWebPlatform)
-			{
-				// В веб-версии также сохраняем в PlayerPrefs для совместимости
-				PlayerPrefs.SetString(currentSaveKey, saveFile);
-			}
-			else
-			{
-				PlayerPrefs.SetString(currentSaveKey, saveFile);
-			}
+			PlayerPrefs.SetString(currentSaveKey, saveFile);
 		}
 	    
 		private string GetCurrentSave()
 		{
 			if (isWebPlatform)
 			{
-				// В веб-версии возвращаем слот по умолчанию если ничего не задано
-				string save = PlayerPrefs.GetString(currentSaveKey, "slot1");
-				return save;
+				// В веб-версии сначала проверяем что сохранено в YandexSDK
+				string webSave = WebSavingAdapter.GetCurrentSaveFileName();
+				if (!string.IsNullOrEmpty(webSave))
+				{
+					return webSave;
+				}
+				
+				// Иначе используем PlayerPrefs или имя по умолчанию
+				return PlayerPrefs.GetString(currentSaveKey, "AutoSave");
 			}
 			else
 			{

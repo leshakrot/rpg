@@ -18,10 +18,18 @@ namespace YG
 
         // Ваши сохранения
 
-        // Слоты для сохранения игровых данных (интеграция с основной системой сохранений)
-        public string gameSaveSlot1 = "";
-        public string gameSaveSlot2 = "";
-        public string gameSaveSlot3 = "";
+        // Основные игровые сохранения (интеграция с системой сохранений)
+        public string currentSaveFile = "";
+        public string gameDataJson = "";
+        public int lastSceneBuildIndex = 0;
+        
+        // Дополнительные сохранения для нескольких слотов (если нужно)
+        public string saveSlot1Name = "";
+        public string saveSlot1Data = "";
+        public string saveSlot2Name = "";  
+        public string saveSlot2Data = "";
+        public string saveSlot3Name = "";
+        public string saveSlot3Data = "";
 
         // Поля (сохранения) можно удалять и создавать новые. При обновлении игры сохранения ломаться не должны
 

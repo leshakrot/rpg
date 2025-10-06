@@ -2,26 +2,16 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using YG;
+using Newtonsoft.Json;
 
 namespace GameDevTV.Saving
 {
     /// <summary>
     /// Адаптер для интеграции системы сохранений с YandexSDK
-    /// Обеспечивает корректную работу сохранений в веб-билдах
+    /// Использует стандартный подход YandexSDK для сохранения данных
     /// </summary>
     public class WebSavingAdapter : MonoBehaviour
     {
-        [System.Serializable]
-        public class GameSaveData
-        {
-            public Dictionary<string, object> saveData = new Dictionary<string, object>();
-            public int lastSceneBuildIndex = 0;
-        }
-
-        private const string GAME_SAVE_SLOT_1 = "slot1";
-        private const string GAME_SAVE_SLOT_2 = "slot2";
-        private const string GAME_SAVE_SLOT_3 = "slot3";
-
         // События для отслеживания изменений сохранений
         public static Action OnSaveLoaded;
         public static Action OnSaveSaved;
@@ -38,50 +28,40 @@ namespace GameDevTV.Saving
 
         private void OnYandexDataLoaded()
         {
+            Debug.Log("WebSavingAdapter: Данные загружены из YandexSDK");
             OnSaveLoaded?.Invoke();
         }
 
         /// <summary>
         /// Сохраняет данные игры в YandexSDK
         /// </summary>
-        public static void SaveGameData(string saveSlot, Dictionary<string, object> gameData, int sceneIndex)
+        public static void SaveGameData(string saveFileName, Dictionary<string, object> gameData, int sceneIndex)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
             try
             {
-                var saveData = new GameSaveData
+                // Сериализуем данные игры в JSON
+                var settings = new JsonSerializerSettings
                 {
-                    saveData = gameData,
-                    lastSceneBuildIndex = sceneIndex
+                    TypeNameHandling = TypeNameHandling.Auto,
+                    Formatting = Formatting.None
                 };
+                string jsonData = JsonConvert.SerializeObject(gameData, settings);
 
-                string jsonData = JsonUtility.ToJson(saveData);
+                // Сохраняем в YandexSDK
+                YandexGame.savesData.currentSaveFile = saveFileName;
+                YandexGame.savesData.gameDataJson = jsonData;
+                YandexGame.savesData.lastSceneBuildIndex = sceneIndex;
 
-                // Сохраняем в соответствующий слот YandexSDK
-                switch (saveSlot)
-                {
-                    case GAME_SAVE_SLOT_1:
-                        YandexGame.savesData.gameSaveSlot1 = jsonData;
-                        break;
-                    case GAME_SAVE_SLOT_2:
-                        YandexGame.savesData.gameSaveSlot2 = jsonData;
-                        break;
-                    case GAME_SAVE_SLOT_3:
-                        YandexGame.savesData.gameSaveSlot3 = jsonData;
-                        break;
-                    default:
-                        YandexGame.savesData.gameSaveSlot1 = jsonData;
-                        break;
-                }
-
+                // Выполняем сохранение через YandexSDK
                 YandexGame.SaveProgress();
-                OnSaveSaved?.Invoke();
                 
-                Debug.Log($"Игра сохранена в слот {saveSlot} через YandexSDK");
+                OnSaveSaved?.Invoke();
+                Debug.Log($"WebSavingAdapter: Игра сохранена '{saveFileName}' через YandexSDK");
             }
             catch (Exception e)
             {
-                Debug.LogError($"Ошибка сохранения через YandexSDK: {e.Message}");
+                Debug.LogError($"WebSavingAdapter: Ошибка сохранения через YandexSDK: {e.Message}");
             }
 #endif
         }
@@ -89,117 +69,173 @@ namespace GameDevTV.Saving
         /// <summary>
         /// Загружает данные игры из YandexSDK
         /// </summary>
-        public static GameSaveData LoadGameData(string saveSlot)
+        public static Dictionary<string, object> LoadGameData(string saveFileName)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
             try
             {
-                string jsonData = "";
-
-                // Загружаем из соответствующего слота YandexSDK
-                switch (saveSlot)
+                // Проверяем, есть ли сохраненные данные
+                if (string.IsNullOrEmpty(YandexGame.savesData.gameDataJson))
                 {
-                    case GAME_SAVE_SLOT_1:
-                        jsonData = YandexGame.savesData.gameSaveSlot1;
-                        break;
-                    case GAME_SAVE_SLOT_2:
-                        jsonData = YandexGame.savesData.gameSaveSlot2;
-                        break;
-                    case GAME_SAVE_SLOT_3:
-                        jsonData = YandexGame.savesData.gameSaveSlot3;
-                        break;
-                    default:
-                        jsonData = YandexGame.savesData.gameSaveSlot1;
-                        break;
+                    Debug.Log($"WebSavingAdapter: Нет сохраненных данных для '{saveFileName}'");
+                    return new Dictionary<string, object>();
                 }
 
-                if (string.IsNullOrEmpty(jsonData))
+                // Если указано конкретное имя файла, проверяем соответствие
+                if (!string.IsNullOrEmpty(saveFileName) && 
+                    !string.IsNullOrEmpty(YandexGame.savesData.currentSaveFile) &&
+                    YandexGame.savesData.currentSaveFile != saveFileName)
                 {
-                    Debug.Log($"Слот {saveSlot} пуст");
-                    return null;
+                    Debug.Log($"WebSavingAdapter: Файл сохранения '{saveFileName}' не найден. Текущий: '{YandexGame.savesData.currentSaveFile}'");
+                    return new Dictionary<string, object>();
                 }
 
-                var saveData = JsonUtility.FromJson<GameSaveData>(jsonData);
-                Debug.Log($"Игра загружена из слота {saveSlot} через YandexSDK");
-                return saveData;
+                // Десериализуем данные
+                var settings = new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto
+                };
+                var gameData = JsonConvert.DeserializeObject<Dictionary<string, object>>(YandexGame.savesData.gameDataJson, settings);
+                
+                // Добавляем информацию о последней сцене
+                if (gameData != null)
+                {
+                    gameData["lastSceneBuildIndex"] = YandexGame.savesData.lastSceneBuildIndex;
+                    Debug.Log($"WebSavingAdapter: Данные игры загружены '{YandexGame.savesData.currentSaveFile}' из YandexSDK");
+                    return gameData;
+                }
+                
+                return new Dictionary<string, object>();
             }
             catch (Exception e)
             {
-                Debug.LogError($"Ошибка загрузки через YandexSDK: {e.Message}");
-                return null;
+                Debug.LogError($"WebSavingAdapter: Ошибка загрузки из YandexSDK: {e.Message}");
+                return new Dictionary<string, object>();
             }
 #else
-            return null;
+            return new Dictionary<string, object>();
 #endif
         }
 
         /// <summary>
-        /// Проверяет существование сохранения в слоте
+        /// Проверяет существование сохранения
         /// </summary>
-        public static bool SaveExists(string saveSlot)
+        public static bool SaveExists(string saveFileName)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            string jsonData = "";
+            if (string.IsNullOrEmpty(YandexGame.savesData.gameDataJson))
+                return false;
 
-            switch (saveSlot)
-            {
-                case GAME_SAVE_SLOT_1:
-                    jsonData = YandexGame.savesData.gameSaveSlot1;
-                    break;
-                case GAME_SAVE_SLOT_2:
-                    jsonData = YandexGame.savesData.gameSaveSlot2;
-                    break;
-                case GAME_SAVE_SLOT_3:
-                    jsonData = YandexGame.savesData.gameSaveSlot3;
-                    break;
-                default:
-                    jsonData = YandexGame.savesData.gameSaveSlot1;
-                    break;
-            }
+            // Если не указано имя файла, считаем что сохранение есть
+            if (string.IsNullOrEmpty(saveFileName))
+                return true;
 
-            return !string.IsNullOrEmpty(jsonData);
+            // Проверяем соответствие имени файла
+            return YandexGame.savesData.currentSaveFile == saveFileName;
 #else
             return false;
 #endif
         }
 
         /// <summary>
-        /// Удаляет сохранение из слота
+        /// Удаляет сохранение
         /// </summary>
-        public static void DeleteSave(string saveSlot)
+        public static void DeleteSave(string saveFileName)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
             try
             {
-                switch (saveSlot)
+                // Если указано конкретное имя и оно совпадает с текущим, или если имя не указано
+                if (string.IsNullOrEmpty(saveFileName) || YandexGame.savesData.currentSaveFile == saveFileName)
                 {
-                    case GAME_SAVE_SLOT_1:
-                        YandexGame.savesData.gameSaveSlot1 = "";
-                        break;
-                    case GAME_SAVE_SLOT_2:
-                        YandexGame.savesData.gameSaveSlot2 = "";
-                        break;
-                    case GAME_SAVE_SLOT_3:
-                        YandexGame.savesData.gameSaveSlot3 = "";
-                        break;
-                    default:
-                        YandexGame.savesData.gameSaveSlot1 = "";
-                        break;
+                    YandexGame.savesData.currentSaveFile = "";
+                    YandexGame.savesData.gameDataJson = "";
+                    YandexGame.savesData.lastSceneBuildIndex = 0;
+                    
+                    YandexGame.SaveProgress();
+                    Debug.Log($"WebSavingAdapter: Сохранение '{saveFileName}' удалено");
                 }
-
-                YandexGame.SaveProgress();
-                Debug.Log($"Сохранение из слота {saveSlot} удалено");
+                else
+                {
+                    Debug.LogWarning($"WebSavingAdapter: Попытка удалить несуществующее сохранение '{saveFileName}'");
+                }
             }
             catch (Exception e)
             {
-                Debug.LogError($"Ошибка удаления сохранения: {e.Message}");
+                Debug.LogError($"WebSavingAdapter: Ошибка удаления сохранения: {e.Message}");
             }
 #endif
         }
 
-        public static string[] GetAvailableSlots()
+        /// <summary>
+        /// Получает список доступных сохранений
+        /// </summary>
+        public static List<string> GetAvailableSaves()
         {
-            return new string[] { GAME_SAVE_SLOT_1, GAME_SAVE_SLOT_2, GAME_SAVE_SLOT_3 };
+#if UNITY_WEBGL && !UNITY_EDITOR
+            var saves = new List<string>();
+            
+            // В текущей реализации поддерживается одно основное сохранение
+            if (!string.IsNullOrEmpty(YandexGame.savesData.gameDataJson))
+            {
+                string saveName = !string.IsNullOrEmpty(YandexGame.savesData.currentSaveFile) 
+                    ? YandexGame.savesData.currentSaveFile 
+                    : "Автосохранение";
+                saves.Add(saveName);
+            }
+            
+            return saves;
+#else
+            return new List<string>();
+#endif
+        }
+
+        /// <summary>
+        /// Получает текущее имя файла сохранения
+        /// </summary>
+        public static string GetCurrentSaveFileName()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return YandexGame.savesData.currentSaveFile ?? "";
+#else
+            return "";
+#endif
+        }
+
+        /// <summary>
+        /// Принудительно загружает данные из YandexSDK
+        /// </summary>
+        public static void ForceLoadFromYandex()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (YandexGame.SDKEnabled)
+            {
+                YandexGame.LoadProgress();
+                Debug.Log("WebSavingAdapter: Принудительная загрузка из YandexSDK");
+            }
+            else
+            {
+                Debug.LogWarning("WebSavingAdapter: YandexSDK не готов");
+            }
+#endif
+        }
+
+        /// <summary>
+        /// Принудительно сохраняет данные в YandexSDK
+        /// </summary>
+        public static void ForceSaveToYandex()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (YandexGame.SDKEnabled)
+            {
+                YandexGame.SaveProgress();
+                Debug.Log("WebSavingAdapter: Принудительное сохранение в YandexSDK");
+            }
+            else
+            {
+                Debug.LogWarning("WebSavingAdapter: YandexSDK не готов");
+            }
+#endif
         }
     }
 }

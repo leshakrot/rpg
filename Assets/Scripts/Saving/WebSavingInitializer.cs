@@ -5,7 +5,7 @@ namespace GameDevTV.Saving
 {
     /// <summary>
     /// Компонент для инициализации веб-адаптера сохранений
-    /// Обеспечивает корректную работу с YandexSDK
+    /// Обеспечивает корректную работу с YandexSDK по стандартному подходу
     /// </summary>
     public class WebSavingInitializer : MonoBehaviour
     {
@@ -29,13 +29,13 @@ namespace GameDevTV.Saving
 
         private void OnEnable()
         {
-            // Подписываемся на события YandexSDK
+            // Подписываемся на событие получения данных YandexSDK
             YandexGame.GetDataEvent += OnYandexDataReceived;
         }
 
         private void OnDisable()
         {
-            // Отписываемся от событий YandexSDK
+            // Отписываемся от события YandexSDK
             YandexGame.GetDataEvent -= OnYandexDataReceived;
         }
 
@@ -47,7 +47,7 @@ namespace GameDevTV.Saving
             if (isInitialized)
             {
                 if (enableDebugLogs)
-                    Debug.Log("WebSavingInitializer уже инициализирован");
+                    Debug.Log("WebSavingInitializer: Уже инициализирован");
                 return;
             }
 
@@ -62,7 +62,7 @@ namespace GameDevTV.Saving
             }
 #else
             if (enableDebugLogs)
-                Debug.Log("WebSavingInitializer: платформа не WebGL, инициализация не требуется");
+                Debug.Log("WebSavingInitializer: Платформа не WebGL, инициализация не требуется");
             
             isInitialized = true;
 #endif
@@ -81,14 +81,14 @@ namespace GameDevTV.Saving
             if (YandexGame.SDKEnabled)
             {
                 if (enableDebugLogs)
-                    Debug.Log("YandexSDK успешно загружен, инициализация веб-сохранений завершена");
+                    Debug.Log("WebSavingInitializer: YandexSDK готов, инициализация завершена");
                     
                 CompleteInitialization();
             }
             else
             {
                 if (enableDebugLogs)
-                    Debug.LogWarning("YandexSDK не загрузился в отведенное время. Инициализация может работать некорректно.");
+                    Debug.LogWarning("WebSavingInitializer: YandexSDK не загрузился вовремя");
                     
                 CompleteInitialization();
             }
@@ -99,16 +99,27 @@ namespace GameDevTV.Saving
             isInitialized = true;
             
             if (enableDebugLogs)
-                Debug.Log("WebSavingInitializer инициализирован успешно");
-                
-            // Уведомляем другие компоненты о готовности
-            WebSavingAdapter.OnSaveLoaded?.Invoke();
+            {
+                Debug.Log("WebSavingInitializer: Инициализация завершена");
+#if UNITY_WEBGL && !UNITY_EDITOR
+                Debug.Log($"WebSavingInitializer: SDK статус: {YandexGame.SDKEnabled}");
+                Debug.Log($"WebSavingInitializer: Текущее сохранение: '{YandexGame.savesData.currentSaveFile}'");
+                Debug.Log($"WebSavingInitializer: Есть данные: {!string.IsNullOrEmpty(YandexGame.savesData.gameDataJson)}");
+#endif
+            }
         }
 
         private void OnYandexDataReceived()
         {
             if (enableDebugLogs)
-                Debug.Log("Получены данные от YandexSDK");
+            {
+                Debug.Log("WebSavingInitializer: Получены данные от YandexSDK");
+#if UNITY_WEBGL && !UNITY_EDITOR
+                Debug.Log($"WebSavingInitializer: Имя файла: '{YandexGame.savesData.currentSaveFile}'");
+                Debug.Log($"WebSavingInitializer: Размер данных: {YandexGame.savesData.gameDataJson?.Length ?? 0} символов");
+                Debug.Log($"WebSavingInitializer: Последняя сцена: {YandexGame.savesData.lastSceneBuildIndex}");
+#endif
+            }
         }
 
         /// <summary>
@@ -124,43 +135,24 @@ namespace GameDevTV.Saving
         }
 
         /// <summary>
-        /// Принудительная загрузка данных из YandexSDK
+        /// Информация о состоянии системы
         /// </summary>
-        public void ForceLoadData()
+        [ContextMenu("Show System Status")]
+        public void ShowSystemStatus()
         {
+            Debug.Log("=== WebSavingInitializer Status ===");
+            Debug.Log($"Инициализирован: {isInitialized}");
+            
 #if UNITY_WEBGL && !UNITY_EDITOR
-            if (YandexGame.SDKEnabled)
-            {
-                YandexGame.LoadProgress();
-                if (enableDebugLogs)
-                    Debug.Log("Принудительная загрузка данных из YandexSDK");
-            }
-            else
-            {
-                if (enableDebugLogs)
-                    Debug.LogWarning("YandexSDK не готов для загрузки данных");
-            }
+            Debug.Log($"YandexSDK готов: {YandexGame.SDKEnabled}");
+            Debug.Log($"Авторизация: {YandexGame.auth}");
+            Debug.Log($"Текущий файл: '{YandexGame.savesData.currentSaveFile}'");
+            Debug.Log($"Есть данные: {!string.IsNullOrEmpty(YandexGame.savesData.gameDataJson)}");
+            Debug.Log($"Последняя сцена: {YandexGame.savesData.lastSceneBuildIndex}");
+#else
+            Debug.Log("Платформа: Не WebGL");
 #endif
-        }
-
-        /// <summary>
-        /// Принудительное сохранение данных в YandexSDK
-        /// </summary>
-        public void ForceSaveData()
-        {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            if (YandexGame.SDKEnabled)
-            {
-                YandexGame.SaveProgress();
-                if (enableDebugLogs)
-                    Debug.Log("Принудительное сохранение данных в YandexSDK");
-            }
-            else
-            {
-                if (enableDebugLogs)
-                    Debug.LogWarning("YandexSDK не готов для сохранения данных");
-            }
-#endif
+            Debug.Log("==================================");
         }
     }
 }
