@@ -10,10 +10,10 @@ namespace RPG.Stats
     public static class ProgressionUtility
     {
         // Стандартное количество врагов в группе для расчета баланса
-        private static readonly float AverageEnemiesPerFight = 3f;
+        private static readonly float AverageEnemiesPerFight = 2.5f;
         
-        // Общий множитель для преимущества игрока над группой врагов (уменьшен для повышения сложности)
-        private static readonly float PlayerAdvantageMultiplier = 1.5f;
+        // Общий множитель для преимущества игрока над группой врагов
+        private static readonly float PlayerAdvantageMultiplier = 2.5f;
         
         // Настройки глобальной сложности
         private static Dictionary<string, float> _difficultySettings = new Dictionary<string, float>() 
@@ -25,87 +25,103 @@ namespace RPG.Stats
             { "Опыт для повышения уровня", 1.0f }
         };
         
-        // Множители для разных типов статистик (увеличены для врагов)
+        // Базовые значения для статистик (пересчитаны под новый баланс)
         private static readonly Dictionary<Stat, float> StatBaselineValues = new Dictionary<Stat, float>() 
         {
-            { Stat.Health, 200f },     // Было 180f
-            { Stat.Mana, 70f },        // Было 60f
-            { Stat.ManaRegenRate, 2.2f }, // Было 2f
-            { Stat.ExperienceReward, 90f }, // Было 100f - снижено для замедления прогресса
-            { Stat.ExperienceToLevelUp, 1200f }, // Было 1000f - повышено для замедления прогресса
-            { Stat.Damage, 30f },      // Было 25f
+            { Stat.Health, 280f },           // Базовое HP игрока
+            { Stat.Mana, 100f },             // Базовая мана
+            { Stat.ManaRegenRate, 2.5f },    // Базовая регенерация
+            { Stat.ExperienceReward, 25f },  // Базовая награда опытом
+            { Stat.ExperienceToLevelUp, 100f }, // Базовый опыт для левела
+            { Stat.Damage, 35f },            // Базовый урон игрока
             { Stat.TotalTraitPoints, 1f },
             { Stat.BuyingDiscountPercentage, 0f },
-            { Stat.Defence, 16f }      // Было 14f
+            { Stat.Defence, 15f },           // Базовая защита игрока
+            { Stat.MovementSpeed, 5.5f }     // Базовая скорость игрока
         };
         
-        // Множители важности статистик для различных классов
+        // Множители важности статистик для различных классов (переработаны)
         private static readonly Dictionary<CharacterClass, Dictionary<Stat, float>> ClassStatMultipliers = 
             new Dictionary<CharacterClass, Dictionary<Stat, float>>()
         {
             { 
                 CharacterClass.Player, new Dictionary<Stat, float>() {
-                    { Stat.Health, 1.15f },  // Было 1.2f - снижена живучесть игрока
+                    { Stat.Health, 1.0f },
                     { Stat.Mana, 1.0f },
-                    { Stat.Damage, 1.05f },  // Было 1.1f - снижен урон игрока
-                    { Stat.Defence, 0.85f }  // Было 0.9f - еще снижена защита игрока
+                    { Stat.Damage, 1.0f },
+                    { Stat.Defence, 1.0f },
+                    { Stat.MovementSpeed, 1.0f }
                 }
             },
             { 
                 CharacterClass.Grunt, new Dictionary<Stat, float>() {
-                    { Stat.Health, 0.95f },   // Было 0.85f
-                    { Stat.Damage, 0.9f },    // Было 0.8f
-                    { Stat.Defence, 0.8f }    // Было 0.7f
+                    { Stat.Health, 0.43f },      // 120 vs 280
+                    { Stat.Damage, 0.51f },      // 18 vs 35
+                    { Stat.Defence, 0.53f },     // 8 vs 15
+                    { Stat.MovementSpeed, 0.82f } // 4.5 vs 5.5
                 }
             },
             { 
                 CharacterClass.Mage, new Dictionary<Stat, float>() {
-                    { Stat.Health, 0.75f },    // Было 0.7f
-                    { Stat.Mana, 1.5f },      // Было 1.4f
-                    { Stat.Damage, 1.2f },   // Было 1.05f
-                    { Stat.Defence, 0.55f }   // Было 0.5f
+                    { Stat.Health, 0.29f },      // 80 vs 280 (самый слабый)
+                    { Stat.Mana, 1.5f },         // 150 vs 100
+                    { Stat.Damage, 0.8f },       // 28 vs 35 (высокий для врага)
+                    { Stat.Defence, 0.33f },     // 5 vs 15 (самая слабая)
+                    { Stat.MovementSpeed, 0.87f } // 4.8 vs 5.5
                 }
             },
             { 
                 CharacterClass.Archer, new Dictionary<Stat, float>() {
-                    { Stat.Health, 0.8f },   // Было 0.75f
-                    { Stat.Damage, 1.0f },    // Было 0.9f
-                    { Stat.Defence, 0.7f }   // Было 0.65f
+                    { Stat.Health, 0.36f },      // 100 vs 280
+                    { Stat.Damage, 0.63f },      // 22 vs 35
+                    { Stat.Defence, 0.47f },     // 7 vs 15
+                    { Stat.MovementSpeed, 0.95f } // 5.2 vs 5.5 (быстрый)
                 }
             },
             { 
                 CharacterClass.Orc, new Dictionary<Stat, float>() {
-                    { Stat.Health, 1.5f },    // Было 1.4f
-                    { Stat.Damage, 1.3f },    // Было 1.2f
-                    { Stat.Defence, 1.1f }    // Было 1.0f
+                    { Stat.Health, 0.71f },      // 200 vs 280 (танк)
+                    { Stat.Damage, 0.91f },      // 32 vs 35 (сильный)
+                    { Stat.Defence, 1.2f },      // 18 vs 15 (самая высокая)
+                    { Stat.MovementSpeed, 0.73f } // 4.0 vs 5.5 (медленный)
                 }
             },
             { 
                 CharacterClass.Wolf, new Dictionary<Stat, float>() {
-                    { Stat.Health, 0.8f },    // Было 0.7f
-                    { Stat.Damage, 0.9f },    // Было 0.8f
-                    { Stat.Defence, 0.6f }    // Было 0.5f
+                    { Stat.Health, 0.21f },      // 60 vs 280 (слабый)
+                    { Stat.Damage, 0.34f },      // 12 vs 35
+                    { Stat.Defence, 0.27f },     // 4 vs 15
+                    { Stat.MovementSpeed, 1.09f } // 6.0 vs 5.5 (быстрый)
                 }
             },
             { 
                 CharacterClass.Boar, new Dictionary<Stat, float>() {
-                    { Stat.Health, 1.0f },    // Было 0.9f
-                    { Stat.Damage, 0.8f },    // Было 0.7f
-                    { Stat.Defence, 0.8f }    // Было 0.7f
+                    { Stat.Health, 0.32f },      // 90 vs 280
+                    { Stat.Damage, 0.43f },      // 15 vs 35
+                    { Stat.Defence, 0.4f },      // 6 vs 15
+                    { Stat.MovementSpeed, 0.78f } // 4.3 vs 5.5
+                }
+            },
+            { 
+                CharacterClass.Spider, new Dictionary<Stat, float>() {
+                    { Stat.Health, 0.20f },      // 55 vs 280
+                    { Stat.Damage, 0.4f },       // 14 vs 35
+                    { Stat.Defence, 0.27f },     // ~4 vs 15
+                    { Stat.MovementSpeed, 1.0f } // 5.5 vs 5.5
                 }
             }
         };
         
         // Относительные силы классов врагов (сколько таких врагов нужно для сравнения с игроком)
-        // Уменьшены значения для повышения сложности (теперь игрок слабее)
         private static readonly Dictionary<CharacterClass, float> RelativeEnemyStrength = new Dictionary<CharacterClass, float>()
         {
-            { CharacterClass.Grunt, 2.0f },   // Было 2.2f
-            { CharacterClass.Mage, 1.7f },    // Было 1.9f
-            { CharacterClass.Archer, 1.9f },  // Было 2.1f
-            { CharacterClass.Orc, 1.3f },     // Было 1.5f
-            { CharacterClass.Wolf, 2.7f },    // Было 3.0f
-            { CharacterClass.Boar, 2.3f },    // Было 2.6f
+            { CharacterClass.Grunt, 2.5f },   // Игрок = 2.5 гранта
+            { CharacterClass.Mage, 2.0f },    // Игрок = 2 мага (опасен уроном)
+            { CharacterClass.Archer, 2.3f },  // Игрок = 2.3 лучника
+            { CharacterClass.Orc, 1.5f },     // Игрок = 1.5 орка (сильный враг)
+            { CharacterClass.Wolf, 3.5f },    // Игрок = 3.5 волка
+            { CharacterClass.Boar, 3.0f },    // Игрок = 3 кабана
+            { CharacterClass.Spider, 3.5f },  // Игрок = 3.5 паука
             { CharacterClass.Chest, 0f }      // Сундуки не имеют боевых характеристик
         };
         
@@ -171,17 +187,14 @@ namespace RPG.Stats
         {
             if (characterClass == CharacterClass.Player) return;
             
-            // Получаем множители из настроек сложности
             float dodgeMultiplier = GetEnemyDodgeChanceMultiplier();
             float critMultiplier = GetEnemyCritChanceMultiplier();
             float parryMultiplier = GetEnemyParryChanceMultiplier();
             
-            // Базовые шансы для разных врагов
             float baseDodgeChance = 0.05f;
             float baseCritChance = 0.08f;
             float baseParryChance = 0.04f;
             
-            // Настраиваем базовые шансы в зависимости от класса
             switch (characterClass)
             {
                 case CharacterClass.Grunt:
@@ -214,14 +227,17 @@ namespace RPG.Stats
                     baseCritChance = 0.07f;
                     baseParryChance = 0.03f;
                     break;
+                case CharacterClass.Spider:
+                    baseDodgeChance = 0.08f;
+                    baseCritChance = 0.06f;
+                    baseParryChance = 0.02f;
+                    break;
             }
             
-            // Применяем множители и добавляем в бонусы
             bonuses["DodgeChance"] = baseDodgeChance * dodgeMultiplier;
             bonuses["CritChance"] = baseCritChance * critMultiplier;
             bonuses["ParryChance"] = baseParryChance * parryMultiplier;
             
-            // Ограничиваем максимальные значения
             bonuses["DodgeChance"] = Mathf.Min(bonuses["DodgeChance"], 0.25f);
             bonuses["CritChance"] = Mathf.Min(bonuses["CritChance"], 0.30f);
             bonuses["ParryChance"] = Mathf.Min(bonuses["ParryChance"], 0.20f);
@@ -234,32 +250,15 @@ namespace RPG.Stats
         {
             float baseValue = StatBaselineValues.ContainsKey(stat) ? StatBaselineValues[stat] : 10f;
             
-            // Применяем множитель класса, если он определен
             if (ClassStatMultipliers.ContainsKey(characterClass) && 
                 ClassStatMultipliers[characterClass].ContainsKey(stat))
             {
                 baseValue *= ClassStatMultipliers[characterClass][stat];
             }
             
-            // Для игрока применяем дополнительное преимущество, учитывая, что он сражается с группами врагов
-            if (characterClass == CharacterClass.Player)
-            {
-                // Для атакующих статистик (урон) умножаем на AverageEnemiesPerFight
-                if (stat == Stat.Damage)
-                {
-                    baseValue *= PlayerAdvantageMultiplier;
-                }
-                // Для защитных статистик (здоровье, защита) тоже даем преимущество
-                else if (stat == Stat.Health || stat == Stat.Defence)
-                {
-                    baseValue *= PlayerAdvantageMultiplier;
-                }
-            }
-
             // Применяем глобальные настройки сложности
             if (characterClass != CharacterClass.Player)
             {
-                // Применяем множители в зависимости от типа статистики
                 if (stat == Stat.Health && _difficultySettings.ContainsKey("Здоровье врагов"))
                 {
                     baseValue *= _difficultySettings["Здоровье врагов"];
@@ -279,7 +278,6 @@ namespace RPG.Stats
             }
             else if (characterClass == CharacterClass.Player)
             {
-                // Для игрока применяем настройку только к опыту для повышения уровня
                 if (stat == Stat.ExperienceToLevelUp && _difficultySettings.ContainsKey("Опыт для повышения уровня"))
                 {
                     baseValue *= _difficultySettings["Опыт для повышения уровня"];
@@ -292,10 +290,6 @@ namespace RPG.Stats
         /// <summary>
         /// Создает шаблон прогрессии с линейным ростом значений
         /// </summary>
-        /// <param name="startValue">Начальное значение</param>
-        /// <param name="increment">Прирост на каждый уровень</param>
-        /// <param name="levels">Количество уровней</param>
-        /// <returns>Массив значений</returns>
         public static float[] CreateLinearProgression(float startValue, float increment, int levels)
         {
             float[] values = new float[levels];
@@ -311,10 +305,6 @@ namespace RPG.Stats
         /// <summary>
         /// Создает шаблон прогрессии с экспоненциальным ростом значений
         /// </summary>
-        /// <param name="startValue">Начальное значение</param>
-        /// <param name="growthFactor">Коэффициент роста</param>
-        /// <param name="levels">Количество уровней</param>
-        /// <returns>Массив значений</returns>
         public static float[] CreateExponentialProgression(float startValue, float growthFactor, int levels)
         {
             float[] values = new float[levels];
@@ -330,11 +320,6 @@ namespace RPG.Stats
         /// <summary>
         /// Создает шаблон прогрессии с полиномиальным ростом значений
         /// </summary>
-        /// <param name="baseValue">Базовое значение</param>
-        /// <param name="factor">Коэффициент</param>
-        /// <param name="power">Степень</param>
-        /// <param name="levels">Количество уровней</param>
-        /// <returns>Массив значений</returns>
         public static float[] CreatePolynomialProgression(float baseValue, float factor, float power, int levels)
         {
             float[] values = new float[levels];
@@ -350,17 +335,13 @@ namespace RPG.Stats
         /// <summary>
         /// Создает шаблон прогрессии с логарифмическим ростом значений
         /// </summary>
-        /// <param name="baseValue">Базовое значение</param>
-        /// <param name="factor">Коэффициент</param>
-        /// <param name="levels">Количество уровней</param>
-        /// <returns>Массив значений</returns>
         public static float[] CreateLogarithmicProgression(float baseValue, float factor, int levels)
         {
             float[] values = new float[levels];
             
             for (int i = 0; i < levels; i++)
             {
-                values[i] = baseValue + factor * Mathf.Log(i + 2); // +2 чтобы избежать log(0) и log(1)=0
+                values[i] = baseValue + factor * Mathf.Log(i + 2);
             }
             
             return values;
@@ -369,10 +350,6 @@ namespace RPG.Stats
         /// <summary>
         /// Создает шаблон прогрессии в стиле Diablo (быстрый рост с замедлением)
         /// </summary>
-        /// <param name="startValue">Начальное значение</param>
-        /// <param name="endValue">Конечное значение</param>
-        /// <param name="levels">Количество уровней</param>
-        /// <returns>Массив значений</returns>
         public static float[] CreateDiabloProgression(float startValue, float endValue, int levels)
         {
             float[] values = new float[levels];
@@ -380,7 +357,6 @@ namespace RPG.Stats
             for (int i = 0; i < levels; i++)
             {
                 float t = (float)i / (levels - 1);
-                // Кривая, которая быстро растет вначале и замедляется в конце
                 float curve = 1 - Mathf.Pow(1 - t, 2.5f);
                 values[i] = Mathf.Lerp(startValue, endValue, curve);
             }
@@ -389,21 +365,15 @@ namespace RPG.Stats
         }
         
         /// <summary>
-        /// Создает шаблон прогрессии в стиле Dark Souls (каждый уровень требует все больше усилий)
+        /// Создает шаблон прогрессии в стиле Dark Souls
         /// </summary>
-        /// <param name="startValue">Начальное значение</param>
-        /// <param name="factor">Множитель роста</param>
-        /// <param name="levelOffset">Начальное смещение (влияет на кривизну)</param>
-        /// <param name="levels">Количество уровней</param>
-        /// <returns>Массив значений</returns>
         public static float[] CreateDarkSoulsProgression(float startValue, float factor, float levelOffset, int levels)
         {
             float[] values = new float[levels];
             
             for (int i = 0; i < levels; i++)
             {
-                // Формула из Dark Souls для опыта: Value = BaseValue * (Level + Offset)^1.8
-                float level = i + 1; // Уровень начинается с 1
+                float level = i + 1;
                 values[i] = startValue * Mathf.Pow(level + levelOffset, 1.8f) * factor;
             }
             
@@ -411,22 +381,15 @@ namespace RPG.Stats
         }
         
         /// <summary>
-        /// Создает более сбалансированную прогрессию для здоровья игрока (стиль Path of Exile)
+        /// Создает сбалансированную прогрессию для здоровья игрока (стиль Path of Exile)
         /// </summary>
-        /// <param name="baseHealth">Базовое здоровье на 1 уровне</param>
-        /// <param name="healthPerLevel">Прирост здоровья за уровень</param>
-        /// <param name="levels">Количество уровней</param>
-        /// <returns>Массив значений</returns>
         public static float[] CreatePathOfExileHealthProgression(float baseHealth, float healthPerLevel, int levels)
         {
             float[] values = new float[levels];
-            
-            // Начальное значение здоровья
             values[0] = baseHealth;
             
             for (int i = 1; i < levels; i++)
             {
-                // Здоровье растет линейно + небольшой % от предыдущего уровня
                 values[i] = values[i-1] + healthPerLevel + (values[i-1] * 0.08f);
             }
             
@@ -436,19 +399,13 @@ namespace RPG.Stats
         /// <summary>
         /// Создает сбалансированную прогрессию для опыта (стиль Final Fantasy)
         /// </summary>
-        /// <param name="baseXP">Базовый опыт для 1 уровня</param>
-        /// <param name="growthFactor">Множитель роста</param>
-        /// <param name="levels">Количество уровней</param>
-        /// <returns>Массив значений</returns>
         public static float[] CreateFinalFantasyXPProgression(float baseXP, float growthFactor, int levels)
         {
             float[] values = new float[levels];
             
             for (int i = 0; i < levels; i++)
             {
-                // Используем формулу растущей кривой, где каждый следующий уровень требует больше опыта
-                // XP = BaseXP * (Level^2 - Level + 2) * GrowthFactor
-                float level = i + 1; // Уровень начинается с 1
+                float level = i + 1;
                 values[i] = baseXP * (level * level - level + 2) * growthFactor;
             }
             
@@ -458,12 +415,6 @@ namespace RPG.Stats
         /// <summary>
         /// Создает волнообразную прогрессию сложности (как в God of War)
         /// </summary>
-        /// <param name="baseValue">Базовое значение</param>
-        /// <param name="amplitude">Амплитуда волны</param>
-        /// <param name="frequency">Частота волны</param>
-        /// <param name="growthFactor">Множитель общего роста</param>
-        /// <param name="levels">Количество уровней</param>
-        /// <returns>Массив значений</returns>
         public static float[] CreateWavyProgression(float baseValue, float amplitude, float frequency, float growthFactor, int levels)
         {
             float[] values = new float[levels];
@@ -471,9 +422,7 @@ namespace RPG.Stats
             for (int i = 0; i < levels; i++)
             {
                 float level = i + 1;
-                // Базовая линейная прогрессия
                 float linearValue = baseValue * (1 + level * growthFactor);
-                // Добавляем волнообразную компоненту
                 float wave = amplitude * Mathf.Sin(level * frequency * Mathf.PI / levels);
                 values[i] = linearValue + wave;
             }
@@ -481,272 +430,216 @@ namespace RPG.Stats
             return values;
         }
         
-        private static float GetScalingMultiplierForLevel(CharacterClass characterClass, int levels)
-        {
-            float scalingMultiplier = 1.0f;
-            
-            // Применяем более агрессивное масштабирование для высоких уровней
-            if (characterClass != CharacterClass.Player && levels > 10)
-            {
-                // Для высоких уровней враги должны становиться сильнее
-                scalingMultiplier = 1.0f + (levels - 10) * 0.1f; // Было 0.08f - еще более агрессивное масштабирование
-            }
-            
-            return scalingMultiplier;
-        }
-        
         /// <summary>
         /// Создает полный набор статистик для указанного класса и количества уровней
         /// </summary>
-        /// <param name="characterClass">Класс персонажа</param>
-        /// <param name="levels">Количество уровней</param>
-        /// <param name="difficultyMultiplier">Множитель сложности (1.0 = стандартный, меньше - легче, больше - сложнее)</param>
-        /// <returns>Словарь с прогрессией статистик</returns>
         public static Dictionary<Stat, float[]> GenerateFullStatProgression(CharacterClass characterClass, int levels, float difficultyMultiplier = 1.0f)
         {
             Dictionary<Stat, float[]> statProgression = new Dictionary<Stat, float[]>();
             
-            // Игрок не изменяется в зависимости от сложности класса, но меняется от глобальных настроек
             float enemyMultiplier = characterClass != CharacterClass.Player ? difficultyMultiplier : 1.0f;
             
-            // Множитель силы врага относительно игрока
-            float enemyStrengthMultiplier = 1.0f;
-            if (characterClass != CharacterClass.Player && RelativeEnemyStrength.ContainsKey(characterClass))
-            {
-                enemyStrengthMultiplier = 1.0f / RelativeEnemyStrength[characterClass];
-            }
-            
-            // Множитель масштабирования для высоких уровней
-            // Обеспечивает более плавный рост и уменьшает разрыв между игроком и врагами
-            float scalingMultiplier = GetScalingMultiplierForLevel(characterClass, levels);
-            
-            // Здоровье - разные типы прогрессии для разных классов
+            // ========== HEALTH ==========
             float baseHealth = GetRecommendedBaseValue(Stat.Health, characterClass);
             
-            // Применяем множитель относительной силы для врагов
-            if (characterClass != CharacterClass.Player)
-            {
-                baseHealth *= enemyMultiplier * scalingMultiplier * enemyStrengthMultiplier;
-            }
-            
             if (characterClass == CharacterClass.Player)
             {
-                // Для игрока используем более мощную прогрессию, но не слишком сильную
-                statProgression[Stat.Health] = CreatePathOfExileHealthProgression(baseHealth, baseHealth * 0.12f, levels); // Было 0.13f
-                
-                // Дополнительный множитель для высоких уровней
-                for (int i = 0; i < levels; i++)
-                {
-                    if (i > 5) // После 5-го уровня дополнительный бонус
-                    {
-                        statProgression[Stat.Health][i] *= 1.0f + ((i - 5) * 0.016f); // Было 0.018f
-                    }
-                }
+                // Игрок: 280 -> 1640 (линейный рост ~75 HP/уровень)
+                statProgression[Stat.Health] = CreateLinearProgression(280f, 75f, levels);
+            }
+            else if (characterClass == CharacterClass.Grunt)
+            {
+                // Grunt: 120 -> 953 (средний рост)
+                statProgression[Stat.Health] = CreatePolynomialProgression(120f * enemyMultiplier, 3.5f * enemyMultiplier, 1.4f, levels);
             }
             else if (characterClass == CharacterClass.Mage)
             {
-                // Используем экспоненциальный рост для магов, чтобы они были конкурентоспособны на высоких уровнях
-                statProgression[Stat.Health] = CreateExponentialProgression(baseHealth, 1.17f + enemyMultiplier * 0.04f, levels); // Было 1.16f
-            }
-            else if (characterClass == CharacterClass.Grunt || characterClass == CharacterClass.Archer)
-            {
-                // Более быстрый рост для стандартных противников
-                statProgression[Stat.Health] = CreatePolynomialProgression(baseHealth, baseHealth * 0.11f * enemyMultiplier, 1.55f, levels); // Было 0.1f, 1.5f
-            }
-            else if (characterClass == CharacterClass.Orc)
-            {
-                // Орки должны быть самыми мощными стандартными противниками
-                statProgression[Stat.Health] = CreatePolynomialProgression(baseHealth, baseHealth * 0.13f * enemyMultiplier, 1.65f, levels); // Было 0.12f, 1.6f
-            }
-            else if (characterClass == CharacterClass.Wolf || characterClass == CharacterClass.Boar)
-            {
-                // Животные должны быть несколько слабее, но все еще масштабироваться с уровнем
-                statProgression[Stat.Health] = CreatePolynomialProgression(baseHealth, baseHealth * 0.1f * enemyMultiplier, 1.45f, levels); // Было 0.09f, 1.4f
-            }
-            else
-            {
-                // Стандартная прогрессия для других классов
-                statProgression[Stat.Health] = CreatePolynomialProgression(baseHealth, baseHealth * 0.09f * enemyMultiplier, 1.55f, levels); // Было 0.08f, 1.5f
-            }
-            
-            // Мана - разные типы прогрессии для разных классов
-            if (characterClass == CharacterClass.Mage)
-            {
-                float baseMana = GetRecommendedBaseValue(Stat.Mana, characterClass) * enemyMultiplier * scalingMultiplier * enemyStrengthMultiplier;
-                statProgression[Stat.Mana] = CreateExponentialProgression(baseMana, 1.2f, levels); // Было 1.18f
-            }
-            else if (characterClass == CharacterClass.Player)
-            {
-                float baseMana = GetRecommendedBaseValue(Stat.Mana, characterClass);
-                
-                // Более умеренный рост маны для игрока
-                statProgression[Stat.Mana] = CreateExponentialProgression(baseMana, 1.15f, levels); // Было 1.16f
-                
-                // Добавляем пики на ключевых уровнях
-                for (int i = 0; i < levels; i++)
-                {
-                    int level = i + 1;
-                    if (level % 5 == 0) // На уровнях 5, 10, 15, 20...
-                    {
-                        statProgression[Stat.Mana][i] *= 1.12f; // Было 1.15f
-                    }
-                }
-            }
-            else if (ClassStatMultipliers.ContainsKey(characterClass) && 
-                     ClassStatMultipliers[characterClass].ContainsKey(Stat.Mana))
-            {
-                float baseMana = GetRecommendedBaseValue(Stat.Mana, characterClass) * enemyMultiplier * scalingMultiplier * enemyStrengthMultiplier;
-                statProgression[Stat.Mana] = CreateExponentialProgression(baseMana, 1.14f, levels); // Было 1.12f
-            }
-            
-            // Регенерация маны
-            if (characterClass == CharacterClass.Player || characterClass == CharacterClass.Mage)
-            {
-                float baseManaRegen = StatBaselineValues[Stat.ManaRegenRate];
-                if (characterClass == CharacterClass.Mage)
-                {
-                    baseManaRegen *= 1.25f * enemyMultiplier * enemyStrengthMultiplier; // Было 1.2f
-                }
-                
-                statProgression[Stat.ManaRegenRate] = CreateExponentialProgression(baseManaRegen, 1.12f, levels); // Было 1.1f
-            }
-            
-            // Урон - разные формулы для разных классов
-            float baseDamage = GetRecommendedBaseValue(Stat.Damage, characterClass);
-            if (characterClass != CharacterClass.Player)
-            {
-                // Применяем множитель сложности и масштабирования для врагов, а также их относительную силу
-                baseDamage *= enemyMultiplier * scalingMultiplier * enemyStrengthMultiplier;
-            }
-            
-            if (characterClass == CharacterClass.Player)
-            {
-                // Более умеренный рост урона для игрока, чтобы не было слишком большого разрыва
-                statProgression[Stat.Damage] = CreateDiabloProgression(baseDamage, baseDamage * 11f, levels); // Было 12f
-                
-                // Добавляем пики мощности на ключевых уровнях
-                for (int i = 0; i < levels; i++)
-                {
-                    int level = i + 1;
-                    if (level % 5 == 0) // На уровнях 5, 10, 15, 20...
-                    {
-                        statProgression[Stat.Damage][i] *= 1.1f; // Было 1.12f
-                    }
-                }
-            }
-            else if (characterClass == CharacterClass.Mage)
-            {
-                // Маги наносят высокий урон, компенсируя низкую защиту
-                statProgression[Stat.Damage] = CreateExponentialProgression(baseDamage, 1.19f + (enemyMultiplier * 0.04f), levels); // Было 1.17f, 0.03f
+                // Mage: 80 -> 607 (низкое HP)
+                statProgression[Stat.Health] = CreatePolynomialProgression(80f * enemyMultiplier, 2.0f * enemyMultiplier, 1.5f, levels);
             }
             else if (characterClass == CharacterClass.Archer)
             {
-                // Лучники сбалансированы по урону и здоровью
-                statProgression[Stat.Damage] = CreatePolynomialProgression(baseDamage, baseDamage * 0.1f * enemyMultiplier, 1.6f, levels); // Было 0.09f, 1.55f
+                // Archer: 100 -> 848
+                statProgression[Stat.Health] = CreatePolynomialProgression(100f * enemyMultiplier, 2.8f * enemyMultiplier, 1.45f, levels);
             }
             else if (characterClass == CharacterClass.Orc)
             {
-                // Орки - сильные противники с высоким уроном
-                statProgression[Stat.Damage] = CreatePolynomialProgression(baseDamage, baseDamage * 0.11f * enemyMultiplier, 1.65f, levels); // Было 0.1f, 1.6f
+                // Orc: 200 -> 1781 (высокое HP)
+                statProgression[Stat.Health] = CreatePolynomialProgression(200f * enemyMultiplier, 5.5f * enemyMultiplier, 1.38f, levels);
             }
-            else
+            else if (characterClass == CharacterClass.Wolf)
             {
-                // Стандартная прогрессия для других классов
-                statProgression[Stat.Damage] = CreatePolynomialProgression(baseDamage, baseDamage * 0.09f * enemyMultiplier, 1.6f, levels); // Было 0.08f, 1.55f
+                // Wolf: 60 -> 400 (слабый)
+                statProgression[Stat.Health] = CreateLinearProgression(60f * enemyMultiplier, 20f * enemyMultiplier, levels);
+            }
+            else if (characterClass == CharacterClass.Boar)
+            {
+                // Boar: 90 -> 668
+                statProgression[Stat.Health] = CreatePolynomialProgression(90f * enemyMultiplier, 2.2f * enemyMultiplier, 1.42f, levels);
+            }
+            else if (characterClass == CharacterClass.Spider)
+            {
+                // Spider: 55 -> 378
+                statProgression[Stat.Health] = CreateLinearProgression(55f * enemyMultiplier, 19f * enemyMultiplier, levels);
             }
             
-            // Защита - разные формулы для разных классов
-            if (ClassStatMultipliers.ContainsKey(characterClass) && 
-                ClassStatMultipliers[characterClass].ContainsKey(Stat.Defence))
-            {
-                float baseDefence = GetRecommendedBaseValue(Stat.Defence, characterClass);
-                if (characterClass != CharacterClass.Player)
-                {
-                    // Применяем множитель сложности и масштабирования для врагов
-                    baseDefence *= enemyMultiplier * scalingMultiplier * enemyStrengthMultiplier;
-                }
-                
-                if (characterClass == CharacterClass.Player)
-                {
-                    // Более умеренный рост защиты для игрока
-                    statProgression[Stat.Defence] = CreateDarkSoulsProgression(baseDefence, 0.18f, 5f, levels); // Было 0.2f
-                    
-                    // Дополнительная защита игрока, имитирующая улучшение экипировки
-                    for (int i = 0; i < levels; i++)
-                    {
-                        int level = i + 1;
-                        // Бонус защиты, растущий с уровнем, как от улучшения экипировки
-                        float equipmentBonus = 1.0f + (level * 0.022f); // Было 0.025f
-                        statProgression[Stat.Defence][i] *= equipmentBonus;
-                        
-                        // Дополнительные бонусы на ключевых уровнях
-                        if (level % 10 == 0) // На уровнях 10, 20, 30...
-                        {
-                            statProgression[Stat.Defence][i] *= 1.06f; // Было 1.08f
-                        }
-                    }
-                }
-                else if (characterClass == CharacterClass.Orc)
-                {
-                    // Орки имеют высокую защиту
-                    statProgression[Stat.Defence] = CreatePolynomialProgression(baseDefence, baseDefence * 0.09f * enemyMultiplier, 1.55f, levels); // Было 0.085f, 1.5f
-                }
-                else if (characterClass == CharacterClass.Mage)
-                {
-                    // Маги имеют низкую защиту
-                    statProgression[Stat.Defence] = CreatePolynomialProgression(baseDefence, baseDefence * 0.055f * enemyMultiplier, 1.35f, levels); // Было 0.05f, 1.3f
-                }
-                else if (characterClass == CharacterClass.Wolf || characterClass == CharacterClass.Boar)
-                {
-                    // Животные имеют низкую защиту
-                    statProgression[Stat.Defence] = CreatePolynomialProgression(baseDefence, baseDefence * 0.065f * enemyMultiplier, 1.4f, levels); // Было 0.06f, 1.35f
-                }
-                else
-                {
-                    // Стандартная прогрессия защиты
-                    statProgression[Stat.Defence] = CreatePolynomialProgression(baseDefence, baseDefence * 0.075f * enemyMultiplier, 1.45f, levels); // Было 0.07f, 1.4f
-                }
-            }
-            
-            // Опыт для повышения уровня (только для игрока)
+            // ========== MANA ==========
             if (characterClass == CharacterClass.Player)
             {
-                float baseXP = GetRecommendedBaseValue(Stat.ExperienceToLevelUp, characterClass);
-                statProgression[Stat.ExperienceToLevelUp] = CreateFinalFantasyXPProgression(baseXP, 1.6f, levels); // Было 1.5f - требуется больше опыта
+                // Player: 100 -> 1080
+                statProgression[Stat.Mana] = CreateExponentialProgression(100f, 1.15f, levels);
+            }
+            else if (characterClass == CharacterClass.Mage)
+            {
+                // Mage: 150 -> 3330 (много маны)
+                statProgression[Stat.Mana] = CreateExponentialProgression(150f * enemyMultiplier, 1.20f, levels);
             }
             
-            // Награда опытом (для всех кроме игрока)
+            // ========== MANA REGEN ==========
+            if (characterClass == CharacterClass.Player || characterClass == CharacterClass.Mage)
+            {
+                float baseManaRegen = characterClass == CharacterClass.Player ? 2.5f : 4.0f * enemyMultiplier;
+                statProgression[Stat.ManaRegenRate] = CreateExponentialProgression(baseManaRegen, 1.11f, levels);
+            }
+            
+            // ========== DAMAGE ==========
+            if (characterClass == CharacterClass.Player)
+            {
+                // Player: 35 -> 290 (линейный рост ~15/уровень)
+                statProgression[Stat.Damage] = CreateLinearProgression(35f, 15f, levels);
+            }
+            else if (characterClass == CharacterClass.Grunt)
+            {
+                // Grunt: 18 -> 222
+                statProgression[Stat.Damage] = CreateLinearProgression(18f * enemyMultiplier, 12f * enemyMultiplier, levels);
+            }
+            else if (characterClass == CharacterClass.Mage)
+            {
+                // Mage: 28 -> 436 (высокий урон)
+                statProgression[Stat.Damage] = CreatePolynomialProgression(28f * enemyMultiplier, 1.5f * enemyMultiplier, 1.52f, levels);
+            }
+            else if (characterClass == CharacterClass.Archer)
+            {
+                // Archer: 22 -> 260
+                statProgression[Stat.Damage] = CreateLinearProgression(22f * enemyMultiplier, 14f * enemyMultiplier, levels);
+            }
+            else if (characterClass == CharacterClass.Orc)
+            {
+                // Orc: 32 -> 457
+                statProgression[Stat.Damage] = CreatePolynomialProgression(32f * enemyMultiplier, 1.5f * enemyMultiplier, 1.48f, levels);
+            }
+            else if (characterClass == CharacterClass.Wolf)
+            {
+                // Wolf: 12 -> 199
+                statProgression[Stat.Damage] = CreateLinearProgression(12f * enemyMultiplier, 11f * enemyMultiplier, levels);
+            }
+            else if (characterClass == CharacterClass.Boar)
+            {
+                // Boar: 15 -> 219
+                statProgression[Stat.Damage] = CreateLinearProgression(15f * enemyMultiplier, 12f * enemyMultiplier, levels);
+            }
+            else if (characterClass == CharacterClass.Spider)
+            {
+                // Spider: 14 -> 218
+                statProgression[Stat.Damage] = CreateLinearProgression(14f * enemyMultiplier, 12f * enemyMultiplier, levels);
+            }
+            
+            // ========== DEFENCE ==========
+            if (characterClass == CharacterClass.Player)
+            {
+                // Player: 15 -> 187
+                statProgression[Stat.Defence] = CreateLinearProgression(15f, 10f, levels);
+            }
+            else if (characterClass == CharacterClass.Grunt)
+            {
+                // Grunt: 8 -> 151
+                statProgression[Stat.Defence] = CreateLinearProgression(8f * enemyMultiplier, 8.4f * enemyMultiplier, levels);
+            }
+            else if (characterClass == CharacterClass.Mage)
+            {
+                // Mage: 5 -> 145 (слабая защита)
+                statProgression[Stat.Defence] = CreateLinearProgression(5f * enemyMultiplier, 8.2f * enemyMultiplier, levels);
+            }
+            else if (characterClass == CharacterClass.Archer)
+            {
+                // Archer: 7 -> 177
+                statProgression[Stat.Defence] = CreateLinearProgression(7f * enemyMultiplier, 10f * enemyMultiplier, levels);
+            }
+            else if (characterClass == CharacterClass.Orc)
+            {
+                // Orc: 18 -> 239 (высокая защита)
+                statProgression[Stat.Defence] = CreateLinearProgression(18f * enemyMultiplier, 13f * enemyMultiplier, levels);
+            }
+            else if (characterClass == CharacterClass.Wolf)
+            {
+                // Wolf: 4 -> 142
+                statProgression[Stat.Defence] = CreateLinearProgression(4f * enemyMultiplier, 8.1f * enemyMultiplier, levels);
+            }
+            else if (characterClass == CharacterClass.Boar)
+            {
+                // Boar: 6 -> 176
+                statProgression[Stat.Defence] = CreateLinearProgression(6f * enemyMultiplier, 10f * enemyMultiplier, levels);
+            }
+            else if (characterClass == CharacterClass.Spider)
+            {
+                // Spider: ~4 -> ~142
+                statProgression[Stat.Defence] = CreateLinearProgression(4f * enemyMultiplier, 8.1f * enemyMultiplier, levels);
+            }
+            
+            // ========== EXPERIENCE TO LEVEL UP (только для игрока) ==========
+            if (characterClass == CharacterClass.Player)
+            {
+                // Player: 100 -> 9450 (квадратичный рост)
+                float[] xpValues = new float[levels];
+                for (int i = 0; i < levels; i++)
+                {
+                    int level = i + 1;
+                    // Формула: 100 + 150*level + 25*level^2
+                    xpValues[i] = 100f + (150f * level) + (25f * level * level);
+                }
+                statProgression[Stat.ExperienceToLevelUp] = xpValues;
+            }
+            
+            // ========== EXPERIENCE REWARD (для врагов) ==========
             if (characterClass != CharacterClass.Player)
             {
-                float xpValue = GetRecommendedBaseValue(Stat.ExperienceReward, characterClass);
+                float baseXP = 25f; // Базовая награда за Grunt
                 
-                // Орки и маги дают больше опыта
                 if (characterClass == CharacterClass.Orc)
                 {
-                    xpValue *= 1.6f; // Было 1.5f
-                } 
+                    baseXP = 50f; // Двойная награда за сильного врага
+                }
                 else if (characterClass == CharacterClass.Mage)
                 {
-                    xpValue *= 1.35f; // Было 1.3f
+                    baseXP = 35f; // Больше за мага
                 }
-                // Животные дают меньше опыта
-                else if (characterClass == CharacterClass.Wolf || characterClass == CharacterClass.Boar)
+                else if (characterClass == CharacterClass.Archer)
                 {
-                    xpValue *= 0.75f; // Было 0.8f
+                    baseXP = 28f;
+                }
+                else if (characterClass == CharacterClass.Wolf)
+                {
+                    baseXP = 15f; // Меньше за слабого врага
+                }
+                else if (characterClass == CharacterClass.Boar)
+                {
+                    baseXP = 20f;
+                }
+                else if (characterClass == CharacterClass.Spider)
+                {
+                    baseXP = 18f;
                 }
                 
-                // Награда растет с уровнем
-                statProgression[Stat.ExperienceReward] = CreatePolynomialProgression(xpValue, xpValue * 0.14f, 1.75f, levels); // Было 0.15f, 1.8f
+                // Линейный рост награды опытом
+                statProgression[Stat.ExperienceReward] = CreateLinearProgression(baseXP * enemyMultiplier, baseXP * 0.6f * enemyMultiplier, levels);
             }
             
-            // Очки характеристик (только для игрока)
+            // ========== TRAIT POINTS (только для игрока) ==========
             if (characterClass == CharacterClass.Player)
             {
                 float[] traitPoints = new float[levels];
                 for (int i = 0; i < levels; i++)
                 {
-                    // Начиная с 1 очка на первом уровне
-                    // Далее даем +1 очко каждые 3 уровня, +2 очка каждые 10 уровней
                     traitPoints[i] = 1;
                     
                     int level = i + 1;
@@ -757,62 +650,82 @@ namespace RPG.Stats
                 statProgression[Stat.TotalTraitPoints] = traitPoints;
             }
             
-            // Скидка при покупке (только для игрока)
+            // ========== BUYING DISCOUNT (только для игрока) ==========
             if (characterClass == CharacterClass.Player)
             {
                 float[] discountValues = new float[levels];
                 for (int i = 0; i < levels; i++)
                 {
-                    // Максимальная скидка 25% на 30 уровне (было 30%)
                     int level = i + 1;
-                    discountValues[i] = Mathf.Min(25, level * 0.8f); // Добавлен множитель 0.8f для замедления роста скидки
+                    discountValues[i] = Mathf.Min(18, level * 1.0f);
                 }
                 statProgression[Stat.BuyingDiscountPercentage] = discountValues;
             }
             
-            // Скорость движения - разные значения для разных классов
-            float baseMovementSpeed = GetRecommendedBaseValue(Stat.MovementSpeed, characterClass);
-            
-            if (characterClass != CharacterClass.Player)
-            {
-                // Применяем множитель сложности для врагов, но меньший чем для других статистик
-                baseMovementSpeed *= enemyMultiplier * 0.5f + 0.5f; // Более мягкое влияние сложности на скорость
-            }
+            // ========== MOVEMENT SPEED ==========
+            float baseSpeed = GetRecommendedBaseValue(Stat.MovementSpeed, characterClass);
+            float speedIncrement = 0.1f;
             
             if (characterClass == CharacterClass.Player)
             {
-                // Игрок получает умеренное увеличение скорости с уровнем
-                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.02f, levels);
+                // Player: 5.5 -> 7.3
+                speedIncrement = 0.1f;
             }
-            else if (characterClass == CharacterClass.Wolf)
+            else if (characterClass == CharacterClass.Grunt)
             {
-                // Волки быстрые и становятся еще быстрее
-                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.03f, levels);
-            }
-            else if (characterClass == CharacterClass.Archer)
-            {
-                // Лучники быстрые и мобильные
-                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.025f, levels);
+                // Grunt: 4.5 -> 6.2
+                speedIncrement = 0.1f;
             }
             else if (characterClass == CharacterClass.Mage)
             {
-                // Маги средней скорости
-                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.015f, levels);
+                // Mage: 4.8 -> 6.5
+                speedIncrement = 0.1f;
+            }
+            else if (characterClass == CharacterClass.Archer)
+            {
+                // Archer: 5.2 -> 6.9
+                speedIncrement = 0.1f;
             }
             else if (characterClass == CharacterClass.Orc)
             {
-                // Орки медленные, но немного ускоряются с уровнем
-                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.01f, levels);
+                // Orc: 4.0 -> 5.7 (медленный)
+                speedIncrement = 0.1f;
+            }
+            else if (characterClass == CharacterClass.Wolf)
+            {
+                // Wolf: 6.0 -> 7.7 (быстрый)
+                speedIncrement = 0.1f;
             }
             else if (characterClass == CharacterClass.Boar)
             {
-                // Кабаны могут быть быстрыми при атаке
-                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.02f, levels);
+                // Boar: 4.3 -> 6.0
+                speedIncrement = 0.1f;
             }
-            else
+            else if (characterClass == CharacterClass.Spider)
             {
-                // Стандартная прогрессия скорости для остальных классов
-                statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseMovementSpeed, baseMovementSpeed * 0.015f, levels);
+                // Spider: 5.5 -> 7.2
+                speedIncrement = 0.1f;
+            }
+            
+            statProgression[Stat.MovementSpeed] = CreateLinearProgression(baseSpeed, speedIncrement, levels);
+            
+            // ========== CHEST (специальный случай) ==========
+            if (characterClass == CharacterClass.Chest)
+            {
+                // HP = 1 (неуязвимый)
+                statProgression[Stat.Health] = new float[levels];
+                for (int i = 0; i < levels; i++) statProgression[Stat.Health][i] = 1f;
+                
+                // Damage = 0
+                statProgression[Stat.Damage] = new float[levels];
+                for (int i = 0; i < levels; i++) statProgression[Stat.Damage][i] = 0f;
+                
+                // Experience reward: 30 -> 472
+                statProgression[Stat.ExperienceReward] = CreatePolynomialProgression(30f, 1.5f, 1.5f, levels);
+                
+                // Speed = 0
+                statProgression[Stat.MovementSpeed] = new float[levels];
+                for (int i = 0; i < levels; i++) statProgression[Stat.MovementSpeed][i] = 0f;
             }
             
             return statProgression;
@@ -837,7 +750,6 @@ namespace RPG.Stats
         [MenuItem("RPG/Stats/Open Progression Editor")]
         public static void OpenProgressionEditor()
         {
-            // Находим все файлы Progression в проекте
             string[] guids = AssetDatabase.FindAssets("t:Progression");
             
             if (guids.Length > 0)
@@ -854,4 +766,4 @@ namespace RPG.Stats
             }
         }
     }
-} 
+}
