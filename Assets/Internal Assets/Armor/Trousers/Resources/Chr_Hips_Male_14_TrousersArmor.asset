@@ -14,17 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemID: b2994ed5-a287-4d18-8169-c0efc5229fae
   displayName: "\u0420\u0430\u0431\u043E\u0447\u0438\u0435 \u0448\u0442\u0430\u043D\u044B"
-  description: 
+  description: "\u0421\u0442\u0430\u0440\u044B\u0435 \u0448\u0442\u0430\u043D\u044B,
+    \u0432\u043E\u0437\u043C\u043E\u0436\u043D\u043E \u043A\u0430\u043A\u043E\u0433\u043E-\u0442\u043E
+    \u0448\u0430\u0445\u0442\u0435\u0440\u0430\n\n\u0417\u0410\u0429\u0418\u0422\u0410
+    +2 \u043F\u0440\u043E\u0446\u0435\u043D\u0442\u0430"
   icon: {fileID: -2064944778, guid: 5aa48661f4a35954e9dc881e10567291, type: 3}
   pickup: {fileID: 470378847386831436, guid: 16981755570f27e4c9c753bc9632dbaf, type: 3}
   stackable: 0
   price: 0
   category: 0
+  cannotBeDropped: 0
   allowedEquipLocation: 3
   equipCondition:
     _and: []
   additiveModifiers: []
-  percentageModifiers: []
+  percentageModifiers:
+  - stat: 8
+    value: 2
   _equippedPrefab: {fileID: 5614696253301654316, guid: 132b297d68224a5489ecab50aa5993b5,
     type: 3}
   _equipLocation: 3
