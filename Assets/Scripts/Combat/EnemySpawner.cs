@@ -43,9 +43,19 @@ namespace RPG.Combat
         
         [Header("Настройки спавна")]
         [Tooltip("Минимальная дистанция между врагами при спавне")]
-        [SerializeField] private float minDistanceBetweenEnemies = 1.5f;
+        [SerializeField] private float minDistanceBetweenEnemies = 2.5f;
         [Tooltip("Максимальное количество попыток найти подходящую позицию")]
-        [SerializeField] private int maxSpawnAttempts = 10;
+        [SerializeField] private int maxSpawnAttempts = 15;
+        [Tooltip("Использовать проверку физических коллайдеров при спавне")]
+        [SerializeField] private bool usePhysicsCheck = true;
+        [Tooltip("Радиус проверки коллайдеров (должен соответствовать размеру врага)")]
+        [SerializeField] private float physicsCheckRadius = 0.5f;
+        
+        [Header("Настройки удаления трупов")]
+        [Tooltip("Автоматически удалять трупы врагов через некоторое время")]
+        [SerializeField] private bool autoRemoveCorpses = true;
+        [Tooltip("Время в секундах до удаления трупа врага")]
+        [SerializeField] private float corpseRemovalTime = 10f;
         
         [Header("Отладка и визуализация")]
         [Tooltip("Выводить отладочную информацию о спавне врагов в консоль")]
@@ -55,11 +65,13 @@ namespace RPG.Combat
         [SerializeField] private Color debugLineColor = Color.yellow;
         
         private List<GameObject> spawnedEnemies = new List<GameObject>();
+        private List<Vector3> pendingSpawnPositions = new List<Vector3>();
         private Dictionary<SpawnPoint, List<GameObject>> enemiesBySpawnPoint = new Dictionary<SpawnPoint, List<GameObject>>();
         private Dictionary<SpawnPoint, Coroutine> respawnCoroutines = new Dictionary<SpawnPoint, Coroutine>();
+        private Dictionary<GameObject, Coroutine> corpseRemovalCoroutines = new Dictionary<GameObject, Coroutine>();
         private string currentSceneName;
         private bool isInitialized = false;
-        private int playerLevel = 1; // Значение по умолчанию
+        private int playerLevel = 1;
         
         private void Awake()
         {
@@ -83,7 +95,17 @@ namespace RPG.Combat
                     if (enemy != null)
                     {
                         Gizmos.DrawLine(transform.position, enemy.transform.position);
+                        
+                        Gizmos.color = Color.cyan;
+                        Gizmos.DrawWireSphere(enemy.transform.position, minDistanceBetweenEnemies);
+                        Gizmos.color = debugLineColor;
                     }
+                }
+                
+                Gizmos.color = Color.yellow;
+                foreach (Vector3 pendingPos in pendingSpawnPositions)
+                {
+                    Gizmos.DrawWireSphere(pendingPos, 0.5f);
                 }
             }
         }
@@ -91,30 +113,35 @@ namespace RPG.Combat
         private void Start()
         {
             currentSceneName = SceneManager.GetActiveScene().name;
+            
             if (!isInitialized)
             {
-                SpawnEnemies();
+                if (showDebugInfo) Debug.Log($"[EnemySpawner] Start() - начинаем инициализацию для сцены {currentSceneName}");
                 isInitialized = true;
+                SpawnEnemies();
+            }
+            else
+            {
+                if (showDebugInfo) Debug.Log($"[EnemySpawner] Start() - пропускаем, уже инициализирован");
             }
         }
         
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            // Проверяем, изменилась ли сцена
+            if (showDebugInfo) Debug.Log($"[EnemySpawner] OnSceneLoaded вызван для сцены: {scene.name}, текущая: {currentSceneName}");
+            
             if (scene.name != currentSceneName)
             {
                 if (showDebugInfo) Debug.Log($"[EnemySpawner] Загружена новая сцена: {scene.name}");
                 ClearEnemies();
                 currentSceneName = scene.name;
-                
-                // Небольшая задержка перед спавном, чтобы дать сцене время загрузиться полностью
-                StartCoroutine(SpawnEnemiesWithDelay());
+                isInitialized = false;
             }
-            else if (respawnOnRevisit)
+            else if (respawnOnRevisit && isInitialized)
             {
-                // Если вернулись на ту же сцену и нужно респавнить врагов
-                if (showDebugInfo) Debug.Log($"[EnemySpawner] Повторное посещение сцены, переспавн врагов");
+                if (showDebugInfo) Debug.Log($"[EnemySpawner] Повторное посещение сцены {scene.name}, переспавн врагов");
                 ClearEnemies();
+                isInitialized = false;
                 StartCoroutine(SpawnEnemiesWithDelay());
             }
         }
@@ -125,7 +152,6 @@ namespace RPG.Combat
             SpawnEnemies();
         }
         
-        // Основной метод спавна врагов
         public void SpawnEnemies()
         {
             if (showDebugInfo) Debug.Log($"[EnemySpawner] Начинаем спавн врагов на сцене {currentSceneName}");
@@ -317,7 +343,6 @@ namespace RPG.Combat
             if (showDebugInfo) Debug.Log($"[EnemySpawner] Дополнительно создано {additionalSpawned} врагов");
         }
         
-        // Метод для спавна врага в конкретной точке
         private bool SpawnEnemyAtPoint(SpawnPoint point)
         {
             GameObject enemyPrefab = point.GetRandomEnemyPrefab();
@@ -334,11 +359,13 @@ namespace RPG.Combat
                 return false;
             }
             
-            // Получаем случайный поворот из точки спавна
+            pendingSpawnPositions.Add(spawnPosition);
+            
             Quaternion randomRotation = point.GetRandomRotation();
             GameObject enemy = Instantiate(enemyPrefab, spawnPosition, randomRotation);
             
-            // Добавляем врага в списки
+            pendingSpawnPositions.Remove(spawnPosition);
+            
             spawnedEnemies.Add(enemy);
             
             if (!enemiesBySpawnPoint.ContainsKey(point))
@@ -347,15 +374,13 @@ namespace RPG.Combat
             }
             enemiesBySpawnPoint[point].Add(enemy);
             
-            // Устанавливаем уровень врага, если включен автолевелинг
             if (useAutoLeveling)
             {
                 SetEnemyLevel(enemy);
             }
             
-            if (showDebugInfo) Debug.Log($"[EnemySpawner] Создан враг {enemy.name} в точке {point.name}");
+            if (showDebugInfo) Debug.Log($"[EnemySpawner] Создан враг {enemy.name} в позиции {spawnPosition} от точки {point.name}");
             
-            // Инициализируем врага
             var aiController = enemy.GetComponent<RPG.Control.AIController>();
             if (aiController != null)
             {
@@ -363,73 +388,174 @@ namespace RPG.Combat
                 aiController.Reset();
             }
             
-            // Подписываемся на событие смерти врага, если включен респавн мертвых врагов
             if (respawnDeadEnemies)
             {
                 var health = enemy.GetComponent<Health>();
                 if (health != null)
                 {
+                    health.onDie.RemoveAllListeners();
                     health.onDie.AddListener(() => OnEnemyDied(enemy, point));
                 }
             }
             
-            // Проверяем, есть ли у врага компонент SaveableEntity, если нет - добавляем
             if (enemy.GetComponent<GameDevTV.Saving.SaveableEntity>() == null)
             {
                 enemy.AddComponent<GameDevTV.Saving.SaveableEntity>();
             }
             
+            point.SetOccupied(true);
+            
             return true;
         }
         
-        // Получить валидную позицию для спавна с учетом минимальной дистанции между врагами
         private Vector3 GetValidSpawnPosition(SpawnPoint point)
         {
             for (int attempt = 0; attempt < maxSpawnAttempts; attempt++)
             {
                 Vector3 candidatePosition = point.GetSpawnPosition();
                 
-                // Проверяем дистанцию до других врагов
-                bool validPosition = true;
-                foreach (GameObject enemy in spawnedEnemies)
-                {
-                    if (enemy != null)
-                    {
-                        float distance = Vector3.Distance(candidatePosition, enemy.transform.position);
-                        if (distance < minDistanceBetweenEnemies)
-                        {
-                            validPosition = false;
-                            break;
-                        }
-                    }
-                }
-                
-                if (validPosition)
+                if (IsValidSpawnPosition(candidatePosition))
                 {
                     return candidatePosition;
                 }
+                
+                if (showDebugInfo && attempt > maxSpawnAttempts / 2)
+                {
+                    Debug.Log($"[EnemySpawner] Попытка {attempt + 1}/{maxSpawnAttempts} для точки {point.name}");
+                }
             }
             
-            // Если не нашли подходящую позицию после всех попыток, возвращаем Vector3.zero
+            if (showDebugInfo)
+            {
+                Debug.LogWarning($"[EnemySpawner] Не удалось найти валидную позицию за {maxSpawnAttempts} попыток");
+            }
+            
             return Vector3.zero;
         }
         
-        // Обработка смерти врага
+        private bool IsValidSpawnPosition(Vector3 position)
+        {
+            foreach (GameObject enemy in spawnedEnemies)
+            {
+                if (enemy != null)
+                {
+                    Health enemyHealth = enemy.GetComponent<Health>();
+                    if (enemyHealth != null && !enemyHealth.IsDead())
+                    {
+                        float distance = Vector3.Distance(position, enemy.transform.position);
+                        if (distance < minDistanceBetweenEnemies)
+                        {
+                            if (showDebugInfo)
+                            {
+                                Debug.Log($"[EnemySpawner] Позиция отклонена - слишком близко к {enemy.name} (дистанция: {distance:F2})");
+                            }
+                            return false;
+                        }
+                    }
+                }
+            }
+            
+            foreach (Vector3 pendingPosition in pendingSpawnPositions)
+            {
+                float distance = Vector3.Distance(position, pendingPosition);
+                if (distance < minDistanceBetweenEnemies)
+                {
+                    if (showDebugInfo)
+                    {
+                        Debug.Log($"[EnemySpawner] Позиция отклонена - слишком близко к ожидающей позиции (дистанция: {distance:F2})");
+                    }
+                    return false;
+                }
+            }
+            
+            if (usePhysicsCheck)
+            {
+                Collider[] colliders = Physics.OverlapSphere(position, physicsCheckRadius);
+                foreach (Collider collider in colliders)
+                {
+                    Health health = collider.GetComponent<Health>();
+                    if (health != null && !health.IsDead())
+                    {
+                        if (showDebugInfo)
+                        {
+                            Debug.Log($"[EnemySpawner] Позиция отклонена - найден коллайдер {collider.gameObject.name}");
+                        }
+                        return false;
+                    }
+                }
+            }
+            
+            return true;
+        }
+        
         private void OnEnemyDied(GameObject deadEnemy, SpawnPoint spawnPoint)
         {
             if (showDebugInfo) Debug.Log($"[EnemySpawner] Враг {deadEnemy.name} умер в точке {spawnPoint.name}");
             
-            // Удаляем врага из списков
             spawnedEnemies.Remove(deadEnemy);
             if (enemiesBySpawnPoint.ContainsKey(spawnPoint))
             {
                 enemiesBySpawnPoint[spawnPoint].Remove(deadEnemy);
             }
             
-            // Запускаем корутину респавна, если еще не запущена для этой точки
-            if (!respawnCoroutines.ContainsKey(spawnPoint) || respawnCoroutines[spawnPoint] == null)
+            if (autoRemoveCorpses && deadEnemy != null)
             {
-                respawnCoroutines[spawnPoint] = StartCoroutine(RespawnEnemyAfterDelay(spawnPoint));
+                if (corpseRemovalCoroutines.ContainsKey(deadEnemy) && corpseRemovalCoroutines[deadEnemy] != null)
+                {
+                    StopCoroutine(corpseRemovalCoroutines[deadEnemy]);
+                }
+                
+                Coroutine removalCoroutine = StartCoroutine(RemoveCorpseAfterDelay(deadEnemy));
+                corpseRemovalCoroutines[deadEnemy] = removalCoroutine;
+            }
+            
+            if (respawnDeadEnemies)
+            {
+                if (!respawnCoroutines.ContainsKey(spawnPoint) || respawnCoroutines[spawnPoint] == null)
+                {
+                    respawnCoroutines[spawnPoint] = StartCoroutine(RespawnEnemyAfterDelay(spawnPoint));
+                }
+            }
+        }
+        
+        private IEnumerator RemoveCorpseAfterDelay(GameObject corpse)
+        {
+            if (showDebugInfo) Debug.Log($"[EnemySpawner] Труп {corpse.name} будет удален через {corpseRemovalTime}с");
+            
+            yield return new WaitForSeconds(corpseRemovalTime);
+            
+            if (corpse != null)
+            {
+                SaveableEntity saveableEntity = corpse.GetComponent<SaveableEntity>();
+                if (saveableEntity != null)
+                {
+                    var savingWrapper = FindAnyObjectByType<RPG.SceneManagement.SavingWrapper>();
+                    if (savingWrapper != null)
+                    {
+                        var savingSystem = savingWrapper.GetComponent<GameDevTV.Saving.SavingSystem>();
+                        if (savingSystem != null)
+                        {
+                            var entityRegistry = typeof(GameDevTV.Saving.SavingSystem)
+                                .GetField("entityRegistry", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                                ?.GetValue(savingSystem);
+                            
+                            if (entityRegistry != null)
+                            {
+                                var removeMethod = entityRegistry.GetType().GetMethod("Remove", 
+                                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                                
+                                if (removeMethod != null)
+                                {
+                                    removeMethod.Invoke(entityRegistry, new object[] { saveableEntity.GetUniqueIdentifier() });
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if (showDebugInfo) Debug.Log($"[EnemySpawner] Удаляем труп {corpse.name}");
+                corpseRemovalCoroutines.Remove(corpse);
+                Destroy(corpse);
             }
         }
         
@@ -534,12 +660,10 @@ namespace RPG.Combat
             }
         }
         
-        // Очистка списка врагов (используется при смене сцены)
         private void ClearEnemies()
         {
             if (showDebugInfo) Debug.Log($"[EnemySpawner] Очищаем список врагов, количество: {spawnedEnemies.Count}");
             
-            // Останавливаем все корутины респавна
             foreach (var coroutine in respawnCoroutines.Values)
             {
                 if (coroutine != null)
@@ -548,6 +672,15 @@ namespace RPG.Combat
                 }
             }
             respawnCoroutines.Clear();
+            
+            foreach (var kvp in corpseRemovalCoroutines)
+            {
+                if (kvp.Value != null)
+                {
+                    StopCoroutine(kvp.Value);
+                }
+            }
+            corpseRemovalCoroutines.Clear();
             
             foreach (GameObject enemy in spawnedEnemies)
             {
@@ -558,9 +691,9 @@ namespace RPG.Combat
             }
             
             spawnedEnemies.Clear();
+            pendingSpawnPositions.Clear();
             enemiesBySpawnPoint.Clear();
             
-            // Сбрасываем статус занятости для всех точек
             SpawnPoint[] allPoints = FindObjectsOfType<SpawnPoint>();
             foreach (SpawnPoint point in allPoints)
             {
@@ -581,21 +714,22 @@ namespace RPG.Combat
             }
         }
         
-        // Реализация интерфейса ISaveable
         public object CaptureState()
         {
-            // Сохраняем только текущие позиции врагов и их идентификаторы
             List<string> enemyData = new List<string>();
             
             foreach (GameObject enemy in spawnedEnemies)
             {
                 if (enemy != null)
                 {
-                    SaveableEntity saveable = enemy.GetComponent<SaveableEntity>();
-                    if (saveable != null)
+                    Health health = enemy.GetComponent<Health>();
+                    if (health != null && !health.IsDead())
                     {
-                        // Сохраняем ID врага, который уже существует на сцене
-                        enemyData.Add(saveable.GetUniqueIdentifier());
+                        SaveableEntity saveable = enemy.GetComponent<SaveableEntity>();
+                        if (saveable != null)
+                        {
+                            enemyData.Add(saveable.GetUniqueIdentifier());
+                        }
                     }
                 }
             }
@@ -610,59 +744,84 @@ namespace RPG.Combat
         
         public void RestoreState(object state)
         {
+            if (showDebugInfo) Debug.Log($"[EnemySpawner] RestoreState вызван");
+            
             SpawnerSaveData saveData = (SpawnerSaveData)state;
             
-            // Восстанавливаем состояние системы
             currentSceneName = saveData.sceneName;
-            isInitialized = saveData.isInitialized;
             
-            // Очищаем существующий список врагов при загрузке
+            if (saveData.enemyIds == null || saveData.enemyIds.Length == 0)
+            {
+                if (showDebugInfo) Debug.Log($"[EnemySpawner] Нет сохраненных врагов, пропускаем восстановление");
+                isInitialized = false;
+                return;
+            }
+            
+            isInitialized = true;
+            
             spawnedEnemies.Clear();
             enemiesBySpawnPoint.Clear();
             
-            // Находим всех врагов на сцене с SaveableEntity
+            foreach (var kvp in corpseRemovalCoroutines)
+            {
+                if (kvp.Value != null)
+                {
+                    StopCoroutine(kvp.Value);
+                }
+            }
+            corpseRemovalCoroutines.Clear();
+            
             SaveableEntity[] entities = FindObjectsOfType<SaveableEntity>();
             
-            // Добавляем в список только тех врагов, чьи ID есть в сохраненных данных
+            int restoredCount = 0;
             foreach (SaveableEntity entity in entities)
             {
                 string id = entity.GetUniqueIdentifier();
                 
                 if (Array.Exists(saveData.enemyIds, savedId => savedId == id))
                 {
-                    // Этот враг был на сцене при сохранении, добавляем его в список
                     GameObject enemy = entity.gameObject;
-                    spawnedEnemies.Add(enemy);
+                    Health health = enemy.GetComponent<Health>();
                     
-                    // Восстанавливаем подписку на событие смерти
-                    if (respawnDeadEnemies)
+                    if (health != null && !health.IsDead())
                     {
-                        var aiController = enemy.GetComponent<RPG.Control.AIController>();
-                        if (aiController != null)
+                        spawnedEnemies.Add(enemy);
+                        restoredCount++;
+                        
+                        if (respawnDeadEnemies)
                         {
-                            SpawnPoint spawnPoint = aiController.GetSpawnPoint();
-                            if (spawnPoint != null)
+                            var aiController = enemy.GetComponent<RPG.Control.AIController>();
+                            if (aiController != null)
                             {
-                                if (!enemiesBySpawnPoint.ContainsKey(spawnPoint))
+                                SpawnPoint spawnPoint = aiController.GetSpawnPoint();
+                                if (spawnPoint != null)
                                 {
-                                    enemiesBySpawnPoint[spawnPoint] = new List<GameObject>();
-                                }
-                                enemiesBySpawnPoint[spawnPoint].Add(enemy);
-                                
-                                var health = enemy.GetComponent<Health>();
-                                if (health != null)
-                                {
+                                    if (!enemiesBySpawnPoint.ContainsKey(spawnPoint))
+                                    {
+                                        enemiesBySpawnPoint[spawnPoint] = new List<GameObject>();
+                                    }
+                                    enemiesBySpawnPoint[spawnPoint].Add(enemy);
+                                    
+                                    health.onDie.RemoveAllListeners();
                                     health.onDie.AddListener(() => OnEnemyDied(enemy, spawnPoint));
+                                    
+                                    spawnPoint.SetOccupied(true);
                                 }
                             }
                         }
+                        
+                        if (showDebugInfo) Debug.Log($"[EnemySpawner] Восстановлен живой враг с ID {id}");
                     }
-                    
-                    if (showDebugInfo) Debug.Log($"[EnemySpawner] Восстановлен враг с ID {id}");
+                    else if (health != null && health.IsDead() && autoRemoveCorpses)
+                    {
+                        if (showDebugInfo) Debug.Log($"[EnemySpawner] Найден мертвый враг с ID {id}, запускаем удаление трупа");
+                        Coroutine removalCoroutine = StartCoroutine(RemoveCorpseAfterDelay(enemy));
+                        corpseRemovalCoroutines[enemy] = removalCoroutine;
+                    }
                 }
             }
             
-            if (showDebugInfo) Debug.Log($"[EnemySpawner] Восстановлено состояние: {spawnedEnemies.Count} врагов");
+            if (showDebugInfo) Debug.Log($"[EnemySpawner] Восстановлено состояние: {restoredCount} живых врагов из {saveData.enemyIds.Length} сохраненных");
         }
         
         // Класс для хранения данных при сохранении
