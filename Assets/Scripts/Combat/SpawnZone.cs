@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
+using UnityEngine.Events;
 
 namespace RPG.Combat
 {
@@ -31,6 +33,13 @@ namespace RPG.Combat
         
         [Tooltip("Максимальное количество врагов (для режима RandomRange)")]
         [SerializeField] private int maxEnemyCount = 5;
+        
+        [Header("Условный спавн зоны")]
+        [Tooltip("Использовать условия для спавна всей зоны")]
+        [SerializeField] private bool useConditionalSpawn = false;
+        
+        [Tooltip("Условие для спавна зоны (вызывается перед спавном)")]
+        [SerializeField] private UnityEvent<SpawnConditionResult> zoneSpawnCondition;
         
         [Header("Дополнительные настройки")]
         [Tooltip("Если включено, то SpawnPoints будут автоматически добавлены к зоне при создании внутри неё")]
@@ -182,8 +191,19 @@ namespace RPG.Combat
             
             if (spawnPoints.Count == 0) return new List<SpawnPoint>();
             
+            List<SpawnPoint> validPoints = new List<SpawnPoint>();
+            foreach (SpawnPoint point in spawnPoints)
+            {
+                if (point.CanSpawn())
+                {
+                    validPoints.Add(point);
+                }
+            }
+            
+            if (validPoints.Count == 0) return new List<SpawnPoint>();
+            
             // Создаем копию списка и перемешиваем его
-            List<SpawnPoint> shuffledPoints = new List<SpawnPoint>(spawnPoints);
+            List<SpawnPoint> shuffledPoints = new List<SpawnPoint>(validPoints);
             ShuffleList(shuffledPoints);
             
             switch (spawnMode)
@@ -199,12 +219,29 @@ namespace RPG.Combat
                     
                 case SpawnMode.RandomRange:
                     // Случайное количество в заданном диапазоне
-                    int randomCount = Random.Range(minEnemyCount, maxEnemyCount + 1);
+                    int randomCount = UnityEngine.Random.Range(minEnemyCount, maxEnemyCount + 1);
                     return shuffledPoints.GetRange(0, Mathf.Min(randomCount, shuffledPoints.Count));
                     
                 default:
                     return new List<SpawnPoint>();
             }
+        }
+        
+        public bool CanZoneSpawn()
+        {
+            if (!useConditionalSpawn)
+            {
+                return true;
+            }
+            
+            if (zoneSpawnCondition == null || zoneSpawnCondition.GetPersistentEventCount() == 0)
+            {
+                return true;
+            }
+            
+            SpawnConditionResult result = new SpawnConditionResult();
+            zoneSpawnCondition.Invoke(result);
+            return result.canSpawn;
         }
 
         // Перемешивание списка (алгоритм Фишера-Йейтса)
@@ -213,7 +250,7 @@ namespace RPG.Combat
             int n = list.Count;
             for (int i = 0; i < n; i++)
             {
-                int r = i + Random.Range(0, n - i);
+                int r = i + UnityEngine.Random.Range(0, n - i);
                 T temp = list[i];
                 list[i] = list[r];
                 list[r] = temp;
@@ -258,9 +295,9 @@ namespace RPG.Combat
             {
                 // Создаем случайную позицию внутри зоны
                 Vector3 randomPos = new Vector3(
-                    Random.Range(-zoneSize.x / 2, zoneSize.x / 2),
+                    UnityEngine.Random.Range(-zoneSize.x / 2, zoneSize.x / 2),
                     0, // Высота всегда 0 относительно зоны
-                    Random.Range(-zoneSize.z / 2, zoneSize.z / 2)
+                    UnityEngine.Random.Range(-zoneSize.z / 2, zoneSize.z / 2)
                 );
                 
                 // Преобразуем локальную позицию в мировую

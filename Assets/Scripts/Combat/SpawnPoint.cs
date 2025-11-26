@@ -1,8 +1,36 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
+using UnityEngine.Events;
 
 namespace RPG.Combat
 {
+    [Serializable]
+    public class DynamicSpawnData
+    {
+        [Tooltip("Условие для спавна (необязательно)")]
+        public UnityEvent<SpawnConditionResult> spawnCondition;
+        
+        [Tooltip("Компоненты, которые будут добавлены на врага после спавна")]
+        public List<ComponentToAdd> componentsToAdd = new List<ComponentToAdd>();
+    }
+    
+    [Serializable]
+    public class ComponentToAdd
+    {
+        [Tooltip("Тип компонента (полное имя класса, например: QuestProgress)")]
+        public string componentTypeName;
+        
+        [Tooltip("Настройка компонента после добавления")]
+        public UnityEvent<Component> onComponentAdded;
+    }
+    
+    [Serializable]
+    public class SpawnConditionResult
+    {
+        public bool canSpawn = true;
+    }
+
     public class SpawnPoint : MonoBehaviour
     {
         [SerializeField] private List<GameObject> enemyPrefabs = new List<GameObject>();
@@ -11,6 +39,13 @@ namespace RPG.Combat
         [Range(0, 1)]
         [SerializeField] private float spawnChance = 0.7f;
         [SerializeField] private bool isOccupied = false;
+        
+        [Header("Динамический спавн")]
+        [Tooltip("Использовать условный спавн для этой точки")]
+        [SerializeField] private bool useDynamicSpawn = false;
+        
+        [Tooltip("Данные динамического спавна")]
+        [SerializeField] private DynamicSpawnData dynamicSpawnData = new DynamicSpawnData();
         
         [Tooltip("Отображать визуальное представление точки спавна всегда, а не только при выборе")]
         [SerializeField] private bool alwaysShowGizmo = true;
@@ -141,14 +176,14 @@ namespace RPG.Combat
         public GameObject GetRandomEnemyPrefab()
         {
             if (enemyPrefabs.Count == 0) return null;
-            int randomIndex = Random.Range(0, enemyPrefabs.Count);
+            int randomIndex = UnityEngine.Random.Range(0, enemyPrefabs.Count);
             return enemyPrefabs[randomIndex];
         }
 
         // Получить позицию для спавна (случайная в радиусе точки)
         public Vector3 GetSpawnPosition()
         {
-            Vector3 randomPos = Random.insideUnitSphere * spawnRadius;
+            Vector3 randomPos = UnityEngine.Random.insideUnitSphere * spawnRadius;
             randomPos.y = 0; // Обеспечиваем, что враг появится на том же уровне Y
             
             Vector3 spawnPosition = transform.position + randomPos;
@@ -173,7 +208,7 @@ namespace RPG.Combat
             }
             
             float baseAngle = usePointDirection ? transform.eulerAngles.y : 0f;
-            float randomAngle = Random.Range(minYRotation, maxYRotation);
+            float randomAngle = UnityEngine.Random.Range(minYRotation, maxYRotation);
             
             return Quaternion.Euler(0f, baseAngle + randomAngle, 0f);
         }
@@ -200,6 +235,94 @@ namespace RPG.Combat
         public List<GameObject> GetEnemyPrefabs()
         {
             return enemyPrefabs;
+        }
+        
+        public bool UseDynamicSpawn()
+        {
+            return useDynamicSpawn;
+        }
+        
+        public bool CanSpawn()
+        {
+            if (!useDynamicSpawn)
+            {
+                return true;
+            }
+            
+            if (dynamicSpawnData.spawnCondition == null || dynamicSpawnData.spawnCondition.GetPersistentEventCount() == 0)
+            {
+                return true;
+            }
+            
+            SpawnConditionResult result = new SpawnConditionResult();
+            dynamicSpawnData.spawnCondition.Invoke(result);
+            return result.canSpawn;
+        }
+        
+        public void ApplyDynamicComponents(GameObject spawnedEnemy)
+        {
+            if (!useDynamicSpawn || spawnedEnemy == null)
+            {
+                return;
+            }
+            
+            foreach (ComponentToAdd componentData in dynamicSpawnData.componentsToAdd)
+            {
+                if (string.IsNullOrEmpty(componentData.componentTypeName))
+                {
+                    continue;
+                }
+                
+                Type componentType = FindComponentType(componentData.componentTypeName);
+                if (componentType == null)
+                {
+                    Debug.LogWarning($"[SpawnPoint] Не удалось найти тип компонента: {componentData.componentTypeName}");
+                    continue;
+                }
+                
+                if (!typeof(Component).IsAssignableFrom(componentType))
+                {
+                    Debug.LogWarning($"[SpawnPoint] Тип {componentData.componentTypeName} не является компонентом");
+                    continue;
+                }
+                
+                Component existingComponent = spawnedEnemy.GetComponent(componentType);
+                if (existingComponent == null)
+                {
+                    existingComponent = spawnedEnemy.AddComponent(componentType);
+                }
+                
+                if (componentData.onComponentAdded != null && componentData.onComponentAdded.GetPersistentEventCount() > 0)
+                {
+                    componentData.onComponentAdded.Invoke(existingComponent);
+                }
+            }
+        }
+        
+        private Type FindComponentType(string typeName)
+        {
+            Type type = Type.GetType(typeName);
+            if (type != null)
+            {
+                return type;
+            }
+            
+            type = Type.GetType(typeName + ", Assembly-CSharp");
+            if (type != null)
+            {
+                return type;
+            }
+            
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                type = assembly.GetType(typeName);
+                if (type != null)
+                {
+                    return type;
+                }
+            }
+            
+            return null;
         }
     }
 } 

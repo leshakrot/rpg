@@ -199,6 +199,12 @@ namespace RPG.Combat
             // Обрабатываем каждую зону
             foreach (SpawnZone zone in zones)
             {
+                if (!zone.CanZoneSpawn())
+                {
+                    if (showDebugInfo) Debug.Log($"[EnemySpawner] Зона '{zone.GetZoneName()}' пропущена - условия спавна не выполнены");
+                    continue;
+                }
+                
                 if (showDebugInfo) Debug.Log($"[EnemySpawner] Обрабатываем зону '{zone.GetZoneName()}'");
                 
                 // Получаем активные точки в зависимости от режима спавна зоны
@@ -315,7 +321,7 @@ namespace RPG.Combat
             
             foreach (SpawnPoint point in availablePoints)
             {
-                if (!point.IsOccupied())
+                if (!point.IsOccupied() && point.CanSpawn())
                 {
                     unoccupiedPoints.Add(point);
                 }
@@ -345,6 +351,12 @@ namespace RPG.Combat
         
         private bool SpawnEnemyAtPoint(SpawnPoint point)
         {
+            if (!point.CanSpawn())
+            {
+                if (showDebugInfo) Debug.Log($"[EnemySpawner] Точка {point.name} пропущена - условия спавна не выполнены");
+                return false;
+            }
+            
             GameObject enemyPrefab = point.GetRandomEnemyPrefab();
             if (enemyPrefab == null)
             {
@@ -378,6 +390,8 @@ namespace RPG.Combat
             {
                 SetEnemyLevel(enemy);
             }
+            
+            point.ApplyDynamicComponents(enemy);
             
             if (showDebugInfo) Debug.Log($"[EnemySpawner] Создан враг {enemy.name} в позиции {spawnPosition} от точки {point.name}");
             
