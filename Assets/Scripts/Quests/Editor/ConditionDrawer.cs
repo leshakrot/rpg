@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using GameDevTV.Utils; // Укажите правильное пространство имен для Condition
 using System.Text;
@@ -178,9 +178,10 @@ namespace RPG.Quests.Editor // Используйте ваше простран�
 
 			// 2. Галочка "NOT" (слева)
 			Rect negateRect = new Rect(position.x, currentY, negateWidth, _lineHeight);
-			EditorGUI.LabelField(negateRect, new GUIContent("NOT", "Negate condition?"));
-			// Сдвигаем галочку чуть правее текста "NOT"
-			negateProp.boolValue = EditorGUI.Toggle(new Rect(negateRect.x + 30, negateRect.y, negateWidth - 30, negateRect.height), GUIContent.none, negateProp.boolValue);
+			Rect negateToggleRect = new Rect(position.x, currentY, 15f, _lineHeight);
+			negateProp.boolValue = EditorGUI.Toggle(negateToggleRect, GUIContent.none, negateProp.boolValue);
+			Rect negateLabelRect = new Rect(negateToggleRect.xMax, currentY, negateWidth - 15f, _lineHeight);
+			EditorGUI.LabelField(negateLabelRect, new GUIContent("NOT", "Negate condition?"));
 
 
 			// 3. Поле для имени предиката

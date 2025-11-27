@@ -12,8 +12,11 @@ public class SpawnPointEditor : Editor
     SerializedProperty alwaysShowGizmoProp;
     SerializedProperty gizmoColorProp;
     SerializedProperty occupiedGizmoColorProp;
+    SerializedProperty spawnConditionsProp;
+    SerializedProperty componentsToAddProp;
 
     private bool showAdvancedSettings = false;
+    private bool showConditionalSpawning = true;
 
     private void OnEnable()
     {
@@ -24,13 +27,14 @@ public class SpawnPointEditor : Editor
         alwaysShowGizmoProp = serializedObject.FindProperty("alwaysShowGizmo");
         gizmoColorProp = serializedObject.FindProperty("gizmoColor");
         occupiedGizmoColorProp = serializedObject.FindProperty("occupiedGizmoColor");
+        spawnConditionsProp = serializedObject.FindProperty("spawnConditions");
+        componentsToAddProp = serializedObject.FindProperty("componentsToAdd");
     }
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
 
-        // Основные настройки
         EditorGUILayout.LabelField("Настройки спавна", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(enemyPrefabsProp, new GUIContent("Список врагов"), true);
         EditorGUILayout.PropertyField(spawnRadiusProp, new GUIContent("Радиус спавна"));
@@ -38,14 +42,30 @@ public class SpawnPointEditor : Editor
         
         EditorGUILayout.Space();
         
-        // Состояние точки спавна
-        GUI.enabled = false; // Делаем поле isOccupied только для чтения
+        GUI.enabled = false;
         EditorGUILayout.PropertyField(isOccupiedProp, new GUIContent("Точка занята"));
         GUI.enabled = true;
         
         EditorGUILayout.Space();
         
-        // Фолдаут для расширенных настроек
+        showConditionalSpawning = EditorGUILayout.Foldout(showConditionalSpawning, "Условный спавн и динамические компоненты", true);
+        if (showConditionalSpawning)
+        {
+            EditorGUI.indentLevel++;
+            
+            EditorGUILayout.PropertyField(spawnConditionsProp, new GUIContent("Условия спавна"));
+            EditorGUILayout.HelpBox("Условия для спавна врага (квесты, диалоги и т.д.). Оставьте пустым для безусловного спавна.", MessageType.Info);
+            
+            EditorGUILayout.Space();
+            
+            EditorGUILayout.PropertyField(componentsToAddProp, new GUIContent("Динамические компоненты"), true);
+            EditorGUILayout.HelpBox("Компоненты, которые будут добавлены на врага при спавне (например, QuestProgress).", MessageType.Info);
+            
+            EditorGUI.indentLevel--;
+        }
+        
+        EditorGUILayout.Space();
+        
         showAdvancedSettings = EditorGUILayout.Foldout(showAdvancedSettings, "Визуализация и отладка", true);
         if (showAdvancedSettings)
         {
@@ -54,7 +74,6 @@ public class SpawnPointEditor : Editor
             EditorGUILayout.PropertyField(gizmoColorProp, new GUIContent("Цвет точки"));
             EditorGUILayout.PropertyField(occupiedGizmoColorProp, new GUIContent("Цвет занятой точки"));
             
-            // Кнопка сброса цветов к стандартным
             if (GUILayout.Button("Сбросить цвета"))
             {
                 gizmoColorProp.colorValue = Color.green;
@@ -66,7 +85,6 @@ public class SpawnPointEditor : Editor
 
         EditorGUILayout.Space();
         
-        // Вывод предупреждений
         if (enemyPrefabsProp.arraySize == 0)
         {
             EditorGUILayout.HelpBox("Добавьте хотя бы одного врага в список!", MessageType.Warning);
@@ -77,7 +95,6 @@ public class SpawnPointEditor : Editor
             EditorGUILayout.HelpBox("Радиус спавна слишком мал. Рекомендуется значение не менее 0.5.", MessageType.Info);
         }
         
-        // Кнопки тестирования в режиме игры
         if (Application.isPlaying)
         {
             EditorGUILayout.Space();
@@ -87,7 +104,6 @@ public class SpawnPointEditor : Editor
             
             EditorGUILayout.BeginHorizontal();
             
-            // Кнопка для ручного спавна врага
             if (GUILayout.Button("Тестовый спавн"))
             {
                 GameObject prefab = spawnPoint.GetRandomEnemyPrefab();
@@ -103,7 +119,6 @@ public class SpawnPointEditor : Editor
                 }
             }
             
-            // Кнопка для изменения статуса занятости
             string statusButtonText = spawnPoint.IsOccupied() ? "Освободить точку" : "Занять точку";
             if (GUILayout.Button(statusButtonText))
             {
@@ -122,16 +137,13 @@ public class SpawnPointEditor : Editor
         GameObject spawnPoint = new GameObject("Enemy Spawn Point");
         spawnPoint.AddComponent<SpawnPoint>();
         
-        // Размещаем точку спавна в текущей позиции сцены
         if (SceneView.lastActiveSceneView != null)
         {
             spawnPoint.transform.position = SceneView.lastActiveSceneView.pivot;
         }
         
-        // Выделяем созданный объект
         Selection.activeGameObject = spawnPoint;
         
-        // Регистрируем создание для Undo
         Undo.RegisterCreatedObjectUndo(spawnPoint, "Create Enemy Spawn Point");
     }
 } 

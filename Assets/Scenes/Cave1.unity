@@ -132,6 +132,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy Spider (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.size
@@ -407,6 +412,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy Spider (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.size
@@ -540,6 +550,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Enemy Spider (11)
+      objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
@@ -675,6 +690,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy Spider
       objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.size
@@ -803,6 +823,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Enemy Spider (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
@@ -1308,6 +1333,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy Spider (16)
       objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.size
@@ -1429,6 +1459,79 @@ MonoBehaviour:
   questReference: {fileID: 11400000, guid: 08efc802f132a8742b252fca19f69429, type: 2}
   objectiveReference: kill
   amount: 1
+--- !u!1 &860743826
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 860743828}
+  - component: {fileID: 860743827}
+  m_Layer: 0
+  m_Name: Enemy Spawn Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &860743827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860743826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29f3077efe5f6be4aafd2ade4bdefb23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Combat.SpawnPoint
+  enemyPrefabs:
+  - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
+  spawnRadius: 2
+  spawnChance: 0.7
+  isOccupied: 0
+  alwaysShowGizmo: 1
+  gizmoColor: {r: 0, g: 1, b: 0, a: 1}
+  occupiedGizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  useRandomRotation: 1
+  minYRotation: 0
+  maxYRotation: 360
+  usePointDirection: 0
+  spawnConditions:
+    _and:
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
+        _negate: 0
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
+        _negate: 1
+  componentsToAdd:
+  - componentTemplate: {fileID: 941566969}
+    eventBinding:
+      eventType: 1
+      methodName: AddProgress
+--- !u!4 &860743828
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860743826}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 84.26684, y: 2.5037465, z: 88.52806}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &878519044
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1503,6 +1606,54 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 878519044}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &941566968
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 941566970}
+  - component: {fileID: 941566969}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &941566969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 941566968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f092a57b85008744d9e8f46574bcc2d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestProgress
+  questList: {fileID: 1517979178}
+  questReference: {fileID: 11400000, guid: 08efc802f132a8742b252fca19f69429, type: 2}
+  objectiveReference: kill
+  amount: 1
+--- !u!4 &941566970
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 941566968}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 83.03931, y: 1.56403, z: 89.15201}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &962040255
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1589,6 +1740,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Enemy Spider (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
@@ -1933,6 +2089,85 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1082340195}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1132333995
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1132333998}
+  - component: {fileID: 1132333997}
+  - component: {fileID: 1132333996}
+  m_Layer: 0
+  m_Name: Enemy Spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1132333996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1132333995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameDevTV.Saving.SaveableEntity
+  uniqueIdentifier: 93b97c8e-eebc-4df0-8c54-a3a812d9fb67
+--- !u!114 &1132333997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1132333995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e23bd94072ac334b9a514084fa07678, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Combat.EnemySpawner
+  minGuaranteedSpawns: 3
+  maxEnemiesPerScene: 10
+  respawnOnRevisit: 1
+  respawnDelay: 1
+  respawnDeadEnemies: 0
+  deadEnemyRespawnTime: 60
+  maxSimultaneousRespawns: 3
+  useSpawnZones: 1
+  maxEnemiesPerZone: 5
+  useAutoLeveling: 1
+  minLevelOffset: -1
+  maxLevelOffset: 2
+  minDistanceBetweenEnemies: 2.5
+  maxSpawnAttempts: 15
+  usePhysicsCheck: 1
+  physicsCheckRadius: 0.5
+  autoRemoveCorpses: 1
+  corpseRemovalTime: 10
+  showDebugInfo: 0
+  drawLinesInGame: 0
+  debugLineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!4 &1132333998
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1132333995}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1204272286
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1945,6 +2180,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Enemy Spider (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
@@ -13690,6 +13930,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy Spider (13)
       objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.size
@@ -16857,7 +17102,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.74994
+      value: -570.7496
       objectReference: {fileID: 0}
     - target: {fileID: 5560568489890141519, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -18817,6 +19062,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy Spider (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.size
@@ -18950,6 +19200,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Enemy Spider (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
@@ -19085,6 +19340,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy Spider (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.size
@@ -19219,6 +19479,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy Spider (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.size
@@ -19352,6 +19617,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Enemy Spider (14)
+      objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
@@ -19656,6 +19926,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy Spider (15)
       objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.size
@@ -19789,6 +20064,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Enemy Spider (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
@@ -20360,6 +20640,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy Spider (10)
       objectReference: {fileID: 0}
+    - target: {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 929567889904848320, guid: 2ef344763b48a0949af1e8a52610238a,
         type: 3}
       propertyPath: onDie.m_PersistentCalls.m_Calls.Array.size
@@ -20583,3 +20868,6 @@ SceneRoots:
   - {fileID: 1761001718}
   - {fileID: 82867812}
   - {fileID: 1204272286}
+  - {fileID: 1132333998}
+  - {fileID: 860743828}
+  - {fileID: 941566970}

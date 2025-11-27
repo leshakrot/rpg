@@ -8,6 +8,9 @@ using System.Collections;
 using RPG.Stats;
 using RPG.Core;
 using Newtonsoft.Json;
+using GameDevTV.Utils;
+using System.Linq;
+using UnityEngine.Events;
 
 namespace RPG.Combat
 {
@@ -65,6 +68,7 @@ namespace RPG.Combat
         [SerializeField] private Color debugLineColor = Color.yellow;
         
         private List<GameObject> spawnedEnemies = new List<GameObject>();
+        private List<GameObject> conditionalEnemies = new List<GameObject>();
         private List<Vector3> pendingSpawnPositions = new List<Vector3>();
         private Dictionary<SpawnPoint, List<GameObject>> enemiesBySpawnPoint = new Dictionary<SpawnPoint, List<GameObject>>();
         private Dictionary<SpawnPoint, Coroutine> respawnCoroutines = new Dictionary<SpawnPoint, Coroutine>();
@@ -345,6 +349,12 @@ namespace RPG.Combat
         
         private bool SpawnEnemyAtPoint(SpawnPoint point)
         {
+            if (!CheckSpawnConditions(point))
+            {
+                if (showDebugInfo) Debug.Log($"[EnemySpawner] Условия спавна не выполнены для точки {point.name}");
+                return false;
+            }
+            
             GameObject enemyPrefab = point.GetRandomEnemyPrefab();
             if (enemyPrefab == null)
             {
@@ -379,6 +389,8 @@ namespace RPG.Combat
                 SetEnemyLevel(enemy);
             }
             
+            AddDynamicComponents(enemy, point);
+            
             if (showDebugInfo) Debug.Log($"[EnemySpawner] Создан враг {enemy.name} в позиции {spawnPosition} от точки {point.name}");
             
             var aiController = enemy.GetComponent<RPG.Control.AIController>();
@@ -405,7 +417,102 @@ namespace RPG.Combat
             
             point.SetOccupied(true);
             
+            bool isConditionalSpawn = point.GetComponentsToAdd().Count > 0;
+            if (isConditionalSpawn)
+            {
+                conditionalEnemies.Add(enemy);
+                if (showDebugInfo) Debug.Log($"[EnemySpawner] Враг {enemy.name} помечен как условный спавн");
+            }
+            
             return true;
+        }
+        
+        private bool CheckSpawnConditions(SpawnPoint point)
+        {
+            IPredicateEvaluator[] evaluators = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
+                .OfType<IPredicateEvaluator>()
+                .ToArray();
+            
+            return point.CheckSpawnConditions(evaluators);
+        }
+        
+        private void AddDynamicComponents(GameObject enemy, SpawnPoint point)
+        {
+            List<ComponentToAdd> componentsToAdd = point.GetComponentsToAdd();
+            if (componentsToAdd == null || componentsToAdd.Count == 0)
+            {
+                return;
+            }
+            
+            foreach (ComponentToAdd componentData in componentsToAdd)
+            {
+                if (componentData.componentTemplate == null)
+                {
+                    if (showDebugInfo) Debug.LogWarning($"[EnemySpawner] Компонент-шаблон не указан на точке {point.name}");
+                    continue;
+                }
+                
+                Type componentType = componentData.componentTemplate.GetType();
+                Component addedComponent = enemy.GetComponent(componentType);
+                
+                if (addedComponent == null)
+                {
+                    addedComponent = enemy.AddComponent(componentType);
+                }
+                
+                CopyComponentValues(componentData.componentTemplate, addedComponent);
+                
+                if (showDebugInfo) Debug.Log($"[EnemySpawner] Добавлен компонент {componentType.Name} на {enemy.name}");
+                
+                if (componentData.eventBinding != null && componentData.eventBinding.eventType != ComponentEventBinding.EventType.None)
+                {
+                    BindComponentToEvent(enemy, addedComponent, componentData.eventBinding);
+                }
+            }
+        }
+        
+        private void CopyComponentValues(Component source, Component destination)
+        {
+            if (source == null || destination == null) return;
+            
+            Type componentType = source.GetType();
+            if (componentType != destination.GetType())
+            {
+                Debug.LogError($"[EnemySpawner] Типы компонентов не совпадают: {componentType} != {destination.GetType()}");
+                return;
+            }
+            
+            string json = JsonUtility.ToJson(source);
+            JsonUtility.FromJsonOverwrite(json, destination);
+        }
+        
+        private void BindComponentToEvent(GameObject enemy, Component component, ComponentEventBinding binding)
+        {
+            if (binding.eventType == ComponentEventBinding.EventType.OnDie)
+            {
+                var health = enemy.GetComponent<Health>();
+                if (health != null && !string.IsNullOrEmpty(binding.methodName))
+                {
+                    var method = component.GetType().GetMethod(binding.methodName, 
+                        System.Reflection.BindingFlags.Public | 
+                        System.Reflection.BindingFlags.Instance);
+                    
+                    if (method != null)
+                    {
+                        UnityAction action = () => method.Invoke(component, null);
+                        health.onDie.AddListener(action);
+                        
+                        if (showDebugInfo) 
+                        {
+                            Debug.Log($"[EnemySpawner] Метод {binding.methodName} привязан к событию OnDie для {enemy.name}");
+                        }
+                    }
+                    else if (showDebugInfo)
+                    {
+                        Debug.LogWarning($"[EnemySpawner] Метод {binding.methodName} не найден в компоненте {component.GetType().Name}");
+                    }
+                }
+            }
         }
         
         private Vector3 GetValidSpawnPosition(SpawnPoint point)
@@ -493,6 +600,8 @@ namespace RPG.Combat
             if (showDebugInfo) Debug.Log($"[EnemySpawner] Враг {deadEnemy.name} умер в точке {spawnPoint.name}");
             
             spawnedEnemies.Remove(deadEnemy);
+            conditionalEnemies.Remove(deadEnemy);
+            
             if (enemiesBySpawnPoint.ContainsKey(spawnPoint))
             {
                 enemiesBySpawnPoint[spawnPoint].Remove(deadEnemy);
@@ -691,6 +800,7 @@ namespace RPG.Combat
             }
             
             spawnedEnemies.Clear();
+            conditionalEnemies.Clear();
             pendingSpawnPositions.Clear();
             enemiesBySpawnPoint.Clear();
             
@@ -701,7 +811,6 @@ namespace RPG.Combat
             }
         }
         
-        // Перемешивание списка (алгоритм Фишера-Йейтса)
         private void ShuffleList<T>(List<T> list)
         {
             int n = list.Count;
@@ -711,6 +820,97 @@ namespace RPG.Combat
                 T temp = list[i];
                 list[i] = list[r];
                 list[r] = temp;
+            }
+        }
+        
+        public GameObject SpawnDynamicEnemy(Vector3 position, GameObject enemyPrefab, Action<GameObject> onSpawnCallback = null)
+        {
+            if (enemyPrefab == null)
+            {
+                Debug.LogError("[EnemySpawner] Попытка создать врага с null префабом");
+                return null;
+            }
+            
+            GameObject enemy = Instantiate(enemyPrefab, position, Quaternion.identity);
+            
+            conditionalEnemies.Add(enemy);
+            
+            if (useAutoLeveling)
+            {
+                SetEnemyLevel(enemy);
+            }
+            
+            if (enemy.GetComponent<GameDevTV.Saving.SaveableEntity>() == null)
+            {
+                enemy.AddComponent<GameDevTV.Saving.SaveableEntity>();
+            }
+            
+            var health = enemy.GetComponent<Health>();
+            if (health != null)
+            {
+                health.onDie.AddListener(() => OnDynamicEnemyDied(enemy));
+            }
+            
+            onSpawnCallback?.Invoke(enemy);
+            
+            if (showDebugInfo) Debug.Log($"[EnemySpawner] Динамически создан враг {enemy.name} в позиции {position}");
+            
+            return enemy;
+        }
+        
+        public GameObject SpawnDynamicEnemyWithComponents(
+            Vector3 position, 
+            GameObject enemyPrefab, 
+            List<ComponentToAdd> components,
+            Action<GameObject> onSpawnCallback = null)
+        {
+            GameObject enemy = SpawnDynamicEnemy(position, enemyPrefab, onSpawnCallback);
+            
+            if (enemy != null && components != null && components.Count > 0)
+            {
+                foreach (ComponentToAdd componentData in components)
+                {
+                    if (componentData.componentTemplate == null)
+                    {
+                        if (showDebugInfo) Debug.LogWarning($"[EnemySpawner] Компонент-шаблон не указан");
+                        continue;
+                    }
+                    
+                    Type componentType = componentData.componentTemplate.GetType();
+                    Component addedComponent = enemy.GetComponent(componentType);
+                    
+                    if (addedComponent == null)
+                    {
+                        addedComponent = enemy.AddComponent(componentType);
+                    }
+                    
+                    CopyComponentValues(componentData.componentTemplate, addedComponent);
+                    
+                    if (componentData.eventBinding != null && componentData.eventBinding.eventType != ComponentEventBinding.EventType.None)
+                    {
+                        BindComponentToEvent(enemy, addedComponent, componentData.eventBinding);
+                    }
+                }
+            }
+            
+            return enemy;
+        }
+        
+        private void OnDynamicEnemyDied(GameObject enemy)
+        {
+            if (showDebugInfo) Debug.Log($"[EnemySpawner] Динамический враг {enemy.name} умер");
+            
+            conditionalEnemies.Remove(enemy);
+            
+            if (autoRemoveCorpses && enemy != null)
+            {
+                if (corpseRemovalCoroutines.ContainsKey(enemy) && corpseRemovalCoroutines[enemy] != null)
+                {
+                    StopCoroutine(corpseRemovalCoroutines[enemy]);
+                }
+                
+                Coroutine removalCoroutine = StartCoroutine(RemoveCorpseAfterDelay(enemy));
+                corpseRemovalCoroutines[enemy] = removalCoroutine;
             }
         }
         

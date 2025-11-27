@@ -1,8 +1,37 @@
 using UnityEngine;
 using System.Collections.Generic;
+using GameDevTV.Utils;
+using UnityEngine.Events;
+using System;
 
 namespace RPG.Combat
 {
+    [Serializable]
+    public class ComponentToAdd
+    {
+        [Tooltip("Компонент-шаблон для копирования на врага")]
+        [SerializeReference] public MonoBehaviour componentTemplate;
+        
+        [Tooltip("Событие для подключения (например, OnDie)")]
+        public ComponentEventBinding eventBinding;
+    }
+    
+    [Serializable]
+    public class ComponentEventBinding
+    {
+        public enum EventType
+        {
+            None,
+            OnDie
+        }
+        
+        [Tooltip("Тип события для подписки")]
+        public EventType eventType = EventType.None;
+        
+        [Tooltip("Метод для вызова при событии")]
+        public string methodName;
+    }
+    
     public class SpawnPoint : MonoBehaviour
     {
         [SerializeField] private List<GameObject> enemyPrefabs = new List<GameObject>();
@@ -35,6 +64,14 @@ namespace RPG.Combat
 
         [Tooltip("Использовать направление точки спавна как базовое направление")]
         [SerializeField] private bool usePointDirection = false;
+        
+        [Header("Условный спавн")]
+        [Tooltip("Условия для спавна врага (для квестов, событий и т.д.)")]
+        [SerializeField] private Condition spawnConditions;
+        
+        [Header("Динамические компоненты")]
+        [Tooltip("Компоненты для добавления на заспавненного врага")]
+        [SerializeField] private List<ComponentToAdd> componentsToAdd = new List<ComponentToAdd>();
 
         // Метод для отображения визуализации всегда
         private void OnDrawGizmos()
@@ -141,14 +178,14 @@ namespace RPG.Combat
         public GameObject GetRandomEnemyPrefab()
         {
             if (enemyPrefabs.Count == 0) return null;
-            int randomIndex = Random.Range(0, enemyPrefabs.Count);
+            int randomIndex = UnityEngine.Random.Range(0, enemyPrefabs.Count);
             return enemyPrefabs[randomIndex];
         }
 
         // Получить позицию для спавна (случайная в радиусе точки)
         public Vector3 GetSpawnPosition()
         {
-            Vector3 randomPos = Random.insideUnitSphere * spawnRadius;
+            Vector3 randomPos = UnityEngine.Random.insideUnitSphere * spawnRadius;
             randomPos.y = 0; // Обеспечиваем, что враг появится на том же уровне Y
             
             Vector3 spawnPosition = transform.position + randomPos;
@@ -173,7 +210,7 @@ namespace RPG.Combat
             }
             
             float baseAngle = usePointDirection ? transform.eulerAngles.y : 0f;
-            float randomAngle = Random.Range(minYRotation, maxYRotation);
+            float randomAngle = UnityEngine.Random.Range(minYRotation, maxYRotation);
             
             return Quaternion.Euler(0f, baseAngle + randomAngle, 0f);
         }
@@ -196,10 +233,23 @@ namespace RPG.Combat
             isOccupied = occupied;
         }
         
-        // Получить список врагов
         public List<GameObject> GetEnemyPrefabs()
         {
             return enemyPrefabs;
+        }
+        
+        public bool CheckSpawnConditions(IEnumerable<IPredicateEvaluator> evaluators)
+        {
+            if (spawnConditions == null)
+            {
+                return true;
+            }
+            return spawnConditions.Check(evaluators);
+        }
+        
+        public List<ComponentToAdd> GetComponentsToAdd()
+        {
+            return componentsToAdd;
         }
     }
 } 
