@@ -357,7 +357,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
   spawnRadius: 2
-  spawnChance: 0.7
+  spawnChance: 1
   isOccupied: 0
   alwaysShowGizmo: 1
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
@@ -611,79 +611,6 @@ MonoBehaviour:
   questReference: {fileID: 11400000, guid: 08efc802f132a8742b252fca19f69429, type: 2}
   objectiveReference: kill
   amount: 1
---- !u!1 &376137540
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 376137542}
-  - component: {fileID: 376137541}
-  m_Layer: 0
-  m_Name: Enemy Spawn Point (13)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &376137541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 376137540}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29f3077efe5f6be4aafd2ade4bdefb23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RPG.Combat.SpawnPoint
-  enemyPrefabs:
-  - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
-  spawnRadius: 2
-  spawnChance: 0.7
-  isOccupied: 0
-  alwaysShowGizmo: 1
-  gizmoColor: {r: 0, g: 1, b: 0, a: 1}
-  occupiedGizmoColor: {r: 1, g: 0, b: 0, a: 1}
-  useRandomRotation: 1
-  minYRotation: 0
-  maxYRotation: 360
-  usePointDirection: 0
-  spawnConditions:
-    _and:
-    - _or:
-      - _predicate: HasQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 0
-    - _or:
-      - _predicate: CompletedQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 1
-  componentsToAdd:
-  - componentTemplate: {fileID: 941566969}
-    eventBinding:
-      eventType: 1
-      methodName: AddProgress
---- !u!4 &376137542
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 376137540}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 147.11, y: 2.5037465, z: 145}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1132333998}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &393972837
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1276,7 +1203,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
   spawnRadius: 2
-  spawnChance: 0.7
+  spawnChance: 1
   isOccupied: 0
   alwaysShowGizmo: 1
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
@@ -1311,7 +1238,7 @@ Transform:
   m_GameObject: {fileID: 647361718}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 124.12, y: 2.5037465, z: 106.7}
+  m_LocalPosition: {x: 119.48, y: 2.5037465, z: 108.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1349,7 +1276,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
   spawnRadius: 2
-  spawnChance: 0.7
+  spawnChance: 1
   isOccupied: 0
   alwaysShowGizmo: 1
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
@@ -1384,7 +1311,7 @@ Transform:
   m_GameObject: {fileID: 653363449}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 108.59, y: 2.5037465, z: 91.3}
+  m_LocalPosition: {x: 83.8, y: 2.5037465, z: 91.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1644,7 +1571,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
   spawnRadius: 2
-  spawnChance: 0.7
+  spawnChance: 1
   isOccupied: 0
   alwaysShowGizmo: 1
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
@@ -1679,7 +1606,7 @@ Transform:
   m_GameObject: {fileID: 793307349}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 101.54, y: 2.5037465, z: 91.32}
+  m_LocalPosition: {x: 70.9, y: 2.5037465, z: 98.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1824,79 +1751,6 @@ MonoBehaviour:
   questReference: {fileID: 11400000, guid: 08efc802f132a8742b252fca19f69429, type: 2}
   objectiveReference: kill
   amount: 1
---- !u!1 &831889040
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 831889042}
-  - component: {fileID: 831889041}
-  m_Layer: 0
-  m_Name: Enemy Spawn Point (11)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &831889041
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 831889040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29f3077efe5f6be4aafd2ade4bdefb23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RPG.Combat.SpawnPoint
-  enemyPrefabs:
-  - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
-  spawnRadius: 2
-  spawnChance: 0.7
-  isOccupied: 0
-  alwaysShowGizmo: 1
-  gizmoColor: {r: 0, g: 1, b: 0, a: 1}
-  occupiedGizmoColor: {r: 1, g: 0, b: 0, a: 1}
-  useRandomRotation: 1
-  minYRotation: 0
-  maxYRotation: 360
-  usePointDirection: 0
-  spawnConditions:
-    _and:
-    - _or:
-      - _predicate: HasQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 0
-    - _or:
-      - _predicate: CompletedQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 1
-  componentsToAdd:
-  - componentTemplate: {fileID: 941566969}
-    eventBinding:
-      eventType: 1
-      methodName: AddProgress
---- !u!4 &831889042
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 831889040}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 140.32, y: 2.5037465, z: 138.72}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1132333998}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &860743826
 GameObject:
   m_ObjectHideFlags: 0
@@ -1929,7 +1783,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
   spawnRadius: 2
-  spawnChance: 0.7
+  spawnChance: 1
   isOccupied: 0
   alwaysShowGizmo: 1
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
@@ -1964,7 +1818,7 @@ Transform:
   m_GameObject: {fileID: 860743826}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 84.26684, y: 2.5037465, z: 88.52806}
+  m_LocalPosition: {x: 57.4, y: 2.08, z: 110.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2411,7 +2265,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
   spawnRadius: 2
-  spawnChance: 0.7
+  spawnChance: 1
   isOccupied: 0
   alwaysShowGizmo: 1
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
@@ -2684,88 +2538,11 @@ Transform:
   - {fileID: 1071755959}
   - {fileID: 1483189857}
   - {fileID: 647361720}
-  - {fileID: 1965917334}
   - {fileID: 1758586370}
   - {fileID: 115284587}
   - {fileID: 1271072020}
-  - {fileID: 831889042}
-  - {fileID: 1166372016}
-  - {fileID: 376137542}
   - {fileID: 1608825091}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1166372014
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1166372016}
-  - component: {fileID: 1166372015}
-  m_Layer: 0
-  m_Name: Enemy Spawn Point (12)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1166372015
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1166372014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29f3077efe5f6be4aafd2ade4bdefb23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RPG.Combat.SpawnPoint
-  enemyPrefabs:
-  - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
-  spawnRadius: 2
-  spawnChance: 0.7
-  isOccupied: 0
-  alwaysShowGizmo: 1
-  gizmoColor: {r: 0, g: 1, b: 0, a: 1}
-  occupiedGizmoColor: {r: 1, g: 0, b: 0, a: 1}
-  useRandomRotation: 1
-  minYRotation: 0
-  maxYRotation: 360
-  usePointDirection: 0
-  spawnConditions:
-    _and:
-    - _or:
-      - _predicate: HasQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 0
-    - _or:
-      - _predicate: CompletedQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 1
-  componentsToAdd:
-  - componentTemplate: {fileID: 941566969}
-    eventBinding:
-      eventType: 1
-      methodName: AddProgress
---- !u!4 &1166372016
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1166372014}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 148.27, y: 2.5037465, z: 140.75}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1132333998}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1204272286
 PrefabInstance:
@@ -2912,7 +2689,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
   spawnRadius: 2
-  spawnChance: 0.7
+  spawnChance: 1
   isOccupied: 0
   alwaysShowGizmo: 1
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
@@ -2947,7 +2724,7 @@ Transform:
   m_GameObject: {fileID: 1253617205}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 95.26684, y: 2.5037465, z: 91.52806}
+  m_LocalPosition: {x: 70.2, y: 2.5037465, z: 105}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2985,7 +2762,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
   spawnRadius: 2
-  spawnChance: 0.7
+  spawnChance: 1
   isOccupied: 0
   alwaysShowGizmo: 1
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
@@ -14833,7 +14610,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
   spawnRadius: 2
-  spawnChance: 0.7
+  spawnChance: 1
   isOccupied: 0
   alwaysShowGizmo: 1
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
@@ -15117,6 +14894,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 419266027854343730, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: uniqueIdentifier
+      value: 1b296168-1897-465b-bbaa-8d5606eabc02
+      objectReference: {fileID: 0}
     - target: {fileID: 451779181412512559, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -15250,12 +15032,12 @@ PrefabInstance:
     - target: {fileID: 578189691652438176, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -314.57257
+      value: -314.57254
       objectReference: {fileID: 0}
     - target: {fileID: 683142751084556466, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AspectRatio
-      value: 1.25
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 797872937150736156, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -15505,7 +15287,7 @@ PrefabInstance:
     - target: {fileID: 1259794001493237979, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000030517578
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1307048965095542783, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -16021,7 +15803,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Resource
       value: 
-      objectReference: {fileID: 8300000, guid: f89647600707f1e40b522c48ba1468b2, type: 3}
+      objectReference: {fileID: 8300000, guid: ce75a3edee0782145b55aea2fead971b, type: 3}
     - target: {fileID: 1982014920191540058, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_audioClip
@@ -16492,7 +16274,7 @@ PrefabInstance:
     - target: {fileID: 2688425471313113580, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AspectRatio
-      value: 1.25
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 2731604543998846347, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -16963,7 +16745,7 @@ PrefabInstance:
     - target: {fileID: 3843386131200789801, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AspectRatio
-      value: 1.25
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 3945405291256237001, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -17008,7 +16790,7 @@ PrefabInstance:
     - target: {fileID: 3960585431120162187, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00008627772
+      value: -0.0008666919
       objectReference: {fileID: 0}
     - target: {fileID: 3998255228178511235, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -17049,7 +16831,7 @@ PrefabInstance:
     - target: {fileID: 4124412002752224969, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.0004681241
+      value: -0.0009045435
       objectReference: {fileID: 0}
     - target: {fileID: 4127280141242659306, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -17406,6 +17188,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4895133042397578599, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: uniqueIdentifier
+      value: 0f685843-260c-464c-bf58-09343128782b
       objectReference: {fileID: 0}
     - target: {fileID: 4912352915867566719, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -17822,6 +17609,11 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0.01540731
       objectReference: {fileID: 0}
+    - target: {fileID: 5460695280646288128, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: uniqueIdentifier
+      value: f36fc0a3-7ca3-4a51-af47-12e0b63fa94f
+      objectReference: {fileID: 0}
     - target: {fileID: 5488774675643732964, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -17865,7 +17657,7 @@ PrefabInstance:
     - target: {fileID: 5489135212274682532, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.7492
+      value: -644.8004
       objectReference: {fileID: 0}
     - target: {fileID: 5489688479755327494, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -17920,7 +17712,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.74994
+      value: -570.74915
       objectReference: {fileID: 0}
     - target: {fileID: 5560568489890141519, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -18828,6 +18620,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7062582454799838636, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 4.5405273
       objectReference: {fileID: 0}
     - target: {fileID: 7123594734438443069, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -20038,7 +19835,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
   spawnRadius: 2
-  spawnChance: 0.7
+  spawnChance: 1
   isOccupied: 0
   alwaysShowGizmo: 1
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
@@ -20528,7 +20325,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
   spawnRadius: 2
-  spawnChance: 0.7
+  spawnChance: 1
   isOccupied: 0
   alwaysShowGizmo: 1
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
@@ -20563,7 +20360,7 @@ Transform:
   m_GameObject: {fileID: 1758586368}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 125, y: 2.5037465, z: 112.2}
+  m_LocalPosition: {x: 127.71, y: 2.5037465, z: 116.38}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -21229,79 +21026,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1938821565}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1965917332
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1965917334}
-  - component: {fileID: 1965917333}
-  m_Layer: 0
-  m_Name: Enemy Spawn Point (7)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1965917333
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1965917332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29f3077efe5f6be4aafd2ade4bdefb23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RPG.Combat.SpawnPoint
-  enemyPrefabs:
-  - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
-  spawnRadius: 2
-  spawnChance: 0.7
-  isOccupied: 0
-  alwaysShowGizmo: 1
-  gizmoColor: {r: 0, g: 1, b: 0, a: 1}
-  occupiedGizmoColor: {r: 1, g: 0, b: 0, a: 1}
-  useRandomRotation: 1
-  minYRotation: 0
-  maxYRotation: 360
-  usePointDirection: 0
-  spawnConditions:
-    _and:
-    - _or:
-      - _predicate: HasQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 0
-    - _or:
-      - _predicate: CompletedQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 1
-  componentsToAdd:
-  - componentTemplate: {fileID: 941566969}
-    eventBinding:
-      eventType: 1
-      methodName: AddProgress
---- !u!4 &1965917334
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1965917332}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 120.76, y: 2.5037465, z: 109.23}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1132333998}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1993842817
 PrefabInstance:
   m_ObjectHideFlags: 0
