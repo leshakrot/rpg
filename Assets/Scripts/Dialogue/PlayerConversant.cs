@@ -21,16 +21,17 @@ namespace RPG.Dialogue
         {
             _currentConversant = newConversant;
             _currentDialogue = newDialogue;
-            // ИСПРАВЛЕНИЕ: передаем эвалюаторы для выбора подходящей стартовой ноды
             _currentNode = _currentDialogue.GetRootNode(GetEvaluators());
             TriggerEnterAction();
             onConversationUpdated();
         }
 
         public void Quit()
-        {           
-            _currentDialogue = null;
+        {
+            // ИСПРАВЛЕНИЕ: TriggerExitAction вызывается ДО сброса _currentNode и _currentConversant,
+            // иначе последняя нода не успевает выполнить свои OnExitActions
             TriggerExitAction();
+            _currentDialogue = null;
             _currentConversant = null;
             _currentNode = null;
             _isChoosing = false;
@@ -49,7 +50,7 @@ namespace RPG.Dialogue
 
         public string GetText()
         {
-            if(_currentNode == null)
+            if (_currentNode == null)
             {
                 return "";
             }
@@ -59,9 +60,7 @@ namespace RPG.Dialogue
 
         public IEnumerable<DialogueNode> GetChoices()
         {
-            var choices = FilterOnCondition(_currentDialogue.GetPlayerChildren(_currentNode)).ToList();
-            Debug.Log($"GetChoices found {choices.Count} choices."); 
-            return choices;
+            return FilterOnCondition(_currentDialogue.GetPlayerChildren(_currentNode));
         }
 
         public void SelectChoice(DialogueNode chosenNode)
@@ -75,7 +74,7 @@ namespace RPG.Dialogue
         public void Next()
         {
             int numPlayerResponses = FilterOnCondition(_currentDialogue.GetPlayerChildren(_currentNode)).Count();
-            if(numPlayerResponses > 0)
+            if (numPlayerResponses > 0)
             {
                 _isChoosing = true;
                 TriggerExitAction();
@@ -84,10 +83,27 @@ namespace RPG.Dialogue
             }
 
             DialogueNode[] children = FilterOnCondition(_currentDialogue.GetAIChildren(_currentNode)).ToArray();
-            int randomIndex = UnityEngine.Random.Range(0, children.Count());
+
+            // ИСПРАВЛЕНИЕ: TriggerExitAction вызывается до перехода на следующую ноду,
+            // пока _currentNode ещё указывает на текущую
             TriggerExitAction();
-            Debug.Log($"Player responses count: {numPlayerResponses}");
-            Debug.Log($"AI children count: {children.Length}");
+
+            // ИСПРАВЛЕНИЕ: если детей нет — это последняя нода, завершаем диалог.
+            // Раньше здесь был IndexOutOfRangeException и OnExitActions не успевали выполниться.
+            if (children.Length == 0)
+            {
+                _currentDialogue = null;
+                _currentConversant = null;
+                _currentNode = null;
+                _isChoosing = false;
+                onConversationUpdated();
+                return;
+            }
+
+            // ИСПРАВЛЕНИЕ: используем children.Length вместо children.Count() —
+            // у int-массива Count() это лишний вызов через LINQ, Length корректнее.
+            // Random.Range(int, int) исключает верхнюю границу, поэтому Length правильно.
+            int randomIndex = UnityEngine.Random.Range(0, children.Length);
             _currentNode = children[randomIndex];
             TriggerEnterAction();
             onConversationUpdated();
@@ -95,39 +111,23 @@ namespace RPG.Dialogue
 
         public bool HasNext()
         {
-            string nodeID = (_currentNode != null) ? _currentNode.name : "NULL";
-            Debug.Log($"HasNext: Called for node: {nodeID}");
-            var allChildren = _currentDialogue.GetAllChildren(_currentNode);
-            var allChildrenList = allChildren.ToList();
-            int initialCount = allChildrenList.Count;
-            string nodeName = (_currentNode != null) ? _currentNode.name : "NULL";
-            Debug.Log($"HasNext: Node '{nodeName}' - Initial children count: {initialCount}");
-
-            var filteredChildren = FilterOnCondition(allChildrenList);
-            int filteredCount = filteredChildren.Count();
-            Debug.Log($"HasNext: Node '{nodeName}' - Filtered children count: {filteredCount}");
-            return filteredCount > 0;
+            return FilterOnCondition(_currentDialogue.GetAllChildren(_currentNode)).Any();
         }
 
         private IEnumerable<DialogueNode> FilterOnCondition(IEnumerable<DialogueNode> inputNodes)
         {
             var evaluators = GetEvaluators().ToList();
-            Debug.Log($"FilterOnCondition: Checking with {evaluators.Count} evaluators.");
 
-            foreach(var node in inputNodes)
+            foreach (var node in inputNodes)
             {
-                string nodeName = (node != null) ? node.name : "NULL_NODE";
                 if (node == null)
                 {
                     Debug.LogWarning("FilterOnCondition: Encountered a NULL node in inputNodes.");
                     continue;
                 }
 
-                bool conditionResult = node.CheckCondition(evaluators);
-                Debug.Log($"FilterOnCondition: Checking node '{nodeName}'. Condition result: {conditionResult}");
-                if (conditionResult)
+                if (node.CheckCondition(evaluators))
                 {
-                    Debug.Log($"FilterOnCondition: Node '{nodeName}' PASSED.");
                     yield return node;
                 }
             }
@@ -140,7 +140,7 @@ namespace RPG.Dialogue
 
         private void TriggerEnterAction()
         {
-            if(_currentNode != null)
+            if (_currentNode != null)
             {
                 foreach (var action in _currentNode.GetOnEnterActions())
                 {
@@ -162,9 +162,9 @@ namespace RPG.Dialogue
 
         private void TriggerAction(string action)
         {
-            if (action == "") return;
+            if (string.IsNullOrEmpty(action)) return;
 
-            foreach(DialogueTrigger trigger in _currentConversant.GetComponents<DialogueTrigger>())
+            foreach (DialogueTrigger trigger in _currentConversant.GetComponents<DialogueTrigger>())
             {
                 trigger.Trigger(action);
             }

@@ -14,6 +14,10 @@ namespace RPG.Crafting
         {
             public InventoryItem item;
             public Ingredients[] ingredients;
+
+            [Tooltip("Время крафта в секундах. 0 = мгновенный крафт.")]
+            [Min(0f)]
+            public float craftingTime = 1.5f;
         }
 
         [System.Serializable]

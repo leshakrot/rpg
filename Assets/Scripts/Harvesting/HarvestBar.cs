@@ -109,9 +109,21 @@ namespace RPG.Harvesting
             activeProcessCoroutine = null;
         }
 
-        private void SetupUI(string title, Color barColor)
+        /// <summary>
+        /// Позволяет задать заголовок бара извне, например, перед вызовом StartProcessing.
+        /// </summary>
+        public void SetTitle(string title)
         {
             if (titleText != null) titleText.text = title;
+        }
+
+        private void SetupUI(string title, Color barColor)
+        {
+            // Принудительно сбрасываем текст, чтобы заглушка из инспектора не оставалась
+            if (titleText != null)
+            {
+                titleText.text = string.IsNullOrEmpty(title) ? "..." : title;
+            }
             if (foregroundImage != null) foregroundImage.color = barColor;
         }
 
