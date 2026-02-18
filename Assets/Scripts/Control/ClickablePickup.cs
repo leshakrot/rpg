@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RPG.Control
 {
     [RequireComponent(typeof(Pickup))]
-    public class ClickablePickup : MonoBehaviour, IRaycastable
+    public class ClickablePickup : InteractableObject
     {
         private Pickup _pickup;
 
@@ -13,7 +13,7 @@ namespace RPG.Control
             _pickup = GetComponent<Pickup>();
         }
 
-        public CursorType GetCursorType()
+        public override CursorType GetCursorType()
         {
             if (_pickup.CanBePickedUp())
             {
@@ -25,13 +25,9 @@ namespace RPG.Control
             }
         }
 
-        public bool HandleRaycast(PlayerController callingController)
+        protected override void OnInteract(PlayerController callingController)
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                _pickup.PickupItem();
-            }
-            return true;
+            _pickup.PickupItem();
         }
     }
 }

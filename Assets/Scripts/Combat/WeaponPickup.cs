@@ -1,11 +1,11 @@
-﻿using RPG.Attributes;
+using RPG.Attributes;
 using RPG.Control;
 using System.Collections;
 using UnityEngine;
 
 namespace RPG.Combat
 {
-    public class WeaponPickup : MonoBehaviour, IRaycastable
+    public class WeaponPickup : InteractableObject
     {
         [SerializeField] private WeaponConfig _weapon;
         [SerializeField] private float _healthToRestore = 0;
@@ -49,16 +49,12 @@ namespace RPG.Combat
             }
         }
 
-        public bool HandleRaycast(PlayerController callingController)
+        protected override void OnInteract(PlayerController callingController)
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                Pickup(callingController.gameObject);
-            }
-            return true;
+            Pickup(callingController.gameObject);
         }
 
-        public CursorType GetCursorType()
+        public override CursorType GetCursorType()
         {
             return CursorType.Pickup;
         }

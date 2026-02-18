@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RPG.Dialogue
 {
-    public class AIConversant : MonoBehaviour, IRaycastable
+    public class AIConversant : InteractableObject
     {
         [SerializeField] private Dialogue _dialogue = null;
         [SerializeField] private string _conversantName;
@@ -18,12 +18,12 @@ namespace RPG.Dialogue
         
         private bool _hasTriggered = false;
 
-        public CursorType GetCursorType()
+        public override CursorType GetCursorType()
         {
             return CursorType.Dialogue;
         }
 
-        public bool HandleRaycast(PlayerController callingController)
+        public override bool HandleRaycast(PlayerController callingController)
         {
             if(_dialogue == null || _isTrigger)
             {
@@ -35,11 +35,12 @@ namespace RPG.Dialogue
                 if(health.IsDead()) return false;
             }
 
-            if (Input.GetMouseButtonDown(0))
-            {
-                callingController.GetComponent<PlayerConversant>().StartDialogue(this, _dialogue);
-            }
-            return true;
+            return base.HandleRaycast(callingController);
+        }
+
+        protected override void OnInteract(PlayerController callingController)
+        {
+            callingController.GetComponent<PlayerConversant>().StartDialogue(this, _dialogue);
         }
 
         public string GetName()

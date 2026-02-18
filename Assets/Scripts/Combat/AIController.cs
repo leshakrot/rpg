@@ -1,4 +1,4 @@
-﻿using GameDevTV.Utils;
+using GameDevTV.Utils;
 using RPG.Attributes;
 using RPG.Combat;
 using RPG.Core;
@@ -23,9 +23,7 @@ namespace RPG.Control
         [SerializeField] private float _patrolSpeedFraction = 0.2f;
         [SerializeField] private float _shoutDistance = 5f;
 
-	    private ActionScheduler _actionScheduler;
-        
-	    private SpawnPoint spawnPoint;
+        private ActionScheduler _actionScheduler;
 
         private Fighter _fighter;
         private GameObject _player;
@@ -51,7 +49,7 @@ namespace RPG.Control
 
         private State _currentState = State.Patrol;
         private float _suspicionTimer = 0f;
-        private float _suspicionDuration = 2f; // сколько секунд враг "осматривается"
+        private float _suspicionDuration = 2f;
         private bool _isReturningToSpawn = false;
 
         private void Awake()
@@ -76,26 +74,25 @@ namespace RPG.Control
             _currentWaypointIndex = 0;
             _currentState = State.Patrol;
             _isReturningToSpawn = false;
-	        _suspicionTimer = 0f;
+            _suspicionTimer = 0f;
             
-	        var fighter = GetComponent<Fighter>();
-	        if (fighter != null)
-	        {
-		        fighter.Cancel();
-	        }
+            var fighter = GetComponent<Fighter>();
+            if (fighter != null)
+            {
+                fighter.Cancel();
+            }
             
-	        var mover = GetComponent<Mover>();
-	        if (mover != null)
-	        {
-		        mover.Cancel();
-	        }
+            var mover = GetComponent<Mover>();
+            if (mover != null)
+            {
+                mover.Cancel();
+            }
         }
-	    
-	    public SpawnPoint GetSpawnPoint()
-	    {
-		    return spawnPoint;
-	    }
-	    
+
+        public SpawnPoint GetSpawnPoint()
+        {
+            return _spawnPoint;
+        }
 
         private Vector3 GetGuardPosition()
         {
@@ -110,10 +107,8 @@ namespace RPG.Control
         {
             if (_health.IsDead()) return;
 
-            // Всегда обновляем таймеры
             UpdateTimers();
 
-            // Проверяем, может ли враг атаковать игрока и находится ли игрок в зоне агрессии
             bool canAttackPlayer = _fighter.CanAttack(_player);
             bool isAggrevated = IsAggrevated();
             bool tooFarFromSpawn = IsTooFarFromSpawn();
@@ -123,7 +118,6 @@ namespace RPG.Control
                 case State.Chase:
                     if (tooFarFromSpawn)
                     {
-                        // Игрок увёл врага слишком далеко — враг теряет интерес
                         _currentState = State.Suspicion;
                         _suspicionTimer = 0f;
                     }
@@ -134,7 +128,6 @@ namespace RPG.Control
                     }
                     else
                     {
-                        // Игрок скрылся — враг начинает подозревать
                         _currentState = State.Suspicion;
                         _suspicionTimer = 0f;
                     }
@@ -147,11 +140,9 @@ namespace RPG.Control
                     {
                         _currentState = State.ReturnToSpawn;
                     }
-                    // В этом состоянии враг не реагирует на игрока, даже если тот снова появился
                     break;
 
                 case State.ReturnToSpawn:
-                    // Если игрок снова агрит врага и враг не слишком далеко — возвращаемся к преследованию
                     if (isAggrevated && canAttackPlayer && !tooFarFromSpawn)
                     {
                         _currentState = State.Chase;
@@ -203,7 +194,7 @@ namespace RPG.Control
 
             if(_timeSinceArrivedAtWaypoint > _waypointDwellTime)
             {
-	            _mover.StartMoveAction(nextPosition, _patrolSpeedFraction);
+                _mover.StartMoveAction(nextPosition, _patrolSpeedFraction);
             }       
         }
 
@@ -266,6 +257,18 @@ namespace RPG.Control
             _spawnPoint = point;
             _guardPosition = new LazyValue<Vector3>(() => _spawnPoint.transform.position);
             _guardPosition.ForceInit();
+
+            // Динамически подхватываем PatrolPath из SpawnPoint, если задан
+            GameObject patrolPathObj = point.GetPatrolPathObject();
+            if (patrolPathObj != null)
+            {
+                PatrolPath path = patrolPathObj.GetComponent<PatrolPath>();
+                if (path != null)
+                {
+                    _patrolPath = path;
+                    _currentWaypointIndex = 0;
+                }
+            }
         }
 
         private void ReturnToSpawnBehaviour()

@@ -69,6 +69,10 @@ namespace RPG.Combat
         [Tooltip("Условия для спавна врага (для квестов, событий и т.д.)")]
         [SerializeField] private Condition spawnConditions;
         
+        [Header("Патруль")]
+        [Tooltip("Путь патрулирования для заспавненного врага (опционально). Перетащи сюда GameObject с компонентом PatrolPath.")]
+        [SerializeField] private GameObject patrolPathObject;
+        
         [Header("Динамические компоненты")]
         [Tooltip("Компоненты для добавления на заспавненного врага")]
         [SerializeField] private List<ComponentToAdd> componentsToAdd = new List<ComponentToAdd>();
@@ -113,6 +117,10 @@ namespace RPG.Combat
             }
             
             infoText += $"\nШанс: {spawnChance * 100}%";
+            if (patrolPathObject != null)
+            {
+                infoText += "\n[ПАТРУЛЬ]";
+            }
             if (isOccupied)
             {
                 infoText += "\n[ЗАНЯТО]";
@@ -250,6 +258,11 @@ namespace RPG.Combat
         public List<ComponentToAdd> GetComponentsToAdd()
         {
             return componentsToAdd;
+        }
+        
+        public GameObject GetPatrolPathObject()
+        {
+            return patrolPathObject;
         }
     }
 } 

@@ -1,4 +1,4 @@
-﻿using GameDevTV.Inventories;
+using GameDevTV.Inventories;
 using GameDevTV.Saving;
 using RPG.Control;
 using RPG.Inventories;
@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace RPG.Shops
 {
-    public class Shop : MonoBehaviour, IRaycastable, ISaveable
+    public class Shop : InteractableObject, ISaveable
     {
         [SerializeField] string shopName;
 
@@ -215,18 +215,14 @@ namespace RPG.Shops
             }
         }
 
-        public CursorType GetCursorType()
+        public override CursorType GetCursorType()
         {
             return CursorType.Shop;
         }
 
-        public bool HandleRaycast(PlayerController callingController)
+        protected override void OnInteract(PlayerController callingController)
         {
-            if(Input.GetMouseButtonDown(0))
-            {
-                callingController.GetComponent<Shopper>().SetActiveShop(this);
-            }
-            return true;  
+            callingController.GetComponent<Shopper>().SetActiveShop(this);
         }
 
         public string GetShopName()
