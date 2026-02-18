@@ -2,71 +2,129 @@ using UnityEngine;
 using UnityEditor;
 
 #if UNITY_EDITOR
+/// <summary>
+/// РЎРѕР·РґР°С‘С‚ РіРѕС‚РѕРІС‹Рµ Skybox-РјР°С‚РµСЂРёР°Р»С‹ РґР»СЏ СЃС‚РёР»СЏ Cozy Lowpoly Dark Fantasy.
+/// Tools в†’ Skybox Creator (Cozy Dark Fantasy)
+/// </summary>
 public class SkyboxMaterialCreator : EditorWindow
 {
-    private Material skyboxMaterial;
+    private Material lastCreatedMaterial;
+    private bool     useMobileShader = false;
 
-    [MenuItem("Tools/Create Procedural Skybox")]
+    [MenuItem("Tools/Skybox Creator (Cozy Dark Fantasy)")]
     public static void ShowWindow()
     {
-        GetWindow<SkyboxMaterialCreator>("Создать скайбокс");
+        var w = GetWindow<SkyboxMaterialCreator>("Skybox Creator");
+        w.minSize = new Vector2(320, 280);
     }
 
     private void OnGUI()
     {
-        GUILayout.Label("Создать процедурный скайбокс", EditorStyles.boldLabel);
+        GUILayout.Label("Skybox Creator вЂ” Cozy Dark Fantasy", EditorStyles.boldLabel);
+        EditorGUILayout.HelpBox(
+            "РЎРѕР·РґР°С‘С‚ РјР°С‚РµСЂРёР°Р» СЃРєР°Р№Р±РѕРєСЃР° СЃ РїСЂРµРґСѓСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё\n" +
+            "РїРѕРґ СЃС‚РёР»СЊ Cozy Lowpoly Dark Fantasy.\n\n" +
+            "Mobile  в†’ AtmosphericSkyboxMobile  (target 2.0)\n" +
+            "Desktop в†’ ProceduralSkybox  (РњР»РµС‡РЅС‹Р№ РїСѓС‚СЊ, С…СЂРѕРјР°С‚РёРєР°)",
+            MessageType.Info);
 
-        if (GUILayout.Button("Создать новый материал скайбокса"))
+        EditorGUILayout.Space(6);
+
+        useMobileShader = EditorGUILayout.Toggle("РњРѕР±РёР»СЊРЅР°СЏ РІРµСЂСЃРёСЏ", useMobileShader);
+
+        EditorGUILayout.Space(4);
+
+        if (GUILayout.Button("РЎРѕР·РґР°С‚СЊ РјР°С‚РµСЂРёР°Р» СЃРєР°Р№Р±РѕРєСЃР°", GUILayout.Height(32)))
+            CreateMaterial();
+
+        if (lastCreatedMaterial != null)
         {
-            CreateSkyboxMaterial();
-        }
+            EditorGUILayout.Space(8);
+            EditorGUILayout.ObjectField("РњР°С‚РµСЂРёР°Р»:", lastCreatedMaterial, typeof(Material), false);
 
-        if (skyboxMaterial != null)
-        {
-            GUILayout.Label("Материал создан: " + skyboxMaterial.name);
-
-            if (GUILayout.Button("Применить к текущей сцене"))
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("РџСЂРёРјРµРЅРёС‚СЊ Рє С‚РµРєСѓС‰РµР№ СЃС†РµРЅРµ"))
+                RenderSettings.skybox = lastCreatedMaterial;
+            if (GUILayout.Button("Р’С‹Р±СЂР°С‚СЊ РІ Project"))
             {
-                RenderSettings.skybox = skyboxMaterial;
+                EditorUtility.FocusProjectWindow();
+                Selection.activeObject = lastCreatedMaterial;
             }
+            EditorGUILayout.EndHorizontal();
         }
     }
 
-    private void CreateSkyboxMaterial()
+    private void CreateMaterial()
     {
-        // Проверка, существует ли шейдер
-        Shader skyboxShader = Shader.Find("Custom/ProceduralSkybox");
-        if (skyboxShader == null)
+        string shaderName = useMobileShader
+            ? "Custom/AtmosphericSkyboxMobile"
+            : "Custom/ProceduralSkybox";
+
+        Shader shader = Shader.Find(shaderName);
+        if (shader == null)
         {
-            Debug.LogError("Шейдер 'Custom/ProceduralSkybox' не найден. Убедитесь, что вы создали шейдер правильно.");
+            EditorUtility.DisplayDialog("РћС€РёР±РєР°",
+                $"РЁРµР№РґРµСЂ '{shaderName}' РЅРµ РЅР°Р№РґРµРЅ.\n" +
+                "РЈР±РµРґРёС‚РµСЃСЊ, С‡С‚Рѕ .shader С„Р°Р№Р»С‹ РґРѕР±Р°РІР»РµРЅС‹ РІ РїСЂРѕРµРєС‚.", "OK");
             return;
         }
 
-        // Создаем новый материал
-        skyboxMaterial = new Material(skyboxShader);
+        var mat = new Material(shader);
+        mat.name = useMobileShader ? "CozyDarkFantasy_Mobile" : "CozyDarkFantasy_PC";
 
-        // Задаем базовые значения
-        skyboxMaterial.SetColor("_SkyColor", new Color(0.4f, 0.6f, 0.9f, 1.0f));
-        skyboxMaterial.SetColor("_HorizonColor", new Color(0.9f, 0.85f, 0.8f, 1.0f));
-        skyboxMaterial.SetColor("_GroundColor", new Color(0.3f, 0.25f, 0.2f, 1.0f));
-        skyboxMaterial.SetFloat("_StarBrightness", 0.5f);
-        skyboxMaterial.SetFloat("_StarDensity", 100.0f);
-        skyboxMaterial.SetFloat("_HorizonBlend", 1.0f);
+        ApplyCozyCorrectedDefaults(mat, useMobileShader);
 
-        // Сохраняем материал в проекте
-        string path = "Assets/Materials";
-
-        // Создаем папку Materials, если она не существует
-        if (!AssetDatabase.IsValidFolder(path))
-        {
+        // РЎРѕС…СЂР°РЅСЏРµРј
+        const string folder = "Assets/Materials";
+        if (!AssetDatabase.IsValidFolder(folder))
             AssetDatabase.CreateFolder("Assets", "Materials");
-        }
 
-        AssetDatabase.CreateAsset(skyboxMaterial, path + "/ProceduralSkybox.mat");
+        string path = AssetDatabase.GenerateUniqueAssetPath($"{folder}/{mat.name}.mat");
+        AssetDatabase.CreateAsset(mat, path);
         AssetDatabase.SaveAssets();
 
-        EditorUtility.FocusProjectWindow();
-        Selection.activeObject = skyboxMaterial;
+        lastCreatedMaterial = mat;
+        Debug.Log($"[SkyboxCreator] РЎРѕР·РґР°РЅ РјР°С‚РµСЂРёР°Р»: {path}");
+    }
+
+    // в”Ђв”Ђв”Ђ Р”РµС„РѕР»С‚РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РїРѕРґ Cozy Lowpoly Dark Fantasy в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+    // РЎС‚РёР»СЊ: С‚С‘РїР»С‹Р№ РјРѕР»РѕС‡РЅРѕ-Р±РµР¶РµРІС‹Р№ РґРµРЅСЊ, РіР»СѓР±РѕРєРёР№ С„РёРѕР»РµС‚РѕРІРѕ-СЃРёРЅРёР№ РЅРѕС‡СЊСЋ.
+    // Р“РѕСЂРёР·РѕРЅС‚ СЏРЅС‚Р°СЂРЅС‹Р№ вЂ” СѓР±РёСЂР°РµС‚ "СЃРµСЂРѕСЃС‚СЊ" РїРµСЂРµС…РѕРґРѕРІ.
+    private static void ApplyCozyCorrectedDefaults(Material mat, bool mobile)
+    {
+        // --- РќРµР±Рѕ (СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ DayNightSystem С‡РµСЂРµР· РіСЂР°РґРёРµРЅС‚, СЌС‚Рѕ РЅР°С‡Р°Р»СЊРЅС‹Рµ) ---
+        mat.SetColor("_SkyColor",      new Color(0.32f, 0.52f, 0.82f, 1f));  // РјСЏРіРєРёР№ СЃРёРЅРёР№
+        mat.SetColor("_HorizonColor",  new Color(0.82f, 0.72f, 0.55f, 1f));  // СЏРЅС‚Р°СЂРЅС‹Р№
+        mat.SetColor("_GroundColor",   new Color(0.10f, 0.10f, 0.15f, 1f));  // С‚С‘РјРЅС‹Р№ РёРЅРґРёРіРѕ
+
+        if (!mobile)
+            mat.SetColor("_MidSkyColor", new Color(0.38f, 0.55f, 0.82f, 1f));
+
+        // --- РђС‚РјРѕСЃС„РµСЂР° ---
+        mat.SetFloat("_HorizonBlend",    mobile ? 2.5f : 3.0f);
+        mat.SetFloat("_AtmospherePower", mobile ? 0.85f : 0.75f);
+        mat.SetFloat("_HorizonGlow",     mobile ? 0.28f : 0.35f);
+        mat.SetFloat("_WarmthFactor",    0.08f);
+
+        // --- Р—РІС‘Р·РґС‹ ---
+        mat.SetFloat("_StarBrightness", 0.90f);
+        mat.SetFloat("_StarDensity",    mobile ? 55f : 75f);
+        mat.SetFloat("_StarSize",       mobile ? 0.018f : 0.022f);
+        mat.SetFloat("_StarTwinkle",    mobile ? 0.25f : 0.35f);
+        if (!mobile) mat.SetFloat("_StarColorShift", 0.30f);
+
+        // --- РќРѕС‡СЊ ---
+        mat.SetFloat("_NightSkyIntensity",  mobile ? 1.15f : 1.10f);
+        mat.SetColor("_NightTint",          new Color(0.55f, 0.60f, 1.0f, 1f)); // С„РёРѕР»РµС‚РѕРІРѕ-СЃРёРЅРёР№
+        mat.SetFloat("_NightTintStrength",  0.18f);
+        if (mobile) mat.SetFloat("_NightSkyDesaturation", 0.25f);
+
+        // --- РњР»РµС‡РЅС‹Р№ РїСѓС‚СЊ (С‚РѕР»СЊРєРѕ PC) ---
+        if (!mobile)
+        {
+            mat.SetFloat("_MilkyWayIntensity", 0.28f);
+            mat.SetFloat("_MilkyWayRotation",  0.5f);
+        }
     }
 }
 #endif

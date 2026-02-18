@@ -6,265 +6,240 @@ public class GraphicsPreset
 {
     [Header("Основные настройки")]
     public string presetName = "Default";
-    
+
     [Header("Освещение")]
-    [Range(0.5f, 2f)] public float lightIntensityMultiplier = 1f;
-    [Range(0.3f, 1.5f)] public float ambientIntensityMultiplier = 1f;
+    [Range(0.5f, 2f)]   public float lightIntensityMultiplier    = 1f;
+    [Range(0.3f, 1.5f)] public float ambientIntensityMultiplier  = 1f;
     public bool enableSoftShadows = true;
-    [Range(0.1f, 2f)] public float shadowDistanceMultiplier = 1f;
-    
+    [Range(0.3f, 1f)]   public float shadowStrengthSun           = 0.65f;
+    [Range(0.1f, 0.7f)] public float shadowStrengthMoon          = 0.40f;
+    [Range(0.3f, 1.5f)] public float shadowDistanceMultiplier    = 1f;
+
     [Header("Туман")]
-    public bool enableAdvancedFog = true;
-    [Range(0.5f, 2f)] public float fogDensityMultiplier = 1f;
-    
-    [Header("Атмосферные эффекты")]
-    [Range(0f, 1f)] public float atmosphericScatteringStrength = 0.7f;
-    [Range(0.5f, 1.5f)] public float colorSaturationMultiplier = 1f;
-    [Range(0.8f, 1.2f)] public float contrastMultiplier = 1f;
-    
-    [Header("Оптимизация")]
-    public bool enableRealTimeReflections = true;
-    [Range(1, 4)] public int lightmapResolutionScale = 1;
-    public bool enableVolumetricFog = true;
+    public bool enableFog = true;
+    [Range(0.3f, 2f)]   public float fogDensityMultiplier        = 1f;
+
+    [Header("Атмосфера")]
+    [Range(0.5f, 1.5f)] public float colorSaturationMultiplier   = 1f;
 }
 
+/// <summary>
+/// Применяет пресет графики к DayNightSystem.
+/// ВАЖНО: пресеты задают АБСОЛЮТНЫЕ множители, применяемые один раз при старте.
+/// Повторный вызов ApplyPreset() корректно сбрасывает предыдущий.
+/// </summary>
 public class AtmosphericPresetManager : MonoBehaviour
 {
-    [Header("Пресеты графики")]
+    [Header("Пресеты")]
     public GraphicsPreset lowPreset;
     public GraphicsPreset mediumPreset;
     public GraphicsPreset highPreset;
     public GraphicsPreset ultraPreset;
-    
-    [Header("Автоматическое определение")]
+
+    [Header("Авто-определение качества")]
     public bool autoDetectQuality = true;
-    
-    private DayNightSystem dayNightSystem;
-    private GraphicsPreset currentPreset;
-    
+
+    // ── Базовые значения DayNightSystem (сохраняем до применения пресета) ──
+    private float _baseSunIntensity;
+    private float _baseMoonIntensity;
+    private float _baseAmbientIntensity;
+    private float _baseFogDay;
+    private float _baseFogNight;
+    private float _baseDaySaturation;
+    private float _baseNightSaturation;
+    private float _baseShadowDistance;
+
+    private DayNightSystem  _dns;
+    private GraphicsPreset  _currentPreset;
+    private bool            _baselinesSaved = false;
+
     private void Start()
     {
-        dayNightSystem = GetComponent<DayNightSystem>();
-        if (dayNightSystem == null)
+        _dns = GetComponent<DayNightSystem>();
+        if (_dns == null)
         {
-            Debug.LogError("AtmosphericPresetManager требует DayNightSystem на том же GameObject!");
+            Debug.LogError("[AtmosphericPresetManager] DayNightSystem не найден на этом GameObject!");
             return;
         }
-        
+
         InitializePresets();
-        
+        SaveBaselines();
+
         if (autoDetectQuality)
-        {
-            ApplyPresetBasedOnQuality();
-        }
+            ApplyPresetByQuality();
         else
-        {
             ApplyPreset(mediumPreset);
-        }
     }
-    
-    private void InitializePresets()
+
+    // ─── Сохранение базовых значений до применения пресета ─────────────────
+    private void SaveBaselines()
     {
-        // Низкие настройки
-        if (lowPreset.presetName == "Default")
-        {
-            lowPreset.presetName = "Low";
-            lowPreset.lightIntensityMultiplier = 0.8f;
-            lowPreset.ambientIntensityMultiplier = 1.2f;
-            lowPreset.enableSoftShadows = false;
-            lowPreset.shadowDistanceMultiplier = 0.5f;
-            lowPreset.enableAdvancedFog = false;
-            lowPreset.fogDensityMultiplier = 0.7f;
-            lowPreset.atmosphericScatteringStrength = 0.3f;
-            lowPreset.colorSaturationMultiplier = 0.9f;
-            lowPreset.contrastMultiplier = 1.1f;
-            lowPreset.enableRealTimeReflections = false;
-            lowPreset.lightmapResolutionScale = 1;
-            lowPreset.enableVolumetricFog = false;
-        }
-        
-        // Средние настройки
-        if (mediumPreset.presetName == "Default")
-        {
-            mediumPreset.presetName = "Medium";
-            mediumPreset.lightIntensityMultiplier = 1f;
-            mediumPreset.ambientIntensityMultiplier = 1f;
-            mediumPreset.enableSoftShadows = true;
-            mediumPreset.shadowDistanceMultiplier = 0.8f;
-            mediumPreset.enableAdvancedFog = true;
-            mediumPreset.fogDensityMultiplier = 1f;
-            mediumPreset.atmosphericScatteringStrength = 0.5f;
-            mediumPreset.colorSaturationMultiplier = 1f;
-            mediumPreset.contrastMultiplier = 1f;
-            mediumPreset.enableRealTimeReflections = true;
-            mediumPreset.lightmapResolutionScale = 2;
-            mediumPreset.enableVolumetricFog = false;
-        }
-        
-        // Высокие настройки
-        if (highPreset.presetName == "Default")
-        {
-            highPreset.presetName = "High";
-            highPreset.lightIntensityMultiplier = 1.1f;
-            highPreset.ambientIntensityMultiplier = 0.9f;
-            highPreset.enableSoftShadows = true;
-            highPreset.shadowDistanceMultiplier = 1f;
-            highPreset.enableAdvancedFog = true;
-            highPreset.fogDensityMultiplier = 1.2f;
-            highPreset.atmosphericScatteringStrength = 0.7f;
-            highPreset.colorSaturationMultiplier = 1.1f;
-            highPreset.contrastMultiplier = 1f;
-            highPreset.enableRealTimeReflections = true;
-            highPreset.lightmapResolutionScale = 3;
-            highPreset.enableVolumetricFog = true;
-        }
-        
-        // Ультра настройки
-        if (ultraPreset.presetName == "Default")
-        {
-            ultraPreset.presetName = "Ultra";
-            ultraPreset.lightIntensityMultiplier = 1.2f;
-            ultraPreset.ambientIntensityMultiplier = 0.8f;
-            ultraPreset.enableSoftShadows = true;
-            ultraPreset.shadowDistanceMultiplier = 1.5f;
-            ultraPreset.enableAdvancedFog = true;
-            ultraPreset.fogDensityMultiplier = 1.5f;
-            ultraPreset.atmosphericScatteringStrength = 1f;
-            ultraPreset.colorSaturationMultiplier = 1.2f;
-            ultraPreset.contrastMultiplier = 0.95f;
-            ultraPreset.enableRealTimeReflections = true;
-            ultraPreset.lightmapResolutionScale = 4;
-            ultraPreset.enableVolumetricFog = true;
-        }
+        _baseSunIntensity     = _dns.maxSunIntensity;
+        _baseMoonIntensity    = _dns.maxMoonIntensity;
+        _baseAmbientIntensity = _dns.atmosphericSettings?.ambientIntensity ?? 1f;
+        _baseFogDay           = _dns.fogDensityDay;
+        _baseFogNight         = _dns.fogDensityNight;
+        _baseDaySaturation    = _dns.atmosphericSettings?.daySaturation    ?? 1.05f;
+        _baseNightSaturation  = _dns.atmosphericSettings?.nightSaturation  ?? 0.75f;
+        _baseShadowDistance   = QualitySettings.shadowDistance;
+        _baselinesSaved       = true;
     }
-    
-    private void ApplyPresetBasedOnQuality()
+
+    // ─── Автовыбор по Unity Quality Level ──────────────────────────────────
+    private void ApplyPresetByQuality()
     {
-        int qualityLevel = QualitySettings.GetQualityLevel();
-        int totalLevels = QualitySettings.names.Length;
-        
-        GraphicsPreset selectedPreset;
-        
-        if (qualityLevel == 0)
-        {
-            selectedPreset = lowPreset;
-        }
-        else if (qualityLevel <= totalLevels / 3)
-        {
-            selectedPreset = mediumPreset;
-        }
-        else if (qualityLevel <= (totalLevels * 2) / 3)
-        {
-            selectedPreset = highPreset;
-        }
-        else
-        {
-            selectedPreset = ultraPreset;
-        }
-        
-        ApplyPreset(selectedPreset);
+        int lvl   = QualitySettings.GetQualityLevel();
+        int total = QualitySettings.names.Length;
+
+        GraphicsPreset selected =
+            lvl == 0                        ? lowPreset    :
+            lvl <= total / 3                ? mediumPreset :
+            lvl <= (total * 2) / 3          ? highPreset   :
+                                              ultraPreset;
+
+        ApplyPreset(selected);
     }
-    
+
+    // ─── Применение пресета ─────────────────────────────────────────────────
     public void ApplyPreset(GraphicsPreset preset)
     {
-        if (preset == null || dayNightSystem == null) return;
-        
-        currentPreset = preset;
-        
-        // Применение настроек освещения
-        dayNightSystem.maxSunIntensity *= preset.lightIntensityMultiplier;
-        dayNightSystem.maxMoonIntensity *= preset.lightIntensityMultiplier;
-        
-        if (dayNightSystem.atmosphericSettings != null)
+        if (preset == null || _dns == null) return;
+        if (!_baselinesSaved) SaveBaselines();
+
+        _currentPreset = preset;
+
+        // Освещение — применяем к БАЗОВЫМ значениям (не накапливаем)
+        _dns.maxSunIntensity  = _baseSunIntensity  * preset.lightIntensityMultiplier;
+        _dns.maxMoonIntensity = _baseMoonIntensity * preset.lightIntensityMultiplier;
+
+        if (_dns.atmosphericSettings != null)
         {
-            dayNightSystem.atmosphericSettings.ambientIntensity *= preset.ambientIntensityMultiplier;
+            _dns.atmosphericSettings.ambientIntensity  = _baseAmbientIntensity
+                                                        * preset.ambientIntensityMultiplier;
+            _dns.atmosphericSettings.daySaturation     = _baseDaySaturation
+                                                        * preset.colorSaturationMultiplier;
+            _dns.atmosphericSettings.nightSaturation   = _baseNightSaturation
+                                                        * preset.colorSaturationMultiplier;
         }
-        
-        // Настройка теней
+
+        // Тени
         ConfigureShadows(preset);
-        
-        // Настройка тумана
-        dayNightSystem.fogDensityDay *= preset.fogDensityMultiplier;
-        dayNightSystem.fogDensityNight *= preset.fogDensityMultiplier;
-        
-        // Применение атмосферных эффектов
-        ApplyAtmosphericEffects(preset);
-        
-        Debug.Log($"Применен пресет графики: {preset.presetName}");
+
+        // Туман
+        _dns.fogDensityDay   = _baseFogDay   * preset.fogDensityMultiplier;
+        _dns.fogDensityNight = _baseFogNight * preset.fogDensityMultiplier;
+        _dns.enableFog       = preset.enableFog;
+
+        // Отражения
+        RenderSettings.defaultReflectionMode = DefaultReflectionMode.Skybox;
+
+        Debug.Log($"[AtmosphericPresetManager] Применён пресет: {preset.presetName}");
     }
-    
+
     private void ConfigureShadows(GraphicsPreset preset)
     {
-        if (dayNightSystem.sunLight != null)
+        LightShadows mode = preset.enableSoftShadows ? LightShadows.Soft : LightShadows.Hard;
+
+        if (_dns.sunLight != null)
         {
-            dayNightSystem.sunLight.shadows = preset.enableSoftShadows ? LightShadows.Soft : LightShadows.Hard;
+            _dns.sunLight.shadows        = mode;
+            _dns.sunLight.shadowStrength = preset.shadowStrengthSun;
         }
-        
-        if (dayNightSystem.moonLight != null)
+
+        if (_dns.moonLight != null)
         {
-            dayNightSystem.moonLight.shadows = preset.enableSoftShadows ? LightShadows.Soft : LightShadows.Hard;
+            _dns.moonLight.shadows        = mode;
+            _dns.moonLight.shadowStrength = preset.shadowStrengthMoon;
         }
-        
-        // Настройка расстояния теней
-        QualitySettings.shadowDistance *= preset.shadowDistanceMultiplier;
+
+        QualitySettings.shadowDistance = _baseShadowDistance * preset.shadowDistanceMultiplier;
     }
-    
-    private void ApplyAtmosphericEffects(GraphicsPreset preset)
+
+    // ─── Инициализация дефолтных пресетов ───────────────────────────────────
+    // Все значения подобраны под стиль Cozy Lowpoly Dark Fantasy.
+    // Ключевые принципы:
+    //   - Тени мягче, чем в реализме (lowpoly плохо выглядит с резкими тенями)
+    //   - Туман лёгкий — не заливает сцену серостью
+    //   - Ambient не перегружен — даёт материалам "дышать"
+    private void InitializePresets()
     {
-        if (dayNightSystem.atmosphericSettings != null)
+        // ── Low ────────────────────────────────────────────────────────────
+        if (IsDefault(lowPreset))
         {
-            // Применение насыщенности цвета
-            dayNightSystem.atmosphericSettings.daySaturation *= preset.colorSaturationMultiplier;
-            dayNightSystem.atmosphericSettings.nightSaturation *= preset.colorSaturationMultiplier;
+            lowPreset.presetName                 = "Low";
+            lowPreset.lightIntensityMultiplier   = 0.90f;
+            lowPreset.ambientIntensityMultiplier = 1.10f;  // чуть светлее без теней
+            lowPreset.enableSoftShadows          = false;
+            lowPreset.shadowStrengthSun          = 0.50f;
+            lowPreset.shadowStrengthMoon         = 0.20f;
+            lowPreset.shadowDistanceMultiplier   = 0.55f;
+            lowPreset.enableFog                  = true;
+            lowPreset.fogDensityMultiplier       = 0.75f;  // лёгкий туман даже на Low
+            lowPreset.colorSaturationMultiplier  = 0.95f;
         }
-        
-        // Настройка отражений
-        if (!preset.enableRealTimeReflections)
+
+        // ── Medium ─────────────────────────────────────────────────────────
+        if (IsDefault(mediumPreset))
         {
-            RenderSettings.defaultReflectionMode = DefaultReflectionMode.Skybox;
+            mediumPreset.presetName                 = "Medium";
+            mediumPreset.lightIntensityMultiplier   = 1.00f;
+            mediumPreset.ambientIntensityMultiplier = 1.00f;
+            mediumPreset.enableSoftShadows          = true;
+            mediumPreset.shadowStrengthSun          = 0.60f;
+            mediumPreset.shadowStrengthMoon         = 0.35f;
+            mediumPreset.shadowDistanceMultiplier   = 0.80f;
+            mediumPreset.enableFog                  = true;
+            mediumPreset.fogDensityMultiplier       = 1.00f;
+            mediumPreset.colorSaturationMultiplier  = 1.00f;
         }
-        
-        // Дополнительные настройки URP (если доступны)
-        ApplyURPSettings(preset);
+
+        // ── High ───────────────────────────────────────────────────────────
+        if (IsDefault(highPreset))
+        {
+            highPreset.presetName                 = "High";
+            highPreset.lightIntensityMultiplier   = 1.05f;
+            highPreset.ambientIntensityMultiplier = 0.95f;
+            highPreset.enableSoftShadows          = true;
+            highPreset.shadowStrengthSun          = 0.65f;
+            highPreset.shadowStrengthMoon         = 0.40f;
+            highPreset.shadowDistanceMultiplier   = 1.00f;
+            highPreset.enableFog                  = true;
+            highPreset.fogDensityMultiplier       = 1.10f;
+            highPreset.colorSaturationMultiplier  = 1.05f;
+        }
+
+        // ── Ultra ──────────────────────────────────────────────────────────
+        if (IsDefault(ultraPreset))
+        {
+            ultraPreset.presetName                 = "Ultra";
+            ultraPreset.lightIntensityMultiplier   = 1.10f;
+            ultraPreset.ambientIntensityMultiplier = 0.90f;
+            ultraPreset.enableSoftShadows          = true;
+            ultraPreset.shadowStrengthSun          = 0.68f;
+            ultraPreset.shadowStrengthMoon         = 0.45f;
+            ultraPreset.shadowDistanceMultiplier   = 1.30f;
+            ultraPreset.enableFog                  = true;
+            ultraPreset.fogDensityMultiplier       = 1.20f;
+            ultraPreset.colorSaturationMultiplier  = 1.08f;
+        }
     }
-    
-    private void ApplyURPSettings(GraphicsPreset preset)
-    {
-        // Поиск URP Asset для дополнительных настроек
-        var urpAsset = GraphicsSettings.defaultRenderPipeline;
-        if (urpAsset != null)
-        {
-            // Здесь можно добавить специфичные для URP настройки
-            // Например, через рефлексию или кастинг к конкретному типу URP Asset
-        }
-    }
-    
-    // Публичные методы для ручного применения пресетов
-    public void ApplyLowPreset() => ApplyPreset(lowPreset);
-    public void ApplyMediumPreset() => ApplyPreset(mediumPreset);
-    public void ApplyHighPreset() => ApplyPreset(highPreset);
-    public void ApplyUltraPreset() => ApplyPreset(ultraPreset);
-    
-    // Метод для создания пользовательского пресета
+
+    private bool IsDefault(GraphicsPreset p) => p == null || p.presetName == "Default";
+
+    // ─── Публичное API ───────────────────────────────────────────────────────
+    public void ApplyLow()    => ApplyPreset(lowPreset);
+    public void ApplyMedium() => ApplyPreset(mediumPreset);
+    public void ApplyHigh()   => ApplyPreset(highPreset);
+    public void ApplyUltra()  => ApplyPreset(ultraPreset);
+
+    public GraphicsPreset GetCurrentPreset() => _currentPreset;
+
+    /// <summary>Создаёт кастомный пресет на основе текущего.</summary>
     public GraphicsPreset CreateCustomPreset(string name)
     {
-        GraphicsPreset customPreset = new GraphicsPreset();
-        customPreset.presetName = name;
-        // Копируем настройки из текущего пресета
-        if (currentPreset != null)
-        {
-            customPreset = JsonUtility.FromJson<GraphicsPreset>(JsonUtility.ToJson(currentPreset));
-            customPreset.presetName = name;
-        }
-        return customPreset;
-    }
-    
-    // Методы для runtime изменения качества
-    private void OnValidate()
-    {
-        if (Application.isPlaying && autoDetectQuality)
-        {
-            ApplyPresetBasedOnQuality();
-        }
+        var src  = _currentPreset ?? mediumPreset;
+        var copy = JsonUtility.FromJson<GraphicsPreset>(JsonUtility.ToJson(src));
+        copy.presetName = name;
+        return copy;
     }
 }

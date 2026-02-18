@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: ProceduralSkybox
-  m_Shader: {fileID: 4800000, guid: a118943bcf382344e806e01003871c9e, type: 3}
+  m_Shader: {fileID: 4800000, guid: da4d87e9a28ee974b934e78c38885470, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -26,20 +26,31 @@ Material:
     m_Ints: []
     m_Floats:
     - _AtmospherePower: 1.2
+    - _AtmosphereThickness: 0.96
+    - _CloudCoverage: 0.631
+    - _CloudSpeed: 0.093
     - _HorizonBlend: 1
+    - _HorizonGlow: 0.3
     - _MilkyWayIntensity: 0.3
+    - _NightBoost: 1.2020253
     - _NightSkyDesaturation: 0.4
     - _NightSkyIntensity: 1.28
+    - _NightTintStr: 0.3
     - _StarBrightness: 0.766
-    - _StarDensity: 100
+    - _StarDensity: 258
     - _StarSize: 0.03
     - _StarTwinkle: 0.5
-    - _WarmthFactor: -0.1
+    - _StarTwinkleSpeed: 2.41
+    - _SunSize: 0.04
+    - _SunSizeConvergence: 4.12
+    - _WarmthFactor: 0.14401072
     m_Colors:
-    - _GroundColor: {r: 0.09514268, g: 0.07766549, b: 0.15533099, a: 1}
-    - _HorizonColor: {r: 0.37476838, g: 0.030916095, b: 0.45155624, a: 1}
+    - _CloudColor: {r: 1, g: 1, b: 1, a: 1}
+    - _GroundColor: {r: 0.20805661, g: 0.19593513, b: 0.23472388, a: 1}
+    - _HorizonColor: {r: 0.5294118, g: 0.80784315, b: 0.92156863, a: 1}
     - _MoonlightTint: {r: 0.7, g: 0.85, b: 1, a: 1}
     - _NightFogTint: {r: 0.4, g: 0.6, b: 0.9, a: 1}
-    - _SkyColor: {r: 0.4804498, g: 0.27413267, b: 0.24851, a: 1}
+    - _NightTintColor: {r: 0.45, g: 0.5, b: 1, a: 1}
+    - _SkyColor: {r: 0.5177232, g: 0.56306535, b: 0.78787404, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

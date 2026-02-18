@@ -33,26 +33,32 @@ public class AtmosphericSettings
     [Header("Освещение окружения")]
     [Tooltip("Цвета окружающего освещения в течение дня")]
     public Gradient ambientLightColor;
+
     [Tooltip("Интенсивность окружающего освещения")]
-    [Range(0f, 3f)] public float ambientIntensity = 1f;
+    [Range(0f, 3f)] public float ambientIntensity = 1.0f;
 
     [Header("Атмосферные переходы")]
     [Tooltip("Длительность рассвета в часах")]
-    [Range(0.5f, 3f)] public float dawnDuration = 1.5f;
+    [Range(0.5f, 3f)] public float dawnDuration = 1.2f;
     [Tooltip("Длительность заката в часах")]
-    [Range(0.5f, 3f)] public float duskDuration = 1.5f;
-    
+    [Range(0.5f, 3f)] public float duskDuration = 1.2f;
+
     [Header("Цветовая коррекция")]
     [Tooltip("Насыщенность цветов днем")]
-    [Range(0.5f, 1.5f)] public float daySaturation = 1.1f;
+    [Range(0.5f, 1.5f)] public float daySaturation = 1.05f;
     [Tooltip("Насыщенность цветов ночью")]
-    [Range(0.3f, 1.2f)] public float nightSaturation = 0.8f;
+    [Range(0.3f, 1.2f)] public float nightSaturation = 0.75f;
     [Tooltip("Температура цвета днем (теплый/холодный)")]
-    [Range(-0.3f, 0.3f)] public float dayTemperature = 0.1f;
+    [Range(-0.3f, 0.3f)] public float dayTemperature = 0.08f;
     [Tooltip("Температура цвета ночью")]
-    [Range(-0.3f, 0.3f)] public float nightTemperature = -0.15f;
+    [Range(-0.3f, 0.3f)] public float nightTemperature = -0.12f;
 }
 
+/// <summary>
+/// Система дня/ночи с визуальным стилем Cozy Lowpoly Dark Fantasy.
+/// Тёплое мягкое освещение днём, уютное голубовато-фиолетовое — ночью.
+/// Без грязных переходов и агрессивной насыщенности.
+/// </summary>
 public class DayNightSystem : MonoBehaviour, ISaveable
 {
     [Header("Время")]
@@ -61,17 +67,17 @@ public class DayNightSystem : MonoBehaviour, ISaveable
     public int currentDay = 1;
 
     [Header("Временные границы (часы)")]
-    [Tooltip("Когда начинается рассвет (например 5.0 = 5:00)")]
-    public float dawnStart = 5.0f;
-    [Tooltip("Когда начинается закат (например 19.5 = 19:30)")]
-    public float duskStart = 19.5f;
-    [Tooltip("Скорость сглаживания переходов")]
+    [Tooltip("Когда начинается рассвет (например 5.5 = 5:30)")]
+    public float dawnStart = 5.5f;
+    [Tooltip("Когда начинается закат (например 19.0 = 19:00)")]
+    public float duskStart = 19.0f;
+    [Tooltip("Скорость сглаживания переходов (рекомендуется 1.5–3)")]
     [Range(0.1f, 10f)] public float transitionSpeed = 2f;
 
     [Header("Атмосферные настройки")]
     public AtmosphericSettings atmosphericSettings;
 
-    [Header("Небо (если используется Skybox)")]
+    [Header("Небо (Skybox Material)")]
     public Material skyboxMaterial;
     public Gradient skyColor;
     public Gradient horizonColor;
@@ -87,285 +93,102 @@ public class DayNightSystem : MonoBehaviour, ISaveable
     public Gradient moonColor;
     [Space]
     [Tooltip("Максимальная интенсивность солнца")]
-    [Range(0, 3)] public float maxSunIntensity = 1.8f;
+    [Range(0, 3)] public float maxSunIntensity = 1.5f;
     [Tooltip("Максимальная интенсивность луны")]
-    [Range(0, 1)] public float maxMoonIntensity = 0.8f;
-    [Space]
-    [Tooltip("Мягкость теней солнца")]
-    [Range(0, 1)] public float sunShadowSoftness = 0.3f;
-    [Tooltip("Мягкость теней луны")]
-    [Range(0, 1)] public float moonShadowSoftness = 0.7f;
+    [Range(0, 1)] public float maxMoonIntensity = 0.55f;
 
-    [Header("Звёзды (если используется Skybox)")]
-    [Range(0, 1)] public float starsBrightness = 0.7f;
+    [Header("Звёзды")]
+    [Range(0, 1)] public float starsBrightness = 0.85f;
 
-    [Header("Туман")]
+    [Header("Туман (лёгкий, атмосферный)")]
     public bool enableFog = true;
     public Gradient fogColor;
-    [Range(0, 0.1f)] public float fogDensityDay = 0.01f;
-    [Range(0, 0.1f)] public float fogDensityNight = 0.035f;
-    [Tooltip("Начальное расстояние тумана")]
-    [Range(10f, 200f)] public float fogStartDistance = 50f;
-    [Tooltip("Конечное расстояние тумана")]
-    [Range(100f, 1000f)] public float fogEndDistance = 300f;
+    [Range(0, 0.05f)] public float fogDensityDay   = 0.004f;
+    [Range(0, 0.05f)] public float fogDensityNight  = 0.012f;
+    [Range(10f,  200f)] public float fogStartDistance = 60f;
+    [Range(100f, 800f)] public float fogEndDistance   = 450f;
 
     [Header("События")]
     public List<TimeEvent> timeEvents = new List<TimeEvent>();
     public DayCompletedEvent onDayCompleted = new DayCompletedEvent();
 
-    private int lastHour = -1;
+    // ─── Приватные переменные ───────────────────────────────────────────────
+    private int lastHour   = -1;
     private int lastMinute = -1;
     private bool dayCompletedFired = false;
 
-    // Плавные значения
-    private Color currentSunColor;
-    private Color currentMoonColor;
+    // Плавные значения (lerp targets)
+    private Color currentSunColorSmooth;
+    private Color currentMoonColorSmooth;
     private float currentSunIntensitySmooth;
     private float currentMoonIntensitySmooth;
-    private Color currentAmbientColor;
-    private Color currentFogColor;
+    private Color currentAmbientSmooth;
+    private Color currentFogColorSmooth;
     private float currentFogDensitySmooth;
-    private float currentSaturation = 1f;
-    private float currentTemperature = 0f;
-    
-    // Кэш для оптимизации
-    private Color baseAmbientColor;
-    private Volume globalVolume;
 
-    private static readonly int SkyColorProperty = Shader.PropertyToID("_SkyColor");
-    private static readonly int HorizonColorProperty = Shader.PropertyToID("_HorizonColor");
-    private static readonly int GroundColorProperty = Shader.PropertyToID("_GroundColor");
-    private static readonly int StarBrightnessProperty = Shader.PropertyToID("_StarBrightness");
-
+    // ─── Lifecycle ──────────────────────────────────────────────────────────
     private void Start()
     {
-        // Автоматически добавляем SaveableEntity если его нет
         if (GetComponent<GameDevTV.Saving.SaveableEntity>() == null)
-        {
             gameObject.AddComponent<GameDevTV.Saving.SaveableEntity>();
-        }
-        
-        // Сохраняем объект при переходе между сценами
+
         DontDestroyOnLoad(gameObject);
-        
-        // Проверяем, не существует ли уже другой экземпляр DayNightSystem
-        DayNightSystem[] existingSystems = FindObjectsOfType<DayNightSystem>();
-        if (existingSystems.Length > 1)
+
+        // Singleton: уничтожаем дубликаты
+        var existing = FindObjectsOfType<DayNightSystem>();
+        if (existing.Length > 1)
         {
-            // Если есть другой экземпляр, уничтожаем текущий
-            foreach (var system in existingSystems)
-            {
-                if (system != this)
-                {
-                    Destroy(gameObject);
-                    return;
-                }
-            }
+            foreach (var s in existing)
+                if (s != this) { Destroy(gameObject); return; }
         }
 
-        // Инициализация настроек освещения
-        InitializeLightingSettings();
-        
-        // Инициализация атмосферных настроек для лунной голубой ночи
         InitializeAtmosphericSettings();
-        
-        // Если используется Skybox материал
-        if (skyboxMaterial != null)
-        {
-            RenderSettings.skybox = skyboxMaterial;
-        }
-
-        // Установка режима окружающего освещения на Color
-        RenderSettings.ambientMode = AmbientMode.Flat;
-        
-        // Поиск глобального Volume для post-processing эффектов
-        globalVolume = FindObjectOfType<Volume>();
-
-        float dayNorm = currentTime / 24f;
-        currentSunColor = sunColor.Evaluate(dayNorm);
-        currentMoonColor = moonColor.Evaluate(dayNorm);
-        currentFogColor = fogColor.Evaluate(dayNorm);
-        currentAmbientColor = atmosphericSettings.ambientLightColor.Evaluate(dayNorm);
-        currentSunIntensitySmooth = 0f;
-        currentMoonIntensitySmooth = 0f;
-        currentFogDensitySmooth = (currentTime > dawnStart && currentTime < duskStart) ? fogDensityDay : fogDensityNight;
-
-        UpdateTime(true);
-    }
-
-    private void InitializeLightingSettings()
-    {
-        // Настройка качества теней для атмосферного освещения
-        if (sunLight != null)
-        {
-            sunLight.shadows = LightShadows.Soft;
-            sunLight.shadowStrength = 0.8f;
-            sunLight.shadowBias = 0.05f;
-            sunLight.shadowNormalBias = 0.4f;
-        }
-
-        if (moonLight != null)
-        {
-            moonLight.shadows = LightShadows.Soft;
-            moonLight.shadowStrength = 0.6f;
-            moonLight.shadowBias = 0.1f;
-            moonLight.shadowNormalBias = 0.6f;
-        }
-
-        // Инициализация градиентов если они пустые
         InitializeDefaultGradients();
+        ConfigureLights();
+
+        if (skyboxMaterial != null)
+            RenderSettings.skybox = skyboxMaterial;
+
+        RenderSettings.ambientMode = AmbientMode.Flat;
+
+        // Снапшот начального состояния (без lerp-задержки)
+        float t = currentTime / 24f;
+        currentSunColorSmooth      = sunColor   != null ? sunColor.Evaluate(t)    : Color.white;
+        currentMoonColorSmooth     = moonColor  != null ? moonColor.Evaluate(t)   : new Color(0.6f, 0.75f, 1f);
+        currentAmbientSmooth       = atmosphericSettings.ambientLightColor != null
+                                     ? atmosphericSettings.ambientLightColor.Evaluate(t)
+                                     : Color.grey;
+        currentFogColorSmooth      = fogColor   != null ? fogColor.Evaluate(t)    : Color.grey;
+        currentSunIntensitySmooth  = 0f;
+        currentMoonIntensitySmooth = 0f;
+        currentFogDensitySmooth    = (currentTime > dawnStart && currentTime < duskStart)
+                                     ? fogDensityDay : fogDensityNight;
+
+        UpdateAll(force: true);
     }
 
-    private void InitializeAtmosphericSettings()
+    private void Update() => UpdateAll(force: false);
+
+    // ─── Основной цикл обновления ───────────────────────────────────────────
+    private void UpdateAll(bool force)
     {
-        // Инициализация атмосферных настроек для лунной голубой ночи (как в Ведьмак 3)
-        if (atmosphericSettings == null)
+        // Движение времени
+        currentTime += Time.deltaTime * timeSpeed / 86400f * 24f;
+        if (currentTime >= 24f)
         {
-            atmosphericSettings = new AtmosphericSettings();
-        }
-
-        // Настройки для создания атмосферы лунной ночи
-        atmosphericSettings.ambientIntensity = 1.2f;
-        atmosphericSettings.dawnDuration = 1.5f;
-        atmosphericSettings.duskDuration = 1.5f;
-        atmosphericSettings.daySaturation = 1.1f;
-        atmosphericSettings.nightSaturation = 0.7f; // Приглушенная насыщенность ночью
-        atmosphericSettings.dayTemperature = 0.1f;
-        atmosphericSettings.nightTemperature = -0.2f; // Более холодная температура для голубого оттенка
-    }
-
-    private void InitializeDefaultGradients()
-    {
-        if (atmosphericSettings.ambientLightColor == null || atmosphericSettings.ambientLightColor.colorKeys.Length == 0)
-        {
-            atmosphericSettings.ambientLightColor = CreateDefaultAmbientGradient();
-        }
-
-        if (sunColor == null || sunColor.colorKeys.Length == 0)
-        {
-            sunColor = CreateDefaultSunGradient();
-        }
-
-        if (moonColor == null || moonColor.colorKeys.Length == 0)
-        {
-            moonColor = CreateDefaultMoonGradient();
-        }
-
-        if (fogColor == null || fogColor.colorKeys.Length == 0)
-        {
-            fogColor = CreateDefaultFogGradient();
-        }
-    }
-
-    private Gradient CreateDefaultAmbientGradient()
-    {
-        Gradient gradient = new Gradient();
-        GradientColorKey[] colorKeys = new GradientColorKey[5];
-        GradientAlphaKey[] alphaKeys = new GradientAlphaKey[2];
-
-        // Ночь (0:00) - глубокий лунный голубой (как в Ведьмак 3)
-        colorKeys[0] = new GradientColorKey(new Color(0.08f, 0.15f, 0.28f), 0f);
-        // Рассвет (6:00) - теплый оранжевый
-        colorKeys[1] = new GradientColorKey(new Color(0.8f, 0.6f, 0.4f), 0.25f);
-        // День (12:00) - яркий теплый белый
-        colorKeys[2] = new GradientColorKey(new Color(0.95f, 0.9f, 0.8f), 0.5f);
-        // Закат (18:00) - теплый оранжево-розовый
-        colorKeys[3] = new GradientColorKey(new Color(0.9f, 0.5f, 0.3f), 0.75f);
-        // Ночь (24:00) - глубокий лунный голубой
-        colorKeys[4] = new GradientColorKey(new Color(0.08f, 0.15f, 0.28f), 1f);
-
-        alphaKeys[0] = new GradientAlphaKey(1f, 0f);
-        alphaKeys[1] = new GradientAlphaKey(1f, 1f);
-
-        gradient.SetKeys(colorKeys, alphaKeys);
-        return gradient;
-    }
-
-    private Gradient CreateDefaultSunGradient()
-    {
-        Gradient gradient = new Gradient();
-        GradientColorKey[] colorKeys = new GradientColorKey[5];
-        GradientAlphaKey[] alphaKeys = new GradientAlphaKey[2];
-
-        colorKeys[0] = new GradientColorKey(new Color(0.2f, 0.3f, 0.6f), 0f);     // Ночь
-        colorKeys[1] = new GradientColorKey(new Color(1f, 0.7f, 0.4f), 0.25f);    // Рассвет
-        colorKeys[2] = new GradientColorKey(new Color(1f, 0.95f, 0.8f), 0.5f);    // День
-        colorKeys[3] = new GradientColorKey(new Color(1f, 0.6f, 0.2f), 0.75f);    // Закат
-        colorKeys[4] = new GradientColorKey(new Color(0.2f, 0.3f, 0.6f), 1f);     // Ночь
-
-        alphaKeys[0] = new GradientAlphaKey(1f, 0f);
-        alphaKeys[1] = new GradientAlphaKey(1f, 1f);
-
-        gradient.SetKeys(colorKeys, alphaKeys);
-        return gradient;
-    }
-
-    private Gradient CreateDefaultMoonGradient()
-    {
-        Gradient gradient = new Gradient();
-        GradientColorKey[] colorKeys = new GradientColorKey[3];
-        GradientAlphaKey[] alphaKeys = new GradientAlphaKey[2];
-
-        // Холодный лунный свет с голубоватым оттенком (как в Ведьмак 3: Каменные сердца)
-        colorKeys[0] = new GradientColorKey(new Color(0.6f, 0.75f, 1f), 0f);       // Более насыщенный голубой
-        colorKeys[1] = new GradientColorKey(new Color(0.5f, 0.7f, 1f), 0.5f);      // Глубокий лунный голубой
-        colorKeys[2] = new GradientColorKey(new Color(0.6f, 0.75f, 1f), 1f);       // Холодный голубоватый
-
-        alphaKeys[0] = new GradientAlphaKey(1f, 0f);
-        alphaKeys[1] = new GradientAlphaKey(1f, 1f);
-
-        gradient.SetKeys(colorKeys, alphaKeys);
-        return gradient;
-    }
-
-    private Gradient CreateDefaultFogGradient()
-    {
-        Gradient gradient = new Gradient();
-        GradientColorKey[] colorKeys = new GradientColorKey[5];
-        GradientAlphaKey[] alphaKeys = new GradientAlphaKey[2];
-
-        // Ночной туман с лунным голубоватым оттенком (атмосфера Ведьмак 3)
-        colorKeys[0] = new GradientColorKey(new Color(0.12f, 0.18f, 0.35f), 0f);   // Глубокий лунный туман
-        colorKeys[1] = new GradientColorKey(new Color(0.9f, 0.7f, 0.5f), 0.25f);   // Утренний туман
-        colorKeys[2] = new GradientColorKey(new Color(0.8f, 0.85f, 0.9f), 0.5f);   // Дневной туман
-        colorKeys[3] = new GradientColorKey(new Color(0.8f, 0.6f, 0.4f), 0.75f);   // Вечерний туман
-        colorKeys[4] = new GradientColorKey(new Color(0.12f, 0.18f, 0.35f), 1f);   // Глубокий лунный туман
-
-        alphaKeys[0] = new GradientAlphaKey(1f, 0f);
-        alphaKeys[1] = new GradientAlphaKey(1f, 1f);
-
-        gradient.SetKeys(colorKeys, alphaKeys);
-        return gradient;
-    }
-
-    private void Update()
-    {
-        UpdateTime(false);
-    }
-
-    private void UpdateTime(bool force)
-    {
-        // Увеличиваем текущее время (формула сохранилась для совместимости
-        currentTime += Time.deltaTime * timeSpeed / 86400.0f * 24.0f;
-
-        if (currentTime >= 24.0f)
-        {
-            currentTime -= 24.0f;
+            currentTime -= 24f;
             currentDay++;
             dayCompletedFired = false;
-
-            foreach (var timeEvent in timeEvents)
-                timeEvent.ResetTrigger();
+            foreach (var e in timeEvents) e.ResetTrigger();
         }
 
-        int hour = Mathf.FloorToInt(currentTime);
+        int hour   = Mathf.FloorToInt(currentTime);
         int minute = Mathf.FloorToInt((currentTime - hour) * 60);
 
         if (force || lastHour != hour || lastMinute != minute)
         {
-            lastHour = hour;
+            lastHour   = hour;
             lastMinute = minute;
-
             CheckTimeEvents(hour, minute);
 
             if (!dayCompletedFired && hour == 23 && minute == 59)
@@ -377,202 +200,124 @@ public class DayNightSystem : MonoBehaviour, ISaveable
 
         UpdateSkybox();
         UpdateLighting();
-        UpdateAmbientLighting();
+        UpdateAmbient();
         UpdateFog();
     }
 
-    private void CheckTimeEvents(int hour, int minute)
-    {
-        foreach (var timeEvent in timeEvents)
-        {
-            if (!timeEvent.hasTriggered && timeEvent.CheckTime(hour, minute))
-            {
-                timeEvent.onTimeReached.Invoke();
-                timeEvent.hasTriggered = true;
-            }
-        }
-    }
-
+    // ─── Skybox ─────────────────────────────────────────────────────────────
     private void UpdateSkybox()
     {
         if (skyboxMaterial == null) return;
+        float t        = currentTime / 24f;
+        float dayProg  = GetDayProgress();
 
-        float dayTime = currentTime / 24.0f;
-        
-        // Получаем прогресс дня для определения ночи
-        float dayProgress = GetDayProgress();
-        float nightProgress = 1.0f - dayProgress;
+        // Основные цвета неба
+        SetSkyboxColor("_SkyColor",      skyColor,      t);
+        SetSkyboxColor("_HorizonColor",  horizonColor,  t);
+        SetSkyboxColor("_GroundColor",   groundColor,   t);
 
-        // Обновляем основные цвета с учетом времени суток
-        if (skyColor != null && skyboxMaterial.HasProperty("_SkyColor"))
-        {
-            skyboxMaterial.SetColor("_SkyColor", skyColor.Evaluate(dayTime));
-        }
-        
-        if (horizonColor != null && skyboxMaterial.HasProperty("_HorizonColor"))
-        {
-            skyboxMaterial.SetColor("_HorizonColor", horizonColor.Evaluate(dayTime));
-        }
-        
-        if (groundColor != null && skyboxMaterial.HasProperty("_GroundColor"))
-        {
-            skyboxMaterial.SetColor("_GroundColor", groundColor.Evaluate(dayTime));
-        }
-
-        // Звезды появляются только ночью (автоматически через шейдер)
+        // Звёзды: показываем ночью через _StarBrightness
+        // Шейдер CozyDarkFantasySkybox определяет nightFactor сам через яркость _SkyColor,
+        // но мы также управляем через _StarBrightness для гибкости
         if (skyboxMaterial.HasProperty("_StarBrightness"))
-        {
             skyboxMaterial.SetFloat("_StarBrightness", starsBrightness);
-        }
-        
-        // Теплота атмосферы - теплее днем, прохладнее ночью
+
+        // Warmth для старых шейдеров (если используется)
         if (skyboxMaterial.HasProperty("_WarmthFactor"))
+            skyboxMaterial.SetFloat("_WarmthFactor", Mathf.Lerp(-0.08f, 0.12f, dayProg));
+
+        // Динамический boost ночи (для CozyDarkFantasySkybox)
+        if (skyboxMaterial.HasProperty("_NightBoost"))
         {
-            float warmth = Mathf.Lerp(-0.1f, 0.2f, dayProgress);
-            skyboxMaterial.SetFloat("_WarmthFactor", warmth);
+            float boost = Mathf.Lerp(1.6f, 1.0f, dayProg);
+            skyboxMaterial.SetFloat("_NightBoost", boost);
         }
-        
-        // Интенсивность ночного неба
-        if (skyboxMaterial.HasProperty("_NightSkyIntensity"))
-        {
-            float nightIntensity = Mathf.Lerp(1.0f, 1.4f, atmosphericSettings.nightSaturation);
-            skyboxMaterial.SetFloat("_NightSkyIntensity", nightIntensity);
-        }
+
+        // DynamicGI: пересчёт после смены цветов скайбокса
+        DynamicGI.UpdateEnvironment();
     }
 
+    private void SetSkyboxColor(string prop, Gradient grad, float t)
+    {
+        if (grad != null && skyboxMaterial.HasProperty(prop))
+            skyboxMaterial.SetColor(prop, grad.Evaluate(t));
+    }
+
+    // ─── Направленный свет (Солнце / Луна) ─────────────────────────────────
     private void UpdateLighting()
     {
         if (sunLight == null || moonLight == null) return;
 
-        // Вращение источников света с улучшенной формулой
-        float sunAngle = (currentTime / 24.0f) * 360.0f - 90f; // Смещение для правильного положения в полдень
-        float moonAngle = sunAngle + 180.0f;
+        float sunAngle  = (currentTime / 24f) * 360f - 90f;
+        float moonAngle = sunAngle + 180f;
 
-        sunLight.transform.rotation = Quaternion.Euler(sunAngle, 30f, 0); // Небольшой наклон для более естественного света
-        moonLight.transform.rotation = Quaternion.Euler(moonAngle, -15f, 0);
+        sunLight.transform.rotation  = Quaternion.Euler(sunAngle,   25f,  0f);
+        moonLight.transform.rotation = Quaternion.Euler(moonAngle, -10f,  0f);
 
-        float dayTime = currentTime / 24.0f;
+        float t   = currentTime / 24f;
+        float day = GetDayProgress();
 
-        // Улучшенные расчеты интенсивности с учетом атмосферных переходов
         float dawnEnd = dawnStart + atmosphericSettings.dawnDuration;
         float duskEnd = duskStart + atmosphericSettings.duskDuration;
 
-        // Солнечный свет
+        // Солнечный фактор
         float sunFactor = 0f;
         if (currentTime >= dawnStart && currentTime <= dawnEnd)
-        {
-            // Рассвет
             sunFactor = Mathf.SmoothStep(0f, 1f, (currentTime - dawnStart) / atmosphericSettings.dawnDuration);
-        }
         else if (currentTime > dawnEnd && currentTime < duskStart)
-        {
-            // День
             sunFactor = 1f;
-        }
         else if (currentTime >= duskStart && currentTime <= duskEnd)
-        {
-            // Закат
             sunFactor = Mathf.SmoothStep(1f, 0f, (currentTime - duskStart) / atmosphericSettings.duskDuration);
-        }
 
-        // Лунный свет (противоположный цикл)
+        // Лунный фактор (когда солнца нет)
         float moonFactor = 0f;
         if (currentTime >= duskEnd || currentTime <= dawnStart)
-        {
-            // Глубокая ночь
             moonFactor = 1f;
-        }
         else if (currentTime > dawnStart && currentTime < dawnEnd)
-        {
-            // Утренние сумерки
             moonFactor = Mathf.SmoothStep(1f, 0f, (currentTime - dawnStart) / atmosphericSettings.dawnDuration);
-        }
         else if (currentTime > duskStart && currentTime < duskEnd)
-        {
-            // Вечерние сумерки
             moonFactor = Mathf.SmoothStep(0f, 1f, (currentTime - duskStart) / atmosphericSettings.duskDuration);
-        }
 
-        float targetSunIntensity = sunFactor * maxSunIntensity;
-        float targetMoonIntensity = moonFactor * maxMoonIntensity;
+        float speed = Time.deltaTime * transitionSpeed;
 
-        // Плавные переходы
-        currentSunColor = Color.Lerp(currentSunColor, sunColor.Evaluate(dayTime), Time.deltaTime * transitionSpeed);
-        currentMoonColor = Color.Lerp(currentMoonColor, moonColor.Evaluate(dayTime), Time.deltaTime * transitionSpeed);
-        currentSunIntensitySmooth = Mathf.Lerp(currentSunIntensitySmooth, targetSunIntensity, Time.deltaTime * transitionSpeed);
-        currentMoonIntensitySmooth = Mathf.Lerp(currentMoonIntensitySmooth, targetMoonIntensity, Time.deltaTime * transitionSpeed);
+        // Плавные цвета
+        Color targetSun  = sunColor  != null ? sunColor.Evaluate(t)  : Color.white;
+        Color targetMoon = moonColor != null ? moonColor.Evaluate(t) : new Color(0.65f, 0.78f, 1f);
 
-        // Применение к источникам света
-        sunLight.color = currentSunColor;
+        currentSunColorSmooth      = Color.Lerp(currentSunColorSmooth,      targetSun,              speed);
+        currentMoonColorSmooth     = Color.Lerp(currentMoonColorSmooth,     targetMoon,             speed);
+        currentSunIntensitySmooth  = Mathf.Lerp(currentSunIntensitySmooth,  sunFactor * maxSunIntensity,  speed);
+        currentMoonIntensitySmooth = Mathf.Lerp(currentMoonIntensitySmooth, moonFactor * maxMoonIntensity, speed);
+
+        sunLight.color     = currentSunColorSmooth;
         sunLight.intensity = currentSunIntensitySmooth;
-        moonLight.color = currentMoonColor;
+        sunLight.shadowStrength = Mathf.Lerp(0.25f, 0.65f, sunFactor); // мягкие тени
+
+        moonLight.color     = currentMoonColorSmooth;
         moonLight.intensity = currentMoonIntensitySmooth;
-
-        // Настройка мягкости теней в зависимости от интенсивности
-        if (sunLight.shadows != LightShadows.None)
-        {
-            sunLight.shadowStrength = Mathf.Lerp(0.3f, 0.8f, sunFactor);
-        }
-        
-        if (moonLight.shadows != LightShadows.None)
-        {
-            moonLight.shadowStrength = Mathf.Lerp(0.1f, 0.6f, moonFactor);
-        }
+        moonLight.shadowStrength = Mathf.Lerp(0.05f, 0.4f, moonFactor);
     }
 
-    private void UpdateAmbientLighting()
+    // ─── Ambient (окружающий свет) ──────────────────────────────────────────
+    private void UpdateAmbient()
     {
-        if (atmosphericSettings.ambientLightColor == null) return;
+        if (atmosphericSettings?.ambientLightColor == null) return;
 
-        float dayTime = currentTime / 24.0f;
-        
-        // Базовый цвет окружающего освещения
-        Color targetAmbientColor = atmosphericSettings.ambientLightColor.Evaluate(dayTime);
-        
-        // Применение температуры цвета
-        float dayProgress = GetDayProgress();
-        float targetTemperature = Mathf.Lerp(atmosphericSettings.nightTemperature, atmosphericSettings.dayTemperature, dayProgress);
-        targetAmbientColor = ApplyColorTemperature(targetAmbientColor, targetTemperature);
-        
-        // Плавное изменение цвета
-        currentAmbientColor = Color.Lerp(currentAmbientColor, targetAmbientColor, Time.deltaTime * transitionSpeed);
-        
-        // Применение интенсивности
-        Color finalAmbientColor = currentAmbientColor * atmosphericSettings.ambientIntensity;
-        
-        // Установка окружающего освещения
-        RenderSettings.ambientLight = finalAmbientColor;
+        float t       = currentTime / 24f;
+        float dayProg = GetDayProgress();
+
+        Color targetAmbient = atmosphericSettings.ambientLightColor.Evaluate(t);
+        targetAmbient = ApplyTemperature(targetAmbient,
+            Mathf.Lerp(atmosphericSettings.nightTemperature,
+                       atmosphericSettings.dayTemperature, dayProg));
+
+        currentAmbientSmooth = Color.Lerp(currentAmbientSmooth, targetAmbient,
+                                          Time.deltaTime * transitionSpeed);
+
+        RenderSettings.ambientLight = currentAmbientSmooth * atmosphericSettings.ambientIntensity;
     }
 
-    private float GetDayProgress()
-    {
-        // Возвращает 0 ночью, 1 днем с плавными переходами
-        if (currentTime >= dawnStart && currentTime <= duskStart)
-        {
-            return Mathf.SmoothStep(0f, 1f, MapTimeTo01Range(dawnStart, duskStart, currentTime));
-        }
-        return 0f;
-    }
-
-    private Color ApplyColorTemperature(Color baseColor, float temperature)
-    {
-        // Простая симуляция цветовой температуры
-        if (temperature > 0)
-        {
-            // Теплее (больше красного/желтого)
-            baseColor.r = Mathf.Min(1f, baseColor.r * (1f + temperature));
-            baseColor.g = Mathf.Min(1f, baseColor.g * (1f + temperature * 0.5f));
-        }
-        else if (temperature < 0)
-        {
-            // Холоднее (больше синего)
-            baseColor.b = Mathf.Min(1f, baseColor.b * (1f - temperature));
-            baseColor.g = Mathf.Max(0f, baseColor.g * (1f + temperature * 0.3f));
-        }
-        
-        return baseColor;
-    }
-
+    // ─── Туман ──────────────────────────────────────────────────────────────
     private void UpdateFog()
     {
         if (!enableFog)
@@ -581,120 +326,267 @@ public class DayNightSystem : MonoBehaviour, ISaveable
             return;
         }
 
-        RenderSettings.fog = true;
-        RenderSettings.fogMode = FogMode.ExponentialSquared; // Более реалистичный туман
+        RenderSettings.fog     = true;
+        RenderSettings.fogMode = FogMode.ExponentialSquared;
 
-        float dayTime = currentTime / 24.0f;
-        float dayProgress = GetDayProgress();
+        float t       = currentTime / 24f;
+        float dayProg = GetDayProgress();
+        float speed   = Time.deltaTime * transitionSpeed;
 
-        // Плавное смешивание плотности тумана
-        float targetFogDensity = Mathf.Lerp(fogDensityNight, fogDensityDay, dayProgress);
+        Color targetFog = fogColor != null ? fogColor.Evaluate(t) : Color.grey;
+        targetFog = ApplyTemperature(targetFog,
+            Mathf.Lerp(atmosphericSettings.nightTemperature,
+                       atmosphericSettings.dayTemperature, dayProg) * 0.4f);
 
-        // Цвет тумана с учетом атмосферных условий
-        Color targetFogColor = fogColor.Evaluate(dayTime);
-        
-        // Применение температуры цвета к туману
-        float targetTemperature = Mathf.Lerp(atmosphericSettings.nightTemperature, atmosphericSettings.dayTemperature, dayProgress);
-        targetFogColor = ApplyColorTemperature(targetFogColor, targetTemperature * 0.5f); // Меньшее влияние на туман
+        float targetDensity = Mathf.Lerp(fogDensityNight, fogDensityDay, dayProg);
 
-        // Плавные переходы
-        currentFogColor = Color.Lerp(currentFogColor, targetFogColor, Time.deltaTime * transitionSpeed);
-        currentFogDensitySmooth = Mathf.Lerp(currentFogDensitySmooth, targetFogDensity, Time.deltaTime * transitionSpeed);
+        currentFogColorSmooth   = Color.Lerp(currentFogColorSmooth,   targetFog,     speed);
+        currentFogDensitySmooth = Mathf.Lerp(currentFogDensitySmooth, targetDensity, speed);
 
-        // Применение настроек тумана
-        RenderSettings.fogColor = currentFogColor;
+        RenderSettings.fogColor   = currentFogColorSmooth;
         RenderSettings.fogDensity = currentFogDensitySmooth;
-        
-        // Если используется Linear туман (для особых случаев)
-        if (RenderSettings.fogMode == FogMode.Linear)
-        {
-            RenderSettings.fogStartDistance = fogStartDistance;
-            RenderSettings.fogEndDistance = fogEndDistance;
-        }
     }
 
-    // Универсальная функция: маппит время суток в 0..1 в интервале [start, end].
-    // Поддерживает интервалы, которые проходят через полночь (end < start).
-    private float MapTimeTo01Range(float start, float end, float time)
+    // ─── Утилиты ────────────────────────────────────────────────────────────
+
+    /// <summary>Возвращает 0 ночью, 1 днём с плавными переходами.</summary>
+    private float GetDayProgress()
     {
-        start = Mathf.Repeat(start, 24f);
-        end = Mathf.Repeat(end, 24f);
-        time = Mathf.Repeat(time, 24f);
+        if (currentTime >= dawnStart && currentTime <= duskStart)
+            return Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(dawnStart, duskStart, currentTime));
+        return 0f;
+    }
 
-        if (Mathf.Approximately(start, end)) return 0f; // защищаем от деления на ноль
-
-        if (start < end)
+    private Color ApplyTemperature(Color c, float temp)
+    {
+        if (temp > 0f)
         {
-            // простой случай, например 6 -> 18
-            if (time < start || time > end) return 0f;
-            return Mathf.InverseLerp(start, end, time);
+            c.r = Mathf.Min(1f, c.r * (1f + temp));
+            c.g = Mathf.Min(1f, c.g * (1f + temp * 0.4f));
         }
-        else
+        else if (temp < 0f)
         {
-            // переход через полночь, например 21 -> 4.5
-            float length = (24f - start) + end;
-            float t = (time >= start) ? (time - start) : (time + (24f - start));
-            t = Mathf.Clamp(t, 0f, length);
-            return t / length;
+            c.b = Mathf.Min(1f, c.b * (1f - temp));
+            c.g = Mathf.Max(0f, c.g * (1f + temp * 0.25f));
+        }
+        return c;
+    }
+
+    private void CheckTimeEvents(int hour, int minute)
+    {
+        foreach (var e in timeEvents)
+            if (!e.hasTriggered && e.CheckTime(hour, minute))
+            { e.onTimeReached.Invoke(); e.hasTriggered = true; }
+    }
+
+    // ─── Инициализация дефолтных настроек ──────────────────────────────────
+
+    private void ConfigureLights()
+    {
+        if (sunLight != null)
+        {
+            sunLight.shadows           = LightShadows.Soft;
+            sunLight.shadowStrength    = 0.65f;
+            sunLight.shadowBias        = 0.04f;
+            sunLight.shadowNormalBias  = 0.35f;
+        }
+        if (moonLight != null)
+        {
+            moonLight.shadows           = LightShadows.Soft;
+            moonLight.shadowStrength    = 0.4f;
+            moonLight.shadowBias        = 0.08f;
+            moonLight.shadowNormalBias  = 0.5f;
         }
     }
 
-    // Управление через API
+    private void InitializeAtmosphericSettings()
+    {
+        if (atmosphericSettings == null) atmosphericSettings = new AtmosphericSettings();
+        atmosphericSettings.ambientIntensity   = 1.0f;
+        atmosphericSettings.dawnDuration       = 1.2f;
+        atmosphericSettings.duskDuration       = 1.2f;
+        atmosphericSettings.daySaturation      = 1.05f;
+        atmosphericSettings.nightSaturation    = 0.75f;
+        atmosphericSettings.dayTemperature     = 0.08f;
+        atmosphericSettings.nightTemperature   = -0.12f;
+    }
+
+    private void InitializeDefaultGradients()
+    {
+        if (IsGradientEmpty(atmosphericSettings.ambientLightColor))
+            atmosphericSettings.ambientLightColor = MakeAmbientGradient();
+
+        if (IsGradientEmpty(sunColor))   sunColor   = MakeSunGradient();
+        if (IsGradientEmpty(moonColor))  moonColor  = MakeMoonGradient();
+        if (IsGradientEmpty(fogColor))   fogColor   = MakeFogGradient();
+        if (IsGradientEmpty(skyColor))   skyColor   = MakeSkyGradient();
+        if (IsGradientEmpty(horizonColor)) horizonColor = MakeHorizonGradient();
+        if (IsGradientEmpty(groundColor))  groundColor  = MakeGroundGradient();
+    }
+
+    private bool IsGradientEmpty(Gradient g) => g == null || g.colorKeys.Length == 0;
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //  COZY LOWPOLY DARK FANTASY — Цветовые градиенты
+    //  Стиль: тёплый янтарный день, нежный золотой закат, мягкая фиолетово-синяя ночь.
+    //  Без агрессивных насыщенных оттенков, без «грязи».
+    // ═══════════════════════════════════════════════════════════════════════
+
+    private Gradient MakeAmbientGradient()
+    {
+        // ключи по времени: 0=полночь, 0.23=рассвет, 0.5=полдень, 0.79=закат, 1=полночь
+        return MakeGradient(
+            (0f,    new Color(0.06f, 0.07f, 0.18f)),  // полночь — тёмный индиго
+            (0.22f, new Color(0.55f, 0.38f, 0.28f)),  // рассвет — тёплый терракот
+            (0.33f, new Color(0.82f, 0.72f, 0.58f)),  // раннее утро — мягкий бежевый
+            (0.50f, new Color(0.88f, 0.84f, 0.76f)),  // полдень — тёплый молочный
+            (0.67f, new Color(0.82f, 0.72f, 0.58f)),  // послеполудень
+            (0.79f, new Color(0.75f, 0.42f, 0.22f)),  // закат — янтарный
+            (0.87f, new Color(0.22f, 0.16f, 0.30f)),  // сумерки — фиолетовый
+            (1f,    new Color(0.06f, 0.07f, 0.18f))   // полночь
+        );
+    }
+
+    private Gradient MakeSunGradient()
+    {
+        return MakeGradient(
+            (0f,    new Color(0.18f, 0.22f, 0.5f)),   // ночь — не используется
+            (0.22f, new Color(1f,   0.65f, 0.35f)),   // рассвет — персиковый
+            (0.37f, new Color(1f,   0.92f, 0.75f)),   // утро — тёплый белый
+            (0.50f, new Color(1f,   0.96f, 0.85f)),   // полдень — чистый
+            (0.63f, new Color(1f,   0.92f, 0.75f)),   // день
+            (0.79f, new Color(1f,   0.55f, 0.20f)),   // закат — глубокий янтарь
+            (0.87f, new Color(0.6f, 0.35f, 0.55f)),   // сумерки — розово-фиолетовый
+            (1f,    new Color(0.18f, 0.22f, 0.5f))
+        );
+    }
+
+    private Gradient MakeMoonGradient()
+    {
+        return MakeGradient(
+            (0f,    new Color(0.65f, 0.78f, 1.00f)),  // холодный лунно-голубой
+            (0.5f,  new Color(0.58f, 0.72f, 0.98f)),  // чуть теплее
+            (1f,    new Color(0.65f, 0.78f, 1.00f))
+        );
+    }
+
+    private Gradient MakeFogGradient()
+    {
+        return MakeGradient(
+            (0f,    new Color(0.10f, 0.12f, 0.28f)),  // ночной туман — тёмный индиго
+            (0.22f, new Color(0.80f, 0.62f, 0.45f)),  // утренний — персиковый
+            (0.37f, new Color(0.78f, 0.82f, 0.88f)),  // утро — серо-голубой
+            (0.50f, new Color(0.80f, 0.83f, 0.88f)),  // день — светло-серый
+            (0.63f, new Color(0.78f, 0.82f, 0.88f)),
+            (0.79f, new Color(0.72f, 0.48f, 0.30f)),  // закат — янтарный туман
+            (0.87f, new Color(0.18f, 0.14f, 0.28f)),  // сумерки
+            (1f,    new Color(0.10f, 0.12f, 0.28f))
+        );
+    }
+
+    private Gradient MakeSkyGradient()
+    {
+        // ВАЖНО: ночные значения должны быть ТЁМНЫМИ (яркость < 0.10)
+        // чтобы шейдер правильно определял NightFactor и показывал звёзды.
+        // Формула: dot(color, float3(0.299, 0.587, 0.114)) < 0.10 = ночь
+        return MakeGradient(
+            (0.00f, new Color(0.05f, 0.04f, 0.16f)),  // полночь — тёмный индиго       (lum≈0.05)
+            (0.20f, new Color(0.08f, 0.06f, 0.20f)),  // 4:48 — ещё ночь               (lum≈0.07)
+            (0.23f, new Color(0.30f, 0.18f, 0.30f)),  // рассвет — пурпурный           (lum≈0.23)
+            (0.30f, new Color(0.38f, 0.52f, 0.78f)),  // утро — синее небо             (lum≈0.49)
+            (0.42f, new Color(0.32f, 0.58f, 0.88f)),  // позднее утро                  (lum≈0.52)
+            (0.50f, new Color(0.28f, 0.60f, 0.92f)),  // полдень — чистый голубой      (lum≈0.54)
+            (0.62f, new Color(0.32f, 0.58f, 0.88f)),  // день
+            (0.72f, new Color(0.45f, 0.38f, 0.65f)),  // предзакатный
+            (0.80f, new Color(0.20f, 0.12f, 0.35f)),  // ранние сумерки                (lum≈0.15)
+            (0.88f, new Color(0.08f, 0.06f, 0.20f)),  // поздние сумерки               (lum≈0.07)
+            (1.00f, new Color(0.05f, 0.04f, 0.16f))   // полночь
+        );
+    }
+
+    private Gradient MakeHorizonGradient()
+    {
+        return MakeGradient(
+            (0.00f, new Color(0.10f, 0.10f, 0.28f)),  // ночной горизонт — тёмно-синий
+            (0.20f, new Color(0.12f, 0.10f, 0.30f)),
+            (0.23f, new Color(0.85f, 0.50f, 0.30f)),  // рассвет — тёплый оранжевый
+            (0.30f, new Color(0.88f, 0.80f, 0.68f)),  // утро
+            (0.50f, new Color(0.92f, 0.88f, 0.80f)),  // день — молочно-бежевый
+            (0.70f, new Color(0.88f, 0.80f, 0.65f)),  // послеполудень
+            (0.78f, new Color(1.00f, 0.52f, 0.18f)),  // закат — яркий янтарь
+            (0.84f, new Color(0.55f, 0.22f, 0.40f)),  // сумерки — розово-фиолетовый
+            (0.90f, new Color(0.14f, 0.10f, 0.30f)),  // ночь
+            (1.00f, new Color(0.10f, 0.10f, 0.28f))
+        );
+    }
+
+    private Gradient MakeGroundGradient()
+    {
+        return MakeGradient(
+            (0.00f, new Color(0.03f, 0.03f, 0.08f)),  // ночь — почти чёрный
+            (0.23f, new Color(0.18f, 0.12f, 0.12f)),  // рассвет
+            (0.50f, new Color(0.25f, 0.28f, 0.22f)),  // день
+            (0.80f, new Color(0.14f, 0.08f, 0.10f)),  // закат
+            (1.00f, new Color(0.03f, 0.03f, 0.08f))
+        );
+    }
+
+    // ─── Хелпер для построения Gradient ────────────────────────────────────
+    private Gradient MakeGradient(params (float time, Color color)[] keys)
+    {
+        var colorKeys = new GradientColorKey[keys.Length];
+        for (int i = 0; i < keys.Length; i++)
+            colorKeys[i] = new GradientColorKey(keys[i].color, keys[i].time);
+
+        var alphaKeys = new GradientAlphaKey[]
+        {
+            new GradientAlphaKey(1f, 0f),
+            new GradientAlphaKey(1f, 1f)
+        };
+
+        var g = new Gradient();
+        g.SetKeys(colorKeys, alphaKeys);
+        return g;
+    }
+
+    // ─── Публичное API ──────────────────────────────────────────────────────
     public void SetTime(float time)
     {
-        currentTime = Mathf.Clamp(time, 0, 24);
-        UpdateTime(true);
+        currentTime = Mathf.Clamp(time, 0f, 24f);
+        UpdateAll(force: true);
     }
 
-    public void SetTimeSpeed(float speed)
-    {
-        timeSpeed = Mathf.Max(0, speed);
-    }
+    public void SetTimeSpeed(float speed) => timeSpeed = Mathf.Max(0f, speed);
 
     public void AddTimeEvent(int hour, int minute, UnityEvent onTimeReached)
     {
-        TimeEvent timeEvent = new TimeEvent
-        {
-            hour = hour,
-            minute = minute,
-            onTimeReached = onTimeReached
-        };
-        timeEvents.Add(timeEvent);
+        timeEvents.Add(new TimeEvent { hour = hour, minute = minute, onTimeReached = onTimeReached });
     }
 
     public string GetTimeString()
     {
-        int hour = Mathf.FloorToInt(currentTime);
-        int minute = Mathf.FloorToInt((currentTime - hour) * 60);
-        return string.Format("{0:00}:{1:00}", hour, minute);
+        int h = Mathf.FloorToInt(currentTime);
+        int m = Mathf.FloorToInt((currentTime - h) * 60);
+        return $"{h:00}:{m:00}";
     }
 
-    // Реализация ISaveable
+    // ─── ISaveable ──────────────────────────────────────────────────────────
     [System.Serializable]
     public struct DayNightSaveData
     {
         public float currentTime;
-        public int currentDay;
+        public int   currentDay;
     }
 
-    public object CaptureState()
-    {
-        return new DayNightSaveData
-        {
-            currentTime = this.currentTime,
-            currentDay = this.currentDay
-        };
-    }
+    public object CaptureState() => new DayNightSaveData { currentTime = currentTime, currentDay = currentDay };
 
     public void RestoreState(object state)
     {
-        if (state is DayNightSaveData saveData)
+        if (state is DayNightSaveData d)
         {
-            currentTime = saveData.currentTime;
-            currentDay = saveData.currentDay;
-            
-            // Принудительно обновляем время после загрузки
-            UpdateTime(true);
+            currentTime = d.currentTime;
+            currentDay  = d.currentDay;
+            UpdateAll(force: true);
         }
     }
 }
