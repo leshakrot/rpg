@@ -841,6 +841,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 419266027854343730, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: uniqueIdentifier
+      value: player
+      objectReference: {fileID: 0}
     - target: {fileID: 451779181412512559, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2069,7 +2074,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.7493
+      value: -570.7499
       objectReference: {fileID: 0}
     - target: {fileID: 5572362029290283794, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -2626,6 +2631,51 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7998753318828248641, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: timeEvents.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7998753318828248641, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: timeEvents.Array.data[0].hour
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7998753318828248641, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: timeEvents.Array.data[0].onTimeReached.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7998753318828248641, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: timeEvents.Array.data[0].onTimeReached.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7998753318828248641, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: timeEvents.Array.data[0].onTimeReached.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 992968713}
+    - target: {fileID: 7998753318828248641, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: timeEvents.Array.data[0].onTimeReached.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7998753318828248641, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: timeEvents.Array.data[0].onTimeReached.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetTime
+      objectReference: {fileID: 0}
+    - target: {fileID: 7998753318828248641, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: timeEvents.Array.data[0].onTimeReached.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: DayNightSystem, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7998753318828248641, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: timeEvents.Array.data[0].onTimeReached.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 8115773987776874202, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2772,6 +2822,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: acaf28b23d2b51649ba3413e1235f8e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &992968713 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7998753318828248641, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+    type: 3}
+  m_PrefabInstance: {fileID: 992968711}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b26debc24011f46489e6fda566a07b7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1305231687
@@ -10007,6 +10069,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87509d17afd884c479f3a93cf9adbaa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactionDistance: 2.5
   _dialogue: {fileID: 11400000, guid: 46d296c5d953e8f4687c549e616bea49, type: 2}
   _conversantName: "\u041A\u0440\u043E\u0432\u0430\u0442\u044C"
   _isTrigger: 0
@@ -10238,8 +10301,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b74dc509797efb144b7cd11c19860b7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactionDistance: 2.5
   stationName: "\u041A\u0430\u043C\u0438\u043D"
-  processingDistance: 2.5
   availableRecipes:
   - {fileID: 11400000, guid: 1decc81f89526e248b9d2a03dcb94c79, type: 2}
 --- !u!65 &8224967038992420644

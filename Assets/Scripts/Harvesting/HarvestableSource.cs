@@ -61,6 +61,19 @@ namespace RPG.Harvesting
             }
         }
 
+        protected virtual void OnEnable()
+        {
+            Core.InteractableRegistry.Instance.Register(this);
+        }
+
+        protected virtual void OnDisable()
+        {
+            if (Core.InteractableRegistry.Instance != null)
+            {
+                Core.InteractableRegistry.Instance.Unregister(this);
+            }
+        }
+
         protected virtual void Start()
         {
             UpdateVisuals();

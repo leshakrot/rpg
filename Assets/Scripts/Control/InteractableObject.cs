@@ -14,6 +14,19 @@ namespace RPG.Control
         protected PlayerController currentController = null;
         private bool hasInteracted = false;
 
+        protected virtual void OnEnable()
+        {
+            InteractableRegistry.Instance.Register(this);
+        }
+
+        protected virtual void OnDisable()
+        {
+            if (InteractableRegistry.Instance != null)
+            {
+                InteractableRegistry.Instance.Unregister(this);
+            }
+        }
+
         public abstract CursorType GetCursorType();
 
         public virtual bool HandleRaycast(PlayerController callingController)

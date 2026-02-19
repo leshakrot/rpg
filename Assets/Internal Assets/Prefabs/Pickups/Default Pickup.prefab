@@ -64,7 +64,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.13722475
   m_Height: 0.37382326
@@ -82,6 +82,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b3c91a7aa0f5b141add9660d13eaf7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _detectionRadius: 2.5
+  _labelPrefab: {fileID: 5843389275787851893, guid: 18d658dfdfd49fe4d865ce8733cdd254,
+    type: 3}
 --- !u!1 &7647857578037138015
 GameObject:
   m_ObjectHideFlags: 0
@@ -144,6 +147,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -165,6 +170,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0

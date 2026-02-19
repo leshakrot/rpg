@@ -92,6 +92,15 @@ namespace GameDevTV.Inventories
 
         public bool CanBePickedUp()
         {
+            if (item is ActionItem actionItem)
+            {
+                // Если предмет уже есть в ActionStore — место есть
+                for (int i = 0; i < 6; i++)
+                {
+                    if (object.ReferenceEquals(actionStore.GetAction(i), item))
+                        return true;
+                }
+            }
             return inventory.HasSpaceFor(item);
         }
     }

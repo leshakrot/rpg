@@ -1,5 +1,6 @@
 using GameDevTV.Inventories;
 using RPG.Stats;
+using RPG.Core;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,6 +11,12 @@ namespace RPG.Inventories
         [Tooltip("How far can the pickups be scattered from the dropper.")]
         [SerializeField] private float _scatterDistance = 1;
         [SerializeField] private DropLibrary _dropLibrary;
+        
+        [Header("Защита от интерактивных объектов")]
+        [Tooltip("Минимальное расстояние от интерактивных объектов")]
+        [SerializeField] private float _minDistanceFromInteractables = 1.5f;
+        [Tooltip("Радиус проверки наличия интерактивных объектов")]
+        [SerializeField] private float _interactableCheckRadius = 2f;
 
         const int ATTEMPTS = 30;
 
@@ -31,10 +38,19 @@ namespace RPG.Inventories
                 NavMeshHit hit;
                 if (NavMesh.SamplePosition(randomPoint, out hit, 0.1f, NavMesh.AllAreas))
                 {
-                    return hit.position;
+                    if (IsValidDropLocation(hit.position))
+                    {
+                        return hit.position;
+                    }
                 }
             }
             return transform.position;
+        }
+
+        private bool IsValidDropLocation(Vector3 position)
+        {
+            float nearestDistSqr = InteractableRegistry.Instance.GetNearestInteractableDistanceSqr(position, _interactableCheckRadius);
+            return nearestDistSqr >= _minDistanceFromInteractables * _minDistanceFromInteractables;
         }
     }
 }
