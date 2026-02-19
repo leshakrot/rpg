@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine;
 using GameDevTV.Inventories;
 using UnityEngine.Events;
 
@@ -7,8 +6,6 @@ public class ChestUI : MonoBehaviour
 {
     public UnityEvent onOpen;
 
-    [SerializeField] InteractButton interactButton;
-	[SerializeField] Sprite interactSprite;
 	[SerializeField] GameObject chestSlotPrefab;
 	[SerializeField] Transform slotsParent;
 
@@ -16,41 +13,13 @@ public class ChestUI : MonoBehaviour
 
 	private void Start()
 	{
-		if (interactButton != null)
-			interactButton.gameObject.SetActive(false);
-			
 		gameObject.SetActive(false);
 	}
 	
-	public void ShowChestOpenButton(bool show, ChestInventory chest)
-	{
-		if (interactButton != null)
-		{
-			interactButton.SetIcon(interactSprite);
-			interactButton.SetInteractionText("Открыть сундук");
-
-			Button button = interactButton.gameObject.GetComponent<Button>();
-			button.onClick.RemoveAllListeners(); // Очищаем предыдущие слушатели перед добавлением нового
-
-			if (show) 
-			{
-				button.onClick.AddListener(() => OpenChest(chest)); // Добавляем новый слушатель только если show == true
-			}
-
-			interactButton.gameObject.SetActive(show);
-		}
-	}
-
-	// Вызывается из скрипта взаимодействия с сундуком (например, когда игрок нажимает клавишу "E")
 	public void OpenChest(ChestInventory chest)
 	{
 		currentChest = chest;
 		gameObject.SetActive(true);
-		interactButton.gameObject.SetActive(false);
-
-		// Центрируем UI по экрану
-		//RectTransform rect = GetComponent<RectTransform>();
-		//rect.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
 
 		Redraw();
 

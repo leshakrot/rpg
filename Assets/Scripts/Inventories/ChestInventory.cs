@@ -1,12 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using GameDevTV.Inventories;
 using GameDevTV.Saving;
 using RPG.Control;
+using RPG.Core;
 
 [RequireComponent(typeof(SaveableEntity))]
-public class ChestInventory : MonoBehaviour, ISaveable
+public class ChestInventory : InteractableObject, ISaveable
 {
 	[Header("Настройка сундука")]
 	[SerializeField] int size = 16;
@@ -132,18 +133,20 @@ public class ChestInventory : MonoBehaviour, ISaveable
 		chestUpdated?.Invoke();
 	}
 
-	private void OnTriggerEnter(Collider other)
+	public override CursorType GetCursorType()
 	{
-		if(other.gameObject.TryGetComponent(out PlayerController player)){
-			chestUI.ShowChestOpenButton(true, this);
+		return CursorType.Pickup;
+	}
+
+	protected override void OnInteract(PlayerController callingController)
+	{
+		if (chestUI != null)
+		{
+			chestUI.OpenChest(this);
+		}
+		else
+		{
+			Debug.LogWarning("ChestUI не назначен для сундука!");
 		}
 	}
-	
-	private void OnTriggerExit(Collider other)
-	{
-		if(other.gameObject.TryGetComponent(out PlayerController player)){
-			chestUI.ShowChestOpenButton(false, this);
-		}
-	}
-	
 }
