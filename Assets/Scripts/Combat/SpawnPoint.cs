@@ -264,5 +264,10 @@ namespace RPG.Combat
         {
             return patrolPathObject;
         }
+
+        public float GetSpawnRadius()
+        {
+            return spawnRadius;
+        }
     }
 } 

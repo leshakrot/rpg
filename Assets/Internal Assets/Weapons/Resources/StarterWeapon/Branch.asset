@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 727476517f189574abe10f85430f9252, type: 3}
+  m_Name: Branch
+  m_EditorClassIdentifier: 
+  itemID: 0987d84a-09e7-404c-9267-cc8db26d6887
+  displayName: "\u0412\u0435\u0442\u043A\u0430"
+  description: "\u0421\u0442\u0430\u0440\u044B\u0439 \u0442\u043E\u043F\u043E\u0440"
+  icon: {fileID: 21300000, guid: c646d600d1539604a8e82573a3b3233a, type: 3}
+  pickup: {fileID: 1543453915408366449, guid: ca2dcaedcbb5a1743a538da0a72a9c82, type: 3}
+  stackable: 0
+  price: 30
+  category: 2
+  cannotBeDropped: 0
+  allowedEquipLocation: 6
+  equipCondition:
+    _and:
+    - _or:
+      - _predicate: MinimumTrait
+        _parameters:
+        - Strength
+        - 0
+        _negate: 0
+    - _or:
+      - _predicate: MinimumTrait
+        _parameters:
+        - Intelligence
+        - 0
+        _negate: 0
+  _animatorOverride: {fileID: 22100000, guid: 46d44333b63e79d489cd3f2b3b15a107, type: 2}
+  _equippedPrefab: {fileID: 93318625537877273, guid: 61397be7663656d468c3b0a28a858d30,
+    type: 3}
+  _weaponDamage: 7
+  _percantageBonus: 0
+  _weaponRange: 2
+  _isRightHanded: 1
+  _projectile: {fileID: 0}
