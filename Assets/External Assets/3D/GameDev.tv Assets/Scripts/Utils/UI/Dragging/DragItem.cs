@@ -35,6 +35,8 @@ namespace GameDevTV.Core.UI.Dragging
         {
             parentCanvas = GetComponentInParent<Canvas>();
             source = GetComponentInParent<IDragSource<T>>();
+            
+            Debug.Log($"DragItem on {gameObject.name} - source found: {source != null}, canvas found: {parentCanvas != null}");
         }
 
         // PRIVATE

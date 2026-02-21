@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using GameDevTV.Inventories;
@@ -27,11 +27,22 @@ namespace GameDevTV.UI.Inventories
 
         public int MaxAcceptable(InventoryItem item)
         {
-            if (inventory.HasSpaceFor(item))
+            var existingItem = inventory.GetItemInSlot(index);
+
+            // Слот занят другим предметом — своп обработает фреймворк
+            if (existingItem != null && !object.ReferenceEquals(existingItem, item))
             {
-                return int.MaxValue;
+                return 0;
             }
-            return 0;
+
+            // Слот занят тем же предметом — принимаем только если стекируемый
+            if (existingItem != null && object.ReferenceEquals(existingItem, item))
+            {
+                return item.IsStackable() ? int.MaxValue : 0;
+            }
+
+            // Слот пустой
+            return int.MaxValue;
         }
 
         public void AddItems(InventoryItem item, int number)

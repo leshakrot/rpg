@@ -31,6 +31,8 @@ namespace GameDevTV.UI.Inventories
             store = player.GetComponent<ActionStore>();
             cooldownStore = player.GetComponent<CooldownStore>();
             store.storeUpdated += UpdateIcon;
+            
+            Debug.Log($"ActionSlotUI on {gameObject.name} - IDragSource check: {GetComponent<IDragSource<InventoryItem>>() != null}");
         }
 
         private void Update()

@@ -6,10 +6,11 @@ namespace RPG.Control
 {
     /// <summary>
     /// Floating world-space UI label above a pickup.
-    /// 
+    /// Maintains a constant screen-space size regardless of camera distance.
+    ///
     /// Usage A — Prefab (recommended):
     ///   Create your own Canvas prefab in WorldSpace mode, add this component to its root.
-    ///   In the prefab, assign LabelText and LabelButton in the inspector.
+    ///   Assign LabelText and LabelButton in the inspector.
     ///   ClickablePickup will Instantiate it and call Setup().
     ///
     /// Usage B — Procedural fallback:
@@ -24,19 +25,22 @@ namespace RPG.Control
         [Tooltip("Button the player clicks to pick up the item")]
         [SerializeField] private Button _labelButton;
 
+        [Header("Screen-size settings")]
+        [Tooltip("Desired label width in pixels at any camera distance")]
+        [SerializeField] private float _targetScreenWidth = 160f;
+
         // ── Internal state ────────────────────────────────────────────────────
         private Transform _target;
         private Camera    _mainCamera;
 
-        private static readonly Vector3 WorldOffset      = new Vector3(0f, 1.8f, 0f);
-        private const           float   LabelWorldWidth  = 1.6f;
-        private const           float   LabelWorldHeight = 0.25f;
+        private static readonly Vector3 WorldOffset = new Vector3(0f, 0.8f, 0f);
+
+        // Reference canvas pixel size — must match the RectTransform.sizeDelta
+        // set either in the prefab or in CreateProcedural().
+        private float _canvasPixelWidth = 200f;
 
         // ── Called by ClickablePickup after Instantiate ───────────────────────
 
-        /// <summary>
-        /// Initialises the label. Called once right after instantiation.
-        /// </summary>
         public void Setup(Transform target, ClickablePickup owner)
         {
             _target     = target;
@@ -47,6 +51,10 @@ namespace RPG.Control
 
             if (_labelButton != null)
                 _labelButton.onClick.AddListener(owner.OnLabelClicked);
+
+            // Read the actual canvas pixel width from the prefab's RectTransform
+            var rt = GetComponent<RectTransform>();
+            if (rt != null) _canvasPixelWidth = rt.sizeDelta.x;
         }
 
         // ── Public API ────────────────────────────────────────────────────────
@@ -66,23 +74,31 @@ namespace RPG.Control
         private void LateUpdate()
         {
             if (_target == null) { Destroy(gameObject); return; }
+            if (_mainCamera == null) return;
 
+            // 1. Follow pickup
             transform.position = _target.position + WorldOffset;
 
-            if (_mainCamera != null)
-            {
-                transform.LookAt(
-                    transform.position + _mainCamera.transform.rotation * Vector3.forward,
-                    _mainCamera.transform.rotation * Vector3.up
-                );
-            }
+            // 2. Billboard
+            transform.LookAt(
+                transform.position + _mainCamera.transform.rotation * Vector3.forward,
+                _mainCamera.transform.rotation * Vector3.up
+            );
+
+            // 3. Constant screen size
+            //    We want the canvas to appear _targetScreenWidth pixels wide on screen.
+            //    world_size = (targetPixels / screenWidth) * 2 * tan(fov/2) * distance
+            float distance  = Vector3.Distance(_mainCamera.transform.position, transform.position);
+            float fovFactor = 2f * Mathf.Tan(_mainCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+            float worldWidth = (_targetScreenWidth / Screen.width) * fovFactor * distance;
+
+            // Convert desired world width back to a uniform scale factor
+            float scale = worldWidth / _canvasPixelWidth;
+            transform.localScale = new Vector3(scale, scale, scale);
         }
 
         // ── Procedural build (fallback) ───────────────────────────────────────
 
-        /// <summary>
-        /// Builds the label entirely in code. Called only when no prefab is supplied.
-        /// </summary>
         public static PickupLabelUI CreateProcedural(Transform target, ClickablePickup owner)
         {
             var go = new GameObject("PickupLabel_" + target.name);
@@ -90,17 +106,17 @@ namespace RPG.Control
 
             var label = go.AddComponent<PickupLabelUI>();
 
-            // Canvas
             var canvas = go.AddComponent<Canvas>();
             canvas.renderMode  = RenderMode.WorldSpace;
             canvas.worldCamera = Camera.main;
 
+            // Pixel dimensions — scale is handled dynamically in LateUpdate
             const float pixelW = 200f, pixelH = 40f;
+            label._canvasPixelWidth = pixelW;
+
             var canvasRect = canvas.GetComponent<RectTransform>();
             canvasRect.sizeDelta  = new Vector2(pixelW, pixelH);
-            canvasRect.localScale = new Vector3(LabelWorldWidth  / pixelW,
-                                                LabelWorldHeight / pixelH,
-                                                LabelWorldWidth  / pixelW);
+            canvasRect.localScale = Vector3.one; // LateUpdate will set the real scale
 
             // Button background
             var btnGO   = new GameObject("Button");
@@ -120,7 +136,6 @@ namespace RPG.Control
             label._labelButton.colors        = colors;
             label._labelButton.targetGraphic = image;
 
-            // Text
             var textGO   = new GameObject("Text");
             textGO.transform.SetParent(btnGO.transform, false);
             var textRect = textGO.AddComponent<RectTransform>();
