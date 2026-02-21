@@ -440,17 +440,33 @@ namespace RPG.Harvesting
         protected virtual void HarvestSingleUnit()
         {
             remainingResources--;
-            
-            // Добавляем ресурс в инвентарь игрока
+
             var inventory = currentPlayer.GetComponent<Inventory>();
-            if (inventory != null && resource.InventoryItem != null)
+            if (inventory != null)
             {
-                inventory.AddToFirstEmptySlot(resource.InventoryItem, 1);
+                // ── Основной предмет (любой InventoryItem) ──────────────────
+                if (resource.PrimaryItem != null)
+                {
+                    inventory.AddToFirstEmptySlot(resource.PrimaryItem, resource.PrimaryItemAmount);
+                }
+
+                // ── Бонусные дропы с вероятностью ───────────────────────────
+                // Каждый слот проверяется независимо — можно выпасть нескольким сразу
+                foreach (var bonus in resource.BonusDrops)
+                {
+                    if (bonus.item == null) continue;
+
+                    if (UnityEngine.Random.value <= bonus.dropChance)
+                    {
+                        inventory.AddToFirstEmptySlot(bonus.item, bonus.amount);
+                        Debug.Log($"[Harvest] Бонусный дроп: {bonus.item.name} x{bonus.amount}");
+                    }
+                }
             }
-            
+
             // Проигрываем звук и эффекты
             PlayHarvestEffects();
-            
+
             OnHarvestComplete?.Invoke(resource, 1);
         }
         
