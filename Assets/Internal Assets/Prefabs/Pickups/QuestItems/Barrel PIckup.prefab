@@ -59,7 +59,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b3c91a7aa0f5b141add9660d13eaf7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactionDistance: 2.5
+  _detectionRadius: 2.5
+  _labelPrefab: {fileID: 5843389275787851893, guid: 18d658dfdfd49fe4d865ce8733cdd254,
+    type: 3}
 --- !u!135 &5992900252897395161
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -95,15 +97,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 6e604c269b8519d4486bbbc982b9afa9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.11774191
+      value: 0.12
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 6e604c269b8519d4486bbbc982b9afa9, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.11774191
+      value: 0.12
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 6e604c269b8519d4486bbbc982b9afa9, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.11774191
+      value: 0.12
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 6e604c269b8519d4486bbbc982b9afa9, type: 3}
       propertyPath: m_LocalPosition.x

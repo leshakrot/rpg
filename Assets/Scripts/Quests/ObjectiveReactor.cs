@@ -37,9 +37,12 @@ public class ObjectiveReactor : MonoBehaviour
 	}
 
 	private void OnEnable()
-	{
-		SubscribeToEvents();
-	}
+    {
+        if (isInitialized && !hasFired)
+        {
+            SubscribeToEvents();
+        }
+    }
 
 	private void OnDisable()
 	{
@@ -47,28 +50,29 @@ public class ObjectiveReactor : MonoBehaviour
 	}
 
 	private void Initialize()
-	{
-		if (isInitialized) return;
-
-		if (!ValidateComponents())
-		{
-			return;
-		}
-
-		if (CheckIfAlreadyFired())
-		{
-			hasFired = true;
-			isInitialized = true;
-			return;
-		}
-
-		if (CheckIfObjectiveAlreadyComplete())
-		{
-			FireReactor();
-		}
-
-		isInitialized = true;
-	}
+    {
+        if (isInitialized) return;
+    
+        if (!ValidateComponents())
+            return;
+    
+        if (CheckIfAlreadyFired())
+        {
+            hasFired = true;
+            isInitialized = true;
+            return;
+        }
+    
+        isInitialized = true;
+    
+        if (CheckIfObjectiveAlreadyComplete())
+        {
+            FireReactor();
+            return;
+        }
+    
+        SubscribeToEvents();
+    }
 
 	private bool ValidateComponents()
 	{

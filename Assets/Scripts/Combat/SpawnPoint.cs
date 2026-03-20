@@ -77,7 +77,10 @@ namespace RPG.Combat
         [Tooltip("Компоненты для добавления на заспавненного врага")]
         [SerializeField] private List<ComponentToAdd> componentsToAdd = new List<ComponentToAdd>();
 
-        // Метод для отображения визуализации всегда
+        // ─────────────────────────────────────────────────────────────────────
+        // Gizmos
+        // ─────────────────────────────────────────────────────────────────────
+
         private void OnDrawGizmos()
         {
             if (alwaysShowGizmo)
@@ -86,7 +89,6 @@ namespace RPG.Combat
             }
         }
         
-        // Метод для визуализации радиуса спавна в редакторе при выделении
         private void OnDrawGizmosSelected()
         {
             if (!alwaysShowGizmo)
@@ -95,12 +97,10 @@ namespace RPG.Combat
             }
             else
             {
-                // Если точка выбрана, рисуем дополнительную подсветку
                 Gizmos.color = new Color(1f, 1f, 1f, 0.3f);
                 Gizmos.DrawWireSphere(transform.position, spawnRadius + 0.2f);
             }
             
-            // Показываем информацию о точке спавна
             GUIStyle style = new GUIStyle();
             style.normal.textColor = isOccupied ? occupiedGizmoColor : gizmoColor;
             style.alignment = TextAnchor.MiddleCenter;
@@ -117,64 +117,47 @@ namespace RPG.Combat
             }
             
             infoText += $"\nШанс: {spawnChance * 100}%";
-            if (patrolPathObject != null)
-            {
-                infoText += "\n[ПАТРУЛЬ]";
-            }
-            if (isOccupied)
-            {
-                infoText += "\n[ЗАНЯТО]";
-            }
+            if (patrolPathObject != null) infoText += "\n[ПАТРУЛЬ]";
+            if (isOccupied)              infoText += "\n[ЗАНЯТО]";
 
 #if UNITY_EDITOR
             UnityEditor.Handles.Label(transform.position + Vector3.up * 1.5f, infoText, style);
 #endif
 
-            // Отображаем направление, если используется направление точки
             if (usePointDirection && useRandomRotation)
             {
                 Gizmos.color = Color.blue;
-                Vector3 direction = transform.forward * spawnRadius;
-                Gizmos.DrawRay(transform.position, direction);
+                Gizmos.DrawRay(transform.position, transform.forward * spawnRadius);
                 
-                // Отображаем диапазон углов
                 if (maxYRotation - minYRotation < 360f)
                 {
                     float baseAngle = transform.eulerAngles.y;
                     
-                    // Рисуем минимальный угол
                     Quaternion minRotation = Quaternion.Euler(0, baseAngle + minYRotation, 0);
                     Gizmos.color = new Color(0, 0.5f, 1f, 0.5f);
                     Gizmos.DrawRay(transform.position, minRotation * Vector3.forward * spawnRadius);
                     
-                    // Рисуем максимальный угол
                     Quaternion maxRotation = Quaternion.Euler(0, baseAngle + maxYRotation, 0);
                     Gizmos.DrawRay(transform.position, maxRotation * Vector3.forward * spawnRadius);
                 }
             }
         }
         
-        // Общий метод отрисовки Gizmo
         private void DrawGizmo()
         {
             Color mainColor = isOccupied ? occupiedGizmoColor : gizmoColor;
             
-            // Рисуем центральную точку
             Gizmos.color = mainColor;
             Gizmos.DrawSphere(transform.position, 0.3f);
             
-            // Рисуем область спавна
             Gizmos.color = new Color(mainColor.r, mainColor.g, mainColor.b, 0.2f);
             Gizmos.DrawSphere(transform.position, spawnRadius);
             
-            // Рисуем контур области спавна
             Gizmos.color = new Color(mainColor.r, mainColor.g, mainColor.b, 0.5f);
             Gizmos.DrawWireSphere(transform.position, spawnRadius);
             
-            // Рисуем стрелку вверх
             Gizmos.DrawRay(transform.position, Vector3.up * 1.0f);
             
-            // Рисуем направление, если это настроено
             if (usePointDirection && !Application.isPlaying)
             {
                 Gizmos.color = new Color(0, 0, 1f, 0.5f);
@@ -182,92 +165,145 @@ namespace RPG.Combat
             }
         }
 
-        // Получить случайного врага из списка
+        // ─────────────────────────────────────────────────────────────────────
+        // Публичный API
+        // ─────────────────────────────────────────────────────────────────────
+
         public GameObject GetRandomEnemyPrefab()
         {
             if (enemyPrefabs.Count == 0) return null;
-            int randomIndex = UnityEngine.Random.Range(0, enemyPrefabs.Count);
-            return enemyPrefabs[randomIndex];
+            return enemyPrefabs[UnityEngine.Random.Range(0, enemyPrefabs.Count)];
         }
 
-        // Получить позицию для спавна (случайная в радиусе точки)
         public Vector3 GetSpawnPosition()
         {
             Vector3 randomPos = UnityEngine.Random.insideUnitSphere * spawnRadius;
-            randomPos.y = 0; // Обеспечиваем, что враг появится на том же уровне Y
+            randomPos.y = 0;
             
             Vector3 spawnPosition = transform.position + randomPos;
             
-            // Проверяем, что позиция находится на NavMesh
             UnityEngine.AI.NavMeshHit hit;
-            if (UnityEngine.AI.NavMesh.SamplePosition(spawnPosition, out hit, spawnRadius, UnityEngine.AI.NavMesh.AllAreas))
+            if (UnityEngine.AI.NavMesh.SamplePosition(
+                    spawnPosition, out hit, spawnRadius, UnityEngine.AI.NavMesh.AllAreas))
             {
                 return hit.position;
             }
             
-            return transform.position; // Если не нашли подходящей позиции, возвращаем исходную точку
+            return transform.position;
         }
 
-        // Получить случайный поворот для врага
         public Quaternion GetRandomRotation()
         {
-            if (!useRandomRotation)
-            {
-                // Если случайный поворот отключен, возвращаем стандартный поворот
-                return Quaternion.identity;
-            }
+            if (!useRandomRotation) return Quaternion.identity;
             
-            float baseAngle = usePointDirection ? transform.eulerAngles.y : 0f;
+            float baseAngle  = usePointDirection ? transform.eulerAngles.y : 0f;
             float randomAngle = UnityEngine.Random.Range(minYRotation, maxYRotation);
-            
             return Quaternion.Euler(0f, baseAngle + randomAngle, 0f);
         }
 
-        // Получить шанс спавна
-        public float GetSpawnChance()
-        {
-            return spawnChance;
-        }
-
-        // Проверка, занята ли точка
-        public bool IsOccupied()
-        {
-            return isOccupied;
-        }
-
-        // Установить статус занятости
-        public void SetOccupied(bool occupied)
-        {
-            isOccupied = occupied;
-        }
-        
-        public List<GameObject> GetEnemyPrefabs()
-        {
-            return enemyPrefabs;
-        }
+        public float GetSpawnChance()       => spawnChance;
+        public bool  IsOccupied()           => isOccupied;
+        public void  SetOccupied(bool v)    => isOccupied = v;
+        public List<GameObject> GetEnemyPrefabs()          => enemyPrefabs;
+        public List<ComponentToAdd> GetComponentsToAdd()   => componentsToAdd;
+        public GameObject GetPatrolPathObject()             => patrolPathObject;
+        public float GetSpawnRadius()                       => spawnRadius;
         
         public bool CheckSpawnConditions(IEnumerable<IPredicateEvaluator> evaluators)
         {
-            if (spawnConditions == null)
-            {
-                return true;
-            }
+            if (spawnConditions == null) return true;
             return spawnConditions.Check(evaluators);
         }
-        
-        public List<ComponentToAdd> GetComponentsToAdd()
+
+        // ─────────────────────────────────────────────────────────────────────
+        // Применение динамических компонентов к заспавненному врагу
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Добавляет все компоненты из <see cref="componentsToAdd"/> на
+        /// <paramref name="spawnedEnemy"/>, копирует их сериализованные поля
+        /// с шаблонов и подписывает на события.
+        ///
+        /// Вызывай этот метод из своего SpawnManager сразу после Instantiate.
+        /// </summary>
+        public void ApplyComponentsTo(GameObject spawnedEnemy)
         {
-            return componentsToAdd;
-        }
-        
-        public GameObject GetPatrolPathObject()
-        {
-            return patrolPathObject;
+            foreach (var entry in componentsToAdd)
+            {
+                if (entry.componentTemplate == null)
+                {
+                    Debug.LogWarning(
+                        $"[SpawnPoint] '{gameObject.name}': шаблон компонента не задан, пропускаем.");
+                    continue;
+                }
+
+                // Добавляем компонент и копируем все [SerializeField]-поля.
+                MonoBehaviour added = ComponentCopier.AddAndCopy(
+                    entry.componentTemplate, spawnedEnemy);
+
+                if (added == null) continue;
+
+                // Привязка к событиям (расширяй switch по мере надобности).
+                TryBindEvent(added, entry.eventBinding, spawnedEnemy);
+            }
         }
 
-        public float GetSpawnRadius()
+        private void TryBindEvent(
+            MonoBehaviour added,
+            ComponentEventBinding binding,
+            GameObject spawnedEnemy)
         {
-            return spawnRadius;
+            if (binding == null ||
+                binding.eventType == ComponentEventBinding.EventType.None ||
+                string.IsNullOrEmpty(binding.methodName))
+            {
+                return;
+            }
+
+            switch (binding.eventType)
+            {
+                case ComponentEventBinding.EventType.OnDie:
+                    // Ищем компонент с событием OnDie на заспавненном враге.
+                    // Замени Health на свой тип, в котором объявлено событие.
+                    var health = spawnedEnemy.GetComponent<RPG.Attributes.Health>();
+                    if (health == null)
+                    {
+                        Debug.LogWarning(
+                            $"[SpawnPoint] Не нашли компонент Health на '{spawnedEnemy.name}' " +
+                            $"для привязки события OnDie → {binding.methodName}.");
+                        break;
+                    }
+
+                    var method = added.GetType().GetMethod(
+                        binding.methodName,
+                        System.Reflection.BindingFlags.Instance |
+                        System.Reflection.BindingFlags.Public |
+                        System.Reflection.BindingFlags.NonPublic);
+
+                    if (method == null)
+                    {
+                        Debug.LogWarning(
+                            $"[SpawnPoint] Метод '{binding.methodName}' не найден " +
+                            $"в {added.GetType().Name}.");
+                        break;
+                    }
+
+                    // Создаём делегат UnityAction и подписываем на onDie.
+                    var action = (UnityAction)System.Delegate.CreateDelegate(
+                        typeof(UnityAction), added, method);
+                    health.onDie.AddListener(action);
+                    break;
+
+                // Добавляй другие типы событий здесь:
+                // case ComponentEventBinding.EventType.OnLevelUp:
+                //     ...
+                //     break;
+
+                default:
+                    Debug.LogWarning(
+                        $"[SpawnPoint] Неизвестный тип события: {binding.eventType}");
+                    break;
+            }
         }
     }
-} 
+}

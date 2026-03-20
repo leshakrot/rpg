@@ -12,13 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 006acf164eb756640b652553bc5d7471, type: 3}
   m_Name: MissingMead
   m_EditorClassIdentifier: 
-  _potentialDrops:
-  - item: {fileID: 11400000, guid: 15cc065084d7bd14584f4e870a627e75, type: 2}
-    relativeChance:
-    - 0
-    minNumber: 01000000
-    maxNumber: 01000000
-  _dropChancePercentage:
-  - 100
-  _minDrops: 01000000
-  _maxDrops: 01000000
+  dropConfigs:
+  - item: {fileID: 11400000, guid: 9f51b80544db41947971aa62ecb1c140, type: 2}
+    relativeChance: 1
+    usePerLevelChance: 0
+    relativeChancePerLevel: []
+    minNumber: 1
+    usePerLevelMinNumber: 0
+    minNumberPerLevel: []
+    maxNumber: 1
+    usePerLevelMaxNumber: 0
+    maxNumberPerLevel: []
+  globalConfig:
+    dropChancePercentage: 100
+    minDrops: 1
+    maxDrops: 1
+    usePerLevelDropChance: 0
+    dropChancePerLevel: []
+    minDropsPerLevel: []
+    maxDropsPerLevel: []
