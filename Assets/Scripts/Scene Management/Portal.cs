@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using TMPro;
-using RPG.UI; // <-- ДОБАВЛЕНО для UIManager
+using RPG.UI;
 
 namespace RPG.SceneManagement
 {
@@ -56,7 +56,6 @@ namespace RPG.SceneManagement
                 interactButton.SetInteractionText(interactText);
                 interactButton.gameObject.SetActive(true);
 
-                // Add listener for the button click if not already added
                 Button button = interactButton.GetComponent<Button>();
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(OnInteractButtonClicked);
@@ -108,16 +107,19 @@ namespace RPG.SceneManagement
             Portal otherPortal = GetOtherPortal();
             UpdatePlayer(otherPortal);
 
-            savingWrapper.Save();
-
             yield return new WaitForSeconds(fadeWaitTime);
-            
+
             // Обновляем UI после перехода между сценами
             UIManager.RefreshUIFromAnywhere();
-            
+
             fader.FadeIn(fadeInTime);
 
             newPlayerController.enabled = true;
+
+            // Сохраняем ПОСЛЕ fadeWaitTime — все Start() уже отработали,
+            // RestoreState применён, состояние объектов корректное
+            savingWrapper.Save();
+
             Destroy(gameObject);
         }
 

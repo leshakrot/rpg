@@ -40,7 +40,10 @@ namespace RPG.Attributes
 
         private void OnEnable()
         {
+            // onLevelUp — реальный левел-ап, регенерация здоровья уместна
             GetComponent<BaseStats>().onLevelUp += RegenerateHealth;
+            // onStatsRefreshed — загрузка/рефреш UI, здоровье НЕ трогаем
+            // (не подписываемся на RegenerateHealth)
         }
 
         private void OnDisable()
@@ -53,7 +56,6 @@ namespace RPG.Attributes
             print(gameObject.name + " took damage: " + damage);
 
             _healthPoints.value = Mathf.Max(_healthPoints.value - damage, 0);
-
 
             if(_healthPoints.value == 0)
             {
@@ -120,11 +122,9 @@ namespace RPG.Attributes
             _healthPoints.value = Mathf.Max(_healthPoints.value, regenHealthPoints);
         }
 
-
-
         public bool IsDead()
         {
-            return _healthPoints.value <= 0; ;
+            return _healthPoints.value <= 0;
         }
 
         public object CaptureState()
