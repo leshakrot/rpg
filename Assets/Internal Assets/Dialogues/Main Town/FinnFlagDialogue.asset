@@ -560,8 +560,7 @@ MonoBehaviour:
     y: 453
     width: 200
     height: 100
-  onEnterActions:
-  - complete_quest_garlands
+  onEnterActions: []
   onExitActions: []
   condition:
     _and: []
@@ -591,7 +590,9 @@ MonoBehaviour:
     width: 200
     height: 100
   onEnterActions: []
-  onExitActions: []
+  onExitActions:
+  - show_garlands
+  - complete_quest_garlands
   condition:
     _and: []
 --- !u!114 &2165231733225241038
@@ -616,12 +617,11 @@ MonoBehaviour:
   - c301088a-3fba-4de4-b388-8b3b2509b8c9
   rect:
     serializedVersion: 2
-    x: 2154
+    x: 2155
     y: 321
     width: 200
     height: 100
-  onEnterActions:
-  - show_garlands
+  onEnterActions: []
   onExitActions: []
   condition:
     _and: []
@@ -680,7 +680,7 @@ MonoBehaviour:
   - 3ab15530-9c99-480f-aa3c-a99bb2a2bb51
   rect:
     serializedVersion: 2
-    x: 439
+    x: 438
     y: 762
     width: 200
     height: 100

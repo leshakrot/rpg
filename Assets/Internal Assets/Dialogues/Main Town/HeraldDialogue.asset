@@ -1,0 +1,324 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cb41413d0f918744b4655afe6c9f18f, type: 3}
+  m_Name: HeraldDialogue
+  m_EditorClassIdentifier: 
+  nodes:
+  - {fileID: 1000000000000000001}
+  - {fileID: 1000000000000000002}
+  - {fileID: 1000000000000000003}
+  - {fileID: 1000000000000000004}
+  - {fileID: 1000000000000000005}
+  - {fileID: 1000000000000000006}
+  - {fileID: 1000000000000000007}
+  - {fileID: 1000000000000000008}
+  newNodeOffset: {x: 250, y: 0}
+--- !u!114 &1000000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: herald-start-01
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u041D\u0430\u0440\u043E\u0434! \u0421\u043B\u0443\u0448\u0430\u0439,\
+    \ \u043D\u0430\u0440\u043E\u0434! \u0422\u0440\u0430\u0434\u0438\u0446\u0438\
+    \u043E\u043D\u043D\u044B\u0435 \u0441\u043E\u0441\u0442\u044F\u0437\u0430\u043D\
+    \u0438\u044F \u041F\u0440\u0430\u0437\u0434\u043D\u0438\u043A\u0430 \u0423\u0440\
+    \u043E\u0436\u0430\u044F \u043D\u0430\u0447\u0438\u043D\u0430\u044E\u0442\u0441\
+    \u044F! \u041E\u0445\u043E\u0442\u0430 \u043D\u0430 \u0441\u043F\u0440\u044F\
+    \u0442\u0430\u043D\u043D\u044B\u0435 \u043C\u0438\u0448\u0435\u043D\u0438, \u0431\
+    \u0440\u043E\u0441\u043E\u043A \u0431\u0440\u0435\u0432\u043D\u0430! \u041F\u043E\
+    \u0431\u0435\u0434\u0438\u0442\u0435\u043B\u044F \u0436\u0434\u0451\u0442 \u043D\
+    \u0430\u0433\u0440\u0430\u0434\u0430 \u0441\u0430\u043C\u043E\u0433\u043E \u043A\
+    \u0443\u043F\u0446\u0430! \u041F\u043E\u0434\u0445\u043E\u0434\u0438, \u0435\
+    \u0441\u043B\u0438 \u043D\u0435 \u0442\u0440\u0443\u0441\u0438\u0448\u044C!"
+  children:
+  - herald-player-join
+  - herald-player-skip
+  rect:
+    serializedVersion: 2
+    x: 100
+    y: 100
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: HasQuest
+        _parameters:
+        - "\u0421\u043E\u0441\u0442\u044F\u0437\u0430\u043D\u0438\u0435"
+        _negate: 1
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - "\u0421\u043E\u0441\u0442\u044F\u0437\u0430\u043D\u0438\u0435"
+        _negate: 1
+--- !u!114 &1000000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: herald-player-join
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 1
+  text: "\u0425\u043E\u0447\u0443 \u0443\u0447\u0430\u0441\u0442\u0432\u043E\u0432\
+    \u0430\u0442\u044C. \u0427\u0442\u043E \u043D\u0430\u0434\u043E \u0434\u0435\
+    \u043B\u0430\u0442\u044C?"
+  children:
+  - herald-explain-01
+  rect:
+    serializedVersion: 2
+    x: 370
+    y: 60
+    width: 200
+    height: 100
+  onEnterActions:
+  - start_quest_contest
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &1000000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: herald-player-skip
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 1
+  text: "\u041F\u043E\u0442\u043E\u043C, \u043C\u043E\u0436\u0435\u0442."
+  children:
+  - herald-okay-later
+  rect:
+    serializedVersion: 2
+    x: 370
+    y: 160
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &1000000000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: herald-explain-01
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u041E\u0442\u043B\u0438\u0447\u043D\u043E! \u0414\u0432\u0430 \u0438\u0441\
+    \u043F\u044B\u0442\u0430\u043D\u0438\u044F. \u041F\u0435\u0440\u0432\u043E\u0435\
+    \ \u2014 \u043E\u0445\u043E\u0442\u0430 \u043D\u0430 \u043C\u0438\u0448\u0435\
+    \u043D\u0438: \u043A\u0442\u043E-\u0442\u043E \u0435\u0449\u0451 \u0434\u043E\
+    \ \u0440\u0430\u0441\u0441\u0432\u0435\u0442\u0430 \u0441\u043F\u0440\u044F\
+    \u0442\u0430\u043B \u0442\u0440\u0438 \u043C\u0438\u0448\u0435\u043D\u0438 \u043F\
+    \u043E \u0432\u0441\u0435\u0439 \u0434\u0435\u0440\u0435\u0432\u043D\u0435. \u041D\
+    \u0430\u0439\u0434\u0438 \u0432\u0441\u0435 \u0442\u0440\u0438 \u0438 \u043F\
+    \u043E\u0440\u0430\u0437\u0438 \u2014 \u043F\u0435\u0440\u0432\u044B\u0439 \u043F\
+    \u043E\u0431\u0435\u0436\u0434\u0430\u0435\u0442. \u0412\u0442\u043E\u0440\u043E\
+    \u0435 \u2014 \u0431\u0440\u043E\u0441\u043E\u043A \u0431\u0440\u0435\u0432\
+    \u043D\u0430: \u043A\u0442\u043E \u0434\u0430\u043B\u044C\u0448\u0435 \u0437\
+    \u0430\u0431\u0440\u043E\u0441\u0438\u0442, \u0442\u043E\u0442 \u0438 \u043F\
+    \u043E\u0431\u0435\u0434\u0438\u043B. \u041D\u0430\u0433\u0440\u0430\u0434\u0430\
+    \ \u2014 \u043E\u0442 \u0437\u0430\u0433\u0430\u0434\u043E\u0447\u043D\u043E\
+    \u0433\u043E \u043A\u0443\u043F\u0446\u0430, \u043A\u043E\u0442\u043E\u0440\u044B\
+    \u0439 \u043F\u043E\u044F\u0432\u0438\u043B\u0441\u044F \u0441\u0435\u0433\u043E\
+    \u0434\u043D\u044F \u0443\u0442\u0440\u043E\u043C. \u0413\u043E\u0432\u043E\u0440\
+    \u0438\u0442, \u0434\u0430\u0440\u0438\u0442 \u0447\u0442\u043E-\u0442\u043E\
+    \ \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043B\u044C\u043D\u043E\
+    \ \u043E\u0441\u043E\u0431\u0435\u043D\u043D\u043E\u0435. \u041D\u0430\u0447\
+    \u0438\u043D\u0430\u0435\u043C?"
+  children:
+  - herald-start-contest
+  rect:
+    serializedVersion: 2
+    x: 640
+    y: 60
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &1000000000000000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: herald-start-contest
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 1
+  text: "\u041D\u0430\u0447\u0438\u043D\u0430\u0435\u043C!"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 910
+    y: 60
+    width: 200
+    height: 100
+  onEnterActions:
+  - talk_to_herald
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &1000000000000000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: herald-okay-later
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u041A\u0430\u043A \u0445\u043E\u0447\u0435\u0448\u044C! \u0422\u043E\u043B\
+    \u044C\u043A\u043E \u043F\u043E\u0441\u043F\u0435\u0448\u0438 \u2014 \u0441\u043E\
+    \u0441\u0442\u044F\u0437\u0430\u043D\u0438\u044F \u043D\u0435 \u0432\u0435\u0447\
+    \u043D\u044B\u0435!"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 640
+    y: 160
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &1000000000000000007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: herald-after-win
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u041F\u043E\u0431\u0435\u0434\u0438\u0442\u0435\u043B\u044C! \u041D\u0430\
+    \u0448 \u043A\u0443\u043F\u0435\u0446 \u043E\u0431\u0435\u0449\u0430\u043B \u0432\
+    \u0440\u0443\u0447\u0438\u0442\u044C \u043D\u0430\u0433\u0440\u0430\u0434\u0443\
+    \ \u043B\u0438\u0447\u043D\u043E. \u0418\u0449\u0438 \u0435\u0433\u043E \u0432\
+    \u043E\u043D \u0442\u0430\u043C \u2014 \u0443 \u043A\u0440\u0430\u0441\u043D\
+    \u043E\u0433\u043E \u0448\u0430\u0442\u0440\u0430. \u0422\u043E\u043B\u044C\u043A\
+    \u043E.. \u0441\u0442\u0440\u0430\u043D\u043D\u043E. \u0412 \u0441\u0430\u043C\
+    \u043E\u043C \u043D\u0430\u0447\u0430\u043B\u0435 \u043E\u043D \u043F\u0440\u0438\
+    \u0448\u0435\u043B \u0438 \u0441\u043F\u0440\u043E\u0441\u0438\u043B, \u043C\
+    \u043E\u0436\u043D\u043E \u043B\u0438 \u0443\u0441\u0442\u0440\u043E\u0438\u0442\
+    \u044C \u0441\u043E\u0441\u0442\u044F\u0437\u0430\u043D\u0438\u044F. \u0421\u0430\
+    \u043C. \u041F\u0440\u0435\u0434\u043B\u043E\u0436\u0438\u043B \u043D\u0430\u0433\
+    \u0440\u0430\u0434\u0443. \u042F \u0442\u043E\u0433\u0434\u0430 \u0435\u0449\
+    \u0451 \u043F\u043E\u0434\u0443\u043C\u0430\u043B \u2014 \u043A\u0442\u043E\
+    \ \u0436 \u0442\u0430\u043A \u0434\u0435\u043B\u0430\u0435\u0442?"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 100
+    y: 400
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: CompletedObjective
+        _parameters:
+        - win_archery
+        _negate: 0
+    - _or:
+      - _predicate: CompletedObjective
+        _parameters:
+        - win_strength
+        _negate: 0
+--- !u!114 &1000000000000000008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: merchant-coin-give
+  m_EditorClassIdentifier: 
+  isPlayerSpeaking: 0
+  text: "\u0410, \u0432\u043E\u0442 \u0438 \u043D\u0430\u0448 \u043B\u043E\u0432\
+    \u043A\u0430\u0447. *\u0443\u043B\u044B\u0431\u0430\u0435\u0442\u0441\u044F\
+    \ \u043D\u0435 \u0433\u043B\u0430\u0437\u0430\u043C\u0438, \u0430 \u0447\u0435\
+    \u043C-\u0442\u043E \u0434\u0440\u0443\u0433\u0438\u043C* \u0414\u0435\u0440\
+    \u0436\u0438. \u041C\u043E\u043D\u0435\u0442\u0430 \u0443\u0434\u0430\u0447\
+    \u0438. \u0413\u043E\u0432\u043E\u0440\u044F\u0442, \u0435\u0441\u043B\u0438\
+    \ \u0437\u0430\u0433\u0430\u0434\u0430\u0442\u044C \u043D\u0430 \u043D\u0435\
+    \u0451 \u0436\u0435\u043B\u0430\u043D\u0438\u0435 \u0432 \u043F\u043E\u043B\
+    \u043D\u043E\u0447\u044C \u2014 \u0438\u0441\u043F\u043E\u043B\u043D\u0438\u0442\
+    \u0441\u044F. \u0425\u043E\u0442\u044F \u044F, \u043A\u043E\u043D\u0435\u0447\
+    \u043D\u043E, \u0432 \u0432\u044B\u0434\u0443\u043C\u043A\u0438 \u043D\u0435\
+    \ \u0432\u0435\u0440\u044E. *\u0445\u043E\u0445\u043E\u0447\u0435\u0442*"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 400
+    y: 400
+    width: 200
+    height: 100
+  onEnterActions:
+  - give_strange_coin
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: CompletedObjective
+        _parameters:
+        - win_archery
+        _negate: 0
+    - _or:
+      - _predicate: CompletedObjective
+        _parameters:
+        - win_strength
+        _negate: 0
