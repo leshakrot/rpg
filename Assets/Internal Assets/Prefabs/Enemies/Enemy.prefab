@@ -1,5 +1,67 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &564399526644813598
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1015571834349821555}
+  m_Layer: 0
+  m_Name: LWeaponTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1015571834349821555
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564399526644813598}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalScale: {x: 0.010000001, y: 0.010000002, z: 0.01}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2478155195940456109}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6250933081427873353
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3848266235041746422}
+  m_Layer: 0
+  m_Name: RWeaponTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3848266235041746422
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6250933081427873353}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2478155195940369635}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2150841163275434977
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -50,7 +112,7 @@ PrefabInstance:
         type: 3}
       propertyPath: leftHandTransform
       value: 
-      objectReference: {fileID: 2478155195940369635}
+      objectReference: {fileID: 3848266235041746422}
     - target: {fileID: 2097720894550855511, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
         type: 3}
       propertyPath: _leftHandTransform
@@ -60,7 +122,7 @@ PrefabInstance:
         type: 3}
       propertyPath: rightHandTransform
       value: 
-      objectReference: {fileID: 2478155195940456109}
+      objectReference: {fileID: 1015571834349821555}
     - target: {fileID: 2097720894550855511, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
         type: 3}
       propertyPath: _rightHandTransform
@@ -407,6 +469,8 @@ MonoBehaviour:
   _patrolSpeedFraction: 0.2
   _shoutDistance: 5
   _maxChaseDistanceFromSpawn: 15
+  _escapeDistanceFromContact: 20
+  _escapeDistanceFromEnemy: 15
 --- !u!114 &6313000335727546957
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -421,6 +485,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scatterDistance: 1
   _dropLibrary: {fileID: 11400000, guid: 1648a246799301c48ae37e8cccef223e, type: 2}
+  _minDistanceFromInteractables: 1.5
+  _interactableCheckRadius: 2
 --- !u!82 &5473090505419759510 stripped
 AudioSource:
   m_CorrespondingSourceObject: {fileID: 6209619965172671607, guid: 8ca993c0cb9ee2c4ba7b3f44cbe1c265,
@@ -487,7 +553,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 462140, guid: 100dded3f80a43846a29e6fdf0e82019,
+        type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 1015571834349821555}
+    - targetCorrespondingSourceObject: {fileID: 442226, guid: 100dded3f80a43846a29e6fdf0e82019,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3848266235041746422}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 100dded3f80a43846a29e6fdf0e82019, type: 3}
 --- !u!4 &2478155195940369635 stripped
