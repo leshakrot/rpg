@@ -44,7 +44,7 @@ MonoBehaviour:
     completionCondition:
       _and: []
     hasProgress: 1
-    requiredCount: 10
+    requiredCount: 7
     hiddenInitially: 1
     revealCondition:
       _and:
@@ -53,6 +53,11 @@ MonoBehaviour:
           _parameters:
           - talk_to_fishers
           _negate: 0
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - kill
+          _negate: 1
     isCollectionObjective: 0
     itemToCollect: {fileID: 0}
   - reference: find_lift

@@ -181,90 +181,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1141839656}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &115284585
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 115284587}
-  - component: {fileID: 115284586}
-  m_Layer: 0
-  m_Name: Enemy Spawn Point (9)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &115284586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 115284585}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29f3077efe5f6be4aafd2ade4bdefb23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RPG.Combat.SpawnPoint
-  enemyPrefabs:
-  - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
-  spawnRadius: 2
-  spawnChance: 1
-  isOccupied: 0
-  alwaysShowGizmo: 1
-  gizmoColor: {r: 0, g: 1, b: 0, a: 1}
-  occupiedGizmoColor: {r: 1, g: 0, b: 0, a: 1}
-  useRandomRotation: 1
-  minYRotation: 0
-  maxYRotation: 360
-  usePointDirection: 0
-  spawnConditions:
-    _and:
-    - _or:
-      - _predicate: HasQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 0
-    - _or:
-      - _predicate: HasObjective
-        _parameters:
-        - kill
-        _negate: 1
-    - _or:
-      - _predicate: CompletedQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 1
-    - _or:
-      - _predicate: CompletedObjective
-        _parameters:
-        - kill
-        _negate: 1
-  patrolPathObject: {fileID: 1141839654}
-  componentsToAdd:
-  - componentTemplate: {fileID: 941566969}
-    eventBinding:
-      eventType: 1
-      methodName: AddProgress
---- !u!4 &115284587
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 115284585}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 120.83, y: 2.5037465, z: 128.65}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1132333998}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &115483017
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1076,7 +992,7 @@ Transform:
   m_GameObject: {fileID: 774007601}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 118.91, y: 2.44, z: 127.92}
+  m_LocalPosition: {x: 117.14, y: 2.44, z: 130.12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2035,9 +1951,6 @@ Transform:
   - {fileID: 1483189857}
   - {fileID: 647361720}
   - {fileID: 1758586370}
-  - {fileID: 115284587}
-  - {fileID: 1271072020}
-  - {fileID: 1608825091}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1141839654
@@ -2218,90 +2131,6 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 70.2, y: 2.5037465, z: 105}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1132333998}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1271072018
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1271072020}
-  - component: {fileID: 1271072019}
-  m_Layer: 0
-  m_Name: Enemy Spawn Point (10)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1271072019
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1271072018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29f3077efe5f6be4aafd2ade4bdefb23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RPG.Combat.SpawnPoint
-  enemyPrefabs:
-  - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
-  spawnRadius: 2
-  spawnChance: 1
-  isOccupied: 0
-  alwaysShowGizmo: 1
-  gizmoColor: {r: 0, g: 1, b: 0, a: 1}
-  occupiedGizmoColor: {r: 1, g: 0, b: 0, a: 1}
-  useRandomRotation: 1
-  minYRotation: 0
-  maxYRotation: 360
-  usePointDirection: 0
-  spawnConditions:
-    _and:
-    - _or:
-      - _predicate: HasQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 0
-    - _or:
-      - _predicate: HasObjective
-        _parameters:
-        - kill
-        _negate: 1
-    - _or:
-      - _predicate: CompletedQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 1
-    - _or:
-      - _predicate: CompletedObjective
-        _parameters:
-        - kill
-        _negate: 1
-  patrolPathObject: {fileID: 1141839654}
-  componentsToAdd:
-  - componentTemplate: {fileID: 941566969}
-    eventBinding:
-      eventType: 1
-      methodName: AddProgress
---- !u!4 &1271072020
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1271072018}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 136.91, y: 2.5037465, z: 137.62}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17150,7 +16979,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.7499
+      value: -644.80005
       objectReference: {fileID: 0}
     - target: {fileID: 5560568489890141519, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -19112,90 +18941,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1534656679}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1608825089
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1608825091}
-  - component: {fileID: 1608825090}
-  m_Layer: 0
-  m_Name: Enemy Spawn Point (14)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1608825090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1608825089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29f3077efe5f6be4aafd2ade4bdefb23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RPG.Combat.SpawnPoint
-  enemyPrefabs:
-  - {fileID: 247781800630390420, guid: 2ef344763b48a0949af1e8a52610238a, type: 3}
-  spawnRadius: 2
-  spawnChance: 1
-  isOccupied: 0
-  alwaysShowGizmo: 1
-  gizmoColor: {r: 0, g: 1, b: 0, a: 1}
-  occupiedGizmoColor: {r: 1, g: 0, b: 0, a: 1}
-  useRandomRotation: 1
-  minYRotation: 0
-  maxYRotation: 360
-  usePointDirection: 0
-  spawnConditions:
-    _and:
-    - _or:
-      - _predicate: HasQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 0
-    - _or:
-      - _predicate: HasObjective
-        _parameters:
-        - kill
-        _negate: 1
-    - _or:
-      - _predicate: CompletedQuest
-        _parameters:
-        - "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-        _negate: 1
-    - _or:
-      - _predicate: CompletedObjective
-        _parameters:
-        - kill
-        _negate: 1
-  patrolPathObject: {fileID: 1141839654}
-  componentsToAdd:
-  - componentTemplate: {fileID: 941566969}
-    eventBinding:
-      eventType: 1
-      methodName: AddProgress
---- !u!4 &1608825091
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1608825089}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 151.78, y: 2.5037465, z: 143.19}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1132333998}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1696155426
 GameObject:
   m_ObjectHideFlags: 0
@@ -20084,6 +19829,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DayNightSystem
+      objectReference: {fileID: 0}
+    - target: {fileID: 6386290386725857841, guid: 740863ae9efc9ed479481af176d6e541,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
