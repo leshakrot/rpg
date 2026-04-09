@@ -6,7 +6,7 @@ public class FishingUI : MonoBehaviour
 	[SerializeField] private InteractButton interactButton;
 	[SerializeField] private Sprite interactSprite;
 	[SerializeField] private GameObject fishingMiniGamePanel; // Панель мини-игры
-	[SerializeField] private FishingMiniGame fishingMiniGame; // Мини-игра рыбалки
+	[SerializeField] private FishingSystem fishingSystem; // Ссылка на систему рыбалки
     [SerializeField] private GameObject successNotification;
     [SerializeField] private GameObject failureNotification;
 
@@ -37,8 +37,8 @@ public class FishingUI : MonoBehaviour
 		{
 			fishingMiniGamePanel.SetActive(true);
 
-			// Запускаем мини-игру через FishingMiniGame
-			fishingMiniGame.StartMiniGame();
+			// Запускаем рыбалку через FishingSystem (он сам запустит мини-игру с нужными параметрами)
+			fishingSystem.StartFishing();
 		}
 		ShowFishingButton(false);
 		ToggleSuccessNotificationVisibility(false);

@@ -10037,6 +10037,18 @@ Transform:
   - {fileID: 1145521685}
   m_Father: {fileID: 1984763040}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &950964010 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1491693333876954801, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+    type: 3}
+  m_PrefabInstance: {fileID: 992968711}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8a935f16a5d23f4994d19a9bcc0955f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &959883712 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5136757879608984300, guid: 1f5a4e5d928e059408bb5b204961a1c2,
@@ -10451,7 +10463,7 @@ PrefabInstance:
     - target: {fileID: 683142751084556466, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AspectRatio
-      value: 1000
+      value: 1.25
       objectReference: {fileID: 0}
     - target: {fileID: 797872937150736156, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -11021,7 +11033,7 @@ PrefabInstance:
     - target: {fileID: 2688425471313113580, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AspectRatio
-      value: 1000
+      value: 1.25
       objectReference: {fileID: 0}
     - target: {fileID: 2765323305817021365, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -11256,7 +11268,7 @@ PrefabInstance:
     - target: {fileID: 3843386131200789801, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AspectRatio
-      value: 1000
+      value: 1.25
       objectReference: {fileID: 0}
     - target: {fileID: 3914836038229411908, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -11338,6 +11350,11 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 47.75
       objectReference: {fileID: 0}
+    - target: {fileID: 4329608341410490160, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: fishingSystem
+      value: 
+      objectReference: {fileID: 950964010}
     - target: {fileID: 4337118159852371192, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -11646,7 +11663,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.7492
+      value: -570.7498
       objectReference: {fileID: 0}
     - target: {fileID: 5572362029290283794, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -11848,6 +11865,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6292334449780493718, guid: 1345df2c3cd9cbd40a817776750bb2f4,
+        type: 3}
+      propertyPath: fishingSystem
+      value: 
+      objectReference: {fileID: 950964010}
     - target: {fileID: 6341260926657719712, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -17073,7 +17095,7 @@ PrefabInstance:
     - target: {fileID: 8419322417996559672, guid: 42e550d4059322349a11630e6a22383e,
         type: 3}
       propertyPath: m_PathPosition
-      value: 0.404128
+      value: 1.166302
       objectReference: {fileID: 0}
     - target: {fileID: 8419322417996559672, guid: 42e550d4059322349a11630e6a22383e,
         type: 3}
@@ -24561,6 +24583,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3807858743900263346, guid: 408d1cdaa2b7b284fa14bac63cc72502,
         type: 3}
+      propertyPath: availableFish.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3807858743900263346, guid: 408d1cdaa2b7b284fa14bac63cc72502,
+        type: 3}
+      propertyPath: 'availableFish.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 57b6542df4bff284c82a055da8d185c2,
+        type: 2}
+    - target: {fileID: 3807858743900263346, guid: 408d1cdaa2b7b284fa14bac63cc72502,
+        type: 3}
+      propertyPath: 'availableFish.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 57b6542df4bff284c82a055da8d185c2,
+        type: 2}
+    - target: {fileID: 3807858743900263346, guid: 408d1cdaa2b7b284fa14bac63cc72502,
+        type: 3}
       propertyPath: playerFishingSystemInteraction
       value: 
       objectReference: {fileID: 992968712}
@@ -26098,8 +26137,40 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2246515848217709059, guid: 46343ba92f8c872408dd90a63ebfe2eb,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7661346190302907442}
   m_SourcePrefab: {fileID: 100100000, guid: 46343ba92f8c872408dd90a63ebfe2eb, type: 3}
+--- !u!1 &7661346190302907441 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2246515848217709059, guid: 46343ba92f8c872408dd90a63ebfe2eb,
+    type: 3}
+  m_PrefabInstance: {fileID: 7661346190302907440}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &7661346190302907442
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7661346190302907441}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 5350209ce88fa524e99a8c0c6a86f0ae, type: 2}
 --- !u!4 &7804603355743963909
 Transform:
   m_ObjectHideFlags: 0

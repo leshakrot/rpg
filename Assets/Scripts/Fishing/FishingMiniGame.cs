@@ -19,13 +19,16 @@ public class FishingMiniGame : MonoBehaviour
 
 	private float minY, maxY; // Границы движения
 
-	private float minIconSpeed = 30f; // Минимальная скорость иконки
-	private float maxIconSpeed = 80f; // Максимальная скорость иконки
+	// Параметры текущей рыбы
+	private float minIconSpeed = 30f;
+	private float maxIconSpeed = 80f;
+	private float minDirectionChangeInterval = 0.5f;
+	private float maxDirectionChangeInterval = 2f;
+
 	private float currentIconSpeed; // Текущая скорость иконки
 	private float iconVelocityY = 1f; // Направление движения иконки (1 = вверх, -1 = вниз)
 
 	private float directionChangeTimer = 0f; // Таймер смены направления
-	private float directionChangeInterval = 1f; // Интервал смены направления (в секундах)
 
 	public event Action OnFishingComplete; // Событие завершения рыбалки
 
@@ -40,8 +43,6 @@ public class FishingMiniGame : MonoBehaviour
 
 		minY = fishingBar.rect.yMin;
 		maxY = fishingBar.rect.yMax;
-
-		//Debug.Log($"Границы движения: minY = {minY}, maxY = {maxY}");
 
 		// Устанавливаем начальную позицию целевой зоны
 		targetZone.anchoredPosition = new Vector2(targetZone.anchoredPosition.x, minY);
@@ -65,15 +66,23 @@ public class FishingMiniGame : MonoBehaviour
 		CheckTargetZone();
 	}
 
-	public void StartMiniGame()
+	public void StartMiniGame(FishData fishData, float difficulty)
 	{
-		ResetGame();
 		if (isPlaying)
 		{
 			Debug.LogWarning("Мини-игра уже запущена!");
 			return;
 		}
 
+		// Применяем параметры сложности из FishData с учетом индивидуальной сложности предмета
+		if (fishData != null)
+		{
+			fishData.CalculateParameters(difficulty, out minIconSpeed, out maxIconSpeed, out minDirectionChangeInterval, out maxDirectionChangeInterval);
+
+			Debug.Log($"Запуск мини-игры с параметрами: Difficulty={difficulty:F2}, Speed [{minIconSpeed:F1}-{maxIconSpeed:F1}], Interval [{minDirectionChangeInterval:F2}-{maxDirectionChangeInterval:F2}]");
+		}
+
+		ResetGame();
 		Debug.Log("Запуск мини-игры...");
 		isPlaying = true;
 		holdTimer = 0f;
@@ -111,6 +120,12 @@ public class FishingMiniGame : MonoBehaviour
 
 	private void UpdateFishingIconPosition()
 	{
+		// Если скорость 0 - крючок не двигается
+		if (maxIconSpeed <= 0f)
+		{
+			return;
+		}
+
 		// Уменьшаем таймер смены направления
 		directionChangeTimer -= Time.deltaTime;
 
@@ -119,7 +134,7 @@ public class FishingMiniGame : MonoBehaviour
 		{
 			iconVelocityY = UnityEngine.Random.value > 0.5f ? 1f : -1f; // Случайное направление
 			currentIconSpeed = UnityEngine.Random.Range(minIconSpeed, maxIconSpeed); // Случайная скорость
-			directionChangeTimer = UnityEngine.Random.Range(0.5f, 2f); // Новый интервал
+			directionChangeTimer = UnityEngine.Random.Range(minDirectionChangeInterval, maxDirectionChangeInterval); // Новый интервал
 		}
 
 		// Получаем текущую позицию иконки
@@ -148,8 +163,6 @@ public class FishingMiniGame : MonoBehaviour
 
 		// Устанавливаем новую позицию
 		fishingIcon.anchoredPosition = new Vector2(fishingIcon.anchoredPosition.x, currentY);
-
-		Debug.Log($"Иконка рыбы: {currentY}, Скорость: {currentIconSpeed}, Направление: {iconVelocityY}");
 	}
 
 	private void CheckTargetZone()
@@ -186,7 +199,7 @@ public class FishingMiniGame : MonoBehaviour
 		Debug.Log("Рыба поймана!");
 
 		// Отправляем событие о завершении рыбалки
-		OnFishingComplete?.Invoke(); // Заменить на реальный результат
+		OnFishingComplete?.Invoke();
 
 		// Сбрасываем игру
 		ResetGame();
@@ -194,18 +207,20 @@ public class FishingMiniGame : MonoBehaviour
 
 	private void ResetGame()
 	{
-		if (!isPlaying)
-		{
-			Debug.LogWarning("ResetGame вызван, но мини-игра уже неактивна!");
-			return;
-		}
-
 		holdTimer = 0f;
 		progressFill.fillAmount = 0f;
-		isPlaying = false;
 		isHolding = false;
 
 		// Сбрасываем позицию целевой зоны
-		targetZone.anchoredPosition = new Vector2(targetZone.anchoredPosition.x, minY);
+		if (targetZone != null)
+		{
+			targetZone.anchoredPosition = new Vector2(targetZone.anchoredPosition.x, minY);
+		}
+
+		// Сбрасываем позицию иконки рыбы
+		if (fishingIcon != null)
+		{
+			fishingIcon.anchoredPosition = new Vector2(fishingIcon.anchoredPosition.x, 0f);
+		}
 	}
 }
