@@ -17,6 +17,24 @@ public class FishingMiniGame : MonoBehaviour
 	[SerializeField] private bool canFail = false;
 	[SerializeField] private float failThreshold = 0f;
 
+	[Header("Tension Settings")]
+	[Tooltip("Время до срыва рыбы когда леска на максимуме (в секундах)")]
+	[SerializeField] private float tensionMaxTime = 2f;
+	[Tooltip("Множитель скорости заполнения tension относительно скорости откатки прогресса")]
+	[SerializeField] private float tensionFillMultiplier = 5f;
+	[Tooltip("Цвет progressFill в нормальном состоянии")]
+	[SerializeField] private Color normalColor = Color.green;
+	[Tooltip("Цвет progressFill в состоянии натяжения (леска вот-вот лопнет)")]
+	[SerializeField] private Color tensionColor = Color.red;
+
+	[Header("Reel Sound Settings")]
+	[Tooltip("Базовый pitch звука сматывания лески")]
+	[SerializeField] private float basePitch = 1f;
+	[Tooltip("Целевой pitch при нажатии кнопки")]
+	[SerializeField] private float targetPitch = 1.3f;
+	[Tooltip("Скорость изменения pitch")]
+	[SerializeField] private float pitchChangeSpeed = 2f;
+
 	public event Action OnFishingComplete;
 	public event Action OnFishingFailed;
 
@@ -37,16 +55,27 @@ public class FishingMiniGame : MonoBehaviour
 	private float iconVelocityY = 1f;
 	private float directionChangeTimer = 0f;
 
+	// ── Tension state ──
+	// tensionTimer накапливается пока holdTimer == 0 и иконка вне зоны.
+	// При попадании иконки в зону — сбрасывается.
+	private float tensionTimer = 0f;
+	private bool isTense = false;   // true когда holdTimer упал до 0 и иконка по-прежнему вне зоны
+
+	// ── Reel sound pitch ──
+	private float currentPitch = 1f;
+	private AudioSource reelAudioSource;
+
 	private void Awake()
 	{
-		// Сбрасываем прогресс при старте
 		if (progressFill != null)
+		{
 			progressFill.fillAmount = 0f;
+			progressFill.color = normalColor;
+		}
 	}
 
 	private void OnEnable()
 	{
-		// Инициализируем границы при включении — layout к этому моменту уже готов
 		InitializeBounds();
 	}
 
@@ -54,7 +83,6 @@ public class FishingMiniGame : MonoBehaviour
 	{
 		if (fishingBar == null) return;
 
-		// Используем Canvas.ForceUpdateCanvases чтобы получить актуальные размеры
 		Canvas.ForceUpdateCanvases();
 
 		minY = fishingBar.rect.yMin;
@@ -68,6 +96,7 @@ public class FishingMiniGame : MonoBehaviour
 
 		UpdateTargetZonePosition();
 		UpdateFishingIconPosition();
+		UpdateReelPitch();
 
 		// Клавиатурный ввод (ПК)
 		if (Input.GetKeyDown(KeyCode.Space)) isHolding = true;
@@ -76,23 +105,19 @@ public class FishingMiniGame : MonoBehaviour
 		CheckTargetZone();
 	}
 
-	/// <summary>
-	/// Зажать — вызывается из UI (PointerDown)
-	/// </summary>
+	/// <summary>Зажать — вызывается из UI (PointerDown)</summary>
 	public void OnPullAction()
 	{
 		isHolding = true;
 	}
 
-	/// <summary>
-	/// Отпустить — вызывается из UI (PointerUp)
-	/// </summary>
+	/// <summary>Отпустить — вызывается из UI (PointerUp)</summary>
 	public void OnPullRelease()
 	{
 		isHolding = false;
 	}
 
-	public void StartMiniGame(FishData fishData, float difficulty)
+	public void StartMiniGame(FishData fishData, float difficulty, AudioSource audioSource = null)
 	{
 		if (isPlaying)
 		{
@@ -109,13 +134,16 @@ public class FishingMiniGame : MonoBehaviour
 				out minDirectionChangeInterval, out maxDirectionChangeInterval);
 		}
 
+		// Устанавливаем AudioSource если передан
+		if (audioSource != null)
+			reelAudioSource = audioSource;
+
 		ResetGame();
 		isPlaying = true;
+		currentPitch = basePitch;
 	}
 
-	/// <summary>
-	/// Останавливает мини-игру без результата (отмена)
-	/// </summary>
+	/// <summary>Останавливает мини-игру без результата (отмена)</summary>
 	public void StopMiniGame()
 	{
 		if (!isPlaying) return;
@@ -178,22 +206,92 @@ public class FishingMiniGame : MonoBehaviour
 		float targetMin = targetZone.anchoredPosition.y - half;
 		float targetMax = targetZone.anchoredPosition.y + half;
 
-		if (iconPos >= targetMin && iconPos <= targetMax)
+		bool iconInZone = iconPos >= targetMin && iconPos <= targetMax;
+
+		if (iconInZone)
+		{
+			// Иконка поймана — нормальный прогресс
 			holdTimer += Time.deltaTime;
+
+			// Если до этого была натяжка — откатываем её с той же скоростью
+			if (isTense)
+			{
+				tensionTimer = Mathf.Max(0f, tensionTimer - Time.deltaTime * tensionFillMultiplier);
+				
+				// Обновляем прогресс-бар tension
+				progressFill.fillAmount = tensionTimer / tensionMaxTime;
+				
+				// Если tension полностью откатился — выходим из tension-режима
+				if (tensionTimer <= 0f)
+				{
+					isTense = false;
+					SetProgressColor(normalColor);
+				}
+			}
+		}
 		else
+		{
+			// Иконка вне зоны — откатываем прогресс
 			holdTimer = Mathf.Max(0f, holdTimer - Time.deltaTime * 2f);
 
-		progressFill.fillAmount = holdTimer / requiredHoldTime;
+			if (holdTimer <= 0f)
+			{
+				// Прогресс на нуле — переходим / остаёмся в tension-режиме
+				if (!isTense)
+				{
+					isTense = true;
+					tensionTimer = 0f;
+					SetProgressColor(tensionColor);
+				}
+
+				// Tension заполняется в tensionFillMultiplier раз быстрее чем откатка
+				tensionTimer += Time.deltaTime * tensionFillMultiplier;
+
+				progressFill.fillAmount = tensionTimer / tensionMaxTime;
+
+				if (tensionTimer >= tensionMaxTime)
+				{
+					FailFishing();
+					return;
+				}
+			}
+		}
+
+		// В нормальном режиме (не tension) обновляем основной прогресс
+		if (!isTense)
+			progressFill.fillAmount = holdTimer / requiredHoldTime;
 
 		if (holdTimer >= requiredHoldTime)
 		{
 			CompleteFishing();
+			return;
 		}
-		else if (canFail && holdTimer <= failThreshold && progressFill.fillAmount > 0f)
+
+		// Старая логика canFail (оставляем для обратной совместимости)
+		if (canFail && !isTense && holdTimer <= failThreshold && progressFill.fillAmount > 0f)
 		{
-			// Проваливаем только если игрок уже набирал прогресс и потерял весь
 			FailFishing();
 		}
+	}
+
+	private void SetProgressColor(Color color)
+	{
+		if (progressFill != null)
+			progressFill.color = color;
+	}
+
+	private void UpdateReelPitch()
+	{
+		if (reelAudioSource == null) return;
+
+		float target = isHolding ? targetPitch : basePitch;
+		currentPitch = Mathf.Lerp(currentPitch, target, pitchChangeSpeed * Time.deltaTime);
+		reelAudioSource.pitch = currentPitch;
+	}
+
+	public void SetReelPitchTarget(float newTargetPitch)
+	{
+		targetPitch = newTargetPitch;
 	}
 
 	private void CompleteFishing()
@@ -215,10 +313,15 @@ public class FishingMiniGame : MonoBehaviour
 	private void ResetGame()
 	{
 		holdTimer = 0f;
+		tensionTimer = 0f;
+		isTense = false;
 		isHolding = false;
 
 		if (progressFill != null)
+		{
 			progressFill.fillAmount = 0f;
+			progressFill.color = normalColor;
+		}
 
 		if (targetZone != null && boundsInitialized)
 		{
@@ -231,7 +334,6 @@ public class FishingMiniGame : MonoBehaviour
 			fishingIcon.anchoredPosition = new Vector2(fishingIcon.anchoredPosition.x, 0f);
 		}
 
-		// Сбрасываем таймер смены направления
 		directionChangeTimer = 0f;
 		iconVelocityY = 1f;
 	}

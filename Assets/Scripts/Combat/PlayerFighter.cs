@@ -638,6 +638,28 @@ namespace RPG.Combat
             }
         }
 
+        /// <summary>
+        /// Скрывает текущее оружие игрока (например, во время рыбалки)
+        /// </summary>
+        public void HideWeapon()
+        {
+            if (_currentWeapon.value != null)
+            {
+                _currentWeapon.value.gameObject.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Показывает текущее оружие игрока обратно
+        /// </summary>
+        public void ShowWeapon()
+        {
+            if (_currentWeapon.value != null)
+            {
+                _currentWeapon.value.gameObject.SetActive(true);
+            }
+        }
+
         private void Update()
         {
             _timeSinceLastAttack += Time.deltaTime; 

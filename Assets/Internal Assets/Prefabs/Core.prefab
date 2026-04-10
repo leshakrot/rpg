@@ -10756,7 +10756,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7594023678767419581}
   m_HandleRect: {fileID: 1655830253426786613}
   m_Direction: 2
-  m_Value: -0.0000016484839
+  m_Value: 1.0000017
   m_Size: 0.94257903
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -12145,7 +12145,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00033569336, y: -314.57245}
+  m_AnchoredPosition: {x: -0.00033569336, y: -314.57202}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7764154432024125765
@@ -34444,6 +34444,7 @@ MonoBehaviour:
   fishingUI: {fileID: 4329608341410490160}
   fishingMiniGame: {fileID: 3987469116396553027}
   inventory: {fileID: 2053926230427993790}
+  experience: {fileID: 4547109143483867493}
   playerAnimator: {fileID: 2985622132386480115}
   fishingRodPrefab: {fileID: 7223173108786086588, guid: 8fa96b962fbc0c64f84b916b0ec72d29,
     type: 3}
@@ -34771,7 +34772,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00033569336, y: -570.74994}
+  m_AnchoredPosition: {x: -0.00033569336, y: -644.8002}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &913256138531843848
@@ -48720,7 +48721,7 @@ PrefabInstance:
     - target: {fileID: 8506327642838901627, guid: 07dc30b6f1bbb4147acd5fd5555a18f5,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00083758833
+      value: -0.000045541114
       objectReference: {fileID: 0}
     - target: {fileID: 8515435840499749170, guid: 07dc30b6f1bbb4147acd5fd5555a18f5,
         type: 3}
@@ -48808,8 +48809,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8675629676098535153, guid: 07dc30b6f1bbb4147acd5fd5555a18f5,
         type: 3}
+      propertyPath: normalColor.a
+      value: 0.5019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 8675629676098535153, guid: 07dc30b6f1bbb4147acd5fd5555a18f5,
+        type: 3}
+      propertyPath: tensionColor.a
+      value: 0.5019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 8675629676098535153, guid: 07dc30b6f1bbb4147acd5fd5555a18f5,
+        type: 3}
+      propertyPath: tensionMaxTime
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8675629676098535153, guid: 07dc30b6f1bbb4147acd5fd5555a18f5,
+        type: 3}
       propertyPath: requiredHoldTime
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8675629676098535153, guid: 07dc30b6f1bbb4147acd5fd5555a18f5,
+        type: 3}
+      propertyPath: tensionFillMultiplier
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8677571946722837203, guid: 07dc30b6f1bbb4147acd5fd5555a18f5,
         type: 3}

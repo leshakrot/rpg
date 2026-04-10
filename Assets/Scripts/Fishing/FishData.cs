@@ -15,6 +15,9 @@ public class FishItemData
 	[Tooltip("Вес выпадения (чем больше, тем чаще попадается)")]
 	[Range(1, 100)]
 	public int dropWeight = 50;
+
+	[Tooltip("Количество опыта за поимку этого предмета")]
+	public float experienceReward = 10f;
 }
 
 [CreateAssetMenu(fileName = "New Fish", menuName = "Fishing/Fish Data", order = 0)]

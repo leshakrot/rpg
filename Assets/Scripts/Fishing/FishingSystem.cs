@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using GameDevTV.Inventories;
 using RPG.Core;
 using RPG.UI.RequirementText;
+using RPG.Stats;
+using RPG.Combat;
 
 public enum FishingState
 {
@@ -20,6 +22,7 @@ public class FishingSystem : MonoBehaviour, IAction
 	[SerializeField] private FishingUI fishingUI;
 	[SerializeField] private FishingMiniGame fishingMiniGame;
 	[SerializeField] private Inventory inventory;
+	[SerializeField] private Experience experience;
 	[SerializeField] private Animator playerAnimator;
 	[SerializeField] private GameObject fishingRodPrefab;
 	[SerializeField] private Transform rightHandTransform;
@@ -29,12 +32,24 @@ public class FishingSystem : MonoBehaviour, IAction
 	[Tooltip("NavMeshAgent игрока. FishingSystem не на игроке — тащи сюда вручную.")]
 	[SerializeField] private NavMeshAgent playerNavMeshAgent;
 
+	[Header("Player Weapon")]
+	[Tooltip("PlayerFighter для скрытия оружия во время рыбалки")]
+	[SerializeField] private PlayerFighter playerFighter;
+
 	[Header("Bite Settings")]
 	[SerializeField] private float minBiteTime = 3f;
 	[SerializeField] private float maxBiteTime = 8f;
 	[SerializeField] private float biteWindowDuration = 3f;
 	[SerializeField] private AudioClip biteSound;
 	[SerializeField] private AudioSource audioSource;
+
+	[Header("Reel Sound Settings")]
+	[SerializeField] private AudioClip reelSound;
+	[SerializeField] private AudioSource reelAudioSource;
+
+	[Header("Result Sounds")]
+	[SerializeField] private AudioClip fishCaughtSound;
+	[SerializeField] private AudioClip fishEscapedSound;
 
 	private FishingAreaTrigger currentFishingArea;
 	private FishData selectedFishData;
@@ -103,6 +118,7 @@ public class FishingSystem : MonoBehaviour, IAction
 		actionScheduler.StartAction(this);
 		StopPlayerMovement(true);
 
+		HidePlayerWeapon();
 		ShowFishingRod();
 		SetFishingAnimation(true, false);
 
@@ -123,7 +139,8 @@ public class FishingSystem : MonoBehaviour, IAction
 		currentState = FishingState.Catching;
 		SetFishingAnimation(true, true);
 		fishingUI.ShowCatchingUI();
-		fishingMiniGame.StartMiniGame(selectedFishData, selectedFishItem.catchDifficulty);
+		fishingMiniGame.StartMiniGame(selectedFishData, selectedFishItem.catchDifficulty, reelAudioSource);
+		StartReelSound();
 	}
 
 	public void PullFish()
@@ -171,19 +188,31 @@ public class FishingSystem : MonoBehaviour, IAction
 
 	private void HandleFishCaught()
 	{
+		StopReelSound();
+		PlayFishCaughtSound();
+		
 		if (selectedFishItem?.item != null)
 		{
 			inventory.AddToFirstEmptySlot(selectedFishItem.item, 1);
 			Debug.Log($"Поймана рыба: {selectedFishItem.item.GetDisplayName()}");
 			
-			// Показываем всплывающее уведомление с именем пойманной рыбы
-			RequirementTextManager.Show(selectedFishItem.item.GetDisplayName());
+			// Добавляем опыт за пойманную рыбу через 1 секунду
+			if (experience != null)
+			{
+				StartCoroutine(AddExperienceDelayed(selectedFishItem.experienceReward));
+			}
+			
+			// Показываем всплывающее уведомление с именем рыбы
+			string notificationText = $"Вы поймали {selectedFishItem.item.GetDisplayName()}";
+			RequirementTextManager.Show(notificationText);
 		}
 		EndFishing(success: true);
 	}
 
 	private void HandleFishingFailed()
 	{
+		StopReelSound();
+		PlayFishEscapedSound();
 		EndFishing(success: false);
 	}
 
@@ -206,6 +235,12 @@ public class FishingSystem : MonoBehaviour, IAction
 			Debug.Log("Не успели подсечь!");
 			EndFishing(success: false);
 		}
+	}
+
+	private IEnumerator AddExperienceDelayed(float experienceAmount)
+	{
+		yield return new WaitForSeconds(1f);
+		experience.GainExperience(experienceAmount);
 	}
 
 	// ──────────────────────────────────────────────
@@ -244,9 +279,13 @@ public class FishingSystem : MonoBehaviour, IAction
 		StopBiteCoroutine();
 
 		if (currentState == FishingState.Catching)
+		{
 			fishingMiniGame.StopMiniGame();
+			StopReelSound();
+		}
 
 		HideFishingRod();
+		ShowPlayerWeapon();
 		SetFishingAnimation(false, false);
 		if (playerAnimator != null)
 			playerAnimator.SetFloat("forwardSpeed", 0f);
@@ -329,6 +368,69 @@ public class FishingSystem : MonoBehaviour, IAction
 		{
 			Destroy(currentFishingRod);
 			currentFishingRod = null;
+		}
+	}
+
+	// ──────────────────────────────────────────────
+	// Управление звуком сматывания лески
+	// ──────────────────────────────────────────────
+
+	private void StartReelSound()
+	{
+		if (reelAudioSource != null && reelSound != null)
+		{
+			reelAudioSource.clip = reelSound;
+			reelAudioSource.loop = true;
+			reelAudioSource.pitch = 1f;
+			reelAudioSource.Play();
+		}
+	}
+
+	private void StopReelSound()
+	{
+		if (reelAudioSource != null && reelAudioSource.isPlaying)
+		{
+			reelAudioSource.Stop();
+		}
+	}
+
+	// ──────────────────────────────────────────────
+	// Управление оружием игрока
+	// ──────────────────────────────────────────────
+
+	private void HidePlayerWeapon()
+	{
+		if (playerFighter != null)
+		{
+			playerFighter.HideWeapon();
+		}
+	}
+
+	private void ShowPlayerWeapon()
+	{
+		if (playerFighter != null)
+		{
+			playerFighter.ShowWeapon();
+		}
+	}
+
+	// ──────────────────────────────────────────────
+	// Звуки результата рыбалки
+	// ──────────────────────────────────────────────
+
+	private void PlayFishCaughtSound()
+	{
+		if (audioSource != null && fishCaughtSound != null)
+		{
+			audioSource.PlayOneShot(fishCaughtSound);
+		}
+	}
+
+	private void PlayFishEscapedSound()
+	{
+		if (audioSource != null && fishEscapedSound != null)
+		{
+			audioSource.PlayOneShot(fishEscapedSound);
 		}
 	}
 }
