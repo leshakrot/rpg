@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 public class FishingUI : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class FishingUI : MonoBehaviour
 
 	private Button interactButtonComponent;
 	private EventTrigger eventTrigger;
+	private Coroutine _deferredHideCoroutine;
 
 	private void Start()
 	{
@@ -22,7 +24,6 @@ public class FishingUI : MonoBehaviour
 		{
 			interactButton.gameObject.SetActive(false);
 			interactButtonComponent = interactButton.GetComponent<Button>();
-			// Создаём EventTrigger заранее, чтобы не добавлять/удалять его каждый раз
 			eventTrigger = interactButtonComponent.gameObject.GetComponent<EventTrigger>()
 				?? interactButtonComponent.gameObject.AddComponent<EventTrigger>();
 		}
@@ -36,72 +37,65 @@ public class FishingUI : MonoBehaviour
 	// Публичные методы управления состоянием UI
 	// ──────────────────────────────────────────────
 
-	/// <summary>
-	/// Показать/скрыть кнопку "Ловить рыбу"
-	/// </summary>
 	public void ShowFishingButton(bool show)
 	{
 		if (interactButton == null) return;
 
 		if (show)
 		{
+			CancelDeferredHide();
 			ConfigureButton("Ловить рыбу", OnStartFishingClicked, raycastEnabled: true, useHold: false);
 			interactButton.gameObject.SetActive(true);
 		}
 		else
 		{
-			interactButton.gameObject.SetActive(false);
+			HideInteractButtonDeferred();
 		}
 	}
 
-	/// <summary>
-	/// Показать кнопку "Подсечь" при поклёвке
-	/// </summary>
 	public void ShowHookButton()
 	{
 		if (interactButton == null) return;
 
+		CancelDeferredHide();
 		ConfigureButton("Подсечь", OnHookClicked, raycastEnabled: true, useHold: false);
 		interactButton.gameObject.SetActive(true);
 	}
 
 	/// <summary>
-	/// Показать кнопку "Отменить" во время ожидания поклёвки.
-	/// RaycastTarget ВКЛЮЧЁН — кнопка должна быть кликабельна.
-	/// Клики по navmesh обрабатывает ActionScheduler через IAction.Cancel().
+	/// Кнопка "Отменить" во время ожидания поклёвки.
+	/// Поведение идентично кнопке "Завершить рыбалку" в мини-игре UI —
+	/// оба вызывают fishingSystem.StopFishing().
 	/// </summary>
 	public void ShowCancelButton()
 	{
 		if (interactButton == null) return;
 
-		ConfigureButton("Отменить", OnCancelClicked, raycastEnabled: true, useHold: false);
+		CancelDeferredHide();
+		ConfigureButton("Отменить", OnStopFishingClicked, raycastEnabled: true, useHold: false);
 		interactButton.gameObject.SetActive(true);
 	}
 
-	/// <summary>
-	/// Показать UI процесса ловли (мини-игра + кнопка "Тянуть")
-	/// </summary>
 	public void ShowCatchingUI()
 	{
 		SetPanelActive(fishingMiniGamePanel, true);
 
 		if (interactButton == null) return;
 
-		// Кнопка "Тянуть" — работает по удержанию (PointerDown/PointerUp)
-		// RaycastTarget включён, иначе нажатие не сработает
+		CancelDeferredHide();
 		SetButtonLabel("Тянуть");
 		SetButtonRaycastTarget(true);
-
-		// Очищаем onClick — будем работать через EventTrigger
 		interactButtonComponent.onClick.RemoveAllListeners();
-
 		SetupHoldEvents();
-
 		interactButton.gameObject.SetActive(true);
 	}
 
 	/// <summary>
-	/// Скрыть все элементы рыбалки (при отмене или выходе из зоны)
+	/// Скрыть все элементы рыбалки (при отмене или выходе из зоны).
+	/// InteractButton скрывается отложенно — через кадр после того как
+	/// MouseButtonUp успеет сбросить PlayerController._isDraggingUI.
+	/// Иначе кнопка исчезает в том же кадре что и клик, isDraggingUI
+	/// застревает в true и игрок не может двигаться.
 	/// </summary>
 	public void HideFishingMiniGame()
 	{
@@ -113,13 +107,10 @@ public class FishingUI : MonoBehaviour
 			ClearEventTrigger();
 			SetButtonRaycastTarget(true);
 			interactButtonComponent?.onClick.RemoveAllListeners();
-			interactButton.gameObject.SetActive(false);
+			HideInteractButtonDeferred();
 		}
 	}
 
-	/// <summary>
-	/// Показать уведомление об успешной ловле
-	/// </summary>
 	public void ShowSuccessResult()
 	{
 		HideFishingMiniGame();
@@ -127,9 +118,6 @@ public class FishingUI : MonoBehaviour
 		ShowFishingButton(true);
 	}
 
-	/// <summary>
-	/// Показать уведомление о неудачной ловле
-	/// </summary>
 	public void ShowFailureResult()
 	{
 		HideFishingMiniGame();
@@ -144,7 +132,7 @@ public class FishingUI : MonoBehaviour
 	private void OnStartFishingClicked()
 	{
 		HideNotifications();
-		interactButton.gameObject.SetActive(false);
+		HideInteractButtonDeferred();
 		fishingSystem.StartFishing();
 	}
 
@@ -153,27 +141,56 @@ public class FishingUI : MonoBehaviour
 		fishingSystem.HookFish();
 	}
 
-	private void OnCancelClicked()
+	private void OnStopFishingClicked()
 	{
-		// CancelFishing() уведомляет ActionScheduler, который вызовет Cancel()
-		fishingSystem.CancelFishing();
+		fishingSystem.StopFishing();
+	}
+
+	// ──────────────────────────────────────────────
+	// Отложенное скрытие кнопки
+	// ──────────────────────────────────────────────
+
+	/// <summary>
+	/// Скрываем кнопку через два кадра — чтобы в текущем кадре успели
+	/// отработать MouseButtonUp и сброс _isDraggingUI в PlayerController.
+	/// Один кадр иногда не хватает если Update PlayerController идёт раньше.
+	/// </summary>
+	private void HideInteractButtonDeferred()
+	{
+		CancelDeferredHide();
+		_deferredHideCoroutine = StartCoroutine(HideAfterFrames(2));
+	}
+
+	private IEnumerator HideAfterFrames(int frames)
+	{
+		for (int i = 0; i < frames; i++)
+			yield return null;
+
+		if (interactButton != null)
+			interactButton.gameObject.SetActive(false);
+
+		_deferredHideCoroutine = null;
+	}
+
+	private void CancelDeferredHide()
+	{
+		if (_deferredHideCoroutine != null)
+		{
+			StopCoroutine(_deferredHideCoroutine);
+			_deferredHideCoroutine = null;
+		}
 	}
 
 	// ──────────────────────────────────────────────
 	// Вспомогательные методы
 	// ──────────────────────────────────────────────
 
-	/// <summary>
-	/// Настроить кнопку с одним onClick-обработчиком
-	/// </summary>
 	private void ConfigureButton(string label, UnityEngine.Events.UnityAction onClick, bool raycastEnabled, bool useHold)
 	{
 		SetButtonLabel(label);
 		SetButtonRaycastTarget(raycastEnabled);
-
 		interactButtonComponent.onClick.RemoveAllListeners();
 		ClearEventTrigger();
-
 		if (!useHold)
 			interactButtonComponent.onClick.AddListener(onClick);
 	}
@@ -185,9 +202,6 @@ public class FishingUI : MonoBehaviour
 		interactButton.SetInteractionText(label);
 	}
 
-	/// <summary>
-	/// Настраивает EventTrigger для удержания кнопки "Тянуть"
-	/// </summary>
 	private void SetupHoldEvents()
 	{
 		ClearEventTrigger();
@@ -210,7 +224,6 @@ public class FishingUI : MonoBehaviour
 	private void SetButtonRaycastTarget(bool enabled)
 	{
 		if (interactButton == null) return;
-
 		var graphics = interactButton.GetComponentsInChildren<Graphic>(true);
 		foreach (var g in graphics)
 			g.raycastTarget = enabled;

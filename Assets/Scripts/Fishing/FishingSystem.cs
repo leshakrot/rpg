@@ -24,6 +24,10 @@ public class FishingSystem : MonoBehaviour, IAction
 	[SerializeField] private Transform rightHandTransform;
 	[SerializeField] private ActionScheduler actionScheduler;
 
+	[Header("Player Movement")]
+	[Tooltip("NavMeshAgent игрока. FishingSystem не на игроке — тащи сюда вручную.")]
+	[SerializeField] private NavMeshAgent playerNavMeshAgent;
+
 	[Header("Bite Settings")]
 	[SerializeField] private float minBiteTime = 3f;
 	[SerializeField] private float maxBiteTime = 8f;
@@ -37,7 +41,6 @@ public class FishingSystem : MonoBehaviour, IAction
 	private FishingState currentState = FishingState.Idle;
 	private GameObject currentFishingRod;
 	private Coroutine biteCoroutine;
-	private NavMeshAgent navMeshAgent;
 
 	public FishingState CurrentState => currentState;
 
@@ -45,8 +48,6 @@ public class FishingSystem : MonoBehaviour, IAction
 	{
 		if (actionScheduler == null)
 			actionScheduler = GetComponent<ActionScheduler>();
-
-		navMeshAgent = GetComponent<NavMeshAgent>();
 	}
 
 	private void OnEnable()
@@ -99,10 +100,7 @@ public class FishingSystem : MonoBehaviour, IAction
 		}
 
 		actionScheduler.StartAction(this);
-
-		// Останавливаем агента — игрок стоит во время рыбалки
-		if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
-			navMeshAgent.isStopped = true;
+		StopPlayerMovement(true);
 
 		ShowFishingRod();
 		SetFishingAnimation(true, false);
@@ -140,8 +138,8 @@ public class FishingSystem : MonoBehaviour, IAction
 	}
 
 	/// <summary>
-	/// Кнопка "Завершить рыбалку" (отдельная кнопка, не InteractButton).
-	/// Подключи в инспекторе к onClick.
+	/// Завершить рыбалку вручную — вызывается и кнопкой в мини-игре UI,
+	/// и кнопкой InteractButton "Отменить". Единая точка выхода.
 	/// </summary>
 	public void StopFishing()
 	{
@@ -150,32 +148,15 @@ public class FishingSystem : MonoBehaviour, IAction
 	}
 
 	/// <summary>
-	/// Кнопка "Отменить" (InteractButton).
-	/// Подключи в FishingUI к onClick кнопки "Отменить".
-	/// </summary>
-	public void CancelFishing()
-	{
-		if (currentState == FishingState.Idle) return;
-		actionScheduler.CancelCurrentAction();
-	}
-
-	/// <summary>
-	/// Реализация IAction. Вызывается ActionScheduler'ом когда стартует другое действие.
-	/// Также вызывается напрямую через CancelFishing() и StopFishing().
+	/// Реализация IAction. Вызывается ActionScheduler'ом когда стартует другое действие,
+	/// а также напрямую через StopFishing().
 	/// </summary>
 	public void Cancel()
 	{
 		if (currentState == FishingState.Idle) return;
 
 		InternalCancel();
-
-		// КЛЮЧЕВОЕ: разблокируем агента сразу после отмены.
-		// Это нужно потому что клик по кнопке "Отменить" перехватывается
-		// InteractWithUI() в PlayerController и никогда не доходит до
-		// InteractWithMovement() — Mover.StartMoveAction() не вызывается,
-		// и агент остаётся с isStopped=true. Разблокируем здесь явно.
-		if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
-			navMeshAgent.isStopped = false;
+		StopPlayerMovement(false);
 
 		fishingUI.HideFishingMiniGame();
 
@@ -241,12 +222,7 @@ public class FishingSystem : MonoBehaviour, IAction
 	private void EndFishing(bool success)
 	{
 		InternalCancel();
-
-		// Разблокируем агента — рыбалка завершена, игрок может двигаться
-		if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
-			navMeshAgent.isStopped = false;
-
-		// Освобождаем ActionScheduler
+		StopPlayerMovement(false);
 		actionScheduler.CancelCurrentAction();
 
 		if (success)
@@ -268,13 +244,25 @@ public class FishingSystem : MonoBehaviour, IAction
 
 		HideFishingRod();
 		SetFishingAnimation(false, false);
-		// Обнуляем forwardSpeed чтобы аниматор вернулся в Idle
 		if (playerAnimator != null)
 			playerAnimator.SetFloat("forwardSpeed", 0f);
 
 		currentState = FishingState.Idle;
 		selectedFishData = null;
 		selectedFishItem = null;
+	}
+
+	private void StopPlayerMovement(bool stop)
+	{
+		if (playerNavMeshAgent == null)
+		{
+			Debug.LogWarning("FishingSystem: playerNavMeshAgent не назначен! Перетащи NavMeshAgent игрока в инспектор.");
+			return;
+		}
+
+		if (!playerNavMeshAgent.enabled || !playerNavMeshAgent.isOnNavMesh) return;
+
+		playerNavMeshAgent.isStopped = stop;
 	}
 
 	private void StopBiteCoroutine()
