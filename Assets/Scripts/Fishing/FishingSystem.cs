@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using GameDevTV.Inventories;
 using RPG.Core;
+using RPG.UI.RequirementText;
 
 public enum FishingState
 {
@@ -174,6 +175,9 @@ public class FishingSystem : MonoBehaviour, IAction
 		{
 			inventory.AddToFirstEmptySlot(selectedFishItem.item, 1);
 			Debug.Log($"Поймана рыба: {selectedFishItem.item.GetDisplayName()}");
+			
+			// Показываем всплывающее уведомление с именем пойманной рыбы
+			RequirementTextManager.Show(selectedFishItem.item.GetDisplayName());
 		}
 		EndFishing(success: true);
 	}

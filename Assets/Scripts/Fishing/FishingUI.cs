@@ -17,6 +17,7 @@ public class FishingUI : MonoBehaviour
 	private Button interactButtonComponent;
 	private EventTrigger eventTrigger;
 	private Coroutine _deferredHideCoroutine;
+	private Coroutine _hideNotificationCoroutine;
 
 	private void Start()
 	{
@@ -116,6 +117,7 @@ public class FishingUI : MonoBehaviour
 		HideFishingMiniGame();
 		SetPanelActive(successNotification, true);
 		ShowFishingButton(true);
+		StartHideNotificationTimer();
 	}
 
 	public void ShowFailureResult()
@@ -123,6 +125,7 @@ public class FishingUI : MonoBehaviour
 		HideFishingMiniGame();
 		SetPanelActive(failureNotification, true);
 		ShowFishingButton(true);
+		StartHideNotificationTimer();
 	}
 
 	// ──────────────────────────────────────────────
@@ -231,8 +234,31 @@ public class FishingUI : MonoBehaviour
 
 	private void HideNotifications()
 	{
+		CancelHideNotificationTimer();
 		SetPanelActive(successNotification, false);
 		SetPanelActive(failureNotification, false);
+	}
+
+	private void StartHideNotificationTimer()
+	{
+		CancelHideNotificationTimer();
+		_hideNotificationCoroutine = StartCoroutine(HideNotificationsAfterDelay(3f));
+	}
+
+	private void CancelHideNotificationTimer()
+	{
+		if (_hideNotificationCoroutine != null)
+		{
+			StopCoroutine(_hideNotificationCoroutine);
+			_hideNotificationCoroutine = null;
+		}
+	}
+
+	private IEnumerator HideNotificationsAfterDelay(float delay)
+	{
+		yield return new WaitForSeconds(delay);
+		HideNotifications();
+		_hideNotificationCoroutine = null;
 	}
 
 	private static void SetPanelActive(GameObject panel, bool active)
