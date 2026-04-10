@@ -1,0 +1,223 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9213496321680156212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 2d605c0d-8261-4ef7-97e7-212ea286398f
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "\u041E\u0442\u043F\u0440\u0430\u0432\u0438\u0442\u044C \u043D\u0430 \u0431\u0430\u0437\u0443"
+  children:
+  - 3e28bbc8-26e0-4551-b8e0-40a3ac1e3d29
+  rect:
+    serializedVersion: 2
+    x: 548
+    y: 351
+    width: 200
+    height: 100
+  onEnterActions:
+  - dismiss_companion
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: CompanionActive
+        _parameters: []
+        _negate: 0
+--- !u!114 &-9135508112083446993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 0723bd31-e641-4fff-ac3c-755f90981a0a
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u0413\u043E"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 801
+    y: 472
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &-8796697012559546977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 0ebba50a-7dad-4fa4-b4ea-802b9fa3d393
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "\u041F\u043E\u0437\u0432\u0430\u0442\u044C \u0441 \u0441\u043E\u0431\u043E\u0439"
+  children:
+  - 0723bd31-e641-4fff-ac3c-755f90981a0a
+  rect:
+    serializedVersion: 2
+    x: 551
+    y: 472
+    width: 200
+    height: 100
+  onEnterActions:
+  - call_companion
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: CompanionOnBase
+        _parameters: []
+        _negate: 0
+--- !u!114 &-7155781809538162743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 34c39e3d-901a-4764-b262-2df28d93fbaf
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u0425\u0430\u0439"
+  children:
+  - 717a1200-7541-4448-9eaa-991cba08bda8
+  - 0ebba50a-7dad-4fa4-b4ea-802b9fa3d393
+  - 2d605c0d-8261-4ef7-97e7-212ea286398f
+  rect:
+    serializedVersion: 2
+    x: 291
+    y: 204
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &-7152795872021695095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 717a1200-7541-4448-9eaa-991cba08bda8
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "\u041D\u0430\u043D\u044F\u0442\u044C \u0437\u0430 100"
+  children:
+  - 22547867-6adb-4c6c-a237-238f88982907
+  rect:
+    serializedVersion: 2
+    x: 541
+    y: 203
+    width: 200
+    height: 100
+  onEnterActions:
+  - hire_companion
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: CanAffordCompanion
+        _parameters: []
+        _negate: 0
+    - _or:
+      - _predicate: CompanionNotHired
+        _parameters: []
+        _negate: 0
+--- !u!114 &-6556759960852059732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 22547867-6adb-4c6c-a237-238f88982907
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u042F \u0442\u0432\u043E\u0439"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 791
+    y: 203
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &-4887549343068475288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 3e28bbc8-26e0-4551-b8e0-40a3ac1e3d29
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u041E\u043A"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 797
+    y: 351
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cb41413d0f918744b4655afe6c9f18f, type: 3}
+  m_Name: Recruiter
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.Dialogue
+  nodes:
+  - {fileID: -7155781809538162743}
+  - {fileID: -7152795872021695095}
+  - {fileID: -8796697012559546977}
+  - {fileID: -9213496321680156212}
+  - {fileID: -6556759960852059732}
+  - {fileID: -4887549343068475288}
+  - {fileID: -9135508112083446993}
+  newNodeOffset: {x: 250, y: 0}

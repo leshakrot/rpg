@@ -28,6 +28,8 @@ namespace RPG.Control
         private GameObject _player;
         private Health _health;
         private Mover _mover;
+        
+        private Health _currentTarget; // Текущая цель (игрок или компаньон)
 
         private LazyValue<Vector3> _guardPosition;
         private float _timeSinceLastSawPlayer = Mathf.Infinity;
@@ -209,7 +211,12 @@ namespace RPG.Control
                 _hasFirstContactPoint = true;
             }
 
-            _fighter.Attack(_player);
+            // Находим ближайшую цель (игрок или компаньон)
+            _currentTarget = FindNearestTarget();
+            if (_currentTarget != null)
+            {
+                _fighter.Attack(_currentTarget.gameObject);
+            }
         }
 
         public void Aggrevate()
@@ -278,8 +285,52 @@ namespace RPG.Control
 
         private bool IsAggrevated()
         {
-            float distanceToPlayer = Vector3.Distance(_player.transform.position, transform.position);
-            return distanceToPlayer < _chaseDistance || _timeSinceAggrevated < _agroCooldownTime;
+            // Проверяем дистанцию до ближайшей цели
+            Health nearestTarget = FindNearestTarget();
+            if (nearestTarget == null) return _timeSinceAggrevated < _agroCooldownTime;
+            
+            float distanceToTarget = Vector3.Distance(nearestTarget.transform.position, transform.position);
+            return distanceToTarget < _chaseDistance || _timeSinceAggrevated < _agroCooldownTime;
+        }
+        
+        private Health FindNearestTarget()
+        {
+            Health nearest = null;
+            float nearestDistance = Mathf.Infinity;
+            
+            // Проверяем игрока
+            if (_player != null)
+            {
+                Health playerHealth = _player.GetComponent<Health>();
+                if (playerHealth != null && !playerHealth.IsDead())
+                {
+                    float dist = Vector3.Distance(transform.position, _player.transform.position);
+                    if (dist < nearestDistance)
+                    {
+                        nearest = playerHealth;
+                        nearestDistance = dist;
+                    }
+                }
+            }
+            
+            // Проверяем компаньонов
+            var companions = FindObjectsOfType<RPG.Companions.CompanionController>();
+            foreach (var companion in companions)
+            {
+                if (companion == null) continue;
+                
+                Health companionHealth = companion.GetComponent<Health>();
+                if (companionHealth == null || companionHealth.IsDead()) continue;
+                
+                float dist = Vector3.Distance(transform.position, companion.transform.position);
+                if (dist < nearestDistance)
+                {
+                    nearest = companionHealth;
+                    nearestDistance = dist;
+                }
+            }
+            
+            return nearest;
         }
 
         private bool IsTooFarFromSpawn()

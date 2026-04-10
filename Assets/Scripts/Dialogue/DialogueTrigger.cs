@@ -1,83 +1,106 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace RPG.Dialogue
 {
-	[Serializable]
-	public class TriggerAction
+	/// <summary>
+	/// Тип действия, которое может выполнить триггер
+	/// </summary>
+	public enum TriggerActionType
 	{
-		[Tooltip("Уникальное имя действия — по нему вы будете вызывать этот элемент")]
-		public string actionName;
-
-		[Tooltip("Событие, которое будет вызвано при срабатывании")]
-		public UnityEvent onTrigger;
+		StartQuest,
+		CompleteQuest,
+		GiveItem,
+		TakeItem,
+		Custom
 	}
 
 	public class DialogueTrigger : MonoBehaviour
 	{
 		[Tooltip("Список действий, которые может выполнить этот триггер")]
-		[SerializeReference]
-		[SerializeField]
-		private List<TriggerAction> _actions = new List<TriggerAction>();
+		[SerializeField] private List<TriggerAction> _actions = new List<TriggerAction>();
 
-		private void OnValidate()
+		// Словарь для кастомных действий (используется для системы компаньонов и других расширений)
+		private Dictionary<string, Action> _customActions = new Dictionary<string, Action>();
+
+		/// <summary>
+		/// Регистрация кастомного действия
+		/// </summary>
+		public void RegisterAction(string actionID, Action callback)
 		{
-			// Если сам список вдруг null — создаём новый
-			if (_actions == null)
-				_actions = new List<TriggerAction>();
-
-			for (int i = 0; i < _actions.Count; i++)
-			{
-				// Если в списке на этой позиции null — создаём новый TriggerAction
-				if (_actions[i] == null)
-					_actions[i] = new TriggerAction();
-
-				// Если внутри TriggerAction ещё нет UnityEvent — инициализируем его
-				if (_actions[i].onTrigger == null)
-					_actions[i].onTrigger = new UnityEvent();
-			}
+			_customActions[actionID] = callback;
 		}
 
 		/// <summary>
-		/// Вызывает событие с указанным именем.
+		/// Удаление кастомного действия
 		/// </summary>
-		public void Trigger(string actionToTrigger)
+		public void UnregisterAction(string actionID)
 		{
-			if (string.IsNullOrEmpty(actionToTrigger))
-				return;
+			_customActions.Remove(actionID);
+		}
 
-			foreach (var action in _actions)
+		/// <summary>
+		/// Вызов действия по ID
+		/// </summary>
+		public void Trigger(string actionID)
+		{
+			// Сначала проверяем кастомные действия
+			if (_customActions.ContainsKey(actionID))
 			{
-				if (action.actionName == actionToTrigger)
+				_customActions[actionID]?.Invoke();
+				return;
+			}
+
+			// Затем проверяем стандартные действия
+			foreach (TriggerAction action in _actions)
+			{
+				if (action.actionID == actionID)
 				{
-					action.onTrigger.Invoke();
+					ExecuteAction(action);
 					return;
 				}
 			}
 
-			Debug.LogWarning($"Action \"{actionToTrigger}\" not found on {gameObject.name}");
+			Debug.LogWarning($"DialogueTrigger: Действие '{actionID}' не найдено на {gameObject.name}");
 		}
 
-		/// <summary>
-		/// Пример автоматического срабатывания при входе в коллайдер.
-		/// </summary>
-		private void OnTriggerEnter(Collider other)
+		private void ExecuteAction(TriggerAction action)
 		{
-			Trigger("OnEnter");
-		}
+			switch (action.actionType)
+			{
+				case TriggerActionType.StartQuest:
+					// Логика запуска квеста
+					Debug.Log($"Запуск квеста: {action.actionID}");
+					break;
 
-		/// <summary>
-		/// Удобный хелпер для выдачи квестов из компонента QuestGiver по индексу.
-		/// </summary>
-		public void TriggerQuest(int questIndex)
-		{
-			var questGiver = GetComponent<Quests.QuestGiver>();
-			if (questGiver != null)
-				questGiver.GiveQuest(questIndex);
-			else
-				Debug.LogWarning($"No QuestGiver found on {gameObject.name}");
+				case TriggerActionType.CompleteQuest:
+					// Логика завершения квеста
+					Debug.Log($"Завершение квеста: {action.actionID}");
+					break;
+
+				case TriggerActionType.GiveItem:
+					// Логика выдачи предмета
+					Debug.Log($"Выдача предмета: {action.actionID}");
+					break;
+
+				case TriggerActionType.TakeItem:
+					// Логика забора предмета
+					Debug.Log($"Забор предмета: {action.actionID}");
+					break;
+
+				case TriggerActionType.Custom:
+					// Кастомная логика
+					Debug.Log($"Кастомное действие: {action.actionID}");
+					break;
+			}
 		}
+	}
+
+	[System.Serializable]
+	public class TriggerAction
+	{
+		public string actionID;
+		public TriggerActionType actionType;
 	}
 }
