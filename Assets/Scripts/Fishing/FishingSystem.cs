@@ -1,32 +1,74 @@
-﻿using System;
 using UnityEngine;
+using UnityEngine.AI;
+using System.Collections;
 using System.Collections.Generic;
 using GameDevTV.Inventories;
+using RPG.Core;
 
-public class FishingSystem : MonoBehaviour
+public enum FishingState
 {
+	Idle,
+	WaitingForBite,
+	Biting,
+	Catching
+}
+
+public class FishingSystem : MonoBehaviour, IAction
+{
+	[Header("References")]
 	[SerializeField] private FishingUI fishingUI;
 	[SerializeField] private FishingMiniGame fishingMiniGame;
 	[SerializeField] private Inventory inventory;
+	[SerializeField] private Animator playerAnimator;
+	[SerializeField] private GameObject fishingRodPrefab;
+	[SerializeField] private Transform rightHandTransform;
+	[SerializeField] private ActionScheduler actionScheduler;
+
+	[Header("Bite Settings")]
+	[SerializeField] private float minBiteTime = 3f;
+	[SerializeField] private float maxBiteTime = 8f;
+	[SerializeField] private float biteWindowDuration = 3f;
+	[SerializeField] private AudioClip biteSound;
+	[SerializeField] private AudioSource audioSource;
 
 	private FishingAreaTrigger currentFishingArea;
 	private FishData selectedFishData;
 	private FishItemData selectedFishItem;
+	private FishingState currentState = FishingState.Idle;
+	private GameObject currentFishingRod;
+	private Coroutine biteCoroutine;
+	private NavMeshAgent navMeshAgent;
+
+	public FishingState CurrentState => currentState;
+
+	private void Awake()
+	{
+		if (actionScheduler == null)
+			actionScheduler = GetComponent<ActionScheduler>();
+
+		navMeshAgent = GetComponent<NavMeshAgent>();
+	}
 
 	private void OnEnable()
 	{
 		fishingMiniGame.OnFishingComplete += HandleFishCaught;
+		fishingMiniGame.OnFishingFailed += HandleFishingFailed;
 	}
 
 	private void OnDisable()
 	{
 		fishingMiniGame.OnFishingComplete -= HandleFishCaught;
+		fishingMiniGame.OnFishingFailed -= HandleFishingFailed;
 	}
 
 	public void SetCurrentFishingArea(FishingAreaTrigger fishingArea)
 	{
 		currentFishingArea = fishingArea;
 	}
+
+	// ──────────────────────────────────────────────
+	// Публичные методы
+	// ──────────────────────────────────────────────
 
 	public void StartFishing()
 	{
@@ -36,28 +78,219 @@ public class FishingSystem : MonoBehaviour
 			return;
 		}
 
-		// Выбираем случайную рыбу из доступных в этой зоне
-		selectedFishData = SelectRandomFish(currentFishingArea.GetAvailableFish());
+		if (currentState != FishingState.Idle)
+		{
+			Debug.LogWarning("Рыбалка уже начата!");
+			return;
+		}
 
+		selectedFishData = SelectRandomFish(currentFishingArea.GetAvailableFish());
 		if (selectedFishData == null)
 		{
 			Debug.LogWarning("В этой зоне нет доступных рыб!");
 			return;
 		}
 
-		// Выбираем случайный предмет из этой рыбы (с учетом весов и индивидуальной сложности)
 		selectedFishItem = selectedFishData.GetRandomFishItem();
-
 		if (selectedFishItem == null || selectedFishItem.item == null)
 		{
 			Debug.LogWarning("В FishData нет доступных предметов!");
 			return;
 		}
 
-		Debug.Log($"Заброс удочки... Попытка поймать: {selectedFishItem.item.GetDisplayName()} (сложность: {selectedFishItem.catchDifficulty:F2})");
+		actionScheduler.StartAction(this);
 
-		// Запускаем мини-игру с параметрами выбранного предмета
+		// Останавливаем агента — игрок стоит во время рыбалки
+		if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+			navMeshAgent.isStopped = true;
+
+		ShowFishingRod();
+		SetFishingAnimation(true, false);
+
+		currentState = FishingState.WaitingForBite;
+		fishingUI.ShowCancelButton();
+		biteCoroutine = StartCoroutine(WaitForBiteCoroutine());
+	}
+
+	public void HookFish()
+	{
+		if (currentState != FishingState.Biting)
+		{
+			Debug.LogWarning("Подсечка невозможна в текущем состоянии!");
+			return;
+		}
+
+		StopBiteCoroutine();
+		currentState = FishingState.Catching;
+		SetFishingAnimation(true, true);
+		fishingUI.ShowCatchingUI();
 		fishingMiniGame.StartMiniGame(selectedFishData, selectedFishItem.catchDifficulty);
+	}
+
+	public void PullFish()
+	{
+		if (currentState == FishingState.Catching)
+			fishingMiniGame.OnPullAction();
+	}
+
+	public void ReleasePull()
+	{
+		if (currentState == FishingState.Catching)
+			fishingMiniGame.OnPullRelease();
+	}
+
+	/// <summary>
+	/// Кнопка "Завершить рыбалку" (отдельная кнопка, не InteractButton).
+	/// Подключи в инспекторе к onClick.
+	/// </summary>
+	public void StopFishing()
+	{
+		if (currentState == FishingState.Idle) return;
+		actionScheduler.CancelCurrentAction();
+	}
+
+	/// <summary>
+	/// Кнопка "Отменить" (InteractButton).
+	/// Подключи в FishingUI к onClick кнопки "Отменить".
+	/// </summary>
+	public void CancelFishing()
+	{
+		if (currentState == FishingState.Idle) return;
+		actionScheduler.CancelCurrentAction();
+	}
+
+	/// <summary>
+	/// Реализация IAction. Вызывается ActionScheduler'ом когда стартует другое действие.
+	/// Также вызывается напрямую через CancelFishing() и StopFishing().
+	/// </summary>
+	public void Cancel()
+	{
+		if (currentState == FishingState.Idle) return;
+
+		InternalCancel();
+
+		// КЛЮЧЕВОЕ: разблокируем агента сразу после отмены.
+		// Это нужно потому что клик по кнопке "Отменить" перехватывается
+		// InteractWithUI() в PlayerController и никогда не доходит до
+		// InteractWithMovement() — Mover.StartMoveAction() не вызывается,
+		// и агент остаётся с isStopped=true. Разблокируем здесь явно.
+		if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+			navMeshAgent.isStopped = false;
+
+		fishingUI.HideFishingMiniGame();
+
+		if (currentFishingArea != null)
+			fishingUI.ShowFishingButton(true);
+	}
+
+	// ──────────────────────────────────────────────
+	// Обработчики событий мини-игры
+	// ──────────────────────────────────────────────
+
+	private void HandleFishCaught()
+	{
+		if (selectedFishItem?.item != null)
+		{
+			inventory.AddToFirstEmptySlot(selectedFishItem.item, 1);
+			Debug.Log($"Поймана рыба: {selectedFishItem.item.GetDisplayName()}");
+		}
+		EndFishing(success: true);
+	}
+
+	private void HandleFishingFailed()
+	{
+		EndFishing(success: false);
+	}
+
+	// ──────────────────────────────────────────────
+	// Корутины
+	// ──────────────────────────────────────────────
+
+	private IEnumerator WaitForBiteCoroutine()
+	{
+		float waitTime = UnityEngine.Random.Range(minBiteTime, maxBiteTime);
+		yield return new WaitForSeconds(waitTime);
+		OnBiteOccurred();
+	}
+
+	private IEnumerator BiteWindowCoroutine()
+	{
+		yield return new WaitForSeconds(biteWindowDuration);
+		if (currentState == FishingState.Biting)
+		{
+			Debug.Log("Не успели подсечь!");
+			EndFishing(success: false);
+		}
+	}
+
+	// ──────────────────────────────────────────────
+	// Внутренняя логика
+	// ──────────────────────────────────────────────
+
+	private void OnBiteOccurred()
+	{
+		currentState = FishingState.Biting;
+
+		if (audioSource != null && biteSound != null)
+			audioSource.PlayOneShot(biteSound);
+
+		fishingUI.ShowHookButton();
+		biteCoroutine = StartCoroutine(BiteWindowCoroutine());
+	}
+
+	private void EndFishing(bool success)
+	{
+		InternalCancel();
+
+		// Разблокируем агента — рыбалка завершена, игрок может двигаться
+		if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+			navMeshAgent.isStopped = false;
+
+		// Освобождаем ActionScheduler
+		actionScheduler.CancelCurrentAction();
+
+		if (success)
+			fishingUI.ShowSuccessResult();
+		else
+			fishingUI.ShowFailureResult();
+	}
+
+	/// <summary>
+	/// Внутренняя очистка: корутины, мини-игра, удочка, анимация, состояние.
+	/// Не трогает UI, NavMeshAgent и ActionScheduler.
+	/// </summary>
+	private void InternalCancel()
+	{
+		StopBiteCoroutine();
+
+		if (currentState == FishingState.Catching)
+			fishingMiniGame.StopMiniGame();
+
+		HideFishingRod();
+		SetFishingAnimation(false, false);
+		// Обнуляем forwardSpeed чтобы аниматор вернулся в Idle
+		if (playerAnimator != null)
+			playerAnimator.SetFloat("forwardSpeed", 0f);
+
+		currentState = FishingState.Idle;
+		selectedFishData = null;
+		selectedFishItem = null;
+	}
+
+	private void StopBiteCoroutine()
+	{
+		if (biteCoroutine != null)
+		{
+			StopCoroutine(biteCoroutine);
+			biteCoroutine = null;
+		}
+	}
+
+	private void SetFishingAnimation(bool isFishing, bool isCatching)
+	{
+		if (playerAnimator == null) return;
+		playerAnimator.SetBool("IsFishing", isFishing);
+		playerAnimator.SetBool("IsCatching", isCatching);
 	}
 
 	private FishData SelectRandomFish(List<FishData> availableFish)
@@ -65,59 +298,45 @@ public class FishingSystem : MonoBehaviour
 		if (availableFish == null || availableFish.Count == 0)
 			return null;
 
-		// Рассчитываем общий вес всех FishData
 		int totalWeight = 0;
 		foreach (var fish in availableFish)
-		{
-			// Суммируем веса всех предметов внутри каждого FishData
-			foreach (var fishItem in fish.possibleItems)
-			{
-				totalWeight += fishItem.dropWeight;
-			}
-		}
+			foreach (var item in fish.possibleItems)
+				totalWeight += item.dropWeight;
 
 		if (totalWeight == 0)
 			return availableFish[0];
 
-		// Выбираем случайное значение
 		int randomValue = UnityEngine.Random.Range(0, totalWeight);
-
-		// Находим рыбу по весу
 		int currentWeight = 0;
+
 		foreach (var fish in availableFish)
 		{
-			foreach (var fishItem in fish.possibleItems)
+			foreach (var item in fish.possibleItems)
 			{
-				currentWeight += fishItem.dropWeight;
+				currentWeight += item.dropWeight;
 				if (randomValue < currentWeight)
-				{
 					return fish;
-				}
 			}
 		}
 
-		// На всякий случай возвращаем первую рыбу
 		return availableFish[0];
 	}
 
-	private void HandleFishCaught()
+	private void ShowFishingRod()
 	{
-		if (selectedFishItem != null && selectedFishItem.item != null)
-		{
-			AddCaughtFishToInventory(selectedFishItem.item, 1);
-			Debug.Log($"Поймана рыба: {selectedFishItem.item.GetDisplayName()}");
-		}
-		else
-		{
-			Debug.LogWarning("Нет выбранного предмета для добавления!");
-		}
-
-		fishingUI.ToggleSuccessNotificationVisibility(true);
-		fishingUI.ShowFishingButton(true);
+		if (fishingRodPrefab == null || rightHandTransform == null) return;
+		HideFishingRod();
+		currentFishingRod = Instantiate(fishingRodPrefab, rightHandTransform);
+		currentFishingRod.transform.localPosition = Vector3.zero;
+		currentFishingRod.transform.localRotation = Quaternion.identity;
 	}
 
-	private void AddCaughtFishToInventory(InventoryItem fishItem, int number)
+	private void HideFishingRod()
 	{
-		inventory.AddToFirstEmptySlot(fishItem, number);
+		if (currentFishingRod != null)
+		{
+			Destroy(currentFishingRod);
+			currentFishingRod = null;
+		}
 	}
 }

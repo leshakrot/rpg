@@ -103,6 +103,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -199,7 +200,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -284,8 +285,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93c54baeaa00d8c4b9c1741e912b0cfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fishingButton: {fileID: 0}
+  interactButton: {fileID: 0}
+  interactSprite: {fileID: 0}
   fishingMiniGamePanel: {fileID: 2470922815915216123}
+  fishingSystem: {fileID: 0}
   fishingMiniGame: {fileID: 0}
   successNotification: {fileID: 0}
   failureNotification: {fileID: 0}
@@ -468,6 +471,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0

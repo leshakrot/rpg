@@ -335,7 +335,11 @@ namespace RPG.Control
             {
                 _isDraggingUI = false;
             }
-            if (EventSystem.current.IsPointerOverGameObject())
+            
+            // Проверяем, находится ли курсор над UI
+            bool isOverUI = EventSystem.current.IsPointerOverGameObject();
+            
+            if (isOverUI)
             {
                 if (Input.GetMouseButtonDown(0))
                 {
@@ -344,10 +348,13 @@ namespace RPG.Control
                 SetCursor(CursorType.UI);
                 return true;
             }
+            
+            // Если мы начали драг на UI, продолжаем блокировать
             if (_isDraggingUI)
             {
                 return true;
             }
+            
             return false;
         }
 

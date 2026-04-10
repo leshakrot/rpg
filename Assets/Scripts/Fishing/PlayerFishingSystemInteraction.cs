@@ -1,24 +1,33 @@
-﻿using UnityEngine;
+using UnityEngine;
+using RPG.Core;
 
 public class PlayerFishingSystemInteraction : MonoBehaviour
 {
-	[SerializeField] private FishingUI fishingUI; // Ссылка на FishingUI
-	[SerializeField] private FishingSystem fishingSystem; // Ссылка на FishingSystem
+	[SerializeField] private FishingUI fishingUI;
+	[SerializeField] private FishingSystem fishingSystem;
+	[SerializeField] private ActionScheduler actionScheduler;
 
-	private FishingAreaTrigger currentFishingArea;
+	private void Awake()
+	{
+		if (actionScheduler == null)
+			actionScheduler = GetComponent<ActionScheduler>();
+	}
 
 	public void EnterFishingArea(FishingAreaTrigger fishingArea)
 	{
-		// Игрок вошел в зону рыбалки
-		currentFishingArea = fishingArea;
 		fishingSystem.SetCurrentFishingArea(fishingArea);
-		fishingUI.ShowFishingButton(true);
+
+		if (fishingSystem.CurrentState == FishingState.Idle)
+			fishingUI.ShowFishingButton(true);
 	}
 
 	public void ExitFishingArea()
 	{
-		// Игрок покинул зону рыбалки
-		currentFishingArea = null;
+		// Отменяем через ActionScheduler — он разблокирует движение
+		// и сам вызовет fishingSystem.Cancel()
+		if (fishingSystem.CurrentState != FishingState.Idle)
+			actionScheduler.CancelCurrentAction();
+
 		fishingSystem.SetCurrentFishingArea(null);
 		fishingUI.ShowFishingButton(false);
 	}
