@@ -3,17 +3,11 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using GameDevTV.Saving;
+using RPG.Combat;
 using Newtonsoft.Json.Linq;
 
 namespace RPG.Companions
 {
-    /// <summary>
-    /// Глобальный менеджер компаньонов. Присутствует на каждой сцене через мегапрефаб.
-    /// Ответственности:
-    ///   1. Хранит состояние найма (сохраняется через ISaveable)
-    ///   2. Спавнит активных компаньонов при загрузке каждой сцены
-    ///   3. Регистрирует живые контроллеры
-    /// </summary>
     public class CompanionManager : MonoBehaviour, ISaveable
     {
         [Header("Реестр компаньонов")]
@@ -32,52 +26,34 @@ namespace RPG.Companions
             }
         }
 
-        // ── данные ───────────────────────────────────────────────────────
-
-        // companionID → состояние найма (сохраняется)
         private Dictionary<string, HiredCompanionInfo> _hired = new();
-
-        // companionID → живой контроллер в текущей сцене (не сохраняется)
         private Dictionary<string, CompanionController> _active = new();
 
         // ── lifecycle ────────────────────────────────────────────────────
 
         private void Awake()
         {
-            if (_instance != null && _instance != this)
-            {
-                // Мегапрефаб появляется на каждой сцене — уничтожаем дубликат,
-                // оставляем тот что уже живёт
-                Destroy(gameObject);
-                return;
-            }
+            if (_instance != null && _instance != this) { Destroy(gameObject); return; }
             _instance = this;
         }
 
-        /// <summary>
-        /// Start() вызывается после RestoreState() — состояние найма уже актуально.
-        /// Здесь спавним активных компаньонов на текущей сцене.
-        /// </summary>
         private void Start()
         {
-            SpawnActiveCompanions();
+            string currentScene = SceneManager.GetActiveScene().name;
+            SpawnActiveCompanions(currentScene);
+            SpawnWaitingCompanions(currentScene);
+            SpawnBasedCompanions(currentScene);
         }
 
         // ── спавн ─────────────────────────────────────────────────────────
 
-        private void SpawnActiveCompanions()
+        /// <summary>Активные компаньоны — следуют за игроком.</summary>
+        private void SpawnActiveCompanions(string currentScene)
         {
-            if (registry == null)
-            {
-                Debug.LogWarning("[CompanionManager] registry не назначен — компаньоны не будут заспавнены.");
-                return;
-            }
+            if (registry == null) return;
 
             foreach (string id in GetActiveCompanionIDs())
             {
-                // CompanionSpawner на родной сцене уже заспавнил его в своём Start()
-                // (спавнер тоже вызывается после RestoreState, порядок не гарантирован)
-                // Поэтому проверяем регистрацию — если уже есть, пропускаем
                 if (IsCompanionRegistered(id)) continue;
 
                 var entry = registry.GetEntry(id);
@@ -96,9 +72,47 @@ namespace RPG.Companions
 
                 GameObject instance = Instantiate(entry.prefab, spawnPos, Quaternion.identity);
                 instance.name = entry.data.CompanionName;
-
                 instance.GetComponent<CompanionController>()?.Activate(entry.data);
             }
+        }
+
+        /// <summary>
+        /// Ждущие компаньоны — нанят, не активен, не на базе.
+        /// Появляются на той сцене и позиции где их отпустили.
+        /// </summary>
+        private void SpawnWaitingCompanions(string currentScene)
+        {
+            if (registry == null) return;
+
+            foreach (var kvp in _hired)
+            {
+                var info = kvp.Value;
+                if (info.isActive) continue;
+                if (info.sentToBase) continue;
+                if (info.waitSceneName != currentScene) continue;
+                if (IsCompanionRegistered(info.companionID)) continue;
+
+                var entry = registry.GetEntry(info.companionID);
+                if (entry == null || entry.prefab == null) continue;
+
+                // Спавним на позиции где отпустили — просто NPC, не активируем контроллер
+                GameObject instance = Instantiate(entry.prefab, info.waitPosition, Quaternion.identity);
+                instance.name = entry.data.CompanionName;
+                // CompanionController в Inactive — стоит на месте, можно поговорить
+            }
+        }
+
+        /// <summary>
+        /// Компаньоны на базе — нанят, sentToBase = true.
+        /// За их спавн отвечает CompanionSpawner на родной сцене.
+        /// Этот метод только сигнализирует спавнеру.
+        /// </summary>
+        private void SpawnBasedCompanions(string currentScene)
+        {
+            // CompanionSpawner.Start() уже отработал к этому моменту и проверил sentToBase сам.
+            // Дополнительно вызываем на случай если порядок Start() был другим.
+            foreach (var spawner in FindObjectsOfType<CompanionSpawner>())
+                spawner.SpawnIfNeeded();
         }
 
         // ── публичный API ─────────────────────────────────────────────────
@@ -114,28 +128,75 @@ namespace RPG.Companions
             {
                 companionID        = id,
                 isActive           = true,
+                sentToBase         = false,
                 recruiterSceneName = sceneName,
-                recruiterPosition  = recruiterPos
+                recruiterPosition  = recruiterPos,
+                waitSceneName      = "",
+                waitPosition       = Vector3.zero
             };
             return true;
         }
 
-        public void DismissCompanion(string id)
+        /// <summary>
+        /// Компаньон ждёт здесь — остаётся на текущей позиции на текущей сцене.
+        /// </summary>
+        public void WaitHere(string id)
         {
             if (!_hired.TryGetValue(id, out var info)) return;
-            info.isActive = false;
-            DestroyActiveController(id);
+
+            // Запоминаем позицию живого контроллера
+            Vector3 waitPos = Vector3.zero;
+            if (_active.TryGetValue(id, out var ctrl) && ctrl != null)
+                waitPos = ctrl.transform.position;
+
+            info.isActive     = false;
+            info.sentToBase   = false;
+            info.waitSceneName = SceneManager.GetActiveScene().name;
+            info.waitPosition  = waitPos;
+
+            // Деактивируем контроллер — компаньон становится обычным NPC на месте
+            if (_active.TryGetValue(id, out var controller) && controller != null)
+                controller.Deactivate();
+
+            _active.Remove(id);
         }
 
+        /// <summary>
+        /// Отправить компаньона на базу — исчезает с текущей сцены,
+        /// появляется на родной сцене у CompanionSpawner.
+        /// </summary>
+        public void SendToBase(string id)
+        {
+            if (!_hired.TryGetValue(id, out var info)) return;
+
+            info.isActive   = false;
+            info.sentToBase = true;
+
+            DestroyActiveInstance(id);
+
+            // Если мы уже на родной сцене компаньона — спавним сразу,
+            // иначе CompanionSpawner отработает при следующей загрузке сцены
+            string currentScene = SceneManager.GetActiveScene().name;
+            if (currentScene == info.recruiterSceneName)
+            {
+                foreach (var spawner in FindObjectsOfType<CompanionSpawner>())
+                {
+                    spawner.ResetAndSpawn();
+                }
+            }
+        }
+
+        /// <summary>Вызвать компаньона — становится активным на текущей сцене.</summary>
         public void ActivateCompanion(string id)
         {
-            if (_hired.TryGetValue(id, out var info))
-                info.isActive = true;
+            if (!_hired.TryGetValue(id, out var info)) return;
+            info.isActive   = true;
+            info.sentToBase = false;
         }
 
-        public void OnCompanionDied(string id) => DismissCompanion(id);
+        public void OnCompanionDied(string id) => WaitHere(id);
 
-        // ── регистрация контроллеров ──────────────────────────────────────
+        // ── регистрация ───────────────────────────────────────────────────
 
         public void RegisterActiveCompanion(string id, CompanionController ctrl)
             => _active[id] = ctrl;
@@ -148,6 +209,8 @@ namespace RPG.Companions
         public bool IsCompanionHired(string id)      => _hired.ContainsKey(id);
         public bool IsCompanionActive(string id)     => _hired.TryGetValue(id, out var i) && i.isActive;
         public bool IsCompanionRegistered(string id) => _active.ContainsKey(id);
+        public bool IsCompanionOnBase(string id)     => _hired.TryGetValue(id, out var i) && !i.isActive && i.sentToBase;
+        public bool IsCompanionWaiting(string id)    => _hired.TryGetValue(id, out var i) && !i.isActive && !i.sentToBase;
 
         public HiredCompanionInfo GetCompanionInfo(string id) =>
             _hired.TryGetValue(id, out var info) ? info : null;
@@ -157,10 +220,10 @@ namespace RPG.Companions
 
         // ── внутреннее ───────────────────────────────────────────────────
 
-        private void DestroyActiveController(string id)
+        private void DestroyActiveInstance(string id)
         {
             if (!_active.TryGetValue(id, out var ctrl)) return;
-            if (ctrl != null) ctrl.Deactivate();
+            if (ctrl != null) Destroy(ctrl.gameObject);
             _active.Remove(id);
         }
 
@@ -191,7 +254,6 @@ namespace RPG.Companions
             foreach (var info in data.hiredCompanions)
                 _hired[info.companionID] = info;
 
-            // Живые контроллеры прошлой сцены уничтожены вместе с ней
             _active.Clear();
         }
     }
@@ -201,6 +263,15 @@ namespace RPG.Companions
     {
         public string  companionID;
         public bool    isActive;
+
+        // Ждёт на месте (не активен, не на базе)
+        public string  waitSceneName;
+        public Vector3 waitPosition;
+
+        // Отправлен на базу — появится у CompanionSpawner на родной сцене
+        public bool    sentToBase;
+
+        // Данные рекрутера
         public string  recruiterSceneName;
         public Vector3 recruiterPosition;
     }

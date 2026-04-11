@@ -5,7 +5,15 @@ namespace RPG.Companions
 {
     /// <summary>
     /// Предикаты для условий в диалоговых нодах.
-    /// Лежит на том же объекте, что CompanionRecruiter.
+    ///
+    /// Доступные предикаты:
+    ///   CompanionHired        — нанят (в любом состоянии)
+    ///   CompanionNotHired     — не нанят вообще
+    ///   CompanionActive       — нанят и следует за игроком
+    ///   CompanionWaiting      — нанят, ждёт на месте ("Подожди здесь")
+    ///   CompanionOnBase       — нанят, отправлен на базу
+    ///   CanAffordCompanion    — хватает денег на найм
+    ///   CannotAffordCompanion — не хватает денег
     /// </summary>
     public class CompanionPredicates : MonoBehaviour, IPredicateEvaluator
     {
@@ -18,15 +26,6 @@ namespace RPG.Companions
                 Debug.LogError("[CompanionPredicates] CompanionRecruiter не найден!", this);
         }
 
-        /// <summary>
-        /// Поддерживаемые предикаты:
-        ///   CompanionHired        — нанят (активен или на базе)
-        ///   CompanionNotHired     — не нанят вообще
-        ///   CompanionActive       — нанят и следует за игроком
-        ///   CompanionOnBase       — нанят, но отправлен на базу
-        ///   CanAffordCompanion    — хватает денег на найм
-        ///   CannotAffordCompanion — не хватает денег
-        /// </summary>
         public bool? Evaluate(string predicate, string[] parameters)
         {
             if (_recruiter == null) return null;
@@ -36,7 +35,8 @@ namespace RPG.Companions
                 "CompanionHired"        =>  _recruiter.CheckCompanionHired(),
                 "CompanionNotHired"     => !_recruiter.CheckCompanionHired(),
                 "CompanionActive"       =>  _recruiter.CheckCompanionActive(),
-                "CompanionOnBase"       =>  _recruiter.CheckCompanionHired() && !_recruiter.CheckCompanionActive(),
+                "CompanionWaiting"      =>  _recruiter.CheckCompanionWaiting(),
+                "CompanionOnBase"       =>  _recruiter.CheckCompanionOnBase(),
                 "CanAffordCompanion"    =>  _recruiter.CheckCanAfford(),
                 "CannotAffordCompanion" => !_recruiter.CheckCanAfford(),
                 _                       => null

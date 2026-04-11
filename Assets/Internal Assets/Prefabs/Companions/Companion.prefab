@@ -3261,6 +3261,7 @@ MonoBehaviour:
   - rid: 3663690647665901774
   - rid: 3663690647665901775
   - rid: 3663690647665901776
+  - rid: 3663690647665901983
   references:
     version: 2
     RefIds:
@@ -3292,7 +3293,7 @@ MonoBehaviour:
             m_Calls:
             - m_Target: {fileID: 4889043228414617376}
               m_TargetAssemblyTypeName: RPG.Companions.CompanionRecruiter, Assembly-CSharp
-              m_MethodName: Dismiss
+              m_MethodName: SendToBase
               m_Mode: 1
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
@@ -3312,6 +3313,25 @@ MonoBehaviour:
             - m_Target: {fileID: 4889043228414617376}
               m_TargetAssemblyTypeName: RPG.Companions.CompanionRecruiter, Assembly-CSharp
               m_MethodName: Call
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+    - rid: 3663690647665901983
+      type: {class: TriggerAction, ns: RPG.Dialogue, asm: Assembly-CSharp}
+      data:
+        actionName: wait_companion
+        onTrigger:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 4889043228414617376}
+              m_TargetAssemblyTypeName: RPG.Companions.CompanionRecruiter, Assembly-CSharp
+              m_MethodName: Dismiss
               m_Mode: 1
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}

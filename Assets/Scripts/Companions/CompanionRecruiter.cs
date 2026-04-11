@@ -64,20 +64,22 @@ namespace RPG.Companions
             ActivateController();
         }
 
+        /// <summary>Подожди здесь — компаньон остаётся на текущей позиции.</summary>
         public void Dismiss()
         {
             if (companionData == null) return;
+            if (!CompanionManager.Instance.IsCompanionHired(companionData.CompanionID)) return;
 
-            if (!CompanionManager.Instance.IsCompanionHired(companionData.CompanionID))
-            {
-                Debug.Log("[CompanionRecruiter] Компаньон не нанят.");
-                return;
-            }
+            CompanionManager.Instance.WaitHere(companionData.CompanionID);
+        }
 
-            // Менеджер внутри вызовет controller.Deactivate()
-            CompanionManager.Instance.DismissCompanion(companionData.CompanionID);
+        /// <summary>Отправить на базу — компаньон исчезает и появляется на родной сцене.</summary>
+        public void SendToBase()
+        {
+            if (companionData == null) return;
+            if (!CompanionManager.Instance.IsCompanionHired(companionData.CompanionID)) return;
 
-            ReturnToBase();
+            CompanionManager.Instance.SendToBase(companionData.CompanionID);
         }
 
         public void Call()
@@ -108,21 +110,20 @@ namespace RPG.Companions
             _controller.Activate(companionData);
         }
 
-        private void ReturnToBase()
-        {
-            if (basePosition == null) return;
-
-            transform.position = basePosition.position;
-            transform.rotation = basePosition.rotation;
-        }
 
         // ── методы для предикатов (CompanionPredicates) ───────────────────
 
-        public bool CheckCompanionHired() =>
+        public bool CheckCompanionHired()   =>
             companionData != null && CompanionManager.Instance.IsCompanionHired(companionData.CompanionID);
 
-        public bool CheckCompanionActive() =>
+        public bool CheckCompanionActive()  =>
             companionData != null && CompanionManager.Instance.IsCompanionActive(companionData.CompanionID);
+
+        public bool CheckCompanionWaiting() =>
+            companionData != null && CompanionManager.Instance.IsCompanionWaiting(companionData.CompanionID);
+
+        public bool CheckCompanionOnBase()  =>
+            companionData != null && CompanionManager.Instance.IsCompanionOnBase(companionData.CompanionID);
 
         public bool CheckCanAfford()
         {

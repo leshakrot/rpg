@@ -135,7 +135,16 @@ namespace RPG.Dialogue
 
         private IEnumerable<IPredicateEvaluator> GetEvaluators()
         {
-            return GetComponents<IPredicateEvaluator>();
+            // Берём предикаты с игрока
+            var evaluators = GetComponents<IPredicateEvaluator>().ToList();
+
+            // Добавляем предикаты с текущего NPC-собеседника
+            if (_currentConversant != null)
+            {
+                evaluators.AddRange(_currentConversant.GetComponents<IPredicateEvaluator>());
+            }
+
+            return evaluators;
         }
 
         private void TriggerEnterAction()
