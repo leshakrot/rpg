@@ -147,6 +147,8 @@ namespace RPG.Control
                     {
                         _timeSinceLastSawPlayer = 0f;
                         AggrevateNearbyEnemies();
+                        // Обновляем цель каждый кадр — игрок или ближайший компаньон
+                        _fighter.Attack(GetNearestHostile());
                     }
                     else
                     {
@@ -209,7 +211,7 @@ namespace RPG.Control
                 _hasFirstContactPoint = true;
             }
 
-            _fighter.Attack(_player);
+            _fighter.Attack(GetNearestHostile());
         }
 
         public void Aggrevate()
@@ -278,8 +280,21 @@ namespace RPG.Control
 
         private bool IsAggrevated()
         {
+            if (_timeSinceAggrevated < _agroCooldownTime) return true;
+
             float distanceToPlayer = Vector3.Distance(_player.transform.position, transform.position);
-            return distanceToPlayer < _chaseDistance || _timeSinceAggrevated < _agroCooldownTime;
+            if (distanceToPlayer < _chaseDistance) return true;
+
+            // Компаньон в радиусе — тоже агрит
+            Collider[] hits = Physics.OverlapSphere(transform.position, _chaseDistance);
+            foreach (Collider hit in hits)
+            {
+                if (!hit.CompareTag("Companion")) continue;
+                Health h = hit.GetComponent<Health>();
+                if (h != null && !h.IsDead()) return true;
+            }
+
+            return false;
         }
 
         private bool IsTooFarFromSpawn()
@@ -292,6 +307,15 @@ namespace RPG.Control
         private bool HasPlayerEscaped()
         {
             if (!_hasFirstContactPoint) return false;
+
+            // Если рядом есть живой компаньон — враг не бросает бой
+            Collider[] hits = Physics.OverlapSphere(transform.position, _chaseDistance);
+            foreach (Collider hit in hits)
+            {
+                if (!hit.CompareTag("Companion")) continue;
+                Health h = hit.GetComponent<Health>();
+                if (h != null && !h.IsDead()) return false;
+            }
 
             float distFromContact = Vector3.Distance(_player.transform.position, _firstContactPoint);
             if (distFromContact > _escapeDistanceFromContact) return true;
@@ -331,6 +355,40 @@ namespace RPG.Control
         private bool AtGuardPosition()
         {
             return Vector3.Distance(transform.position, _guardPosition.value) < 0.5f;
+        }
+
+        /// <summary>
+        /// Возвращает ближайшую враждебную цель — игрока или активного компаньона.
+        /// Компаньон берётся только если он в радиусе chase и ближе игрока.
+        /// </summary>
+        private GameObject GetNearestHostile()
+        {
+            float distToPlayer = Vector3.Distance(_player.transform.position, transform.position);
+
+            // Ищем компаньонов в радиусе
+            GameObject nearestCompanion = null;
+            float nearestCompanionDist = Mathf.Infinity;
+
+            Collider[] hits = Physics.OverlapSphere(transform.position, _chaseDistance);
+            foreach (Collider hit in hits)
+            {
+                if (!hit.CompareTag("Companion")) continue;
+                Health h = hit.GetComponent<Health>();
+                if (h == null || h.IsDead()) continue;
+
+                float d = Vector3.Distance(hit.transform.position, transform.position);
+                if (d < nearestCompanionDist)
+                {
+                    nearestCompanionDist = d;
+                    nearestCompanion = hit.gameObject;
+                }
+            }
+
+            // Атакуем того кто ближе
+            if (nearestCompanion != null && nearestCompanionDist < distToPlayer)
+                return nearestCompanion;
+
+            return _player;
         }
 
         private void OnDrawGizmosSelected()

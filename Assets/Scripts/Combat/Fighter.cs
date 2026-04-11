@@ -139,8 +139,10 @@ namespace RPG.Combat
             return best;
         }
 
-        private IEnumerable<Health> FindAllTargetsInRange(float range)
+        protected virtual IEnumerable<Health> FindAllTargetsInRange(float range)
         {
+            bool iAmAnEnemy = GetComponent<RPG.Control.AIController>() != null;
+
             RaycastHit[] raycastHits = Physics.SphereCastAll(transform.position, range, Vector3.up);
             foreach (var hit in raycastHits)
             {
@@ -148,6 +150,14 @@ namespace RPG.Combat
                 if (health == null) continue;
                 if (health.IsDead()) continue;
                 if (health.gameObject == gameObject) continue;
+
+                // Компаньон — союзник для всех
+                if (hit.transform.CompareTag("Companion")) continue;
+
+                // Враги не атакуют друг друга
+                bool targetIsEnemy = hit.transform.GetComponent<RPG.Control.AIController>() != null;
+                if (iAmAnEnemy && targetIsEnemy) continue;
+
                 yield return health;
             }
         }
@@ -202,7 +212,7 @@ namespace RPG.Combat
         /// который раньше давал ложный false и мешал переходу в Chase.
         /// Fighter.Update() сам справляется с движением к цели.
         /// </summary>
-        public bool CanAttack(GameObject combatTarget)
+        public virtual bool CanAttack(GameObject combatTarget)
         {
             if (combatTarget == null) return false;
             Health targetToTest = combatTarget.GetComponent<Health>();

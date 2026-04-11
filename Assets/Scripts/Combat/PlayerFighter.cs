@@ -781,6 +781,16 @@ namespace RPG.Combat
 			return state;
 		}
 
+        // Игрок не переключается на компаньона при автоатаке после убийства врага
+        protected override IEnumerable<Health> FindAllTargetsInRange(float range)
+        {
+            foreach (Health h in base.FindAllTargetsInRange(range))
+            {
+                if (!h.gameObject.CompareTag("Companion"))
+                    yield return h;
+            }
+        }
+
 		public void RestoreState(object state)
 		{
 			// Преобразуем состояние обратно в словарь
