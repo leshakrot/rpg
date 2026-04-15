@@ -48,22 +48,13 @@ namespace GameDevTV.Utils
 
             public bool Check(IEnumerable<IPredicateEvaluator> evaluators)
             {
-                bool wasHandled = false; // ‘лаг: отреагировал ли хоть кто-то на предикат
-
                 foreach (var evaluator in evaluators)
                 {
                     bool? result = evaluator.Evaluate(_predicate, _parameters);
-                    if (result == null)
-                    {
-                        continue;
-                    }
-
-                    wasHandled = true;
+                    if (result == null) continue;
                     if (result == _negate) return false;
                 }
-
-                // ¬озвращаем true, только если предикат был кем-то обработан и проверка пройдена
-                return wasHandled;
+                return true;
             }
         }        
     }

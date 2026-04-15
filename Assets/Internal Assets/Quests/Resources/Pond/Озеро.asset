@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: "\u041E\u0437\u0435\u0440\u043E"
   m_EditorClassIdentifier: 
   _objectives:
-  - reference: talk_to_wise_tree
+  - reference: talk_to_rybbert
     description: "\u041F\u043E\u0433\u043E\u0432\u043E\u0440\u0438\u0442\u044C \u0441
-      \u043C\u0443\u0434\u0440\u044B\u043C \u0434\u0435\u0440\u0435\u0432\u043E\u043C"
+      \u0420\u044B\u0431\u0431\u0435\u0440\u0442\u043E\u043C"
     usesCondition: 0
     completionCondition:
       _and: []
@@ -26,4 +26,28 @@ MonoBehaviour:
       _and: []
     isCollectionObjective: 0
     itemToCollect: {fileID: 0}
+  - reference: talk_to_wise_tree
+    description: "\u041F\u043E\u0433\u043E\u0432\u043E\u0440\u0438\u0442\u044C \u0441
+      \u043C\u0443\u0434\u0440\u044B\u043C \u0434\u0435\u0440\u0435\u0432\u043E\u043C"
+    usesCondition: 1
+    completionCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - talk_to_rybbert
+          _negate: 0
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - talk_to_rybbert
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
   _rewards: []
+  _objectivesToComplete: 0
