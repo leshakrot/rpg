@@ -1,25 +1,28 @@
 using System.Collections.Generic;
+using GameDevTV.Saving;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace RPG.Core
 {
     /// <summary>
-    /// Lightweight scene-lifetime registry that maps string keys to GameObjects.
+    /// Scene-scoped registry: maps string keys → GameObjects.
     ///
-    /// Place this component on any persistent GameObject in the scene.
-    /// VFX objects that need to be toggled via item/ability effects should
-    /// register themselves here (or be registered manually via the Inspector list).
+    /// Теперь реализует ISaveable — сохраняет активное состояние каждого
+    /// зарегистрированного объекта. При переходе между сценами SavingSystem
+    /// вызовет RestoreState уже на новой сцене, и объекты (напр. VFX-след)
+    /// активируются/деактивируются автоматически.
     ///
-    /// This is intentionally NOT a DontDestroyOnLoad singleton — it lives
-    /// exactly as long as the scene it belongs to. Each scene that needs
-    /// toggleable objects has its own registry instance.
+    /// Требования к сцене:
+    ///   • На этом же GameObject должен стоять SaveableEntity (GameDevTV) с
+    ///     фиксированным GUID — иначе Save-система не найдёт компонент.
+    ///   • В каждой сцене, где нужно восстанавливать состояние, должен быть
+    ///     свой SceneObjectRegistry с тем же GUID у SaveableEntity.
     /// </summary>
-    public class SceneObjectRegistry : MonoBehaviour
+    public class SceneObjectRegistry : MonoBehaviour, ISaveable
     {
-        // ── Singleton (scene-scoped, not cross-scene) ──────────────────────
         public static SceneObjectRegistry Instance { get; private set; }
 
-        // ── Inspector-registered entries ──────────────────────────────────
         [System.Serializable]
         public struct Entry
         {
@@ -27,13 +30,13 @@ namespace RPG.Core
             public GameObject target;
         }
 
-        [Tooltip("Objects registered at scene load. Add your VFX/other objects here.")]
+        [Tooltip("Objects registered at scene load.")]
         [SerializeField] private List<Entry> initialEntries = new();
 
-        // ── Runtime dictionary ─────────────────────────────────────────────
         private readonly Dictionary<string, GameObject> _registry = new();
 
-        // ──────────────────────────────────────────────────────────────────
+        // ── Lifecycle ──────────────────────────────────────────────────────
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -50,7 +53,7 @@ namespace RPG.Core
                 if (!string.IsNullOrEmpty(entry.key) && entry.target != null)
                     Register(entry.key, entry.target);
                 else
-                    Debug.LogWarning("[SceneObjectRegistry] Invalid entry (empty key or null target) skipped.");
+                    Debug.LogWarning("[SceneObjectRegistry] Invalid entry skipped.");
             }
         }
 
@@ -61,30 +64,62 @@ namespace RPG.Core
 
         // ── Public API ─────────────────────────────────────────────────────
 
-        /// <summary>Register a GameObject under a key. Overwrites any existing entry.</summary>
         public void Register(string key, GameObject obj)
         {
             if (string.IsNullOrEmpty(key) || obj == null) return;
             _registry[key] = obj;
         }
 
-        /// <summary>Unregister a key.</summary>
-        public void Unregister(string key)
+        public void Unregister(string key) => _registry.Remove(key);
+
+        public GameObject Get(string key)
         {
-            _registry.Remove(key);
+            _registry.TryGetValue(key, out var obj);
+            return obj;
+        }
+
+        public bool Contains(string key) =>
+            _registry.TryGetValue(key, out var obj) && obj != null;
+
+        // ── ISaveable ──────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Сохраняем словарь key → activeSelf для всех зарегистрированных объектов.
+        /// Объекты, которые были null во время сохранения, пропускаем.
+        /// </summary>
+        public object CaptureState()
+        {
+            var state = new Dictionary<string, bool>();
+            foreach (var kvp in _registry)
+            {
+                if (kvp.Value != null)
+                    state[kvp.Key] = kvp.Value.activeSelf;
+            }
+            return state;
         }
 
         /// <summary>
-        /// Retrieve a registered object. Returns null and logs a warning if not found.
+        /// Восстанавливаем состояния. Вызывается SavingSystem сразу после
+        /// загрузки сцены — к этому моменту все Awake() уже выполнились и
+        /// initialEntries уже зарегистрированы, так что объекты доступны.
         /// </summary>
-        public GameObject Get(string key)
+        public void RestoreState(object state)
         {
-            if (_registry.TryGetValue(key, out var obj)) return obj;
-            return null;
-        }
+            if (state is not Dictionary<string, bool> saved)
+            {
+                Debug.LogError("[SceneObjectRegistry] RestoreState: unexpected data type.");
+                return;
+            }
 
-        /// <summary>Returns true if the key is registered and the object is not null.</summary>
-        public bool Contains(string key) =>
-            _registry.TryGetValue(key, out var obj) && obj != null;
+            foreach (var kvp in saved)
+            {
+                if (_registry.TryGetValue(kvp.Key, out var obj) && obj != null)
+                {
+                    obj.SetActive(kvp.Value);
+                }
+                // Ключ есть в сохранении, но не зарегистрирован в этой сцене —
+                // это нормально: не все сцены содержат все объекты.
+            }
+        }
     }
 }
