@@ -33,6 +33,24 @@ namespace GameDevTV.Saving
         }
 
         /// <summary>
+        /// Получает настройки JSON сериализации с кастомными конвертерами для Unity типов
+        /// </summary>
+        private static JsonSerializerSettings GetJsonSettings()
+        {
+            return new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.None,
+                Converters = new JsonConverter[]
+                {
+                    new Vector3JsonConverter(),
+                    new QuaternionJsonConverter(),
+                    new ColorJsonConverter()
+                }
+            };
+        }
+
+        /// <summary>
         /// Сохраняет данные игры в YandexSDK
         /// </summary>
         public static void SaveGameData(string saveFileName, Dictionary<string, object> gameData, int sceneIndex)
@@ -40,13 +58,8 @@ namespace GameDevTV.Saving
 #if UNITY_WEBGL && !UNITY_EDITOR
             try
             {
-                // Сериализуем данные игры в JSON
-                var settings = new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.Auto,
-                    Formatting = Formatting.None
-                };
-                string jsonData = JsonConvert.SerializeObject(gameData, settings);
+                // Сериализуем данные игры в JSON с кастомными конвертерами
+                string jsonData = JsonConvert.SerializeObject(gameData, GetJsonSettings());
 
                 // Сохраняем в YandexSDK
                 YandexGame.savesData.currentSaveFile = saveFileName;
@@ -90,12 +103,8 @@ namespace GameDevTV.Saving
                     return new Dictionary<string, object>();
                 }
 
-                // Десериализуем данные
-                var settings = new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.Auto
-                };
-                var gameData = JsonConvert.DeserializeObject<Dictionary<string, object>>(YandexGame.savesData.gameDataJson, settings);
+                // Десериализуем данные с кастомными конвертерами
+                var gameData = JsonConvert.DeserializeObject<Dictionary<string, object>>(YandexGame.savesData.gameDataJson, GetJsonSettings());
                 
                 // Добавляем информацию о последней сцене
                 if (gameData != null)

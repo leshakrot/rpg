@@ -105,7 +105,13 @@ namespace RPG.Movement
 
 		public void RestoreState(object state)
 		{
-			MoverSaveData data = (MoverSaveData)state;
+			MoverSaveData data = state switch
+			{
+				MoverSaveData msd => msd,
+				Newtonsoft.Json.Linq.JObject jo => jo.ToObject<MoverSaveData>(),
+				_ => default
+			};
+
 			_navMeshAgent.enabled = false;
 			transform.position = data.position.ToVector();
 			transform.rotation = data.rotation.ToQuaternion();

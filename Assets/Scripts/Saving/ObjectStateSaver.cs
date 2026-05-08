@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using GameDevTV.Saving;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 [System.Serializable]
 public class ObjectVisibilityData
@@ -27,31 +29,8 @@ public class ObjectStateSaver : MonoBehaviour, ISaveable
     [Header("Objects to Manage")]
     [SerializeField] private List<GameObject> managedObjects = new List<GameObject>();
     
-    [Header("Auto Save/Load Settings")]
-    [SerializeField] private bool autoSaveOnStateChange = true;
-    [SerializeField] private bool autoLoadOnStart = true;
-    
     [Header("Debug")]
     [SerializeField] private bool debugMode = false;
-    
-    private SavingSystem savingSystem;
-    
-    private void Awake()
-    {
-        savingSystem = FindObjectOfType<SavingSystem>();
-        if (savingSystem == null && debugMode)
-        {
-            Debug.LogWarning("SavingSystem not found in scene. ObjectStateManager will not save/load states.");
-        }
-    }
-    
-    private void Start()
-    {
-        if (autoLoadOnStart && savingSystem != null)
-        {
-            LoadStates();
-        }
-    }
     
     public object CaptureState()
     {
@@ -75,62 +54,47 @@ public class ObjectStateSaver : MonoBehaviour, ISaveable
     
     public void RestoreState(object state)
     {
-        if (state is ObjectStatesData data)
+        // Обработка различных типов входных данных
+        ObjectStatesData data = state switch
         {
-            int restoredCount = 0;
-            
-            foreach (ObjectVisibilityData objectData in data.objectStates)
+            ObjectStatesData osd => osd,
+            JObject jo => jo.ToObject<ObjectStatesData>(),
+            _ => null
+        };
+
+        if (data == null || data.objectStates == null)
+        {
+            if (debugMode)
             {
-                GameObject targetObject = FindManagedObjectByName(objectData.objectName);
-                if (targetObject != null)
+                Debug.LogWarning($"ObjectStateManager: Could not deserialize state data (type: {state?.GetType()})");
+            }
+            return;
+        }
+
+        int restoredCount = 0;
+        
+        foreach (ObjectVisibilityData objectData in data.objectStates)
+        {
+            GameObject targetObject = FindManagedObjectByName(objectData.objectName);
+            if (targetObject != null)
+            {
+                targetObject.SetActive(objectData.isActive);
+                restoredCount++;
+                
+                if (debugMode)
                 {
-                    targetObject.SetActive(objectData.isActive);
-                    restoredCount++;
-                }
-                else if (debugMode)
-                {
-                    Debug.LogWarning($"ObjectStateManager: Could not find object '{objectData.objectName}' to restore state");
+                    Debug.Log($"ObjectStateManager: Restored '{objectData.objectName}' to active={objectData.isActive}");
                 }
             }
-            
-            if (debugMode)
+            else if (debugMode)
             {
-                Debug.Log($"ObjectStateManager: Restored state for {restoredCount} objects");
+                Debug.LogWarning($"ObjectStateManager: Could not find object '{objectData.objectName}' to restore state");
             }
         }
-    }
-    
-    [ContextMenu("Save Current States")]
-    public void SaveStates()
-    {
-        if (savingSystem != null)
+        
+        if (debugMode)
         {
-            savingSystem.Save("objectStates");
-            if (debugMode)
-            {
-                Debug.Log("ObjectStateManager: States saved to file");
-            }
-        }
-        else if (debugMode)
-        {
-            Debug.LogWarning("ObjectStateManager: Cannot save - SavingSystem not found");
-        }
-    }
-    
-    [ContextMenu("Load Saved States")]
-    public void LoadStates()
-    {
-        if (savingSystem != null && savingSystem.SaveFileExists("objectStates"))
-        {
-            savingSystem.Load("objectStates");
-            if (debugMode)
-            {
-                Debug.Log("ObjectStateManager: States loaded from file");
-            }
-        }
-        else if (debugMode)
-        {
-            Debug.LogWarning("ObjectStateManager: Cannot load - save file does not exist or SavingSystem not found");
+            Debug.Log($"ObjectStateManager: Restored state for {restoredCount} objects");
         }
     }
     
@@ -143,11 +107,6 @@ public class ObjectStateSaver : MonoBehaviour, ISaveable
             {
                 obj.SetActive(true);
             }
-        }
-        
-        if (autoSaveOnStateChange)
-        {
-            SaveStates();
         }
         
         if (debugMode)
@@ -167,11 +126,6 @@ public class ObjectStateSaver : MonoBehaviour, ISaveable
             }
         }
         
-        if (autoSaveOnStateChange)
-        {
-            SaveStates();
-        }
-        
         if (debugMode)
         {
             Debug.Log("ObjectStateManager: All managed objects are now hidden");
@@ -183,11 +137,6 @@ public class ObjectStateSaver : MonoBehaviour, ISaveable
         if (obj != null && managedObjects.Contains(obj))
         {
             obj.SetActive(visible);
-            
-            if (autoSaveOnStateChange)
-            {
-                SaveStates();
-            }
             
             if (debugMode)
             {

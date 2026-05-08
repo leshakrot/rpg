@@ -582,11 +582,15 @@ public class DayNightSystem : MonoBehaviour, ISaveable
 
     public void RestoreState(object state)
     {
-        if (state is DayNightSaveData d)
+        DayNightSaveData d = state switch
         {
-            currentTime = d.currentTime;
-            currentDay  = d.currentDay;
-            UpdateAll(force: true);
-        }
+            DayNightSaveData data => data,
+            Newtonsoft.Json.Linq.JObject jo => jo.ToObject<DayNightSaveData>(),
+            _ => default
+        };
+
+        currentTime = d.currentTime;
+        currentDay  = d.currentDay;
+        UpdateAll(force: true);
     }
 }

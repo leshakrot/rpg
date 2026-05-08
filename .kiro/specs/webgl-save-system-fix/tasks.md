@@ -1,0 +1,139 @@
+# Implementation Plan
+
+- [ ] 1. Write bug condition exploration test
+  - **Property 1: Bug Condition** - Unity Types Serialization Failure in WebGL
+  - **CRITICAL**: This test MUST FAIL on unfixed code - failure confirms the bug exists
+  - **DO NOT attempt to fix the test or the code when it fails**
+  - **NOTE**: This test encodes the expected behavior - it will validate the fix when it passes after implementation
+  - **GOAL**: Surface counterexamples that demonstrate the bug exists
+  - **Scoped PBT Approach**: Scope the property to concrete failing cases - WebGL save operations with Unity types (Vector3, Quaternion, Color)
+  - Test that WebSavingAdapter.SaveGameData() and LoadGameData() correctly serialize/deserialize Unity types (Vector3, Quaternion, Color) in WebGL build
+  - Create test data with Vector3(10.5f, 2.0f, 15.3f), Quaternion.Euler(45, 90, 0), Color.red
+  - Save through WebSavingAdapter, then load and verify types are correct (not JObject)
+  - Test that ObjectStateSaver states are saved in main save file, not separate "objectStates" file
+  - Test that CompanionManager.RestoreState() correctly deserializes JObject with Unity types
+  - Run test on UNFIXED code
+  - **EXPECTED OUTCOME**: Test FAILS (this is correct - it proves the bug exists)
+  - Document counterexamples found:
+    - Vector3/Quaternion/Color deserialize as JObject instead of Unity types
+    - ObjectStateSaver creates separate "objectStates" file not loaded with main save
+    - CompanionManager gets incorrect data when deserializing JObject without settings
+  - Mark task complete when test is written, run, and failure is documented
+  - _Requirements: 1.1, 1.2, 1.3, 1.4_
+
+- [ ] 2. Write preservation property tests (BEFORE implementing fix)
+  - **Property 2: Preservation** - Editor and Non-Unity-Type Operations
+  - **IMPORTANT**: Follow observation-first methodology
+  - Observe behavior on UNFIXED code for non-buggy inputs:
+    - Editor save/load operations with Unity types work correctly
+    - WebGL save/load with primitive types (int, string, bool) work correctly
+    - SaveableEntity ISaveable interface workflow works correctly
+    - Hotkeys (L, S, Delete) execute corresponding operations
+    - Platform detection through isWebPlatform works correctly
+    - YandexSDK timeout handling works with warning
+  - Write property-based tests capturing observed behavior patterns:
+    - For all save operations in Editor (not WebGL), result equals original system behavior
+    - For all save operations with primitive types only (no Unity types), result equals original system behavior
+    - For all SaveableEntity operations, CaptureState/RestoreState workflow equals original system behavior
+    - For all hotkey inputs, operations equal original system behavior
+    - For all platform detection calls, isWebPlatform result equals original system behavior
+    - For all YandexSDK unavailable scenarios, timeout handling equals original system behavior
+  - Property-based testing generates many test cases for stronger guarantees
+  - Run tests on UNFIXED code
+  - **EXPECTED OUTCOME**: Tests PASS (this confirms baseline behavior to preserve)
+  - Mark task complete when tests are written, run, and passing on unfixed code
+  - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
+
+- [x] 3. Fix WebGL save system for Unity types
+
+  - [x] 3.1 Add custom JSON converters to WebSavingAdapter
+    - Open `Assets/Scripts/Saving/WebSavingAdapter.cs`
+    - Create private static method `GetJsonSettings()` that returns JsonSerializerSettings with:
+      - TypeNameHandling = TypeNameHandling.Auto
+      - Converters array containing: Vector3JsonConverter, QuaternionJsonConverter, ColorJsonConverter
+    - Update `SaveGameData()` method to use `GetJsonSettings()` instead of inline JsonSerializerSettings
+    - Update `LoadGameData()` method to use `GetJsonSettings()` for deserialization
+    - Ensure symmetry between serialization and deserialization settings
+    - _Bug_Condition: isBugCondition(input) where input.platform == WebGL AND input.converters NOT CONTAINS [Vector3JsonConverter, QuaternionJsonConverter, ColorJsonConverter]_
+    - _Expected_Behavior: WebSavingAdapter SHALL use the same custom JSON converters as SavingSystem for Unity types_
+    - _Preservation: Editor save operations and primitive type saves SHALL continue to work unchanged_
+    - _Requirements: 1.1, 2.1, 3.1, 3.2_
+
+  - [x] 3.2 Integrate ObjectStateSaver with main save file
+    - Open `Assets/Scripts/Saving/ObjectStateSaver.cs`
+    - Remove `SaveStates()` method that calls `savingSystem.Save("objectStates")`
+    - Remove `LoadStates()` method that calls `savingSystem.Load("objectStates")`
+    - Remove `autoLoadOnStart` field and its usage in `Start()`
+    - Remove `autoSaveOnStateChange` field and all calls to `SaveStates()` from `ShowAllObjects()`, `HideAllObjects()`, `SetObjectVisibility()`
+    - Remove `savingSystem` field and `Awake()` method
+    - Remove context menu items `[ContextMenu("Save Current States")]` and `[ContextMenu("Load Saved States")]`
+    - ObjectStateSaver now works purely through ISaveable interface (CaptureState/RestoreState)
+    - SaveableEntity will automatically call RestoreState when loading main save file
+    - _Bug_Condition: isBugCondition(input) where ObjectStateSaver creates separate "objectStates" file instead of using main save_
+    - _Expected_Behavior: ObjectStateSaver SHALL use main save file through ISaveable interface_
+    - _Preservation: SaveableEntity ISaveable workflow SHALL continue to work unchanged_
+    - _Requirements: 1.2, 2.2, 3.3_
+
+  - [x] 3.3 Add JsonSerializerSettings to CompanionManager deserialization
+    - Open `Assets/Scripts/Companions/CompanionManager.cs`
+    - Add `using GameDevTV.Saving;` at the top for access to custom converters
+    - Create private static method `GetJsonSettings()` that returns JsonSerializerSettings with:
+      - TypeNameHandling = TypeNameHandling.Auto
+      - Converters array containing: Vector3JsonConverter, QuaternionJsonConverter, ColorJsonConverter
+    - Update `RestoreState()` method where `jo.ToObject<SaveData>()` is called
+    - Pass `GetJsonSettings()` as parameter: `jo.ToObject<SaveData>(GetJsonSettings())`
+    - Ensure Unity types in companion data (waitPosition, etc.) deserialize correctly
+    - _Bug_Condition: isBugCondition(input) where CompanionManager uses JObject.ToObject without JsonSerializerSettings_
+    - _Expected_Behavior: CompanionManager SHALL use JsonSerializerSettings with custom converters for deserialization_
+    - _Preservation: Companion hiring and management SHALL continue to work unchanged_
+    - _Requirements: 1.3, 2.3_
+
+  - [x] 3.4 Verify numeric type handling (if needed)
+    - Check if `Assets/Scripts/Saving/JsonSaveHelper.cs` exists
+    - If it exists, verify it has `ToInt()` and `ToFloat()` methods for safe type conversion
+    - If methods don't exist, create them to handle double to int/float conversion
+    - Review all deserialization points to ensure numeric types are handled correctly
+    - If no issues found with current implementation, document and skip
+    - _Bug_Condition: isBugCondition(input) where JSON deserializes numbers as double instead of expected float/int_
+    - _Expected_Behavior: System SHALL correctly handle type conversion for numeric values_
+    - _Preservation: All existing numeric value handling SHALL continue to work unchanged_
+    - _Requirements: 1.4, 2.4_
+
+  - [x] 3.5 Verify bug condition exploration test now passes
+    - **Property 1: Expected Behavior** - Unity Types Serialization Success in WebGL
+    - **IMPORTANT**: Re-run the SAME test from task 1 - do NOT write a new test
+    - The test from task 1 encodes the expected behavior
+    - When this test passes, it confirms the expected behavior is satisfied
+    - Run bug condition exploration test from step 1
+    - Verify that:
+      - Vector3, Quaternion, Color correctly serialize/deserialize through WebSavingAdapter
+      - ObjectStateSaver states are saved in main save file
+      - CompanionManager correctly deserializes JObject with Unity types
+    - **EXPECTED OUTCOME**: Test PASSES (confirms bug is fixed)
+    - _Requirements: 2.1, 2.2, 2.3, 2.4_
+
+  - [x] 3.6 Verify preservation tests still pass
+    - **Property 2: Preservation** - Editor and Non-Unity-Type Operations
+    - **IMPORTANT**: Re-run the SAME tests from task 2 - do NOT write new tests
+    - Run preservation property tests from step 2
+    - Verify that:
+      - Editor save/load operations still work correctly
+      - WebGL save/load with primitive types still work correctly
+      - SaveableEntity ISaveable interface still works correctly
+      - Hotkeys still execute corresponding operations
+      - Platform detection still works correctly
+      - YandexSDK timeout handling still works with warning
+    - **EXPECTED OUTCOME**: Tests PASS (confirms no regressions)
+    - Confirm all tests still pass after fix (no regressions)
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
+
+- [ ] 4. Checkpoint - Ensure all tests pass
+  - Run all unit tests for saving system
+  - Run all property-based tests
+  - Run integration tests in WebGL build
+  - Test full save/load cycle with companions and object states in WebGL
+  - Test scene switching with object state preservation
+  - Test hotkeys in WebGL build
+  - Verify YandexSDK integration works correctly
+  - If any issues arise, investigate and fix before proceeding
+  - Ask the user if questions arise

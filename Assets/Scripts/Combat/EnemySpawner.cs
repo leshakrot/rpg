@@ -934,7 +934,12 @@ namespace RPG.Combat
         {
             if (showDebugInfo) Debug.Log("[EnemySpawner] RestoreState вызван");
 
-            SpawnerSaveData saveData = (SpawnerSaveData)state;
+            SpawnerSaveData saveData = state switch
+            {
+                SpawnerSaveData ssd => ssd,
+                Newtonsoft.Json.Linq.JObject jo => jo.ToObject<SpawnerSaveData>(),
+                _ => default
+            };
 
             // Если сохранение сделано на другой сцене — игнорируем.
             // Такого не должно быть в норме, но защита лишней не бывает.

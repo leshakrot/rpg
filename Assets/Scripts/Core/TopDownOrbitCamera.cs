@@ -492,9 +492,22 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
 
     public void RestoreState(object state)
     {
-        if (state is CameraSaveData_TopDownOrbit data) { _currentX = data.currentX; _currentY = data.currentY; distance = data.distance; _smoothX = _currentX; _smoothY = _currentY; _smoothDistance = distance; if (enableDebugLogs) Debug.Log($"[{gameObject.name}] RestoreState: X={data.currentX}, Y={data.currentY}, Dist={data.distance}"); }
-        else if (state != null) { Debug.LogWarning($"[{gameObject.name}] RestoreState received invalid data type: {state.GetType()}", this); }
-        else { if (enableDebugLogs) Debug.LogWarning($"[{gameObject.name}] RestoreState received null data.", this); }
+        CameraSaveData_TopDownOrbit data = state switch
+        {
+            CameraSaveData_TopDownOrbit csd => csd,
+            Newtonsoft.Json.Linq.JObject jo => jo.ToObject<CameraSaveData_TopDownOrbit>(),
+            _ => default
+        };
+
+        _currentX = data.currentX;
+        _currentY = data.currentY;
+        distance = data.distance;
+        _smoothX = _currentX;
+        _smoothY = _currentY;
+        _smoothDistance = distance;
+        
+        if (enableDebugLogs)
+            Debug.Log($"[{gameObject.name}] RestoreState: X={data.currentX}, Y={data.currentY}, Dist={data.distance}");
     }
     #endregion
 }

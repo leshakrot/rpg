@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using GameDevTV.Saving;
 using RPG.Combat;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace RPG.Companions
@@ -232,6 +233,31 @@ namespace RPG.Companions
         [System.Serializable]
         public struct SaveData { public List<HiredCompanionInfo> hiredCompanions; }
 
+        /// <summary>
+        /// Получает настройки JSON сериализации с кастомными конвертерами для Unity типов
+        /// </summary>
+        private static JsonSerializerSettings GetJsonSettings()
+        {
+            return new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Converters = new JsonConverter[]
+                {
+                    new Vector3JsonConverter(),
+                    new QuaternionJsonConverter(),
+                    new ColorJsonConverter()
+                }
+            };
+        }
+
+        /// <summary>
+        /// Получает JsonSerializer с кастомными конвертерами для Unity типов
+        /// </summary>
+        private static JsonSerializer GetJsonSerializer()
+        {
+            return JsonSerializer.Create(GetJsonSettings());
+        }
+
         public object CaptureState() =>
             new SaveData { hiredCompanions = _hired.Values.ToList() };
 
@@ -240,7 +266,7 @@ namespace RPG.Companions
             SaveData data = state switch
             {
                 SaveData sd => sd,
-                JObject  jo => jo.ToObject<SaveData>(),
+                JObject  jo => jo.ToObject<SaveData>(GetJsonSerializer()),
                 _           => default
             };
 
