@@ -110,6 +110,29 @@ MonoBehaviour:
           _negate: 0
     isCollectionObjective: 0
     itemToCollect: {fileID: 0}
+  - reference: give_sausage
+    description: "\u041F\u043E\u0434\u0435\u043B\u0438\u0442\u044C\u0441\u044F \u043A\u043E\u043B\u0431\u0430\u0441\u043A\u043E\u0439
+      \u0441 \u0411\u0430\u0440\u0431\u043E\u0441\u043E\u043C"
+    usesCondition: 0
+    completionCondition:
+      _and:
+      - _or:
+        - _predicate: HasInventoryItem
+          _parameters:
+          - a433731b-b964-4074-bf01-e9197cf7147a
+          _negate: 0
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - retrieve_sausages
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
   - reference: return_to_arti
     description: "\u0412\u0435\u0440\u043D\u0443\u0442\u044C \u043A\u043E\u043B\u0431\u0430\u0441\u043A\u0438
       \u043F\u043E\u0432\u0430\u0440\u0443 \u0410\u0440\u0442\u0438"

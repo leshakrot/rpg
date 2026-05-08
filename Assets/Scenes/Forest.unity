@@ -5874,7 +5874,6 @@ GameObject:
   - component: {fileID: 694519134}
   - component: {fileID: 694519133}
   - component: {fileID: 694519132}
-  - component: {fileID: 694519135}
   m_Layer: 0
   m_Name: Spline
   m_TagString: Untagged
@@ -6208,20 +6207,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 163798707109162979}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &694519135
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 694519131}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a30f1187f96610c43bffa4f7f752a474, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RPG.Core.SceneVFXGate
-  registryKey: sniffpotiontrail_tail_thief
-  allowedInThisScene: 1
 --- !u!1 &698832321
 GameObject:
   m_ObjectHideFlags: 0
@@ -7892,7 +7877,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Combat.SpawnPoint
   enemyPrefabs:
-  - {fileID: 3182546067588808471, guid: 28c02ed72f7aec4499ea90d5e3287f91, type: 3}
+  - {fileID: 3182546067588808471, guid: 938ddc85f657a1d4690274930564f742, type: 3}
   spawnRadius: 2
   spawnChance: 1
   isOccupied: 0
@@ -21731,7 +21716,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Combat.SpawnPoint
   enemyPrefabs:
-  - {fileID: 3182546067588808471, guid: 28c02ed72f7aec4499ea90d5e3287f91, type: 3}
+  - {fileID: 5803950358573588896, guid: 182f75be6d5b1ea49a88c35d32b3f2cc, type: 3}
   spawnRadius: 2
   spawnChance: 1
   isOccupied: 0
@@ -23194,7 +23179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Core.SceneObjectRegistry
   initialEntries:
   - key: sniffpotiontrail_tail_thief
-    slot: {fileID: 694519135}
+    target: {fileID: 694519131}
 --- !u!4 &2434589191698894759
 Transform:
   m_ObjectHideFlags: 0

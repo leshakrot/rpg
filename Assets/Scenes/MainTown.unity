@@ -2319,6 +2319,7 @@ MonoBehaviour:
   - {fileID: 1310447437}
   - {fileID: 134000978}
   - {fileID: 459537905}
+  - {fileID: 315553674}
   autoSaveOnStateChange: 1
   autoLoadOnStart: 1
   debugMode: 0
@@ -3765,7 +3766,7 @@ PrefabInstance:
     - target: {fileID: 578189691652438176, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -314.57254
+      value: -314.57233
       objectReference: {fileID: 0}
     - target: {fileID: 625896486219221792, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -7471,7 +7472,7 @@ PrefabInstance:
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -570.7499
+      value: -570.74976
       objectReference: {fileID: 0}
     - target: {fileID: 5551642854549289169, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -12964,7 +12965,6 @@ GameObject:
   - component: {fileID: 315553675}
   - component: {fileID: 315553677}
   - component: {fileID: 315553676}
-  - component: {fileID: 315553678}
   m_Layer: 0
   m_Name: Spline
   m_TagString: Untagged
@@ -13218,20 +13218,6 @@ MonoBehaviour:
       m_Data: []
   m_Knots:
     m_KnotsLink: []
---- !u!114 &315553678
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 315553674}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a30f1187f96610c43bffa4f7f752a474, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RPG.Core.SceneVFXGate
-  registryKey: sniffpotiontrail_tail_thief
-  allowedInThisScene: 1
 --- !u!1001 &323089013
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15827,6 +15813,18 @@ MonoBehaviour:
               m_TargetAssemblyTypeName: RPG.Quests.QuestCompletion, Assembly-CSharp
               m_MethodName: CompleteObjective
               m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+            - m_Target: {fileID: 315553674}
+              m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+              m_MethodName: SetActive
+              m_Mode: 6
               m_Arguments:
                 m_ObjectArgument: {fileID: 0}
                 m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -55219,7 +55217,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Core.SceneObjectRegistry
   initialEntries:
   - key: sniffpotiontrail_tail_thief
-    slot: {fileID: 315553678}
+    target: {fileID: 315553674}
 --- !u!114 &8391043189741487274
 MonoBehaviour:
   m_ObjectHideFlags: 0
