@@ -64,6 +64,11 @@ MonoBehaviour:
         _parameters:
         - "\u0421\u043E\u0441\u0442\u044F\u0437\u0430\u043D\u0438\u0435"
         _negate: 1
+    - _or:
+      - _predicate: CompletedObjective
+        _parameters:
+        - find_targets
+        _negate: 1
 --- !u!114 &1000000000000000002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,17 +239,13 @@ MonoBehaviour:
     y: 400
     width: 200
     height: 100
-  onEnterActions: []
+  onEnterActions:
+  - return_to_herald
   onExitActions: []
   condition:
     _and:
     - _or:
       - _predicate: CompletedObjective
         _parameters:
-        - win_archery
-        _negate: 0
-    - _or:
-      - _predicate: CompletedObjective
-        _parameters:
-        - win_strength
+        - find_targets
         _negate: 0

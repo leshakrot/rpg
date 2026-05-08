@@ -22,6 +22,7 @@ namespace RPG.SceneManagement
             MainTown_Tavern,
             MainTownTavern_Cellar,
             MainTownTavernCellar_Cave, 
+            MainTown_Forest,
             E,   
         }
 

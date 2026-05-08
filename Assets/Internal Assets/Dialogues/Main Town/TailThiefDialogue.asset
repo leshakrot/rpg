@@ -123,7 +123,7 @@ MonoBehaviour:
     - _or:
       - _predicate: HasInventoryItem
         _parameters:
-        - 4a60694a-fe87-4186-8cf5-2a10ab928d8d
+        - a433731b-b964-4074-bf01-e9197cf7147a
         _negate: 0
 --- !u!114 &-8111111111111111108
 MonoBehaviour:
@@ -161,6 +161,11 @@ MonoBehaviour:
       - _predicate: CompletedQuest
         _parameters:
         - "\u0425\u0432\u043E\u0441\u0442\u0430\u0442\u044B\u0439 \u0432\u043E\u0440"
+        _negate: 1
+    - _or:
+      - _predicate: CompletedObjective
+        _parameters:
+        - talk_to_arti
         _negate: 1
 --- !u!114 &-8111111111111111107
 MonoBehaviour:
@@ -203,7 +208,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPlayerSpeaking: 1
   text: "\u041E\u0433\u043E, \u043F\u043E\u0439\u0434\u0443 \u043F\u043E\u0438\u0449\u0443
-    \u044D\u0442\u043E\u0433\u043E \u0437\u0432\u0435\u0440\u044F."
+    \u044D\u0442\u043E\u0433\u043E \u0437\u0432\u0435\u0440\u044F. *\u041F\u043E\u0434\u0430\u0440\u043E\u043A
+    \u043A\u0443\u043F\u0446\u0430 \u0441\u0435\u0439\u0447\u0430\u0441 \u043A\u0430\u043A
+    \u043D\u0435\u043B\u044C\u0437\u044F \u043A\u0441\u0442\u0430\u0442\u0438*"
   children:
   - 5df9b24f-6b2e-4ed2-9589-7fc5b1b4dd3d
   rect:
@@ -213,7 +220,7 @@ MonoBehaviour:
     width: 200
     height: 100
   onEnterActions:
-  - start_quest_tail_thief
+  - talk_to_arti
   onExitActions: []
   condition:
     _and: []
@@ -304,8 +311,7 @@ MonoBehaviour:
     y: 105
     width: 200
     height: 100
-  onEnterActions:
-  - talk_to_arti
+  onEnterActions: []
   onExitActions: []
   condition:
     _and:
@@ -313,11 +319,16 @@ MonoBehaviour:
       - _predicate: HasQuest
         _parameters:
         - "\u0425\u0432\u043E\u0441\u0442\u0430\u0442\u044B\u0439 \u0432\u043E\u0440"
-        _negate: 1
+        _negate: 0
     - _or:
       - _predicate: CompletedQuest
         _parameters:
         - "\u0425\u0432\u043E\u0441\u0442\u0430\u0442\u044B\u0439 \u0432\u043E\u0440"
+        _negate: 1
+    - _or:
+      - _predicate: CompletedObjective
+        _parameters:
+        - talk_to_arti
         _negate: 1
 --- !u!114 &11400000
 MonoBehaviour:
