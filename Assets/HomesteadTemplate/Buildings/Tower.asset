@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc85175fc58d167408e3aca6fc05929d, type: 3}
+  m_Name: Tower
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Homestead.BuildingData
+  buildingId: template_tower
+  displayName: "\u0421\u0442\u043E\u0440\u043E\u0436\u0435\u0432\u0430\u044F \u0431\u0430\u0448\u043D\u044F"
+  description: "\u041E\u0431\u043E\u0440\u043E\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0435
+    \u0441\u043E\u043E\u0440\u0443\u0436\u0435\u043D\u0438\u0435. \u0414\u0435\u043C\u043E\u043D\u0441\u0442\u0440\u0438\u0440\u0443\u0435\u0442
+    \u0442\u0440\u0435\u0431\u043E\u0432\u0430\u043D\u0438\u044F \u043A \u0443\u0440\u043E\u0432\u043D\u044E
+    \u0438\u0433\u0440\u043E\u043A\u0430 (\u0443\u0440\u043E\u0432\u0435\u043D\u044C
+    5+)."
+  icon: {fileID: 0}
+  category: "\u041E\u0431\u043E\u0440\u043E\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0435
+    \u0441\u043E\u043E\u0440\u0443\u0436\u0435\u043D\u0438\u044F"
+  maxLevel: 3
+  maxInstances: -1
+  levelPrefabs:
+  - {fileID: 3042665141524426184, guid: 3b0d63fec41fd9a43baaa49986a0814b, type: 3}
+  - {fileID: 9066663734194216992, guid: 649813a873bb46e418c1f977bce18dbd, type: 3}
+  - {fileID: 8784325614227739734, guid: 63536052a5c97804ebe349c321904b82, type: 3}
+  levelRequirements:
+  - requirements:
+    - {fileID: 11400000, guid: ca6fea3bc8176b644bf5b745e0e1d9e5, type: 2}
+    - {fileID: 0}
+    - {fileID: 11400000, guid: ee522229233d7fd47856e0b8dedf7740, type: 2}
+  - requirements:
+    - {fileID: 11400000, guid: 181452cdb75bcdb4fb51407bbf251ce1, type: 2}
+    - {fileID: 0}
+    - {fileID: 11400000, guid: 356c7b2c5510045448dd58664106e930, type: 2}
+  - requirements:
+    - {fileID: 11400000, guid: fded1c1d898da39458ed3dc91939f774, type: 2}
+    - {fileID: 0}
+    - {fileID: 11400000, guid: 3ab013197bbd0cf43b4fee1e24a96ccf, type: 2}

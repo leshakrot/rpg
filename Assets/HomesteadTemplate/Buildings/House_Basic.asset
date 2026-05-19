@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc85175fc58d167408e3aca6fc05929d, type: 3}
+  m_Name: House_Basic
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Homestead.BuildingData
+  buildingId: template_house_basic
+  displayName: "\u0411\u0430\u0437\u043E\u0432\u044B\u0439 \u0434\u043E\u043C"
+  description: "\u041F\u0440\u043E\u0441\u0442\u043E\u0435 \u0436\u0438\u043B\u0438\u0449\u0435
+    \u0434\u043B\u044F \u043E\u0442\u0434\u044B\u0445\u0430 \u0438 \u0445\u0440\u0430\u043D\u0435\u043D\u0438\u044F
+    \u0432\u0435\u0449\u0435\u0439. \u0414\u0435\u043C\u043E\u043D\u0441\u0442\u0440\u0438\u0440\u0443\u0435\u0442
+    \u0431\u0430\u0437\u043E\u0432\u0443\u044E \u0441\u0438\u0441\u0442\u0435\u043C\u0443
+    \u0441\u0442\u0440\u043E\u0438\u0442\u0435\u043B\u044C\u0441\u0442\u0432\u0430
+    \u0441 \u0442\u0440\u0435\u0431\u043E\u0432\u0430\u043D\u0438\u044F\u043C\u0438
+    \u043A \u0440\u0435\u0441\u0443\u0440\u0441\u0430\u043C."
+  icon: {fileID: 0}
+  category: "\u0416\u0438\u043B\u044B\u0435 \u0437\u0434\u0430\u043D\u0438\u044F"
+  maxLevel: 3
+  maxInstances: -1
+  levelPrefabs:
+  - {fileID: 6758957702236372799, guid: 689ce72ab7258b5428f7f54a7f51f6bd, type: 3}
+  - {fileID: 3630590899596566689, guid: b80513e97865a65448fd7fee0d249b20, type: 3}
+  - {fileID: 4489293373862008579, guid: c3b77e93ba015eb42aaa0abbf4ff4ec9, type: 3}
+  levelRequirements:
+  - requirements:
+    - {fileID: 0}
+    - {fileID: 11400000, guid: ff2c8b091921e4547b8c781987e3452c, type: 2}
+  - requirements:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 11400000, guid: a1b4505f1d17f314594e440d637f8e30, type: 2}
+  - requirements:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 11400000, guid: 2f5f008f0b50baf48a13d014d5dff315, type: 2}
