@@ -994,8 +994,6 @@ MonoBehaviour:
   - {fileID: 1618737939}
   - {fileID: 1570492736}
   - {fileID: 2145336447}
-  autoSaveOnStateChange: 1
-  autoLoadOnStart: 1
   debugMode: 0
 --- !u!4 &140033161
 Transform:
@@ -1097,7 +1095,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 316016732262282104, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 144693417}
   m_SourcePrefab: {fileID: 100100000, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5, type: 3}
 --- !u!4 &144693415 stripped
 Transform:
@@ -1105,6 +1107,29 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 144693414}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &144693416 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 316016732262282104, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5,
+    type: 3}
+  m_PrefabInstance: {fileID: 144693414}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &144693417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144693416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &169023445
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3558,8 +3583,18 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8902302945443342141, guid: 163047e657b41774783483d26f13ed29,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1903992664}
   m_SourcePrefab: {fileID: 100100000, guid: 163047e657b41774783483d26f13ed29, type: 3}
+--- !u!1 &369097255 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8902302945443342141, guid: 163047e657b41774783483d26f13ed29,
+    type: 3}
+  m_PrefabInstance: {fileID: 369097254}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &372722435
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4021,8 +4056,18 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3823118672653271732, guid: 6d9e8e439578a384586371e57582bd26,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1873882031}
   m_SourcePrefab: {fileID: 100100000, guid: 6d9e8e439578a384586371e57582bd26, type: 3}
+--- !u!1 &392809252 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3823118672653271732, guid: 6d9e8e439578a384586371e57582bd26,
+    type: 3}
+  m_PrefabInstance: {fileID: 392809251}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &400920870
 GameObject:
   m_ObjectHideFlags: 0
@@ -4221,8 +4266,18 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1487481561}
   m_SourcePrefab: {fileID: 100100000, guid: 7bb2f6635027dc24ea29126a0c7cbb71, type: 3}
+--- !u!1 &403319545 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+    type: 3}
+  m_PrefabInstance: {fileID: 403319544}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &410530830
 GameObject:
   m_ObjectHideFlags: 0
@@ -4971,6 +5026,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2085071221}
+    - targetCorrespondingSourceObject: {fileID: 2207465980584292844, guid: 4ec949b28c573694ab272f1fdbfc862e,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2085071222}
   m_SourcePrefab: {fileID: 100100000, guid: 4ec949b28c573694ab272f1fdbfc862e, type: 3}
 --- !u!1001 &425692310
 PrefabInstance:
@@ -5038,7 +5097,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 316016732262282104, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 425692313}
   m_SourcePrefab: {fileID: 100100000, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5, type: 3}
 --- !u!4 &425692311 stripped
 Transform:
@@ -5046,6 +5109,29 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 425692310}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &425692312 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 316016732262282104, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5,
+    type: 3}
+  m_PrefabInstance: {fileID: 425692310}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &425692313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425692312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &429036186
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5498,7 +5584,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1224061063268461895, guid: aa997c0b066b04f45ad3bcd4b08bf0d3,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 490141680}
   m_SourcePrefab: {fileID: 100100000, guid: aa997c0b066b04f45ad3bcd4b08bf0d3, type: 3}
 --- !u!4 &490141678 stripped
 Transform:
@@ -5506,6 +5596,29 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 490141677}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &490141679 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1224061063268461895, guid: aa997c0b066b04f45ad3bcd4b08bf0d3,
+    type: 3}
+  m_PrefabInstance: {fileID: 490141677}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &490141680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 490141679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &500108041
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5572,8 +5685,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3823118672653271732, guid: 6d9e8e439578a384586371e57582bd26,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 500108043}
   m_SourcePrefab: {fileID: 100100000, guid: 6d9e8e439578a384586371e57582bd26, type: 3}
+--- !u!1 &500108042 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3823118672653271732, guid: 6d9e8e439578a384586371e57582bd26,
+    type: 3}
+  m_PrefabInstance: {fileID: 500108041}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &500108043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500108042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &510518935
 GameObject:
   m_ObjectHideFlags: 0
@@ -5677,8 +5817,18 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3823118672653271732, guid: 6d9e8e439578a384586371e57582bd26,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2022490892}
   m_SourcePrefab: {fileID: 100100000, guid: 6d9e8e439578a384586371e57582bd26, type: 3}
+--- !u!1 &515708505 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3823118672653271732, guid: 6d9e8e439578a384586371e57582bd26,
+    type: 3}
+  m_PrefabInstance: {fileID: 515708504}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &534045375 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 31b2eeced22ab9640b2337ea10eaff52,
@@ -6340,8 +6490,18 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 648945131}
   m_SourcePrefab: {fileID: 100100000, guid: 7bb2f6635027dc24ea29126a0c7cbb71, type: 3}
+--- !u!1 &613723980 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+    type: 3}
+  m_PrefabInstance: {fileID: 613723979}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &613849246 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1386827661674566, guid: 3fb60ca003e2a7c46b289bee8b14a692,
@@ -6643,6 +6803,23 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 613723979}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &648945131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 613723980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &657686569
 GameObject:
   m_ObjectHideFlags: 0
@@ -6811,8 +6988,18 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4304643663178506707, guid: 3d797bd88e6a35b41a091fd51380a6e8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1566299636}
   m_SourcePrefab: {fileID: 100100000, guid: 3d797bd88e6a35b41a091fd51380a6e8, type: 3}
+--- !u!1 &690001601 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4304643663178506707, guid: 3d797bd88e6a35b41a091fd51380a6e8,
+    type: 3}
+  m_PrefabInstance: {fileID: 690001600}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &691848612 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: ab30a210ee9a40646856cc303670f09c,
@@ -7027,8 +7214,18 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8902302945443342141, guid: 163047e657b41774783483d26f13ed29,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1195118812}
   m_SourcePrefab: {fileID: 100100000, guid: 163047e657b41774783483d26f13ed29, type: 3}
+--- !u!1 &703211817 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8902302945443342141, guid: 163047e657b41774783483d26f13ed29,
+    type: 3}
+  m_PrefabInstance: {fileID: 703211816}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &707658046
 GameObject:
   m_ObjectHideFlags: 0
@@ -8240,6 +8437,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1570492742}
+    - targetCorrespondingSourceObject: {fileID: 1841705985760018, guid: 4f671f96ada2b43438b517dbc501e523,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1570492743}
   m_SourcePrefab: {fileID: 100100000, guid: 4f671f96ada2b43438b517dbc501e523, type: 3}
 --- !u!1 &720743478
 GameObject:
@@ -8946,8 +9147,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6495751648487132108, guid: f52e813a58930c24a91a7631e8653b27,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 830094676}
   m_SourcePrefab: {fileID: 100100000, guid: f52e813a58930c24a91a7631e8653b27, type: 3}
+--- !u!1 &830094675 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6495751648487132108, guid: f52e813a58930c24a91a7631e8653b27,
+    type: 3}
+  m_PrefabInstance: {fileID: 830094674}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &830094676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 830094675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &830628573
 GameObject:
   m_ObjectHideFlags: 0
@@ -9385,8 +9613,18 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3823118672653271732, guid: 6d9e8e439578a384586371e57582bd26,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 909055743}
   m_SourcePrefab: {fileID: 100100000, guid: 6d9e8e439578a384586371e57582bd26, type: 3}
+--- !u!1 &892779069 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3823118672653271732, guid: 6d9e8e439578a384586371e57582bd26,
+    type: 3}
+  m_PrefabInstance: {fileID: 892779068}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &894215668
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9504,6 +9742,23 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 892779068}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &909055743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 892779069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &915186808
 GameObject:
   m_ObjectHideFlags: 0
@@ -9727,6 +9982,23 @@ MonoBehaviour:
     initialStock: 4
     buyingDiscountPercentage: 0
     levelToUnlock: 0
+--- !u!114 &959883723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 191295888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &961119861
 GameObject:
   m_ObjectHideFlags: 0
@@ -12111,8 +12383,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8902302945443342141, guid: 163047e657b41774783483d26f13ed29,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 999098773}
   m_SourcePrefab: {fileID: 100100000, guid: 163047e657b41774783483d26f13ed29, type: 3}
+--- !u!1 &999098772 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8902302945443342141, guid: 163047e657b41774783483d26f13ed29,
+    type: 3}
+  m_PrefabInstance: {fileID: 999098771}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &999098773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 999098772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &1004094871
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12262,8 +12561,18 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1921338554}
   m_SourcePrefab: {fileID: 100100000, guid: 7bb2f6635027dc24ea29126a0c7cbb71, type: 3}
+--- !u!1 &1007122024 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+    type: 3}
+  m_PrefabInstance: {fileID: 1007122023}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1009505133 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4848845758006597748, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
@@ -12569,8 +12878,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6495751648487132108, guid: 9ff4b5a6f43a96e4281bd7dfe9178118,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1092675521}
   m_SourcePrefab: {fileID: 100100000, guid: 9ff4b5a6f43a96e4281bd7dfe9178118, type: 3}
+--- !u!1 &1092675520 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6495751648487132108, guid: 9ff4b5a6f43a96e4281bd7dfe9178118,
+    type: 3}
+  m_PrefabInstance: {fileID: 1092675519}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1092675521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1092675520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &1093470248
 GameObject:
   m_ObjectHideFlags: 0
@@ -13153,6 +13489,23 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 703211816}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1195118812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 703211817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &1195665427
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14002,8 +14355,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7690742263361058507, guid: 9e1220549ec9ea44a9a82b0eb3a93a34,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1216591105}
   m_SourcePrefab: {fileID: 100100000, guid: 9e1220549ec9ea44a9a82b0eb3a93a34, type: 3}
+--- !u!1 &1216591104 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7690742263361058507, guid: 9e1220549ec9ea44a9a82b0eb3a93a34,
+    type: 3}
+  m_PrefabInstance: {fileID: 1216591103}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1216591105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1216591104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &1222805469
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14540,8 +14920,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3823118672653271732, guid: 6d9e8e439578a384586371e57582bd26,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1284905835}
   m_SourcePrefab: {fileID: 100100000, guid: 6d9e8e439578a384586371e57582bd26, type: 3}
+--- !u!1 &1284905834 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3823118672653271732, guid: 6d9e8e439578a384586371e57582bd26,
+    type: 3}
+  m_PrefabInstance: {fileID: 1284905833}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1284905835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284905834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &1288131625
 GameObject:
   m_ObjectHideFlags: 0
@@ -14674,8 +15081,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3823118672653271732, guid: 6d9e8e439578a384586371e57582bd26,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1304660325}
   m_SourcePrefab: {fileID: 100100000, guid: 6d9e8e439578a384586371e57582bd26, type: 3}
+--- !u!1 &1304660324 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3823118672653271732, guid: 6d9e8e439578a384586371e57582bd26,
+    type: 3}
+  m_PrefabInstance: {fileID: 1304660323}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1304660325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1304660324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &1305352405
 GameObject:
   m_ObjectHideFlags: 0
@@ -15209,8 +15643,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1357110651}
   m_SourcePrefab: {fileID: 100100000, guid: 7bb2f6635027dc24ea29126a0c7cbb71, type: 3}
+--- !u!1 &1357110650 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+    type: 3}
+  m_PrefabInstance: {fileID: 1357110649}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1357110651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1357110650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &1359793881
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15277,8 +15738,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1359793883}
   m_SourcePrefab: {fileID: 100100000, guid: 7bb2f6635027dc24ea29126a0c7cbb71, type: 3}
+--- !u!1 &1359793882 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+    type: 3}
+  m_PrefabInstance: {fileID: 1359793881}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1359793883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1359793882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &1363801942
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15345,8 +15833,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8902302945443342141, guid: 163047e657b41774783483d26f13ed29,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1363801944}
   m_SourcePrefab: {fileID: 100100000, guid: 163047e657b41774783483d26f13ed29, type: 3}
+--- !u!1 &1363801943 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8902302945443342141, guid: 163047e657b41774783483d26f13ed29,
+    type: 3}
+  m_PrefabInstance: {fileID: 1363801942}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1363801944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1363801943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!4 &1365936092 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: ab30a210ee9a40646856cc303670f09c,
@@ -15502,8 +16017,18 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1547592451}
   m_SourcePrefab: {fileID: 100100000, guid: 7bb2f6635027dc24ea29126a0c7cbb71, type: 3}
+--- !u!1 &1384831920 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+    type: 3}
+  m_PrefabInstance: {fileID: 1384831919}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1391291544
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15570,8 +16095,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1391291546}
   m_SourcePrefab: {fileID: 100100000, guid: 7bb2f6635027dc24ea29126a0c7cbb71, type: 3}
+--- !u!1 &1391291545 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+    type: 3}
+  m_PrefabInstance: {fileID: 1391291544}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1391291546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1391291545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!114 &1393351769 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7162782148674304242, guid: 1345df2c3cd9cbd40a817776750bb2f4,
@@ -16150,6 +16702,23 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 403319544}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1487481561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 403319545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &1491707608
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16862,7 +17431,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 316016732262282104, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1543065845}
   m_SourcePrefab: {fileID: 100100000, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5, type: 3}
 --- !u!4 &1543065843 stripped
 Transform:
@@ -16870,6 +17443,29 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1543065842}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1543065844 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 316016732262282104, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5,
+    type: 3}
+  m_PrefabInstance: {fileID: 1543065842}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1543065845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1543065844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &1543222891
 GameObject:
   m_ObjectHideFlags: 0
@@ -16907,6 +17503,23 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1384831919}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1547592451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384831920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &1554857984
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17029,6 +17642,23 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 690001600}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1566299636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690001601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &1566389093
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17248,6 +17878,23 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.77778244, y: 1.2648385, z: 0.5342727}
   m_Center: {x: 0.017869757, y: 0.7895583, z: 0.022560539}
+--- !u!114 &1570492743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1570492736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &1577142980
 GameObject:
   m_ObjectHideFlags: 0
@@ -18839,6 +19486,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 959883722}
+    - targetCorrespondingSourceObject: {fileID: 377756571439557319, guid: 1f5a4e5d928e059408bb5b204961a1c2,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 959883723}
   m_SourcePrefab: {fileID: 100100000, guid: 1f5a4e5d928e059408bb5b204961a1c2, type: 3}
 --- !u!1001 &1750600056
 PrefabInstance:
@@ -19404,8 +20055,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1775494521}
   m_SourcePrefab: {fileID: 100100000, guid: 7bb2f6635027dc24ea29126a0c7cbb71, type: 3}
+--- !u!1 &1775494520 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+    type: 3}
+  m_PrefabInstance: {fileID: 1775494519}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1775494521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775494520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &1785716373
 GameObject:
   m_ObjectHideFlags: 0
@@ -19536,7 +20214,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1224061063268461895, guid: aa997c0b066b04f45ad3bcd4b08bf0d3,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1796884675}
   m_SourcePrefab: {fileID: 100100000, guid: aa997c0b066b04f45ad3bcd4b08bf0d3, type: 3}
 --- !u!4 &1796884673 stripped
 Transform:
@@ -19544,6 +20226,29 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1796884672}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1796884674 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1224061063268461895, guid: aa997c0b066b04f45ad3bcd4b08bf0d3,
+    type: 3}
+  m_PrefabInstance: {fileID: 1796884672}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1796884675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1796884674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &1800514725
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20123,8 +20828,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8902302945443342141, guid: 163047e657b41774783483d26f13ed29,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1831091653}
   m_SourcePrefab: {fileID: 100100000, guid: 163047e657b41774783483d26f13ed29, type: 3}
+--- !u!1 &1831091652 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8902302945443342141, guid: 163047e657b41774783483d26f13ed29,
+    type: 3}
+  m_PrefabInstance: {fileID: 1831091651}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1831091653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831091652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &1837108427
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20191,8 +20923,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1837108429}
   m_SourcePrefab: {fileID: 100100000, guid: 7bb2f6635027dc24ea29126a0c7cbb71, type: 3}
+--- !u!1 &1837108428 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3638254425552802095, guid: 7bb2f6635027dc24ea29126a0c7cbb71,
+    type: 3}
+  m_PrefabInstance: {fileID: 1837108427}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1837108429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1837108428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &1845326407
 GameObject:
   m_ObjectHideFlags: 0
@@ -20291,7 +21050,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 316016732262282104, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1861458064}
   m_SourcePrefab: {fileID: 100100000, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5, type: 3}
 --- !u!4 &1861458062 stripped
 Transform:
@@ -20299,6 +21062,29 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1861458061}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1861458063 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 316016732262282104, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5,
+    type: 3}
+  m_PrefabInstance: {fileID: 1861458061}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1861458064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1861458063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &1865027386
 GameObject:
   m_ObjectHideFlags: 0
@@ -20401,6 +21187,23 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 392809251}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1873882031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 392809252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &1878179486
 GameObject:
   m_ObjectHideFlags: 0
@@ -20482,6 +21285,23 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 369097254}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1903992664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 369097255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &1917611650 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3247922294036564481, guid: 1345df2c3cd9cbd40a817776750bb2f4,
@@ -20494,6 +21314,23 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1007122023}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1921338554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1007122024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &1924504578
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21050,8 +21887,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6495751648487132108, guid: f52e813a58930c24a91a7631e8653b27,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1994595093}
   m_SourcePrefab: {fileID: 100100000, guid: f52e813a58930c24a91a7631e8653b27, type: 3}
+--- !u!1 &1994595092 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6495751648487132108, guid: f52e813a58930c24a91a7631e8653b27,
+    type: 3}
+  m_PrefabInstance: {fileID: 1994595091}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1994595093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1994595092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &1997532555
 GameObject:
   m_ObjectHideFlags: 0
@@ -21121,6 +21985,23 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 515708504}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2022490892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 515708505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &2028170814
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21536,6 +22417,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Quests.QuestCompletion
   _quest: {fileID: 11400000, guid: 08efc802f132a8742b252fca19f69429, type: 2}
   _objective: go_to_fishers
+--- !u!114 &2085071222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198762172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &2088133792
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21602,8 +22500,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6495751648487132108, guid: 9ff4b5a6f43a96e4281bd7dfe9178118,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2088133794}
   m_SourcePrefab: {fileID: 100100000, guid: 9ff4b5a6f43a96e4281bd7dfe9178118, type: 3}
+--- !u!1 &2088133793 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6495751648487132108, guid: 9ff4b5a6f43a96e4281bd7dfe9178118,
+    type: 3}
+  m_PrefabInstance: {fileID: 2088133792}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2088133794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2088133793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1001 &2090273925
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22284,8 +23209,18 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8902302945443342141, guid: 163047e657b41774783483d26f13ed29,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6291103031282030902}
   m_SourcePrefab: {fileID: 100100000, guid: 163047e657b41774783483d26f13ed29, type: 3}
+--- !u!1 &319977706643964503 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8902302945443342141, guid: 163047e657b41774783483d26f13ed29,
+    type: 3}
+  m_PrefabInstance: {fileID: 319977706643964502}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &337305729550624535
 GameObject:
   m_ObjectHideFlags: 0
@@ -22469,8 +23404,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6495751648487132108, guid: 9ff4b5a6f43a96e4281bd7dfe9178118,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 611994946069274053}
   m_SourcePrefab: {fileID: 100100000, guid: 9ff4b5a6f43a96e4281bd7dfe9178118, type: 3}
+--- !u!1 &611994946069274052 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6495751648487132108, guid: 9ff4b5a6f43a96e4281bd7dfe9178118,
+    type: 3}
+  m_PrefabInstance: {fileID: 611994946069274051}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &611994946069274053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 611994946069274052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!4 &699361767486295950
 Transform:
   m_ObjectHideFlags: 0
@@ -22736,8 +23698,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 310504113751226548, guid: ee9767a2e4570f341a1fd3551284feb0,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1371357441485551374}
   m_SourcePrefab: {fileID: 100100000, guid: ee9767a2e4570f341a1fd3551284feb0, type: 3}
+--- !u!1 &1371357441485551373 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 310504113751226548, guid: ee9767a2e4570f341a1fd3551284feb0,
+    type: 3}
+  m_PrefabInstance: {fileID: 1371357441485551372}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1371357441485551374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1371357441485551373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!1 &1406119253946512661
 GameObject:
   m_ObjectHideFlags: 0
@@ -23266,8 +24255,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8252244351360774386, guid: 145009b2840256f4d98d45d3ba5c6778,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3023567325712601799}
   m_SourcePrefab: {fileID: 100100000, guid: 145009b2840256f4d98d45d3ba5c6778, type: 3}
+--- !u!1 &3023567325712601798 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8252244351360774386, guid: 145009b2840256f4d98d45d3ba5c6778,
+    type: 3}
+  m_PrefabInstance: {fileID: 3023567325712601797}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3023567325712601799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3023567325712601798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!114 &3098164808799379485
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23400,8 +24416,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 316016732262282104, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3316082981495157496}
   m_SourcePrefab: {fileID: 100100000, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5, type: 3}
+--- !u!1 &3316082981495157495 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 316016732262282104, guid: 6dbbfa27ed8036a4fb409db3f6ab9ff5,
+    type: 3}
+  m_PrefabInstance: {fileID: 3316082981495157494}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3316082981495157496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3316082981495157495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!33 &3469287836783591998
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -23999,7 +25042,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1224061063268461895, guid: aa997c0b066b04f45ad3bcd4b08bf0d3,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4619606870455010771}
   m_SourcePrefab: {fileID: 100100000, guid: aa997c0b066b04f45ad3bcd4b08bf0d3, type: 3}
 --- !u!4 &4619606870455010769 stripped
 Transform:
@@ -24007,6 +25054,29 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4619606870455010768}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4619606870455010770 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1224061063268461895, guid: aa997c0b066b04f45ad3bcd4b08bf0d3,
+    type: 3}
+  m_PrefabInstance: {fileID: 4619606870455010768}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4619606870455010771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4619606870455010770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!4 &4672809809926584118
 Transform:
   m_ObjectHideFlags: 0
@@ -24941,6 +26011,23 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 319977706643964502}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6291103031282030902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 319977706643964503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd29773201a6ab944ab9544544347eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Control.InteractableHighlight
+  highlightColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  highlightIntensity: 0.15
+  includeChildren: 1
+  mode: 2
+  colorTintStrength: 0.4
 --- !u!33 &6317671532157332759
 MeshFilter:
   m_ObjectHideFlags: 0
