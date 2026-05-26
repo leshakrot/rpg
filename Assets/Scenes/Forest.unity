@@ -10762,7 +10762,7 @@ PrefabInstance:
     - target: {fileID: 2569365168600568997, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_fontSize
-      value: 72
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 2578920766092905477, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -10807,7 +10807,7 @@ PrefabInstance:
     - target: {fileID: 2731604543998846347, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_fontSize
-      value: 72
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 2765323305817021365, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -11122,7 +11122,7 @@ PrefabInstance:
     - target: {fileID: 4243784675392960615, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_fontSize
-      value: 47.75
+      value: 51.55
       objectReference: {fileID: 0}
     - target: {fileID: 4337118159852371192, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -11187,7 +11187,7 @@ PrefabInstance:
     - target: {fileID: 4581316347825049917, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_fontSize
-      value: 72
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 4596631907567677672, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -11462,7 +11462,7 @@ PrefabInstance:
     - target: {fileID: 5696601140710066406, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
       propertyPath: m_fontSize
-      value: 47.75
+      value: 49.5
       objectReference: {fileID: 0}
     - target: {fileID: 5771099847281887289, guid: 1345df2c3cd9cbd40a817776750bb2f4,
         type: 3}
@@ -16124,12 +16124,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7187e006da2431940aa169237e969daa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveReactor
-  questName: "\u041F\u043E\u0434\u044A\u0435\u043C\u043D\u0438\u043A"
-  objectiveReference: find_lift
+  questName: "\u0425\u0432\u043E\u0441\u0442\u0430\u0442\u044B\u0439 \u0432\u043E\u0440"
+  objectiveReference: follow_trail
   onObjectiveCompleted:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 7637240994138510487}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
@@ -16139,7 +16139,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 1
+          m_BoolArgument: 0
         m_CallState: 2
   reactorId: 
 --- !u!4 &1343040744
@@ -25186,6 +25186,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a49ae6d2de5e47047be79a1d03bbfd3a, type: 3}
+--- !u!1 &7637240994138510487 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3574786063650186117, guid: a49ae6d2de5e47047be79a1d03bbfd3a,
+    type: 3}
+  m_PrefabInstance: {fileID: 7637240994138510486}
+  m_PrefabAsset: {fileID: 0}
 --- !u!23 &8063222387758472505
 MeshRenderer:
   m_ObjectHideFlags: 0

@@ -38,10 +38,23 @@ public class ObjectiveReactor : MonoBehaviour
 
 	private void OnEnable()
     {
-        if (isInitialized && !hasFired)
+        if (!isInitialized || hasFired) return;
+
+        // Переподписываемся, но сначала проверяем текущее состояние —
+        // задание могло выполниться пока реактор был вне сцены / неактивен
+        if (CheckIfAlreadyFired())
         {
-            SubscribeToEvents();
+            hasFired = true;
+            return;
         }
+
+        if (CheckIfObjectiveAlreadyComplete())
+        {
+            FireReactor();
+            return;
+        }
+
+        SubscribeToEvents();
     }
 
 	private void OnDisable()
