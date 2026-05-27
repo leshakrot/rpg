@@ -889,6 +889,8 @@ SkinnedMeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -910,9 +912,11 @@ SkinnedMeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   serializedVersion: 2
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
@@ -2182,6 +2186,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 55671221753197750, guid: 28c02ed72f7aec4499ea90d5e3287f91,
         type: 3}
+      propertyPath: defaultWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 6fed3ad4865f4b745877d811e7368cdd,
+        type: 2}
+    - target: {fileID: 55671221753197750, guid: 28c02ed72f7aec4499ea90d5e3287f91,
+        type: 3}
       propertyPath: leftHandTransform
       value: 
       objectReference: {fileID: 6117215601022470111}
@@ -2269,7 +2279,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: ded35336826f218439baff2a37d702bb, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 3182546067588808471, guid: 28c02ed72f7aec4499ea90d5e3287f91,
         type: 3}
       propertyPath: m_Name
@@ -2294,7 +2304,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: f894685748d5d4f43bd90b464d792e91, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 6991818344359335946, guid: 28c02ed72f7aec4499ea90d5e3287f91,
         type: 3}
       propertyPath: _waypointDwellTime

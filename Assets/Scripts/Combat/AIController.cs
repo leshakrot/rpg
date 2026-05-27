@@ -50,12 +50,9 @@ namespace RPG.Control
         private Vector3 _firstContactPoint;
         private bool _hasFirstContactPoint = false;
 
-        // Флаг: игрок убежал в этом цикле преследования.
-        // Пока true — враг не возобновляет Chase из Suspicion/ReturnToSpawn,
-        // даже если agro cooldown ещё не истёк.
-        // Сбрасывается только когда игрок снова входит в _chaseDistance с нуля
-        // (т.е. _timeSinceAggrevated >= _agroCooldownTime).
         private bool _playerEscapedThisChase = false;
+        private GameObject _currentTarget = null;
+        private bool _returningToSpawn = false;
 
         private enum State
         {
@@ -68,6 +65,10 @@ namespace RPG.Control
         private State _currentState = State.Patrol;
         private float _suspicionTimer = 0f;
         private float _suspicionDuration = 2f;
+
+        private State _lastLoggedState = (State)(-1);
+        private bool _lastLoggedEscaped = false;
+        private bool _lastLoggedReturning = false;
 
         private void Awake()
         {
@@ -94,6 +95,8 @@ namespace RPG.Control
             _suspicionTimer = 0f;
             _hasFirstContactPoint = false;
             _playerEscapedThisChase = false;
+            _currentTarget = null;
+            _returningToSpawn = false;
 
             _fighter.Cancel();
             _mover.Cancel();
@@ -121,15 +124,32 @@ namespace RPG.Control
             bool tooFarFromSpawn = IsTooFarFromSpawn();
             bool playerEscaped = HasPlayerEscaped();
 
-            // Игрок вернулся близко с нуля (agro полностью остыло и снова вошёл в радиус) —
-            // сбрасываем флаг побега чтобы враг мог снова начать преследование
             if (_playerEscapedThisChase && _timeSinceAggrevated >= _agroCooldownTime)
             {
                 float distToPlayer = Vector3.Distance(_player.transform.position, transform.position);
                 if (distToPlayer < _chaseDistance)
-                {
                     _playerEscapedThisChase = false;
-                }
+            }
+
+            if (_playerEscapedThisChase && _currentState == State.ReturnToSpawn)
+            {
+                float distToPlayer = Vector3.Distance(_player.transform.position, transform.position);
+                if (distToPlayer < _chaseDistance)
+                    _playerEscapedThisChase = false;
+            }
+
+            // Расширенный лог для диагностики
+            float distFromContact = _hasFirstContactPoint
+                ? Vector3.Distance(_player.transform.position, _firstContactPoint)
+                : -1f;
+            float distFromEnemy = Vector3.Distance(_player.transform.position, transform.position);
+
+            if (_currentState != _lastLoggedState || _playerEscapedThisChase != _lastLoggedEscaped || _returningToSpawn != _lastLoggedReturning)
+            {
+                Debug.Log($"[AI] State={_currentState} | aggr={isAggrevated} | escaped={_playerEscapedThisChase} | playerEscapedCalc={playerEscaped} | returning={_returningToSpawn} | timeSinceAggr={_timeSinceAggrevated:F1} | distEnemy={distFromEnemy:F1} | distFromContact={distFromContact:F1} | hasContact={_hasFirstContactPoint} | suspTimer={_suspicionTimer:F1}");
+                _lastLoggedState = _currentState;
+                _lastLoggedEscaped = _playerEscapedThisChase;
+                _lastLoggedReturning = _returningToSpawn;
             }
 
             switch (_currentState)
@@ -138,31 +158,28 @@ namespace RPG.Control
                     if (tooFarFromSpawn || playerEscaped)
                     {
                         _playerEscapedThisChase = true;
-                        _currentState = State.Suspicion;
-                        _suspicionTimer = 0f;
-                        _hasFirstContactPoint = false;
-                        _fighter.Cancel();
+                        EnterSuspicionState();
                     }
                     else if (isAggrevated)
                     {
                         _timeSinceLastSawPlayer = 0f;
                         AggrevateNearbyEnemies();
-                        // Обновляем цель каждый кадр — игрок или ближайший компаньон
-                        _fighter.Attack(GetNearestHostile());
+
+                        GameObject nearestHostile = GetNearestHostile();
+                        if (nearestHostile != _currentTarget)
+                        {
+                            _currentTarget = nearestHostile;
+                            _fighter.Attack(_currentTarget);
+                        }
                     }
                     else
                     {
-                        _currentState = State.Suspicion;
-                        _suspicionTimer = 0f;
-                        _hasFirstContactPoint = false;
-                        _fighter.Cancel();
+                        EnterSuspicionState();
                     }
                     break;
 
                 case State.Suspicion:
-                    SuspicionBehaviour();
                     _suspicionTimer += Time.deltaTime;
-                    // Возобновляем Chase только если игрок НЕ убегал в этом цикле
                     if (!_playerEscapedThisChase && isAggrevated && !tooFarFromSpawn)
                     {
                         EnterChaseState();
@@ -174,15 +191,21 @@ namespace RPG.Control
                     break;
 
                 case State.ReturnToSpawn:
-                    // Возобновляем Chase только если игрок НЕ убегал в этом цикле
                     if (!_playerEscapedThisChase && isAggrevated && !tooFarFromSpawn)
                     {
+                        _returningToSpawn = false;
                         EnterChaseState();
                         break;
                     }
-                    ReturnToSpawnBehaviour();
+                    if (!_returningToSpawn)
+                    {
+                        _returningToSpawn = true;
+                        _mover.StartMoveAction(_guardPosition.value, _patrolSpeedFraction);
+                    }
                     if (AtGuardPosition())
                     {
+                        _returningToSpawn = false;
+                        _hasFirstContactPoint = false;
                         _currentState = State.Patrol;
                     }
                     break;
@@ -190,7 +213,6 @@ namespace RPG.Control
                 case State.Patrol:
                 default:
                     PatrolBehaviour();
-                    // Из Patrol атакуем всегда (флаг _playerEscapedThisChase уже сброшен к этому моменту)
                     if (!_playerEscapedThisChase && isAggrevated && !tooFarFromSpawn)
                     {
                         EnterChaseState();
@@ -203,15 +225,29 @@ namespace RPG.Control
         {
             _currentState = State.Chase;
             _timeSinceLastSawPlayer = 0f;
+            _suspicionTimer = 0f;
+            _returningToSpawn = false;
             Aggrevate();
 
             if (!_hasFirstContactPoint)
             {
-                _firstContactPoint = transform.position;
+                _firstContactPoint = _player.transform.position;
                 _hasFirstContactPoint = true;
             }
 
-            _fighter.Attack(GetNearestHostile());
+            _currentTarget = null;
+            GameObject nearestHostile = GetNearestHostile();
+            _currentTarget = nearestHostile;
+            _fighter.Attack(_currentTarget);
+        }
+
+        private void EnterSuspicionState()
+        {
+            _currentState = State.Suspicion;
+            _suspicionTimer = 0f;
+            _currentTarget = null;
+            _fighter.Cancel();
+            _actionScheduler.CancelCurrentAction();
         }
 
         public void Aggrevate()
@@ -262,11 +298,6 @@ namespace RPG.Control
             return distanceToWaypoint < _waypointTolerance;
         }
 
-        private void SuspicionBehaviour()
-        {
-            _actionScheduler.CancelCurrentAction();
-        }
-
         private void AggrevateNearbyEnemies()
         {
             RaycastHit[] hits = Physics.SphereCastAll(transform.position, _shoutDistance, Vector3.up, 0);
@@ -285,7 +316,6 @@ namespace RPG.Control
             float distanceToPlayer = Vector3.Distance(_player.transform.position, transform.position);
             if (distanceToPlayer < _chaseDistance) return true;
 
-            // Компаньон в радиусе — тоже агрит
             Collider[] hits = Physics.OverlapSphere(transform.position, _chaseDistance);
             foreach (Collider hit in hits)
             {
@@ -308,7 +338,6 @@ namespace RPG.Control
         {
             if (!_hasFirstContactPoint) return false;
 
-            // Если рядом есть живой компаньон — враг не бросает бой
             Collider[] hits = Physics.OverlapSphere(transform.position, _chaseDistance);
             foreach (Collider hit in hits)
             {
@@ -347,25 +376,15 @@ namespace RPG.Control
             }
         }
 
-        private void ReturnToSpawnBehaviour()
-        {
-            _mover.StartMoveAction(_guardPosition.value, _patrolSpeedFraction);
-        }
-
         private bool AtGuardPosition()
         {
             return Vector3.Distance(transform.position, _guardPosition.value) < 0.5f;
         }
 
-        /// <summary>
-        /// Возвращает ближайшую враждебную цель — игрока или активного компаньона.
-        /// Компаньон берётся только если он в радиусе chase и ближе игрока.
-        /// </summary>
         private GameObject GetNearestHostile()
         {
             float distToPlayer = Vector3.Distance(_player.transform.position, transform.position);
 
-            // Ищем компаньонов в радиусе
             GameObject nearestCompanion = null;
             float nearestCompanionDist = Mathf.Infinity;
 
@@ -384,7 +403,6 @@ namespace RPG.Control
                 }
             }
 
-            // Атакуем того кто ближе
             if (nearestCompanion != null && nearestCompanionDist < distToPlayer)
                 return nearestCompanion;
 
