@@ -25,7 +25,7 @@ MonoBehaviour:
     width: 200
     height: 100
   onEnterActions:
-  - peaceful_solution_done
+  - 
   onExitActions: []
   condition:
     _and:
@@ -131,7 +131,8 @@ MonoBehaviour:
     \u043C\u044B \u0438\u043D\u043E\u0433\u0434\u0430 \u043E\u0441\u0442\u0430\u0432\u043B\u044F\u0442\u044C
     \u0431\u043B\u0435\u0441\u0442\u044F\u0448\u043A\u0438 \u0443 \u0432\u0445\u043E\u0434\u0430.
     \u0414\u043B\u044F \u0442\u0435\u0431\u044F."
-  children: []
+  children:
+  - a9486ab1-e019-4fe1-adb2-f8fc3c61b3cf
   rect:
     serializedVersion: 2
     x: 931
@@ -313,6 +314,7 @@ MonoBehaviour:
   - {fileID: -6344562082286711836}
   - {fileID: 3066950144742907487}
   - {fileID: 705740862822669635}
+  - {fileID: 2856670197035735297}
   newNodeOffset: {x: 250, y: 0}
 --- !u!114 &705740862822669635
 MonoBehaviour:
@@ -345,6 +347,35 @@ MonoBehaviour:
         _parameters:
         - peaceful_solution
         _negate: 0
+--- !u!114 &2856670197035735297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: a9486ab1-e019-4fe1-adb2-f8fc3c61b3cf
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "*\u0413\u043E\u0431\u043B\u0438\u043D\u044B \u043D\u0430\u0431\u0438\u0440\u0430\u044E\u0442\u0441\u044F
+    \u0441\u0438\u043B \u0438 \u0441\u043F\u0443\u0441\u0442\u044F \u043D\u0435\u0441\u043A\u043E\u043B\u044C\u043A\u043E
+    \u0447\u0430\u0441\u043E\u0432 \u0441\u043E\u0431\u0438\u0440\u0430\u044E\u0442
+    \u043F\u043B\u043E\u0442\u0438\u043D\u0443*"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 1181
+    y: 100
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions:
+  - peaceful_solution_done
+  condition:
+    _and: []
 --- !u!114 &3066950144742907487
 MonoBehaviour:
   m_ObjectHideFlags: 0

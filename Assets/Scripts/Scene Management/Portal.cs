@@ -26,6 +26,7 @@ namespace RPG.SceneManagement
             ForestPath_Forest,
             MainTown_MainTownCavePath,
             MainTownCavePath_CellarCave,
+            ForestPath_ForestPathCave,
             E,   
         }
 

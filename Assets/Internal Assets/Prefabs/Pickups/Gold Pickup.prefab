@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5768426698786852731}
   - component: {fileID: 3372008105995505868}
-  - component: {fileID: 4627296902540984738}
   - component: {fileID: 8131970518798734077}
   m_Layer: 0
   m_Name: Gold Pickup
@@ -47,29 +46,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91f208ba0dbe65d478b628ca24b59c42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!136 &4627296902540984738
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6532546932008015704}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.13722475
-  m_Height: 0.37382326
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8131970518798734077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,6 +58,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b3c91a7aa0f5b141add9660d13eaf7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _detectionRadius: 2.5
+  _labelPrefab: {fileID: 5843389275787851893, guid: 18d658dfdfd49fe4d865ce8733cdd254,
+    type: 3}
 --- !u!1001 &7324599639492059145
 PrefabInstance:
   m_ObjectHideFlags: 0
