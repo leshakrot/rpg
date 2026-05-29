@@ -6,7 +6,7 @@ using GameDevTV.Core.UI.Dragging;
 
 namespace GameDevTV.UI.Inventories
 {
-    public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<InventoryItem>
+    public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<InventoryItem>, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler
     {
         // CONFIG DATA
         [SerializeField] InventoryItemIcon icon = null;
@@ -15,6 +15,11 @@ namespace GameDevTV.UI.Inventories
         int index;
         InventoryItem item;
         Inventory inventory;
+        
+        // Для отслеживания перетаскивания
+        private bool isDragging = false;
+        private Vector2 pointerDownPosition;
+        private const float dragThreshold = 5f; // Минимальное расстояние для определения драга
 
         // PUBLIC
 
@@ -63,6 +68,65 @@ namespace GameDevTV.UI.Inventories
         public void RemoveItems(int number)
         {
             inventory.RemoveFromSlot(index, number);
+        }
+        
+        // PRIVATE
+        
+        // Обработка нажатия мыши
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                isDragging = false;
+                pointerDownPosition = eventData.position;
+            }
+        }
+        
+        // Обработка начала перетаскивания
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            isDragging = true;
+        }
+        
+        // Обработка отпускания мыши
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                // Проверяем, было ли перетаскивание
+                float distance = Vector2.Distance(pointerDownPosition, eventData.position);
+                
+                // Если мышь не сдвинулась больше порога и не было драга - используем предмет
+                if (distance < dragThreshold && !isDragging)
+                {
+                    UseItem();
+                }
+                
+                isDragging = false;
+            }
+        }
+        
+        // Метод для использования предмета
+        private void UseItem()
+        {
+            InventoryItem currentItem = GetItem();
+            
+            // Проверяем, что предмет существует и является ActionItem
+            if (currentItem != null && currentItem is ActionItem actionItem)
+            {
+                GameObject player = GameObject.FindGameObjectWithTag("Player");
+                if (player != null)
+                {
+                    // Используем предмет
+                    bool wasUsed = actionItem.Use(player);
+                    
+                    // Если предмет был использован и он расходуемый - удаляем один экземпляр
+                    if (wasUsed && actionItem.isConsumable())
+                    {
+                        RemoveItems(1);
+                    }
+                }
+            }
         }
     }
 }
