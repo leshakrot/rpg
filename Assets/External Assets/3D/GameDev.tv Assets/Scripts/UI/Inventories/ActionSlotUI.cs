@@ -12,7 +12,7 @@ namespace GameDevTV.UI.Inventories
     /// <summary>
     /// The UI slot for the player action bar.
     /// </summary>
-    public class ActionSlotUI : MonoBehaviour, IItemHolder, IDragContainer<GameDevTV.Inventories.InventoryItem>, IPointerClickHandler
+    public class ActionSlotUI : MonoBehaviour, IItemHolder, IDragContainer<GameDevTV.Inventories.InventoryItem>, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler
     {
         // CONFIG DATA
         [SerializeField] InventoryItemIcon icon = null;
@@ -23,6 +23,11 @@ namespace GameDevTV.UI.Inventories
         ActionStore store;
         CooldownStore cooldownStore;
         GameObject player;
+        
+        // Для отслеживания перетаскивания
+        private bool isDragging = false;
+        private Vector2 pointerDownPosition;
+        private const float dragThreshold = 5f; // Минимальное расстояние для определения драга
 
         // LIFECYCLE METHODS
         private void Awake()
@@ -87,12 +92,37 @@ namespace GameDevTV.UI.Inventories
             }
         }
 
-        // Обработка клика по иконке предмета
-        public void OnPointerClick(PointerEventData eventData)
+        // Обработка нажатия мыши
+        public void OnPointerDown(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                UseItem();
+                isDragging = false;
+                pointerDownPosition = eventData.position;
+            }
+        }
+        
+        // Обработка начала перетаскивания
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            isDragging = true;
+        }
+        
+        // Обработка отпускания мыши
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                // Проверяем, было ли перетаскивание
+                float distance = Vector2.Distance(pointerDownPosition, eventData.position);
+                
+                // Если мышь не сдвинулась больше порога и не было драга - используем предмет
+                if (distance < dragThreshold && !isDragging)
+                {
+                    UseItem();
+                }
+                
+                isDragging = false;
             }
         }
 
