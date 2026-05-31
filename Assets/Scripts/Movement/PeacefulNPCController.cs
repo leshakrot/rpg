@@ -4,11 +4,6 @@ using UnityEngine;
 
 namespace RPG.Control
 {
-    /// <summary>
-    /// Контроллер для мирных декоративных NPC.
-    /// Только патрулирование по вейпоинтам, без боевой логики, без смерти.
-    /// Требует: PeacefulMover, NavMeshAgent.
-    /// </summary>
     public class PeacefulNPCController : MonoBehaviour
     {
         [SerializeField] private PatrolPath _patrolPath;
@@ -17,18 +12,9 @@ namespace RPG.Control
 
         [Header("Speed")]
         [SerializeField] private bool _randomSpeed = false;
-
-        [Tooltip("Используется когда Random Speed выключен")]
-        [Range(0, 1)]
-        [SerializeField] private float _moveSpeedFraction = 0.2f;
-
-        [Tooltip("Минимальная скорость при Random Speed")]
-        [Range(0, 1)]
-        [SerializeField] private float _minSpeedFraction = 0.1f;
-
-        [Tooltip("Максимальная скорость при Random Speed")]
-        [Range(0, 1)]
-        [SerializeField] private float _maxSpeedFraction = 0.5f;
+        [Range(0, 1)] [SerializeField] private float _moveSpeedFraction = 0.2f;
+        [Range(0, 1)] [SerializeField] private float _minSpeedFraction = 0.1f;
+        [Range(0, 1)] [SerializeField] private float _maxSpeedFraction = 0.5f;
 
         private PeacefulMover _mover;
         private LazyValue<Vector3> _originPosition;
@@ -36,13 +22,18 @@ namespace RPG.Control
         private int _currentWaypointIndex = 0;
         private float _timeSinceArrivedAtWaypoint = Mathf.Infinity;
         private float _currentSpeedFraction;
+        
+        // НОВОЕ: Переменная для хранения времени ожидания на конкретной точке
+        private float _currentWaypointDwellTime;
 
         private void Awake()
         {
             _mover = GetComponent<PeacefulMover>();
             _originPosition = new LazyValue<Vector3>(() => transform.position);
             _originPosition.ForceInit();
+            
             _currentSpeedFraction = GetSpeedFraction();
+            _currentWaypointDwellTime = _waypointDwellTime;
         }
 
         private void Update()
@@ -59,16 +50,26 @@ namespace RPG.Control
                 if (AtWaypoint())
                 {
                     _timeSinceArrivedAtWaypoint = 0f;
+                    
+                    // НОВОЕ: Считываем параметры вейпоинта ПЕРЕД тем, как переключить индекс
+                    _currentWaypointDwellTime = _patrolPath.GetWaypointDwellTime(_currentWaypointIndex, _waypointDwellTime);
+                    float? speedOverride = _patrolPath.GetWaypointSpeedOverride(_currentWaypointIndex);
+                    
                     CycleWaypoint();
-                    // Новая скорость роллится при смене вейпоинта
-                    _currentSpeedFraction = GetSpeedFraction();
+
+                    // НОВОЕ: Применяем переопределение скорости или роллим новую стандартную
+                    if (speedOverride.HasValue)
+                        _currentSpeedFraction = speedOverride.Value;
+                    else
+                        _currentSpeedFraction = GetSpeedFraction();
                 }
                 nextPosition = GetCurrentWaypoint();
             }
 
             _timeSinceArrivedAtWaypoint += Time.deltaTime;
 
-            if (_timeSinceArrivedAtWaypoint > _waypointDwellTime)
+            // ИЗМЕНЕНО: теперь сравниваем с _currentWaypointDwellTime
+            if (_timeSinceArrivedAtWaypoint > _currentWaypointDwellTime)
             {
                 _mover.StartMoveAction(nextPosition, _currentSpeedFraction);
             }
@@ -76,9 +77,7 @@ namespace RPG.Control
 
         private float GetSpeedFraction()
         {
-            if (_randomSpeed)
-                return Random.Range(_minSpeedFraction, _maxSpeedFraction);
-
+            if (_randomSpeed) return Random.Range(_minSpeedFraction, _maxSpeedFraction);
             return _moveSpeedFraction;
         }
 

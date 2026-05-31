@@ -54,6 +54,10 @@ namespace RPG.Control
         private GameObject _currentTarget = null;
         private bool _returningToSpawn = false;
 
+        // Новые переменные для индивидуальных настроек точек патрулирования
+        private float _currentWaypointDwellTime;
+        private float _currentWaypointSpeed;
+
         private enum State
         {
             Patrol,
@@ -80,6 +84,10 @@ namespace RPG.Control
 
             _guardPosition = new LazyValue<Vector3>(GetGuardPosition);
             _guardPosition.ForceInit();
+
+            // Инициализация стандартными значениями
+            _currentWaypointDwellTime = _waypointDwellTime;
+            _currentWaypointSpeed = _patrolSpeedFraction;
         }
 
         public void Reset()
@@ -97,6 +105,10 @@ namespace RPG.Control
             _playerEscapedThisChase = false;
             _currentTarget = null;
             _returningToSpawn = false;
+
+            // Сброс динамических параметров патруля
+            _currentWaypointDwellTime = _waypointDwellTime;
+            _currentWaypointSpeed = _patrolSpeedFraction;
 
             _fighter.Cancel();
             _mover.Cancel();
@@ -271,14 +283,27 @@ namespace RPG.Control
                 if (AtWaypoint())
                 {
                     _timeSinceArrivedAtWaypoint = 0;
+
+                    // Считываем параметры конкретного вейпоинта (или берем дефолтные)
+                    _currentWaypointDwellTime = _patrolPath.GetWaypointDwellTime(_currentWaypointIndex, _waypointDwellTime);
+                    float? speedOverride = _patrolPath.GetWaypointSpeedOverride(_currentWaypointIndex);
+                    _currentWaypointSpeed = speedOverride.HasValue ? speedOverride.Value : _patrolSpeedFraction;
+
                     CycleWaypoint();
                 }
                 nextPosition = GetCurrentWaypoint();
             }
-
-            if (_timeSinceArrivedAtWaypoint > _waypointDwellTime)
+            else
             {
-                _mover.StartMoveAction(nextPosition, _patrolSpeedFraction);
+                // На случай, если NPC просто стоит на месте без пути
+                _currentWaypointDwellTime = _waypointDwellTime;
+                _currentWaypointSpeed = _patrolSpeedFraction;
+            }
+
+            // Используем динамические параметры времени и скорости для движения
+            if (_timeSinceArrivedAtWaypoint > _currentWaypointDwellTime)
+            {
+                _mover.StartMoveAction(nextPosition, _currentWaypointSpeed);
             }
         }
 
