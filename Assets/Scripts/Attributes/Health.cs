@@ -14,6 +14,9 @@ namespace RPG.Attributes
         [SerializeField] private UnityEvent<float> _takeDamage;
         public UnityEvent onDie;
 
+        // C# event — подписчики (напр. AIController) узнают кто нанёс урон
+        public event Action<GameObject> onTakeDamage;
+
         private LazyValue<float> _healthPoints;
 
         private Animator _animator;
@@ -56,6 +59,8 @@ namespace RPG.Attributes
             print(gameObject.name + " took damage: " + damage);
 
             _healthPoints.value = Mathf.Max(_healthPoints.value - damage, 0);
+
+            onTakeDamage?.Invoke(instigator);
 
             if(_healthPoints.value == 0)
             {

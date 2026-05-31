@@ -85,6 +85,8 @@ namespace RPG.Control
             _guardPosition = new LazyValue<Vector3>(GetGuardPosition);
             _guardPosition.ForceInit();
 
+            _health.onTakeDamage += OnDamageTaken;
+
             // Инициализация стандартными значениями
             _currentWaypointDwellTime = _waypointDwellTime;
             _currentWaypointSpeed = _patrolSpeedFraction;
@@ -125,6 +127,21 @@ namespace RPG.Control
         }
 
         private void Start() { }
+
+        private void OnDestroy()
+        {
+            if (_health != null)
+                _health.onTakeDamage -= OnDamageTaken;
+        }
+        
+        private void OnDamageTaken(GameObject instigator)
+        {
+            if (instigator == null) return;
+            if (_health.IsDead()) return;
+            _playerEscapedThisChase = false; // урон = новый контакт, старый escape неактуален
+            Aggrevate();
+            Debug.Log($"[AI] Aggrevate called, timeSinceAggr reset. playerEscaped={_playerEscapedThisChase}, tooFarFromSpawn={IsTooFarFromSpawn()}");
+        }
 
         private void Update()
         {
