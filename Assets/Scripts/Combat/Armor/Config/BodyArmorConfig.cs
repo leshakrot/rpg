@@ -1,115 +1,56 @@
-using GameDevTV.Inventories;
-using RPG.Attributes;
 using RPG.Inventories;
-using RPG.Stats;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RPG.Combat
 {
+    /// <summary>
+    /// A single "chest piece" that bundles all of the modular meshes that make up a
+    /// jacket / cuirass: the torso plus the left and right shoulders (upper arms)
+    /// and forearms (lower arms). Equipping this one item swaps every assigned
+    /// region at once. Leave a field empty to keep the current mesh in that region.
+    /// </summary>
     [CreateAssetMenu(fileName = "Body Armor", menuName = "RPG/ Body Armor/ New Body Armor", order = 1)]
-    public class BodyArmorConfig : StatsEquipableItem // EquipableItem/*, IModifierProvider*/
+    public class BodyArmorConfig : StatsEquipableItem
     {
+        [Header("Modular chest pieces (leave empty to keep the current mesh)")]
+        [Tooltip("Torso mesh.")]
         [SerializeField] private BodyArmor _equippedPrefab;
-        [SerializeField] private EquipLocation _equipLocation;
-        //[SerializeField] private float _weaponDamage = 5f;
-        //[SerializeField] private float _percantageBonus = 0;
-        //[SerializeField] private float _weaponRange = 2f;
-        //[SerializeField] private bool _isRightHanded = true;
-        //[SerializeField] private Projectile _projectile;
+        [Tooltip("Left shoulder / upper arm mesh.")]
+        [SerializeField] private UpperArmLeftArmor _upperArmLeftPrefab;
+        [Tooltip("Right shoulder / upper arm mesh.")]
+        [SerializeField] private UpperArmRightArmor _upperArmRightPrefab;
+        [Tooltip("Left forearm / lower arm mesh.")]
+        [SerializeField] private LowerArmLeftArmor _lowerArmLeftPrefab;
+        [Tooltip("Right forearm / lower arm mesh.")]
+        [SerializeField] private LowerArmRightArmor _lowerArmRightPrefab;
 
-        private const string armorName = "Body Armor";
+        private const string TorsoPartName = "Body Armor";
+        private const string UpperArmLeftPartName = "UpperArm Left Armor";
+        private const string UpperArmRightPartName = "UpperArm Right Armor";
+        private const string LowerArmLeftPartName = "LowerArm Left Armor";
+        private const string LowerArmRightPartName = "LowerArm Right Armor";
 
-        public BodyArmor Spawn(Transform equipTransform)
+        /// <summary>Mount transforms for every modular chest region on the character.</summary>
+        public struct Mounts
         {
-            DestroyOldArmor(equipTransform);
-
-            BodyArmor armor = null;
-            if(_equippedPrefab != null)
-            {
-                armor = Instantiate(_equippedPrefab, equipTransform);
-                armor.gameObject.name = armorName;
-            }
-
-            return armor;
+            public Transform Torso;
+            public Transform UpperArmLeft;
+            public Transform UpperArmRight;
+            public Transform LowerArmLeft;
+            public Transform LowerArmRight;
         }
 
-        private void DestroyOldArmor(Transform equipTransform)
+        /// <summary>
+        /// Spawns every assigned chest piece onto its matching mount, rebinding each
+        /// mesh to the character skeleton.
+        /// </summary>
+        public void Spawn(in Mounts mounts)
         {
-            // Находим старую броню по имени
-            Transform oldArmor = equipTransform.Find(armorName);
-
-            if (oldArmor == null) return;
-
-            // Получаем SkinnedMeshRenderer у старой брони
-            if (!oldArmor.TryGetComponent(out SkinnedMeshRenderer oldSMR))
-            {
-                Debug.LogError("Старая броня не содержит SkinnedMeshRenderer!");
-                return;
-            }
-
-            // Проверяем, есть ли SkinnedMeshRenderer у нового префаба
-            if (!_equippedPrefab.TryGetComponent(out SkinnedMeshRenderer newSMR))
-            {
-                Debug.LogError("Новый префаб не содержит SkinnedMeshRenderer!");
-                return;
-            }
-
-            // Сохраняем новый меш и материалы из нового префаба
-            Mesh newArmorMesh = newSMR.sharedMesh;
-            Material[] newMaterials = newSMR.sharedMaterials;
-
-            // Копируем данные из старого SkinnedMeshRenderer в новый
-            SkinnedMeshRendererCopier.CopySkinnedMeshRenderer(oldSMR, newSMR);
-
-            // Восстанавливаем новый меш и материалы после копирования
-            newSMR.sharedMesh = newArmorMesh;
-            newSMR.sharedMaterials = newMaterials;
-
-            // Переименовываем и уничтожаем старую броню
-            oldArmor.name = "Destroying";
-            Destroy(oldArmor.gameObject);
+            ModularArmorAttacher.Attach(_equippedPrefab, mounts.Torso, TorsoPartName);
+            ModularArmorAttacher.Attach(_upperArmLeftPrefab, mounts.UpperArmLeft, UpperArmLeftPartName);
+            ModularArmorAttacher.Attach(_upperArmRightPrefab, mounts.UpperArmRight, UpperArmRightPartName);
+            ModularArmorAttacher.Attach(_lowerArmLeftPrefab, mounts.LowerArmLeft, LowerArmLeftPartName);
+            ModularArmorAttacher.Attach(_lowerArmRightPrefab, mounts.LowerArmRight, LowerArmRightPartName);
         }
-
-        public EquipLocation GetEquipLocation()
-        {
-            return _equipLocation;
-        }
-
-        public void SetupEquipLocation(EquipLocation equipLocation)
-        {
-            _equipLocation = equipLocation;
-        }
-
-        //public float GetDamage()
-        //{
-        //    return _weaponDamage;
-        //}
-
-        //public float GetPercentageBonus()
-        //{
-        //    return _percantageBonus;
-        //}
-
-        //public float GetRange()
-        //{
-        //    return _weaponRange;
-        //}
-
-        //public IEnumerable<float> GetAdditiveModifiers(Stat stat)
-        //{
-        //    if(stat == Stat.Damage)
-        //    {
-        //        yield return _weaponDamage;
-        //    }
-        //}
-
-        //public IEnumerable<float> GetPercentageModifiers(Stat stat)
-        //{
-        //    if (stat == Stat.Damage)
-        //    {
-        //        yield return _percantageBonus;
-        //    }
-        //}
     }
 }
