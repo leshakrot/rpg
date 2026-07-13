@@ -410,10 +410,28 @@ namespace RPG.Harvesting
             
             while (remainingResources > 0 && isHarvesting)
             {
-                // Ждём время для добычи одной единицы
-                yield return new WaitForSeconds(timePerUnit);
-                
-                if (!isHarvesting) 
+                // ИСПРАВЛЕНИЕ: раньше здесь был yield return new WaitForSeconds(timePerUnit),
+                // который "молчал" всю единицу целиком и слал прогресс только по завершении
+                // добычи каждой единицы (скачками 1.0 -> 0.5 -> 0.0 для 2 юнитов и т.д.).
+                // Теперь тикаем покадрово, чтобы прогресс полосы был непрерывным
+                // и не зависел от количества юнитов в точке.
+                float unitTimer = 0f;
+                while (unitTimer < timePerUnit)
+                {
+                    if (!isHarvesting) yield break;
+
+                    unitTimer += Time.deltaTime;
+                    float unitFraction = Mathf.Clamp01(unitTimer / timePerUnit);
+
+                    // Общий прогресс по всей точке добычи (1.0 -> 0.0),
+                    // с учётом дробной доли добычи текущей единицы
+                    currentProgress = (remainingResources - unitFraction) / resource.ResourceAmount;
+                    OnHarvestProgress?.Invoke(currentProgress);
+
+                    yield return null;
+                }
+
+                if (!isHarvesting)
                 {
                     break;
                 }
@@ -421,7 +439,7 @@ namespace RPG.Harvesting
                 // Добываем одну единицу ресурса
                 HarvestSingleUnit();
                 
-                // Обновляем прогресс (бар уменьшается от 1.0 до 0.0)
+                // Точное значение сразу после добычи юнита (без погрешности накопления кадров)
                 currentProgress = (float)remainingResources / resource.ResourceAmount;
                 OnHarvestProgress?.Invoke(currentProgress);
             }

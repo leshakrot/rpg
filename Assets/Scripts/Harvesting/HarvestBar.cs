@@ -62,22 +62,30 @@ namespace RPG.Harvesting
             StartCoroutine(FadeOut());
         }
 
-        // Корутина для отслеживания добычи (убывающий прогресс)
+        // Корутина для отслеживания добычи (возрастающий прогресс: 0% -> 100%)
         private IEnumerator TrackHarvestable(IHarvestable harvestable)
         {
             // Настройка и отображение
             SetupUI(harvestable.GetResource().ResourceName, harvestingColor);
+
+            // ИСПРАВЛЕНИЕ: жестко сбрасываем полосу в 0% ДО показа,
+            // чтобы не было рывка от "хвоста" предыдущего значения anchorMax
+            foreground.anchorMax = new Vector2(0f, 1f);
+            if (progressText != null) progressText.text = "0%";
+
             yield return StartCoroutine(FadeIn());
 
-            // ИСПРАВЛЕНИЕ: Получаем текущий прогресс из ресурса вместо жестко заданного 1f
-            float currentProgress = (float)harvestable.GetRemainingResources() / harvestable.GetResource().ResourceAmount;
+            int totalAmount = harvestable.GetResource().ResourceAmount;
 
-            // Лямбда-функция для обновления прогресса по событию
-            System.Action<float> progressUpdater = (progress) => { currentProgress = progress; };
+            // ИСПРАВЛЕНИЕ: currentProgress теперь хранит СОБРАННУЮ долю (0 -> 1),
+            // а не оставшуюся (1 -> 0), поэтому инвертируем remaining/total
+            float currentProgress = 1f - (float)harvestable.GetRemainingResources() / totalAmount;
+
+            // Лямбда-функция для обновления прогресса по событию.
+            // HarvestableSource.OnHarvestProgress отдаёт "остаток" ресурса (1 -> 0),
+            // поэтому инвертируем в "собрано" (0 -> 1), чтобы полоса росла слева направо
+            System.Action<float> progressUpdater = (progress) => { currentProgress = 1f - progress; };
             harvestable.OnHarvestProgress += progressUpdater;
-
-            // ИСПРАВЛЕНИЕ: Сразу обновляем бар с правильным прогрессом
-            UpdateBar(currentProgress);
 
             // Цикл обновления, пока корутина активна
             while (true)
