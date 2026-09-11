@@ -1,0 +1,163 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b887383adfa29fd47b5b333aba08945b, type: 3}
+  m_Name: "\u0417\u043E\u043B\u043E\u0442\u043E"
+  m_EditorClassIdentifier: 
+  _objectives:
+  - reference: talk_to_blacksmith
+    description: "\u041F\u043E\u0433\u043E\u0432\u043E\u0440\u0438\u0442\u044C \u0441
+      \u043A\u0443\u0437\u043D\u0435\u0446\u043E\u043C"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 0
+    revealCondition:
+      _and: []
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  - reference: find_helper_house
+    description: "\u041D\u0430\u0439\u0442\u0438 \u0434\u043E\u043C
+      \u043F\u043E\u0434\u0441\u043E\u0431\u043D\u0438\u043A\u0430"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - talk_to_blacksmith
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  - reference: talk_to_helper
+    description: "\u041F\u043E\u0433\u043E\u0432\u043E\u0440\u0438\u0442\u044C \u0441
+      \u0425\u043C\u0435\u043B\u0435\u043C"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - find_helper_house
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  - reference: examine_smoke_trail
+    description: "\u041E\u0441\u043C\u043E\u0442\u0440\u0435\u0442\u044C
+      \u0441\u0442\u0440\u0430\u043D\u043D\u044B\u0439 \u0441\u043B\u0435\u0434
+      \u0434\u044B\u043C\u0430 \u0443 \u043E\u043A\u043D\u0430"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - talk_to_helper
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  - reference: follow_trail_to_clearing
+    description: "\u041F\u0440\u043E\u0439\u0442\u0438 \u043F\u043E \u0441\u043B\u0435\u0434\u0443
+      \u0434\u043E \u043B\u0435\u0441\u043D\u043E\u0439 \u043F\u043E\u043B\u044F\u043D\u044B"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - examine_smoke_trail
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  - reference: find_merchant_mark
+    description: "\u041E\u0441\u043C\u043E\u0442\u0440\u0435\u0442\u044C
+      \u0432\u044B\u0440\u0435\u0437\u0430\u043D\u043D\u044B\u0439 \u0437\u043D\u0430\u043A
+      \u043A\u0443\u043F\u0446\u0430"
+    usesCondition: 1
+    completionCondition:
+      _and:
+      - _or:
+        - _predicate: HasInventoryItem
+          _parameters:
+          - merchant-sign-item-guid-0001
+          _negate: 0
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - follow_trail_to_clearing
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  - reference: return_to_blacksmith
+    description: "\u0412\u0435\u0440\u043D\u0443\u0442\u044C\u0441\u044F \u043A
+      \u043A\u0443\u0437\u043D\u0435\u0446\u0443"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - find_merchant_mark
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  - reference: go_to_town
+    description: "\u041E\u0442\u043F\u0440\u0430\u0432\u0438\u0442\u044C\u0441\u044F \u0432
+      \u0433\u043E\u0440\u043E\u0434"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - return_to_blacksmith
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
+  _rewards: []
+  _objectivesToComplete: 0
