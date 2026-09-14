@@ -16,6 +16,20 @@ namespace RPG.Combat
         [SerializeField] float timeBetweenAttacks = 1f;
         [SerializeField] float autoAttackRange = 4f;
 
+        [Header("Combat feel")]
+        [Tooltip("Разброс интервала между атаками (0.15 = +/-15%), чтобы ритм боя не был метрономом.")]
+        [SerializeField] [Range(0f, 0.5f)] float attackTimingVariance = 0.15f;
+        [Tooltip("Максимальный шанс уклонения цели, вычисляемый из её защиты.")]
+        [SerializeField] [Range(0f, 1f)] float maxDodgeChance = 0.3f;
+        [Tooltip("Сколько последовательных ударов по одной цели усиливают урон.")]
+        [SerializeField] int maxComboStacks = 5;
+        [Tooltip("Прирост урона за каждый удар в комбо (0.05 = +5% за стак).")]
+        [SerializeField] [Range(0f, 0.2f)] float comboDamagePerStack = 0.05f;
+
+        private const float DodgeDefenceScale = 100f;
+        private const string DodgeTriggerName = "dodge";
+        private const string CriticalHitTriggerName = "criticalHit";
+
         public WeaponConfig defaultWeapon = null;
         public Transform rightHandTransform = null;
         public Transform leftHandTransform = null;
@@ -25,6 +39,13 @@ namespace RPG.Combat
         float timeSinceLastAttack = Mathf.Infinity;
         WeaponConfig currentWeaponConfig;
         LazyValue<Weapon> currentWeapon;
+
+        // Текущая длительность до следующей атаки — пересчитывается с разбросом после каждого удара
+        private float nextAttackDelay;
+
+        // Комбо: сколько раз подряд мы попали по одной и той же цели
+        private int comboStacks = 0;
+        private Health lastComboTarget;
 
         // Кэшируем компоненты — не используем GetComponent в Update каждый кадр
         private Mover _mover;
@@ -44,6 +65,8 @@ namespace RPG.Combat
             _mover = GetComponent<Mover>();
             _animator = GetComponent<Animator>();
             _baseStats = GetComponent<BaseStats>();
+
+            nextAttackDelay = timeBetweenAttacks;
         }
 
         private Weapon SetupDefaultWeapon()
@@ -115,10 +138,12 @@ namespace RPG.Combat
         private void AttackBehaviour()
         {
             transform.LookAt(target.transform);
-            if (timeSinceLastAttack > timeBetweenAttacks)
+            if (timeSinceLastAttack > nextAttackDelay)
             {
                 TriggerAttack();
                 timeSinceLastAttack = 0;
+                // Каждая следующая атака чуть раньше или чуть позже — бой не выглядит как метроном
+                nextAttackDelay = timeBetweenAttacks * UnityEngine.Random.Range(1f - attackTimingVariance, 1f + attackTimingVariance);
             }
         }
 
@@ -173,13 +198,25 @@ namespace RPG.Combat
         {
             if (target == null) return;
 
-            float damage = _baseStats.GetStat(Stat.Damage);
             BaseStats targetBaseStats = target.GetComponent<BaseStats>();
+
+            // Цель может уклониться — шанс растёт с её защитой, что делает статы реально важными
+            if (RollDodge(targetBaseStats))
+            {
+                ResetCombo();
+                target.GetComponent<Animator>()?.SetTrigger(DodgeTriggerName);
+                return;
+            }
+
+            float damage = _baseStats.GetStat(Stat.Damage);
             if (targetBaseStats != null)
             {
                 float defence = targetBaseStats.GetStat(Stat.Defence);
                 damage /= 1 + defence / damage;
             }
+
+            damage = ApplyComboBonus(damage);
+            damage = ApplyDamageVarianceAndCrit(damage);
 
             if (currentWeapon.value != null)
             {
@@ -194,6 +231,61 @@ namespace RPG.Combat
             {
                 target.TakeDamage(gameObject, damage);
             }
+        }
+
+        /// <summary>
+        /// Вычисляет шанс цели уклониться от атаки на основе её характеристики защиты.
+        /// Ограничен maxDodgeChance, чтобы уклонение не делало бой непредсказуемым.
+        /// </summary>
+        private bool RollDodge(BaseStats targetBaseStats)
+        {
+            if (targetBaseStats == null) return false;
+            float defence = targetBaseStats.GetStat(Stat.Defence);
+            float dodgeChance = Mathf.Clamp(defence / (defence + DodgeDefenceScale), 0f, maxDodgeChance);
+            return UnityEngine.Random.value < dodgeChance;
+        }
+
+        /// <summary>
+        /// Усиливает урон за серию последовательных попаданий по одной цели.
+        /// Комбо сбрасывается при смене цели, промахе или отмене атаки.
+        /// </summary>
+        private float ApplyComboBonus(float damage)
+        {
+            if (target != lastComboTarget)
+            {
+                lastComboTarget = target;
+                comboStacks = 0;
+            }
+
+            float bonus = 1f + Mathf.Min(comboStacks, maxComboStacks) * comboDamagePerStack;
+            comboStacks++;
+            return damage * bonus;
+        }
+
+        private void ResetCombo()
+        {
+            comboStacks = 0;
+            lastComboTarget = null;
+        }
+
+        /// <summary>
+        /// Добавляет случайный разброс урона и, с шансом оружия, критический удар.
+        /// </summary>
+        private float ApplyDamageVarianceAndCrit(float damage)
+        {
+            float variance = currentWeaponConfig.GetDamageVariance();
+            if (variance > 0f)
+            {
+                damage *= UnityEngine.Random.Range(1f - variance, 1f + variance);
+            }
+
+            if (UnityEngine.Random.value < currentWeaponConfig.GetCriticalChance())
+            {
+                damage *= currentWeaponConfig.GetCriticalMultiplier();
+                _animator.SetTrigger(CriticalHitTriggerName);
+            }
+
+            return damage;
         }
 
         void Shoot()
@@ -229,6 +321,7 @@ namespace RPG.Combat
         {
             StopAttack();
             target = null;
+            ResetCombo();
             _mover.Cancel();
         }
 

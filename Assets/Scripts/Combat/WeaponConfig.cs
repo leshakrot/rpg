@@ -17,6 +17,14 @@ namespace RPG.Combat
         [SerializeField] private bool _isRightHanded = true;
         [SerializeField] private Projectile _projectile;
 
+        [Header("Combat feel")]
+        [Tooltip("Шанс (0-1) нанести критический удар этим оружием.")]
+        [SerializeField] [Range(0f, 1f)] private float _criticalChance = 0.1f;
+        [Tooltip("Множитель урона при критическом ударе.")]
+        [SerializeField] private float _criticalMultiplier = 1.75f;
+        [Tooltip("Случайный разброс урона, напр. 0.15 = урон гуляет на +/-15%.")]
+        [SerializeField] [Range(0f, 0.9f)] private float _damageVariance = 0.15f;
+
         private const string weaponName = "Weapon";
 
         public Weapon Spawn(Transform rightHand, Transform leftHand, Animator animator)
@@ -89,6 +97,24 @@ namespace RPG.Combat
         public float GetRange()
         {
             return _weaponRange;
+        }
+
+        /// <summary>Возвращает шанс критического удара для этого оружия (0-1).</summary>
+        public float GetCriticalChance()
+        {
+            return _criticalChance;
+        }
+
+        /// <summary>Возвращает множитель урона, применяемый при критическом ударе.</summary>
+        public float GetCriticalMultiplier()
+        {
+            return _criticalMultiplier;
+        }
+
+        /// <summary>Возвращает величину случайного разброса урона (0-1, доля от базового урона).</summary>
+        public float GetDamageVariance()
+        {
+            return _damageVariance;
         }
 
         public IEnumerable<float> GetAdditiveModifiers(Stat stat)
