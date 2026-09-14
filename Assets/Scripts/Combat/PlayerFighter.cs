@@ -27,6 +27,16 @@ namespace RPG.Combat
         [SerializeField] private int _maxComboStacks = 5;
         [Tooltip("Прирост урона за каждый удар в комбо (0.05 = +5% за стак).")]
         [SerializeField] [Range(0f, 0.2f)] private float _comboDamagePerStack = 0.05f;
+        [Tooltip("Скорость поворота корпуса к цели (градусы/сек). Большое значение выглядит как почти мгновенный поворот, меньшее — плавнее, без рывков.")]
+        [SerializeField] private float _facingRotationSpeed = 720f;
+
+        [Header("Camera impact feel")]
+        [Tooltip("Сила тряски камеры при обычном попадании игрока в ближнем бою (0-1).")]
+        [SerializeField] [Range(0f, 1f)] private float _hitShakeAmount = 0.18f;
+        [Tooltip("Сила тряски камеры при критическом попадании игрока в ближнем бою (0-1).")]
+        [SerializeField] [Range(0f, 1f)] private float _criticalHitShakeAmount = 0.45f;
+        [Tooltip("Сила тряски камеры, когда игрок сам получает урон (0-1).")]
+        [SerializeField] [Range(0f, 1f)] private float _takeDamageShakeAmount = 0.12f;
 
         private const float DodgeDefenceScale = 100f;
         private const string DodgeTriggerName = "dodge";
@@ -61,6 +71,7 @@ namespace RPG.Combat
 
         private ActionScheduler _actionScheduler;
         private Health _target;
+        private Health _ownHealth;
         private Equipment _equipment;
 		private Mover _mover;
 		private Animator _animator;
@@ -123,6 +134,28 @@ namespace RPG.Combat
                 _equipment.equipmentUpdated += UpdateGloveLeftArmor;
                 _equipment.equipmentUpdated += UpdateGloveRightArmor;
             }
+
+            _ownHealth = GetComponent<Health>();
+            if (_ownHealth != null)
+            {
+                _ownHealth.onTakeDamage += OnPlayerTookDamage;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_ownHealth != null)
+            {
+                _ownHealth.onTakeDamage -= OnPlayerTookDamage;
+            }
+        }
+
+        /// <summary>
+        /// Небольшая тряска камеры, когда игрок сам получает урон — даёт ощущение веса ударов противника.
+        /// </summary>
+        private void OnPlayerTookDamage(GameObject instigator)
+        {
+            TopDownOrbitCamera.Instance?.InduceShake(_takeDamageShakeAmount);
         }
 
         private Weapon SetupDefaultWeapon()
@@ -433,7 +466,7 @@ namespace RPG.Combat
         private void AttackBehaviour()
 		{
 			Debug.Log("AttackBehaviour");
-            transform.LookAt(_target.transform);
+            FaceTarget(_target.transform);
             if(_timeSinceLastAttack > _nextAttackDelay)
             {
                 TriggerAttack();
@@ -441,6 +474,21 @@ namespace RPG.Combat
                 // Каждая следующая атака чуть раньше или чуть позже — бой не выглядит как метроном
                 _nextAttackDelay = _timeBetweenAttacks * UnityEngine.Random.Range(1f - _attackTimingVariance, 1f + _attackTimingVariance);
             }
+        }
+
+        /// <summary>
+        /// Поворачивает игрока к цели только по горизонтали (yaw), игнорируя разницу высот.
+        /// Обычный Transform.LookAt наклоняет весь корпус по тангажу, если цель чуть выше/ниже
+        /// (кочка, яма, разная высота пивота коллайдера) — из-за этого персонаж визуально
+        /// "проваливается" или бьёт под неестественным углом. Плоский поворот убирает этот артефакт.
+        /// </summary>
+        private void FaceTarget(Transform targetTransform)
+        {
+            Vector3 direction = targetTransform.position - transform.position;
+            direction.y = 0f;
+            if (direction.sqrMagnitude < 0.0001f) return;
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, _facingRotationSpeed * Time.deltaTime);
         }
 
         private void TriggerAttack()
@@ -506,17 +554,22 @@ namespace RPG.Combat
             }
 
             damage = ApplyComboBonus(damage);
-            damage = ApplyDamageVarianceAndCrit(damage);
+            damage = ApplyDamageVarianceAndCrit(damage, out bool isCriticalHit);
 
             if(_currentWeapon.value != null)
             {
                 _currentWeapon.value.OnHit();
             }
 
-            if (_currentWeaponConfig.HasProjectile()) _currentWeaponConfig.LaunchProjectile(rightHandTransform, leftHandTransform, _target, gameObject, damage);
+            if (_currentWeaponConfig.HasProjectile())
+            {
+                // Для снарядов тряска происходит в момент физического попадания (см. Projectile.cs), а не выстрела
+                _currentWeaponConfig.LaunchProjectile(rightHandTransform, leftHandTransform, _target, gameObject, damage, isCriticalHit);
+            }
             else
             {
                 _target.TakeDamage(gameObject, damage);
+                TopDownOrbitCamera.Instance?.InduceShake(isCriticalHit ? _criticalHitShakeAmount : _hitShakeAmount);
             }
         }
 
@@ -558,7 +611,7 @@ namespace RPG.Combat
         /// <summary>
         /// Добавляет случайный разброс урона и, с шансом оружия, критический удар.
         /// </summary>
-        private float ApplyDamageVarianceAndCrit(float damage)
+        private float ApplyDamageVarianceAndCrit(float damage, out bool isCriticalHit)
         {
             float variance = _currentWeaponConfig.GetDamageVariance();
             if (variance > 0f)
@@ -568,8 +621,13 @@ namespace RPG.Combat
 
             if (UnityEngine.Random.value < _currentWeaponConfig.GetCriticalChance())
             {
+                isCriticalHit = true;
                 damage *= _currentWeaponConfig.GetCriticalMultiplier();
                 _animator.SetTrigger(CriticalHitTriggerName);
+            }
+            else
+            {
+                isCriticalHit = false;
             }
 
             return damage;

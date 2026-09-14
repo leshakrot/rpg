@@ -1,4 +1,4 @@
-﻿using RPG.Attributes;
+using RPG.Attributes;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -14,10 +14,17 @@ namespace RPG.Combat
         [SerializeField] private GameObject[] _destroyOnHit;
         [SerializeField] private UnityEvent _onHit;
 
+        [Header("Impact feel")]
+        [Tooltip("Сила тряски камеры при обычном попадании снаряда, выпущенного игроком (0-1).")]
+        [SerializeField] [Range(0f, 1f)] private float _hitShakeAmount = 0.18f;
+        [Tooltip("Сила тряски камеры при критическом попадании снаряда, выпущенного игроком (0-1).")]
+        [SerializeField] [Range(0f, 1f)] private float _criticalHitShakeAmount = 0.45f;
+
         private Health _target;
         private Vector3 _targetPoint;
         private GameObject _instigator = null;
         private float _damage;
+        private bool _isCriticalHit;
 
         private void Start()
         {
@@ -30,22 +37,23 @@ namespace RPG.Combat
             transform.Translate(Vector3.forward * _speed * Time.deltaTime);
         }
 
-        public void SetTarget(Health target, GameObject instigator, float damage)
+        public void SetTarget(Health target, GameObject instigator, float damage, bool isCriticalHit = false)
         {
-            SetTarget(instigator, damage, target);
+            SetTarget(instigator, damage, target, default, isCriticalHit);
         }
 
-        public void SetTarget(Vector3 targetPoint, GameObject instigator, float damage)
+        public void SetTarget(Vector3 targetPoint, GameObject instigator, float damage, bool isCriticalHit = false)
         {
-            SetTarget(instigator, damage, null, targetPoint);
+            SetTarget(instigator, damage, null, targetPoint, isCriticalHit);
         }
 
-        public void SetTarget(GameObject instigator, float damage, Health target = null, Vector3 targetPoint = default)
+        public void SetTarget(GameObject instigator, float damage, Health target = null, Vector3 targetPoint = default, bool isCriticalHit = false)
         {
             _target = target;
             _targetPoint = targetPoint;
             _damage = damage;
             _instigator = instigator;
+            _isCriticalHit = isCriticalHit;
 
             Destroy(gameObject, _maxLifeTime);
         }
@@ -68,6 +76,13 @@ namespace RPG.Combat
             if (health == null || health.IsDead()) return;
 	        if (other.gameObject == _instigator) return;
             health.TakeDamage(_instigator, _damage);
+
+            // Тряска камеры именно в момент физического попадания снаряда — не в момент выстрела
+            if (_instigator != null && _instigator.GetComponent<RPG.Combat.PlayerFighter>() != null)
+            {
+                float shakeAmount = _isCriticalHit ? _criticalHitShakeAmount : _hitShakeAmount;
+                global::TopDownOrbitCamera.Instance?.InduceShake(shakeAmount);
+            }
 
             _speed = 0;
 

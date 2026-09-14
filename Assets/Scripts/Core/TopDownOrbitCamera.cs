@@ -62,6 +62,16 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
     [Tooltip("Включить подробные логи в консоль для отладки ввода.")]
     [SerializeField] private bool enableDebugLogs = false;
 
+    [Header("Camera Shake")]
+    [Tooltip("Максимальное смещение камеры (в метрах) при полной силе тряски.")]
+    [SerializeField] private float shakeMaxPositionOffset = 0.22f;
+    [Tooltip("Максимальный угол случайного наклона камеры (крен, градусы) при полной силе тряски.")]
+    [SerializeField] private float shakeMaxRotationOffset = 2.2f;
+    [Tooltip("Скорость затухания тряски (доля силы в секунду).")]
+    [SerializeField] private float shakeDecaySpeed = 2.5f;
+    [Tooltip("Частота шума Перлина для тряски — больше значение, резче дрожание.")]
+    [SerializeField] private float shakeFrequency = 20f;
+
     // Приватные переменные состояния
     private float _currentX = 0f;
     private float _currentY = 45f;
@@ -95,6 +105,13 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
     // Статическое свойство для PlayerController
     public static bool IsInputUsedByCamera { get; private set; }
 
+    // Позволяет боевым скриптам вызывать тряску камеры без прямой ссылки на объект камеры
+    public static TopDownOrbitCamera Instance { get; private set; }
+
+    // "Trauma" — накопленная сила тряски (0-1). Затухает со временем, несколько ударов подряд усиливают эффект.
+    private float _shakeTrauma = 0f;
+    private float _shakeSeed;
+
     // Структура для сохранения (если используется ISaveable)
     [System.Serializable]
     private struct CameraSaveData { public float currentX; public float currentY; public float distance; }
@@ -102,6 +119,21 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
     #endregion
 
     #region Unity Methods
+
+    void Awake()
+    {
+        Instance = this;
+        _shakeSeed = UnityEngine.Random.value * 1000f;
+    }
+
+    /// <summary>
+    /// Добавляет тряску камеры. amount — сила в диапазоне 0-1 (0.15-0.2 обычный удар, 0.4-0.5 крит).
+    /// Несколько попаданий подряд накапливают эффект, а не сбрасывают его — комбо ощущается весомее.
+    /// </summary>
+    public void InduceShake(float amount)
+    {
+        _shakeTrauma = Mathf.Clamp01(_shakeTrauma + amount);
+    }
 
     void Start()
     {
@@ -455,6 +487,29 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
         Vector3 desiredPosition = targetPivotPosition - direction * _smoothDistance;
         transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref _currentPositionVelocity, positionSmoothTime);
         transform.rotation = rotation;
+
+        ApplyShake();
+    }
+
+    /// <summary>
+    /// Накладывает лёгкое дрожание камеры поверх обычного положения на основе шума Перлина.
+    /// Сила тряски затухает квадратично — так эффект от удара ощущается резко, но быстро сходит на нет.
+    /// </summary>
+    private void ApplyShake()
+    {
+        if (_shakeTrauma <= 0f) return;
+
+        float shakeAmount = _shakeTrauma * _shakeTrauma;
+        float t = Time.time * shakeFrequency;
+
+        float offsetX = (Mathf.PerlinNoise(_shakeSeed, t) * 2f - 1f) * shakeMaxPositionOffset * shakeAmount;
+        float offsetY = (Mathf.PerlinNoise(_shakeSeed + 1f, t) * 2f - 1f) * shakeMaxPositionOffset * shakeAmount;
+        float roll = (Mathf.PerlinNoise(_shakeSeed + 2f, t) * 2f - 1f) * shakeMaxRotationOffset * shakeAmount;
+
+        transform.position += transform.right * offsetX + transform.up * offsetY;
+        transform.rotation *= Quaternion.Euler(0f, 0f, roll);
+
+        _shakeTrauma = Mathf.Max(0f, _shakeTrauma - shakeDecaySpeed * Time.deltaTime);
     }
 
     private float ClampAngle(float angle, float min, float max) { return Mathf.Clamp(angle, min, max); }

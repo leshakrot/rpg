@@ -25,6 +25,8 @@ namespace RPG.Combat
         [SerializeField] int maxComboStacks = 5;
         [Tooltip("Прирост урона за каждый удар в комбо (0.05 = +5% за стак).")]
         [SerializeField] [Range(0f, 0.2f)] float comboDamagePerStack = 0.05f;
+        [Tooltip("Скорость поворота корпуса к цели (градусы/сек). Большое значение выглядит как почти мгновенный поворот, меньшее — плавнее, без рывков.")]
+        [SerializeField] float facingRotationSpeed = 720f;
 
         private const float DodgeDefenceScale = 100f;
         private const string DodgeTriggerName = "dodge";
@@ -137,7 +139,7 @@ namespace RPG.Combat
 
         private void AttackBehaviour()
         {
-            transform.LookAt(target.transform);
+            FaceTarget(target.transform);
             if (timeSinceLastAttack > nextAttackDelay)
             {
                 TriggerAttack();
@@ -145,6 +147,21 @@ namespace RPG.Combat
                 // Каждая следующая атака чуть раньше или чуть позже — бой не выглядит как метроном
                 nextAttackDelay = timeBetweenAttacks * UnityEngine.Random.Range(1f - attackTimingVariance, 1f + attackTimingVariance);
             }
+        }
+
+        /// <summary>
+        /// Поворачивает бойца к цели только по горизонтали (yaw), игнорируя разницу высот.
+        /// Обычный Transform.LookAt наклоняет весь корпус по тангажу, если цель чуть выше/ниже
+        /// (кочка, яма, разная высота пивота коллайдера) — из-за этого персонаж визуально
+        /// "проваливается" или бьёт под неестественным углом. Плоский поворот убирает этот артефакт.
+        /// </summary>
+        private void FaceTarget(Transform targetTransform)
+        {
+            Vector3 direction = targetTransform.position - transform.position;
+            direction.y = 0f;
+            if (direction.sqrMagnitude < 0.0001f) return;
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, facingRotationSpeed * Time.deltaTime);
         }
 
         public Health FindNewTargetInRange(float range)
@@ -216,7 +233,7 @@ namespace RPG.Combat
             }
 
             damage = ApplyComboBonus(damage);
-            damage = ApplyDamageVarianceAndCrit(damage);
+            damage = ApplyDamageVarianceAndCrit(damage, out bool isCriticalHit);
 
             if (currentWeapon.value != null)
             {
@@ -225,7 +242,7 @@ namespace RPG.Combat
 
             if (currentWeaponConfig.HasProjectile())
             {
-                currentWeaponConfig.LaunchProjectile(rightHandTransform, leftHandTransform, target, gameObject, damage);
+                currentWeaponConfig.LaunchProjectile(rightHandTransform, leftHandTransform, target, gameObject, damage, isCriticalHit);
             }
             else
             {
@@ -271,7 +288,7 @@ namespace RPG.Combat
         /// <summary>
         /// Добавляет случайный разброс урона и, с шансом оружия, критический удар.
         /// </summary>
-        private float ApplyDamageVarianceAndCrit(float damage)
+        private float ApplyDamageVarianceAndCrit(float damage, out bool isCriticalHit)
         {
             float variance = currentWeaponConfig.GetDamageVariance();
             if (variance > 0f)
@@ -279,7 +296,8 @@ namespace RPG.Combat
                 damage *= UnityEngine.Random.Range(1f - variance, 1f + variance);
             }
 
-            if (UnityEngine.Random.value < currentWeaponConfig.GetCriticalChance())
+            isCriticalHit = UnityEngine.Random.value < currentWeaponConfig.GetCriticalChance();
+            if (isCriticalHit)
             {
                 damage *= currentWeaponConfig.GetCriticalMultiplier();
                 _animator.SetTrigger(CriticalHitTriggerName);
