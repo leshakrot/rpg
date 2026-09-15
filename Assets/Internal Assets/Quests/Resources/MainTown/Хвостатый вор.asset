@@ -151,6 +151,24 @@ MonoBehaviour:
           _negate: 0
     isCollectionObjective: 0
     itemToCollect: {fileID: 0}
+  - reference: go_sleep
+    description: "\u041E\u0442\u043F\u0440\u0430\u0432\u0438\u0442\u044C\u0441\u044F
+      \u0434\u043E\u043C\u043E\u0439 \u0438 \u043B\u0435\u0447\u044C \u0441\u043F\u0430\u0442\u044C"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 0
+    requiredCount: 1
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - return_to_arti
+          _negate: 0
+    isCollectionObjective: 0
+    itemToCollect: {fileID: 0}
   _rewards:
   - number: 120
     item: {fileID: 11400000, guid: 14c9d40d213c40d43b1755b25c673e9b, type: 2}
