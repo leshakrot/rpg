@@ -1,10 +1,15 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace RPG.SceneManagement
 {
     public class Fader : MonoBehaviour
     {
+        [Header("Location Image")]
+        [Tooltip("UI Image, отображающий картинку локации поверх/под затемнением на время перехода")]
+        [SerializeField] Image locationImage;
+
         CanvasGroup canvasGroup;
         Coroutine currentActiveFade = null;
 
@@ -16,6 +21,23 @@ namespace RPG.SceneManagement
         public void FadeOutImmediate()
         {
             canvasGroup.alpha = 1;
+        }
+
+        /// <summary>
+        /// Устанавливает картинку локации, которая будет видна во время затемнения.
+        /// Вызывать перед FadeOut, чтобы нужная картинка уже была выставлена
+        /// к моменту, когда экран полностью закроется.
+        /// </summary>
+        public void SetLocationImage(Sprite sprite)
+        {
+            if (locationImage == null)
+            {
+                Debug.LogWarning("Fader: locationImage не назначен в инспекторе.");
+                return;
+            }
+
+            locationImage.sprite = sprite;
+            locationImage.enabled = sprite != null;
         }
 
         public Coroutine FadeOut(float time)

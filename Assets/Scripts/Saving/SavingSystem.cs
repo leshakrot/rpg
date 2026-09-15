@@ -22,6 +22,15 @@ namespace GameDevTV.Saving
         [SerializeField] private bool waitForYandexSDK = true;
         [SerializeField] private float maxWaitTime = 10f;
 
+        /// <summary>
+        /// Стреляет каждый раз, когда завершён полный проход RestoreState()
+        /// по всем SaveableEntity в текущей сцене. Подписчики (например,
+        /// ObjectiveReactor) используют этот сигнал, чтобы гарантированно
+        /// выполнять свою логику только после восстановления состояния,
+        /// а не полагаться на порядок Awake/Start между разными скриптами.
+        /// </summary>
+        public static event Action OnRestoreStateComplete;
+
         private bool isWebPlatform
         {
             get
@@ -264,6 +273,8 @@ namespace GameDevTV.Saving
                     saveable.RestoreState(state[id]);
                 }
             }
+
+            OnRestoreStateComplete?.Invoke();
         }
 
         private string GetPathFromSaveFile(string saveFile)

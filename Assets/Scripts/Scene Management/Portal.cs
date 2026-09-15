@@ -44,6 +44,10 @@ namespace RPG.SceneManagement
         [SerializeField] private Sprite interactIcon;
 	    [SerializeField] private string interactText = "Переход";
 
+        [Header("Location Image")]
+        [Tooltip("Картинка локации, в которую ведёт этот портал — показывается на Fader во время перехода")]
+        [SerializeField] private Sprite destinationImage;
+
         private bool isPlayerInRange = false;
 
         public void ToggleAvailability(bool b)
@@ -98,6 +102,8 @@ namespace RPG.SceneManagement
             SavingWrapper savingWrapper = FindObjectOfType<SavingWrapper>();
             PlayerController playerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
             playerController.enabled = false;
+
+            fader.SetLocationImage(destinationImage);
 
             yield return fader.FadeOut(fadeOutTime);
 

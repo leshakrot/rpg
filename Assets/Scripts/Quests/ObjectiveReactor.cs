@@ -1,7 +1,9 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using RPG.Quests;
+using GameDevTV.Saving;
 
 public class ObjectiveReactor : MonoBehaviour
 {
@@ -14,6 +16,10 @@ public class ObjectiveReactor : MonoBehaviour
 
 	[Header("Идентификатор реактора")]
 	[SerializeField] private string reactorId;
+
+	[Header("Синхронизация с восстановлением состояния")]
+	[Tooltip("Страховка на случай, если SavingSystem.OnRestoreStateComplete в этой сцене вообще не придёт (New Game / запуск сцены без SavingSystem). Секунды, unscaled.")]
+	[SerializeField] private float restoreWaitTimeout = 0.2f;
 
 	private const string QUEST_LIST_ERROR = "QuestList не найден в сцене!";
 	private const string QUEST_NOT_FOUND_ERROR = "Квест '{0}' не найден!";
@@ -33,6 +39,40 @@ public class ObjectiveReactor : MonoBehaviour
 
 	private void Start()
 	{
+		// ВАЖНО: подписка напрямую на Initialize(), БЕЗ корутины-обёртки.
+		// ObjectStateSaver.RestoreState() может в рамках того же прохода
+		// выключить именно этот GameObject (если он входит в managedObjects
+		// как визуально персистентный объект). SetActive(false) немедленно
+		// убивает любые корутины на этом объекте — поэтому ждать сигнал
+		// через корутину нельзя, реактор до него просто не доживёт.
+		// Обычная C#-подписка на событие переживает выключение объекта
+		// и сработает синхронно в конце SavingSystem.RestoreState(),
+		// уже ПОСЛЕ того как ObjectStateSaver закончил свой проход —
+		// то есть корректно переактивирует объект, даже если он был
+		// на мгновение выключен восстановлением.
+		SavingSystem.OnRestoreStateComplete += HandleRestoreStateComplete;
+		StartCoroutine(FallbackInitializeIfNoRestoreSignal());
+	}
+
+	private void HandleRestoreStateComplete()
+	{
+		Initialize();
+	}
+
+	private IEnumerator FallbackInitializeIfNoRestoreSignal()
+	{
+		// Срабатывает только если сигнал восстановления вообще не пришёл
+		// (New Game, ручной запуск сцены в редакторе без SavingSystem и т.п.).
+		// Если Initialize() уже был вызван через HandleRestoreStateComplete —
+		// isInitialized == true, и Initialize() ниже просто ничего не сделает.
+		float elapsed = 0f;
+
+		while (!isInitialized && elapsed < restoreWaitTimeout)
+		{
+			elapsed += Time.unscaledDeltaTime;
+			yield return null;
+		}
+
 		Initialize();
 	}
 
@@ -59,7 +99,15 @@ public class ObjectiveReactor : MonoBehaviour
 
 	private void OnDisable()
 	{
+		// SavingSystem.OnRestoreStateComplete здесь НЕ отписываем намеренно —
+		// именно эта отписка ломала восстановление, когда ObjectStateSaver
+		// выключал этот же объект в рамках своего прохода (см. Start()).
 		UnsubscribeFromEvents();
+	}
+
+	private void OnDestroy()
+	{
+		SavingSystem.OnRestoreStateComplete -= HandleRestoreStateComplete;
 	}
 
 	private void Initialize()
