@@ -169,15 +169,20 @@ MonoBehaviour:
   - d7ee88d0-c79e-4a61-875c-f128f93e587c
   rect:
     serializedVersion: 2
-    x: 197.20001
-    y: 409.40002
+    x: 244.20001
+    y: 395.40002
     width: 200
     height: 100
   onEnterActions:
   - give_sausage
   onExitActions: []
   condition:
-    _and: []
+    _and:
+    - _or:
+      - _predicate: CompletedObjective
+        _parameters:
+        - give_sausage
+        _negate: 1
 --- !u!114 &2101822274153130807
 MonoBehaviour:
   m_ObjectHideFlags: 0

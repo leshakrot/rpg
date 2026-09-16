@@ -21,6 +21,10 @@ public class ObjectiveReactor : MonoBehaviour
 	[Tooltip("Страховка на случай, если SavingSystem.OnRestoreStateComplete в этой сцене вообще не придёт (New Game / запуск сцены без SavingSystem). Секунды, unscaled.")]
 	[SerializeField] private float restoreWaitTimeout = 0.2f;
 
+	[Header("Повторное применение эффекта")]
+	[Tooltip("Если включено: даже когда реактор уже срабатывал раньше (IsReactorFired == true), onObjectiveCompleted всё равно вызывается при каждой загрузке сцены — гарантирует актуальное состояние (например, активность объекта), даже если ObjectStateSaver восстановил устаревшие данные. Включай для реакторов, управляющих постоянной видимостью объектов. Оставляй выключенным для одноразовых эффектов (VFX/звук), которые не должны повторяться при каждом визите в сцену.")]
+	[SerializeField] private bool reapplyEffectIfAlreadyFired = false;
+
 	private const string QUEST_LIST_ERROR = "QuestList не найден в сцене!";
 	private const string QUEST_NOT_FOUND_ERROR = "Квест '{0}' не найден!";
 	
@@ -117,14 +121,25 @@ public class ObjectiveReactor : MonoBehaviour
         if (!ValidateComponents())
             return;
     
+        isInitialized = true;
+    
         if (CheckIfAlreadyFired())
         {
             hasFired = true;
-            isInitialized = true;
+
+            if (reapplyEffectIfAlreadyFired)
+            {
+                // Реактор уже срабатывал раньше (зафиксировано в QuestStatus),
+                // поэтому обычный путь через FireReactor() не идёт —
+                // MarkReactorAsFired() и лог "выполнено!" тут не нужны,
+                // это не первое срабатывание. Но состояние (например,
+                // активность объекта) всё равно нужно гарантированно
+                // применить заново, а не полагаться на ObjectStateSaver.
+                onObjectiveCompleted?.Invoke();
+            }
+
             return;
         }
-    
-        isInitialized = true;
     
         if (CheckIfObjectiveAlreadyComplete())
         {
