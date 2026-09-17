@@ -2825,6 +2825,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6313907048022330186}
   - component: {fileID: 3322793541488094103}
+  - component: {fileID: 7797905101719056850}
   m_Layer: 0
   m_Name: Damage Text Spawner
   m_TagString: Untagged
@@ -2860,6 +2861,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damageTextPrefab: {fileID: 6382639610877371558, guid: ccf838a0fc8db344bae7cbea2c429d7a,
+    type: 3}
+--- !u!114 &7797905101719056850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5233757090381072667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd79f937c33a4fd4abf5389b83a9cd52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.UI.KnockoutCountdownText.KnockoutCountdownSpawner
+  _knockoutCountdownTextPrefab: {fileID: 3951020647706948061, guid: afed72c4116a2c64aac8fd53c242c7d5,
     type: 3}
 --- !u!1 &5400896760858775074
 GameObject:
@@ -3182,7 +3197,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Companions.CompanionController
   followDistance: 3
   followStopDistance: 2
+  followCatchUpSpeedMultiplier: 1.15
   combatRange: 10
+  knockoutRespawnDuration: 15
+  reviveHealthPercentage: 50
+  knockoutCountdownSpawner: {fileID: 7797905101719056850}
 --- !u!114 &3486578022821377742
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3197,6 +3216,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Combat.CompanionFighter
   timeBetweenAttacks: 1
   autoAttackRange: 4
+  attackTimingVariance: 0.15
+  maxDodgeChance: 0.3
+  maxComboStacks: 5
+  comboDamagePerStack: 0.05
+  facingRotationSpeed: 720
   defaultWeapon: {fileID: 11400000, guid: 759344115a4e6eb43896c10f2514b0a9, type: 2}
   rightHandTransform: {fileID: 7355961892098174990}
   leftHandTransform: {fileID: 240454551214397892}
