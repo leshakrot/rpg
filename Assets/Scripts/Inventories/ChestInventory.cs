@@ -49,6 +49,104 @@ public class ChestInventory : InteractableObject, ISaveable
 		chestUpdated?.Invoke();
 	}
 
+	/// <summary>
+	/// Добавляет предмет в сундук в количестве 1 штука, автоматически находя
+	/// подходящий слот (существующий стек этого же предмета или первый пустой).
+	/// Удобно вызывать из UnityEvent, например из ObjectiveReactor.onObjectiveCompleted.
+	/// </summary>
+	public void AddItem(InventoryItem item)
+	{
+		AddItem(item, 1);
+	}
+
+	/// <summary>
+	/// Добавляет предмет в сундук в указанном количестве, автоматически находя
+	/// подходящий слот (существующий стек этого же предмета или первый пустой).
+	/// Возвращает true, если предмет удалось добавить.
+	/// </summary>
+	public bool AddItem(InventoryItem item, int number)
+	{
+		if (item == null || number <= 0)
+		{
+			Debug.LogWarning($"ChestInventory на {gameObject.name}: попытка добавить null-предмет или неверное количество ({number}).", this);
+			return false;
+		}
+
+		int slot = FindStackSlot(item);
+		if (slot < 0)
+		{
+			slot = FindEmptySlot();
+		}
+
+		if (slot < 0)
+		{
+			Debug.LogWarning($"ChestInventory на {gameObject.name}: нет свободного места для предмета {item.GetDisplayName()}.", this);
+			return false;
+		}
+
+		items[slot] = item;
+		numbers[slot] += number;
+		chestUpdated?.Invoke();
+		return true;
+	}
+
+	/// <summary>
+	/// Добавляет предмет в сундук по его ID. Принимает формат "itemID,quantity"
+	/// или просто "itemID" (количество по умолчанию = 1). Удобно для UnityEvent,
+	/// когда нет прямой ссылки на ScriptableObject предмета.
+	/// </summary>
+	public void AddItemByID(string itemIDWithQuantity)
+	{
+		if (string.IsNullOrEmpty(itemIDWithQuantity))
+		{
+			Debug.LogError("ChestInventory: ID предмета не может быть пустым.", this);
+			return;
+		}
+
+		string itemID = itemIDWithQuantity;
+		int quantity = 1;
+
+		if (itemIDWithQuantity.Contains(","))
+		{
+			string[] parts = itemIDWithQuantity.Split(',');
+			if (parts.Length != 2 || !int.TryParse(parts[1].Trim(), out quantity))
+			{
+				Debug.LogError($"ChestInventory: неверный формат '{itemIDWithQuantity}'. Ожидается 'itemID,quantity'.", this);
+				return;
+			}
+			itemID = parts[0].Trim();
+		}
+
+		InventoryItem item = InventoryItem.GetFromID(itemID);
+		if (item == null)
+		{
+			Debug.LogError($"ChestInventory: предмет с ID '{itemID}' не найден!", this);
+			return;
+		}
+
+		AddItem(item, quantity);
+	}
+
+	private int FindEmptySlot()
+	{
+		for (int i = 0; i < size; i++)
+		{
+			if (items[i] == null) return i;
+		}
+		return -1;
+	}
+
+	private int FindStackSlot(InventoryItem item)
+	{
+		if (item == null || !item.IsStackable()) return -1;
+
+		for (int i = 0; i < size; i++)
+		{
+			if (ReferenceEquals(items[i], item)) return i;
+		}
+		return -1;
+	}
+
 	public void RemoveFromSlot(int slot, int number)
 	{
 		if (numbers[slot] <= 0) return;
