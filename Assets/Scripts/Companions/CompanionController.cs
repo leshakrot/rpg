@@ -21,9 +21,20 @@ namespace RPG.Companions
         [Header("Следование")]
         [SerializeField] private float followDistance    = 3f;
         [SerializeField] private float followStopDistance = 2f;
-        [Tooltip("Множитель скорости следования относительно актуальной скорости игрока. " +
-                 "Значение больше 1 позволяет компаньону нагонять игрока, если он немного отстал.")]
+        [Tooltip("Максимальный множитель скорости следования относительно скорости игрока.")]
         [SerializeField] private float followCatchUpSpeedMultiplier = 1.15f;
+
+        [Tooltip("Скорость, с которой компаньон плавно меняет свою скорость.")]
+        [SerializeField] private float followSpeedSmoothTime = 0.25f;
+
+        [Tooltip("Дополнительная дистанция, при которой компаньон продолжает движение после входа в stop-зону.")]
+        [SerializeField] private float followStopHysteresis = 0.45f;
+
+        [Tooltip("Дистанция, после которой компаньон начинает заметно замедляться.")]
+        [SerializeField] private float followSlowdownDistance = 2.6f;
+
+        [Tooltip("Минимальная скорость движения внутри комфортной зоны, если игрок продолжает идти.")]
+        [SerializeField] private float followMinimumMovingSpeed = 0.65f;
 
         [Header("Бой")]
         [SerializeField] private float combatRange = 10f;
@@ -50,6 +61,8 @@ namespace RPG.Companions
         private Health       _target;
         private string       _companionID;
         private Coroutine    _knockoutRoutine;
+        private float         _followSpeedVelocity;
+        private bool          _wasFollowingMovement;
 
         // ── Unity lifecycle ───────────────────────────────────────────────
 
@@ -112,6 +125,8 @@ namespace RPG.Companions
 
             _agent.enabled   = true;
             _agent.isStopped = false;
+            _followSpeedVelocity = 0f;
+            _wasFollowingMovement = true;
 
             _health.onDie.AddListener(HandleDeath);
 
@@ -131,6 +146,8 @@ namespace RPG.Companions
 
             _agent.isStopped = true;
             _agent.enabled   = false;
+            _followSpeedVelocity = 0f;
+            _wasFollowingMovement = false;
 
             _target      = null;
             _player      = null;
@@ -148,8 +165,6 @@ namespace RPG.Companions
 
         private void TickFollow()
         {
-            SyncFollowSpeedWithPlayer();
-
             Health enemy = GetBestEnemy();
             if (enemy != null)
             {
@@ -159,28 +174,83 @@ namespace RPG.Companions
             }
 
             float dist = Vector3.Distance(transform.position, _player.position);
+            float stopDistance = Mathf.Min(followStopDistance, followDistance);
+            float resumeDistance = followDistance;
 
-            if (dist > followDistance)
+            // Пока компаньон уже идёт, не даём ему мгновенно останавливаться
+            // от каждого небольшого колебания дистанции.
+            if (_agent.isStopped)
             {
-                _agent.isStopped = false;
-                _agent.SetDestination(_player.position);
+                if (dist > resumeDistance)
+                {
+                    _agent.isStopped = false;
+                    _wasFollowingMovement = true;
+                }
             }
             else
             {
-                _agent.isStopped = true;
+                // Останавливаемся только когда действительно подошли близко.
+                if (dist <= stopDistance)
+                {
+                    _agent.isStopped = true;
+                    _wasFollowingMovement = false;
+                }
             }
+
+            if (_agent.isStopped)
+            {
+                // Сбрасываем остаточную скорость мягко через NavMeshAgent.
+                _agent.velocity = Vector3.zero;
+                SyncFollowSpeedWithPlayer(0f);
+                return;
+            }
+
+            _agent.SetDestination(_player.position);
+
+            // Чем ближе к игроку, тем меньше нужна скорость догоняющего.
+            // Это предотвращает постоянное "перелетание" через stopDistance.
+            float slowdownStart = Mathf.Max(stopDistance, followSlowdownDistance);
+            float t = Mathf.InverseLerp(stopDistance, slowdownStart, dist);
+
+            float playerSpeed = GetPlayerMovementSpeed();
+            float catchUpMultiplier = Mathf.Lerp(0.85f, followCatchUpSpeedMultiplier, t);
+
+            // Когда игрок сам движется, внутри комфортной зоны компаньон
+            // сохраняет небольшой ход вместо резкого перехода в Idle.
+            float targetSpeed = playerSpeed * catchUpMultiplier;
+
+            if (playerSpeed > 0.05f && dist < slowdownStart)
+            {
+                targetSpeed = Mathf.Max(
+                    targetSpeed,
+                    followMinimumMovingSpeed * Mathf.InverseLerp(stopDistance, slowdownStart, dist)
+                );
+            }
+
+            SyncFollowSpeedWithPlayer(targetSpeed);
         }
 
         /// <summary>
-        /// Подстраивает скорость следования компаньона под актуальную скорость игрока
-        /// (спринт, замедления, бонусы и т.д.), чтобы компаньон не отставал вне боя.
+        /// Плавно подстраивает скорость компаньона под движение игрока.
+        /// Скорость не скачет каждый кадр, поэтому переходы Run/Idle выглядят естественнее.
         /// </summary>
-        private void SyncFollowSpeedWithPlayer()
+        private void SyncFollowSpeedWithPlayer(float targetSpeed)
         {
             if (_playerAgent == null) return;
-            if (_playerAgent.speed <= 0f) return;
 
-            _agent.speed = _playerAgent.speed * followCatchUpSpeedMultiplier;
+            float smoothTime = Mathf.Max(0.01f, followSpeedSmoothTime);
+            _agent.speed = Mathf.SmoothDamp(
+                _agent.speed,
+                Mathf.Max(0f, targetSpeed),
+                ref _followSpeedVelocity,
+                smoothTime
+            );
+        }
+
+        private float GetPlayerMovementSpeed()
+        {
+            if (_playerAgent == null || !_playerAgent.enabled) return 0f;
+            return _playerAgent.velocity.magnitude;
         }
 
         // ── тик боя ──────────────────────────────────────────────────────
