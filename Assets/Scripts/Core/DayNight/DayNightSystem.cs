@@ -66,6 +66,19 @@ public class DayNightSystem : MonoBehaviour, ISaveable
     public float timeSpeed = 0.5f;
     public int currentDay = 1;
 
+    [Tooltip("Если включено, при запуске системы время суток будет остановлено. " +
+             "Можно изменить во время игры через PauseTime / ResumeTime / SetTimePaused.")]
+    [SerializeField] private bool startTimePaused = false;
+
+    [Tooltip("Текущее состояние паузы времени. Сохраняется между сценами и в сохранении игры.")]
+    [SerializeField] private bool timePaused = false;
+
+    /// <summary>
+    /// Возвращает true, если игровое время сейчас остановлено.
+    /// Удобно для других систем, которым нужно проверить состояние времени.
+    /// </summary>
+    public bool IsTimePaused => timePaused;
+
     [Header("Временные границы (часы)")]
     [Tooltip("Когда начинается рассвет (например 5.5 = 5:30)")]
     public float dawnStart = 5.5f;
@@ -142,6 +155,11 @@ public class DayNightSystem : MonoBehaviour, ISaveable
                 if (s != this) { Destroy(gameObject); return; }
         }
 
+        // Начальное состояние задаётся в Inspector.
+        // После запуска системы дальше используется именно timePaused,
+        // поэтому StartTimePaused не влияет на последующие переходы между сценами.
+        timePaused = startTimePaused;
+
         InitializeAtmosphericSettings();
         InitializeDefaultGradients();
         ConfigureLights();
@@ -172,14 +190,19 @@ public class DayNightSystem : MonoBehaviour, ISaveable
     // ─── Основной цикл обновления ───────────────────────────────────────────
     private void UpdateAll(bool force)
     {
-        // Движение времени
-        currentTime += Time.deltaTime * timeSpeed / 86400f * 24f;
-        if (currentTime >= 24f)
+        // Движение времени.
+        // При паузе само игровое время и день не меняются, но визуальная часть
+        // системы продолжает обновляться, поэтому состояние освещения остаётся корректным.
+        if (!timePaused)
         {
-            currentTime -= 24f;
-            currentDay++;
-            dayCompletedFired = false;
-            foreach (var e in timeEvents) e.ResetTrigger();
+            currentTime += Time.deltaTime * timeSpeed / 86400f * 24f;
+            if (currentTime >= 24f)
+            {
+                currentTime -= 24f;
+                currentDay++;
+                dayCompletedFired = false;
+                foreach (var e in timeEvents) e.ResetTrigger();
+            }
         }
 
         int hour   = Mathf.FloorToInt(currentTime);
@@ -558,6 +581,34 @@ public class DayNightSystem : MonoBehaviour, ISaveable
 
     public void SetTimeSpeed(float speed) => timeSpeed = Mathf.Max(0f, speed);
 
+    /// <summary>
+    /// Ставит игровое время на паузу.
+    /// Можно напрямую вызывать из UnityEvent / Objective Reactor.
+    /// </summary>
+    public void PauseTime()
+    {
+        timePaused = true;
+    }
+
+    /// <summary>
+    /// Снимает игровое время с паузы.
+    /// Можно напрямую вызывать из UnityEvent / Objective Reactor.
+    /// </summary>
+    public void ResumeTime()
+    {
+        timePaused = false;
+    }
+
+    /// <summary>
+    /// Устанавливает состояние паузы явно.
+    /// true = остановить время, false = продолжить.
+    /// Удобно для UnityEvent и других систем.
+    /// </summary>
+    public void SetTimePaused(bool paused)
+    {
+        timePaused = paused;
+    }
+
     public void AddTimeEvent(int hour, int minute, UnityEvent onTimeReached)
     {
         timeEvents.Add(new TimeEvent { hour = hour, minute = minute, onTimeReached = onTimeReached });
@@ -576,9 +627,15 @@ public class DayNightSystem : MonoBehaviour, ISaveable
     {
         public float currentTime;
         public int   currentDay;
+        public bool  timePaused;
     }
 
-    public object CaptureState() => new DayNightSaveData { currentTime = currentTime, currentDay = currentDay };
+    public object CaptureState() => new DayNightSaveData
+    {
+        currentTime = currentTime,
+        currentDay  = currentDay,
+        timePaused  = timePaused
+    };
 
     public void RestoreState(object state)
     {
@@ -591,6 +648,7 @@ public class DayNightSystem : MonoBehaviour, ISaveable
 
         currentTime = d.currentTime;
         currentDay  = d.currentDay;
+        timePaused  = d.timePaused;
         UpdateAll(force: true);
     }
 }

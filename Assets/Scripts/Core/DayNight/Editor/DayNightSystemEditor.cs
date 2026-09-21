@@ -7,7 +7,7 @@ using UnityEngine.Events;
 public class DayNightSystemEditor : Editor
 {
     // ─── Сериализованные свойства ───────────────────────────────────────────
-    private SerializedProperty currentTime, timeSpeed, currentDay;
+    private SerializedProperty currentTime, timeSpeed, currentDay, startTimePaused;
     private SerializedProperty dawnStart, duskStart, transitionSpeed;
     private SerializedProperty atmosphericSettings;
     private SerializedProperty skyboxMaterial, skyColor, horizonColor, groundColor;
@@ -40,9 +40,10 @@ public class DayNightSystemEditor : Editor
 
     private void OnEnable()
     {
-        currentTime   = serializedObject.FindProperty("currentTime");
-        timeSpeed     = serializedObject.FindProperty("timeSpeed");
-        currentDay    = serializedObject.FindProperty("currentDay");
+        currentTime     = serializedObject.FindProperty("currentTime");
+        timeSpeed       = serializedObject.FindProperty("timeSpeed");
+        currentDay      = serializedObject.FindProperty("currentDay");
+        startTimePaused = serializedObject.FindProperty("startTimePaused");
         dawnStart     = serializedObject.FindProperty("dawnStart");
         duskStart     = serializedObject.FindProperty("duskStart");
         transitionSpeed = serializedObject.FindProperty("transitionSpeed");
@@ -176,8 +177,16 @@ public class DayNightSystemEditor : Editor
             currentTime.floatValue = hours + mins / 60f;
 
         EditorGUILayout.Space(4);
-        EditorGUILayout.PropertyField(timeSpeed,     new GUIContent("Скорость времени",     "1 = 86400 сек/игровой день"));
-        EditorGUILayout.PropertyField(currentDay,    new GUIContent("Текущий день"));
+        EditorGUILayout.PropertyField(timeSpeed,
+            new GUIContent("Скорость времени", "1 = 86400 сек/игровой день"));
+        EditorGUILayout.PropertyField(currentDay,
+            new GUIContent("Текущий день"));
+        EditorGUILayout.PropertyField(startTimePaused,
+            new GUIContent(
+                "Пауза при запуске",
+                "Если включено, время суток будет остановлено сразу после запуска DayNightSystem. " +
+                "Игра, NPC и другая игровая логика при этом продолжают работать."
+            ));
         EditorGUILayout.Space(4);
         EditorGUILayout.LabelField("Границы суток", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(dawnStart,     new GUIContent("Начало рассвета (ч)"));
