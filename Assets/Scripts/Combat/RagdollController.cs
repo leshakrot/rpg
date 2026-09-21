@@ -34,6 +34,39 @@ namespace RPG.Combat
         [Tooltip("После остановки тела отключить его ragdoll-коллайдеры. Существенно дешевле для слабых устройств.")]
         [SerializeField] private bool disableCollidersWhenSettled = true;
 
+        [Header("Импульс при смерти")]
+        [Tooltip("Добавлять небольшой случайный физический импульс при смерти.")]
+        [SerializeField] private bool useDeathImpulse = true;
+
+        [Tooltip("Минимальная сила импульса.")]
+        [SerializeField] private float minDeathImpulse = 1.5f;
+
+        [Tooltip("Максимальная сила импульса.")]
+        [SerializeField] private float maxDeathImpulse = 3.5f;
+
+        [Tooltip("Минимальная случайная составляющая вверх.")]
+        [SerializeField] private float minUpwardImpulse = 0.15f;
+
+        [Tooltip("Максимальная случайная составляющая вверх.")]
+        [SerializeField] private float maxUpwardImpulse = 0.75f;
+
+        [Tooltip("Максимальный случайный разброс направления в градусах.")]
+        [Range(0f, 90f)]
+        [SerializeField] private float impulseSpreadAngle = 25f;
+
+        [Tooltip("Сколько частей ragdoll получают импульс. Обычно 1 достаточно.")]
+        [Range(1, 3)]
+        [SerializeField] private int impulseBodyPartCount = 1;
+
+        [Tooltip("Случайное вращение тела после смерти. Создаёт больше вариантов падения.")]
+        [SerializeField] private bool useDeathTorque = true;
+
+        [Tooltip("Минимальная сила случайного вращения.")]
+        [SerializeField] private float minDeathTorque = 0.5f;
+
+        [Tooltip("Максимальная сила случайного вращения.")]
+        [SerializeField] private float maxDeathTorque = 2f;
+
         [Header("Дополнительно")]
         [Tooltip("Отключать ли Animator при переходе в ragdoll.")]
         [SerializeField] private bool disableAnimator = true;
@@ -64,6 +97,8 @@ namespace RPG.Combat
 
         private Rigidbody[] ragdollRigidbodies;
         private Collider[] ragdollColliders;
+
+        private GameObject lastDamageInstigator;
 
         private bool isRagdollActive;
         private bool isInitialized;
@@ -146,18 +181,29 @@ namespace RPG.Combat
 
         private void SubscribeToHealth()
         {
-            if (health != null)
+            if (health == null)
             {
-                health.onDie.AddListener(OnDeath);
+                return;
             }
+
+            health.onDie.AddListener(OnDeath);
+            health.onTakeDamage += OnTakeDamage;
         }
 
         private void UnsubscribeFromHealth()
         {
-            if (health != null)
+            if (health == null)
             {
-                health.onDie.RemoveListener(OnDeath);
+                return;
             }
+
+            health.onDie.RemoveListener(OnDeath);
+            health.onTakeDamage -= OnTakeDamage;
+        }
+
+        private void OnTakeDamage(GameObject instigator)
+        {
+            lastDamageInstigator = instigator;
         }
 
         private void OnDeath()
@@ -191,6 +237,11 @@ namespace RPG.Combat
             }
 
             EnableRagdoll();
+
+            if (useDeathImpulse)
+            {
+                ApplyDeathImpulse();
+            }
 
             float elapsed = 0f;
             float settledElapsed = 0f;
@@ -295,6 +346,113 @@ namespace RPG.Combat
             }
 
             Physics.SyncTransforms();
+        }
+
+        private void ApplyDeathImpulse()
+        {
+            if (ragdollRigidbodies == null || ragdollRigidbodies.Length == 0)
+            {
+                return;
+            }
+
+            int partsToAffect = Mathf.Clamp(
+                impulseBodyPartCount,
+                1,
+                ragdollRigidbodies.Length
+            );
+
+            List<Rigidbody> availableParts = new List<Rigidbody>(ragdollRigidbodies);
+
+            for (int i = 0; i < partsToAffect; i++)
+            {
+                if (availableParts.Count == 0)
+                {
+                    break;
+                }
+
+                int randomIndex = Random.Range(0, availableParts.Count);
+                Rigidbody rigidbody = availableParts[randomIndex];
+                availableParts.RemoveAt(randomIndex);
+
+                if (rigidbody == null)
+                {
+                    continue;
+                }
+
+                Vector3 direction = GetDeathImpulseDirection();
+
+                float impulse = Random.Range(
+                    minDeathImpulse,
+                    Mathf.Max(minDeathImpulse, maxDeathImpulse)
+                );
+
+                float upward = Random.Range(
+                    minUpwardImpulse,
+                    Mathf.Max(minUpwardImpulse, maxUpwardImpulse)
+                );
+
+                direction += Vector3.up * upward;
+                direction.Normalize();
+
+                rigidbody.AddForce(
+                    direction * impulse,
+                    ForceMode.Impulse
+                );
+
+                if (useDeathTorque)
+                {
+                    Vector3 randomTorque = Random.onUnitSphere;
+
+                    float torque = Random.Range(
+                        minDeathTorque,
+                        Mathf.Max(minDeathTorque, maxDeathTorque)
+                    );
+
+                    rigidbody.AddTorque(
+                        randomTorque * torque,
+                        ForceMode.Impulse
+                    );
+                }
+            }
+        }
+
+        private Vector3 GetDeathImpulseDirection()
+        {
+            Vector3 direction;
+
+            if (lastDamageInstigator != null)
+            {
+                direction = transform.position - lastDamageInstigator.transform.position;
+
+                direction.y = 0f;
+
+                if (direction.sqrMagnitude < 0.0001f)
+                {
+                    direction = -transform.forward;
+                }
+            }
+            else
+            {
+                direction = Random.insideUnitSphere;
+                direction.y = 0f;
+
+                if (direction.sqrMagnitude < 0.0001f)
+                {
+                    direction = Vector3.forward;
+                }
+            }
+
+            direction.Normalize();
+
+            // Небольшой случайный поворот направления.
+            float randomAngle = Random.Range(
+                -impulseSpreadAngle,
+                impulseSpreadAngle
+            );
+
+            direction = Quaternion.Euler(0f, randomAngle, 0f) * direction;
+
+            return direction;
         }
 
         private void DisableRagdoll()
