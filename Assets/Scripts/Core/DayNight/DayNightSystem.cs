@@ -66,12 +66,27 @@ public class DayNightSystem : MonoBehaviour, ISaveable
     public float timeSpeed = 0.5f;
     public int currentDay = 1;
 
-    [Tooltip("Если включено, при запуске системы время суток будет остановлено. " +
-             "Можно изменить во время игры через PauseTime / ResumeTime / SetTimePaused.")]
+    [Tooltip("Начальное состояние времени при запуске новой игровой сессии. " +
+             "После запуска это значение больше не переопределяет состояние времени. " +
+             "Снять паузу можно только явным вызовом ResumeTime() или SetTimePaused(false).")]
     [SerializeField] private bool startTimePaused = false;
 
     [Tooltip("Текущее состояние паузы времени. Сохраняется между сценами и в сохранении игры.")]
     [SerializeField] private bool timePaused = false;
+
+    // Состояние паузы живёт отдельно от конкретного экземпляра сцены.
+    // Это важно, если при загрузке новой сцены создаётся новый DayNightSystem:
+    // его StartTimePaused не должен заново переопределять состояние,
+    // которое уже было изменено квестом.
+    private static bool sessionTimePaused;
+    private static bool sessionTimePausedInitialized;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStaticState()
+    {
+        sessionTimePaused = false;
+        sessionTimePausedInitialized = false;
+    }
 
     /// <summary>
     /// Возвращает true, если игровое время сейчас остановлено.
@@ -155,10 +170,16 @@ public class DayNightSystem : MonoBehaviour, ISaveable
                 if (s != this) { Destroy(gameObject); return; }
         }
 
-        // Начальное состояние задаётся в Inspector.
-        // После запуска системы дальше используется именно timePaused,
-        // поэтому StartTimePaused не влияет на последующие переходы между сценами.
-        timePaused = startTimePaused;
+        // StartTimePaused используется ТОЛЬКО один раз — при старте новой
+        // игровой сессии. При смене сцены он больше никогда не переопределяет
+        // состояние, установленное PauseTime / ResumeTime / SetTimePaused.
+        if (!sessionTimePausedInitialized)
+        {
+            sessionTimePaused = startTimePaused;
+            sessionTimePausedInitialized = true;
+        }
+
+        timePaused = sessionTimePaused;
 
         InitializeAtmosphericSettings();
         InitializeDefaultGradients();
@@ -588,6 +609,8 @@ public class DayNightSystem : MonoBehaviour, ISaveable
     public void PauseTime()
     {
         timePaused = true;
+        sessionTimePaused = true;
+        sessionTimePausedInitialized = true;
     }
 
     /// <summary>
@@ -597,6 +620,8 @@ public class DayNightSystem : MonoBehaviour, ISaveable
     public void ResumeTime()
     {
         timePaused = false;
+        sessionTimePaused = false;
+        sessionTimePausedInitialized = true;
     }
 
     /// <summary>
@@ -607,6 +632,8 @@ public class DayNightSystem : MonoBehaviour, ISaveable
     public void SetTimePaused(bool paused)
     {
         timePaused = paused;
+        sessionTimePaused = paused;
+        sessionTimePausedInitialized = true;
     }
 
     public void AddTimeEvent(int hour, int minute, UnityEvent onTimeReached)
@@ -649,6 +676,12 @@ public class DayNightSystem : MonoBehaviour, ISaveable
         currentTime = d.currentTime;
         currentDay  = d.currentDay;
         timePaused  = d.timePaused;
+
+        // Сохранённое состояние имеет приоритет над настройкой StartTimePaused
+        // и должно пережить последующие переходы между сценами.
+        sessionTimePaused = timePaused;
+        sessionTimePausedInitialized = true;
+
         UpdateAll(force: true);
     }
 }
