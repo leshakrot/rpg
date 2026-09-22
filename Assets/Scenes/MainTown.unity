@@ -12412,6 +12412,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 154032128}
+        m_TargetAssemblyTypeName: DayNightSystem, Assembly-CSharp
+        m_MethodName: SetTime
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 6
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1236498976}
+        m_TargetAssemblyTypeName: RPG.Animation.CharacterAnimationController, Assembly-CSharp
+        m_MethodName: SetBoolTrue
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 6
+          m_StringArgument: isWaving2
+          m_BoolArgument: 1
+        m_CallState: 2
   reactorId: 
   restoreWaitTimeout: 0.2
   reapplyEffectIfAlreadyFired: 1
@@ -20255,9 +20279,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1236498976}
+        m_TargetAssemblyTypeName: RPG.Animation.CharacterAnimationController, Assembly-CSharp
+        m_MethodName: SetBoolFalse
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: isWaving2
+          m_BoolArgument: 0
+        m_CallState: 2
   reactorId: 
   restoreWaitTimeout: 0.2
-  reapplyEffectIfAlreadyFired: 0
+  reapplyEffectIfAlreadyFired: 1
 --- !u!1001 &496951818
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36502,7 +36538,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Animation.CharacterAnimationController
   startParameter: isWaving2
-  setStartParameterOnStart: 1
+  setStartParameterOnStart: 0
 --- !u!1 &1236498977 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8538931527402673927, guid: 28eae5ecb3f07ca49bf2cbe84d017995,

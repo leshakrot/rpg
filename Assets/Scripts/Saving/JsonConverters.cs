@@ -1,13 +1,16 @@
-using UnityEngine;
-using Newtonsoft.Json;
 using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 namespace GameDevTV.Saving
 {
     /// <summary>
-    /// JSON конвертер для Vector3
+    /// JSON converters used by both local and Yandex saves.
+    /// The format intentionally remains compatible with the existing project:
+    /// { "x": ..., "y": ..., "z": ... } etc.
     /// </summary>
-    public class Vector3JsonConverter : JsonConverter<Vector3>
+    public sealed class Vector3JsonConverter : JsonConverter<Vector3>
     {
         public override void WriteJson(JsonWriter writer, Vector3 value, JsonSerializer serializer)
         {
@@ -21,21 +24,29 @@ namespace GameDevTV.Saving
             writer.WriteEndObject();
         }
 
-        public override Vector3 ReadJson(JsonReader reader, Type objectType, Vector3 existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override Vector3 ReadJson(
+            JsonReader reader,
+            Type objectType,
+            Vector3 existingValue,
+            bool hasExistingValue,
+            JsonSerializer serializer)
         {
-            var jo = Newtonsoft.Json.Linq.JObject.Load(reader);
+            JObject json = JObject.Load(reader);
+
             return new Vector3(
-                (float)jo["x"],
-                (float)jo["y"],
-                (float)jo["z"]
-            );
+                ReadFloat(json, "x"),
+                ReadFloat(json, "y"),
+                ReadFloat(json, "z"));
+        }
+
+        private static float ReadFloat(JObject json, string name)
+        {
+            JToken token = json[name];
+            return token == null ? 0f : token.Value<float>();
         }
     }
 
-    /// <summary>
-    /// JSON конвертер для Quaternion
-    /// </summary>
-    public class QuaternionJsonConverter : JsonConverter<Quaternion>
+    public sealed class QuaternionJsonConverter : JsonConverter<Quaternion>
     {
         public override void WriteJson(JsonWriter writer, Quaternion value, JsonSerializer serializer)
         {
@@ -51,22 +62,30 @@ namespace GameDevTV.Saving
             writer.WriteEndObject();
         }
 
-        public override Quaternion ReadJson(JsonReader reader, Type objectType, Quaternion existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override Quaternion ReadJson(
+            JsonReader reader,
+            Type objectType,
+            Quaternion existingValue,
+            bool hasExistingValue,
+            JsonSerializer serializer)
         {
-            var jo = Newtonsoft.Json.Linq.JObject.Load(reader);
+            JObject json = JObject.Load(reader);
+
             return new Quaternion(
-                (float)jo["x"],
-                (float)jo["y"],
-                (float)jo["z"],
-                (float)jo["w"]
-            );
+                ReadFloat(json, "x"),
+                ReadFloat(json, "y"),
+                ReadFloat(json, "z"),
+                ReadFloat(json, "w", 1f));
+        }
+
+        private static float ReadFloat(JObject json, string name, float fallback = 0f)
+        {
+            JToken token = json[name];
+            return token == null ? fallback : token.Value<float>();
         }
     }
 
-    /// <summary>
-    /// JSON конвертер для Color
-    /// </summary>
-    public class ColorJsonConverter : JsonConverter<Color>
+    public sealed class ColorJsonConverter : JsonConverter<Color>
     {
         public override void WriteJson(JsonWriter writer, Color value, JsonSerializer serializer)
         {
@@ -82,15 +101,26 @@ namespace GameDevTV.Saving
             writer.WriteEndObject();
         }
 
-        public override Color ReadJson(JsonReader reader, Type objectType, Color existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override Color ReadJson(
+            JsonReader reader,
+            Type objectType,
+            Color existingValue,
+            bool hasExistingValue,
+            JsonSerializer serializer)
         {
-            var jo = Newtonsoft.Json.Linq.JObject.Load(reader);
+            JObject json = JObject.Load(reader);
+
             return new Color(
-                (float)jo["r"],
-                (float)jo["g"],
-                (float)jo["b"],
-                (float)jo["a"]
-            );
+                ReadFloat(json, "r"),
+                ReadFloat(json, "g"),
+                ReadFloat(json, "b"),
+                ReadFloat(json, "a", 1f));
+        }
+
+        private static float ReadFloat(JObject json, string name, float fallback = 0f)
+        {
+            JToken token = json[name];
+            return token == null ? fallback : token.Value<float>();
         }
     }
 }
