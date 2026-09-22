@@ -1,44 +1,37 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Newtonsoft.Json;
 
 namespace GameDevTV.Saving
 {
     /// <summary>
-    /// Main saving facade.
+    /// This component provides the interface to the saving system. It provides
+    /// methods to save and restore a scene.
     ///
-    /// The original save model is deliberately preserved:
-    /// Dictionary<string, object> at the root, SaveableEntity IDs as keys,
-    /// and "lastSceneBuildIndex" as the scene marker.
-    ///
-    /// Storage selection:
-    /// - desktop/editor: local JSON file;
-    /// - WebGL guest: local JSON string in PlayerPrefs/browser storage;
-    /// - WebGL authorized Yandex user: Yandex cloud.
+    /// This component should be created once and shared between all subsequent scenes.
+    /// Интегрирован с YandexSDK для корректной работы в веб-билдах.
     /// </summary>
     public class SavingSystem : MonoBehaviour
     {
-        [Header("Web")]
+        [Header("Веб-интеграция")]
         [SerializeField] private bool waitForYandexSDK = true;
         [SerializeField] private float maxWaitTime = 10f;
 
-        [Header("Guest -> Cloud")]
-        [Tooltip(
-            "When an authorized Yandex user has no cloud save, an existing " +
-            "guest save with the same name may be copied to the cloud.")]
-        [SerializeField] private bool migrateGuestSaveToCloud = true;
-
+        /// <summary>
+        /// Стреляет каждый раз, когда завершён полный проход RestoreState()
+        /// по всем SaveableEntity в текущей сцене. Подписчики (например,
+        /// ObjectiveReactor) используют этот сигнал, чтобы гарантированно
+        /// выполнять свою логику только после восстановления состояния,
+        /// а не полагаться на порядок Awake/Start между разными скриптами.
+        /// </summary>
         public static event Action OnRestoreStateComplete;
 
-        private readonly LocalSaveStorage localStorage =
-            new LocalSaveStorage();
-
-        private readonly YandexSaveStorage yandexStorage =
-            new YandexSaveStorage();
-
-        private bool IsWebPlatform
+        private bool isWebPlatform
         {
             get
             {
@@ -49,66 +42,50 @@ namespace GameDevTV.Saving
 #endif
             }
         }
-
         /// <summary>
-        /// Loads the last saved scene and restores its state.
+        /// Will load the last scene that was saved and restore the state. This
+        /// must be run as a coroutine.
         /// </summary>
+        /// <param name="saveFile">The save file to consult for loading.</param>
         public IEnumerator LoadLastScene(string saveFile)
         {
-            if (IsWebPlatform && waitForYandexSDK)
-                yield return WaitForYandexSDK();
-
-            Dictionary<string, object> state =
-                LoadFile(saveFile);
-
-            int buildIndex =
-                SceneManager.GetActiveScene().buildIndex;
-
-            if (state.TryGetValue(
-                "lastSceneBuildIndex",
-                out object sceneValue))
+            if (isWebPlatform && waitForYandexSDK)
             {
-                buildIndex = JsonSaveHelper.ToInt(sceneValue);
+                yield return WaitForYandexSaveData();
             }
 
-            if (buildIndex < 0 ||
-                buildIndex >= SceneManager.sceneCountInBuildSettings)
+            Dictionary<string, object> state = LoadFile(saveFile);
+            int buildIndex = SceneManager.GetActiveScene().buildIndex;
+            if (state.ContainsKey("lastSceneBuildIndex"))
             {
-                Debug.LogWarning(
-                    $"[Saving] Save '{saveFile}' contains invalid scene index " +
-                    $"{buildIndex}. Current scene will be kept.");
-                RestoreState(state);
-                yield break;
+                buildIndex = JsonSaveHelper.ToInt(state["lastSceneBuildIndex"]);
             }
-
             yield return SceneManager.LoadSceneAsync(buildIndex);
-            yield return null;
-
             RestoreState(state);
         }
 
         /// <summary>
-        /// Saves the current scene while preserving all previously stored
-        /// state that belongs to other scenes/entities.
+        /// Save the current scene to the provided save file.
         /// </summary>
         public void Save(string saveFile)
         {
-            Dictionary<string, object> state =
-                LoadFile(saveFile);
-
+            Dictionary<string, object> state = LoadFile(saveFile);
             CaptureState(state);
             SaveFile(saveFile, state);
         }
 
+        /// <summary>
+        /// Delete the state in the given save file.
+        /// </summary>
         public void Delete(string saveFile)
         {
-            if (UseYandexCloud())
+            if (isWebPlatform)
             {
-                yandexStorage.Delete(saveFile);
+                WebSavingAdapter.DeleteSave(saveFile);
             }
             else
             {
-                localStorage.Delete(saveFile);
+                File.Delete(GetPathFromSaveFile(saveFile));
             }
         }
 
@@ -116,195 +93,194 @@ namespace GameDevTV.Saving
         {
             RestoreState(LoadFile(saveFile));
         }
-
+        
         public bool SaveFileExists(string saveFile)
         {
-            if (UseYandexCloud())
-                return yandexStorage.Exists(saveFile);
-
-            return localStorage.Exists(saveFile);
+            if (isWebPlatform)
+            {
+                return WebSavingAdapter.SaveExists(saveFile);
+            }
+            else
+            {
+                string path = GetPathFromSaveFile(saveFile);
+                return File.Exists(path);
+            }
         }
-
+        
         public IEnumerable<string> ListSaves()
         {
-            if (UseYandexCloud())
+            if (isWebPlatform)
             {
-                foreach (string save in yandexStorage.ListSaves())
+                var saves = WebSavingAdapter.GetAvailableSaves();
+                foreach (string save in saves)
+                {
                     yield return save;
-
-                yield break;
+                }
             }
+            else
+            {
+                foreach (string path in Directory.EnumerateFiles(Application.persistentDataPath))
+                {
+                    if(Path.GetExtension(path) == ".json")
+                    {
+                        yield return Path.GetFileNameWithoutExtension(path);
+                    }
+                }
+            }
+        }
 
-            foreach (string save in localStorage.ListSaves())
-                yield return save;
+        // PRIVATE
+
+        private IEnumerator WaitForYandexSaveData()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            yield return WebSavingAdapter.WaitForData(maxWaitTime);
+
+            if (!WebSavingAdapter.IsDataLoaded)
+            {
+                Debug.LogWarning(
+                    "SavingSystem: данные сохранения Yandex не готовы."
+                );
+            }
+#else
+            yield return null;
+#endif
+        }
+
+        public IEnumerator WaitForSaveSystem()
+        {
+            if (isWebPlatform && waitForYandexSDK)
+            {
+                yield return WaitForYandexSaveData();
+            }
         }
 
         private Dictionary<string, object> LoadFile(string saveFile)
         {
-            if (UseYandexCloud())
+            if (isWebPlatform)
             {
-                if (yandexStorage.TryLoad(saveFile, out Dictionary<string, object> cloudState))
+                var webData = WebSavingAdapter.LoadGameData(saveFile);
+                if (webData != null && webData.Count > 0)
                 {
-                    Debug.Log(
-                        $"SavingSystem: Loaded '{saveFile}' from Yandex cloud.");
-                    return cloudState;
-                }
-
-                // Important: only fall back to guest data when the cloud
-                // save does not exist. We never use a stale local guest save
-                // to override an existing cloud save.
-                if (migrateGuestSaveToCloud &&
-                    localStorage.TryLoad(
-                        saveFile,
-                        out Dictionary<string, object> localState))
-                {
-                    Debug.Log(
-                        $"SavingSystem: No cloud save '{saveFile}'. " +
-                        "Using local guest save and migrating it to cloud.");
-
-                    yandexStorage.TrySave(saveFile, localState);
-                    return localState;
-                }
-
-                Debug.Log(
-                    $"SavingSystem: No cloud save '{saveFile}'.");
-                return new Dictionary<string, object>();
-            }
-
-            if (localStorage.TryLoad(
-                saveFile,
-                out Dictionary<string, object> state))
-            {
-                Debug.Log(
-                    $"SavingSystem: Loaded local save '{saveFile}'.");
-                return state;
-            }
-
-            Debug.Log(
-                $"SavingSystem: No local save '{saveFile}'.");
-            return new Dictionary<string, object>();
-        }
-
-        private void SaveFile(
-            string saveFile,
-            Dictionary<string, object> state)
-        {
-            if (UseYandexCloud())
-            {
-                if (!yandexStorage.TrySave(saveFile, state))
-                {
-                    Debug.LogWarning(
-                        $"SavingSystem: Yandex cloud save failed for '{saveFile}'. " +
-                        "The local guest save is kept as a backup.");
-
-                    // Do not lose the user's current state if cloud saving
-                    // fails transiently.
-                    localStorage.TrySave(saveFile, state);
+                    Debug.Log($"SavingSystem: Загружено из веб-хранилища: {saveFile}");
+                    return webData;
                 }
                 else
                 {
-                    // Keep the local copy only as a guest backup. It is not
-                    // selected while the user is authorized.
-                    localStorage.TrySave(saveFile, state);
+                    Debug.Log($"SavingSystem: Нет данных в веб-хранилище для: {saveFile}");
+                    return new Dictionary<string, object>();
                 }
-
-                return;
             }
-
-            if (!localStorage.TrySave(saveFile, state))
+            else
             {
-                Debug.LogError(
-                    $"SavingSystem: Failed to save local file '{saveFile}'.");
+                string path = GetPathFromSaveFile(saveFile);
+                if (!File.Exists(path))
+                {
+                    return new Dictionary<string, object>();
+                }
+                
+                try
+                {
+                    string json = File.ReadAllText(path, Encoding.UTF8);
+                    var settings = new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.Auto,
+                        Converters = new JsonConverter[]
+                        {
+                            new Vector3JsonConverter(),
+                            new QuaternionJsonConverter(),
+                            new ColorJsonConverter()
+                        }
+                    };
+                    return JsonConvert.DeserializeObject<Dictionary<string, object>>(json, settings) ?? new Dictionary<string, object>();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Failed to load save file {saveFile}: {e.Message}");
+                    return new Dictionary<string, object>();
+                }
             }
         }
 
-        private void CaptureState(
-            Dictionary<string, object> state)
+        private void SaveFile(string saveFile, object state)
         {
-            foreach (SaveableEntity saveable
-                     in FindObjectsOfType<SaveableEntity>())
+            if (isWebPlatform)
             {
-                string id = saveable.GetUniqueIdentifier();
-
-                if (string.IsNullOrEmpty(id))
+                try
                 {
-                    Debug.LogWarning(
-                        $"SavingSystem: SaveableEntity '{saveable.name}' has no ID.",
-                        saveable);
-                    continue;
+                    var stateDict = state as Dictionary<string, object>;
+                    if (stateDict != null)
+                    {
+                        int sceneIndex = 0;
+                        if (stateDict.ContainsKey("lastSceneBuildIndex"))
+                        {
+                            sceneIndex = JsonSaveHelper.ToInt(stateDict["lastSceneBuildIndex"]);
+                        }
+                        
+                        WebSavingAdapter.SaveGameData(saveFile, stateDict, sceneIndex);
+                        Debug.Log($"SavingSystem: Сохранено в веб-хранилище: {saveFile}");
+                    }
                 }
-
-                state[id] = saveable.CaptureState();
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Failed to save to web storage {saveFile}: {e.Message}");
+                }
             }
-
-            state["lastSceneBuildIndex"] =
-                SceneManager.GetActiveScene().buildIndex;
+            else
+            {
+                string path = GetPathFromSaveFile(saveFile);
+                print("Saving to " + path);
+                
+                try
+                {
+                    var settings = new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.Auto,
+                        Formatting = Formatting.Indented,
+                        Converters = new JsonConverter[]
+                        {
+                            new Vector3JsonConverter(),
+                            new QuaternionJsonConverter(),
+                            new ColorJsonConverter()
+                        }
+                    };
+                    string json = JsonConvert.SerializeObject(state, settings);
+                    File.WriteAllText(path, json, Encoding.UTF8);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Failed to save file {saveFile}: {e.Message}");
+                }
+            }
         }
 
-        private void RestoreState(
-            Dictionary<string, object> state)
+        private void CaptureState(Dictionary<string, object> state)
         {
-            if (state == null)
-                state = new Dictionary<string, object>();
+            foreach (SaveableEntity saveable in FindObjectsOfType<SaveableEntity>())
+            {
+                state[saveable.GetUniqueIdentifier()] = saveable.CaptureState();
+            }
 
-            foreach (SaveableEntity saveable
-                     in FindObjectsOfType<SaveableEntity>())
+            state["lastSceneBuildIndex"] = SceneManager.GetActiveScene().buildIndex;
+        }
+
+        private void RestoreState(Dictionary<string, object> state)
+        {
+            foreach (SaveableEntity saveable in FindObjectsOfType<SaveableEntity>())
             {
                 string id = saveable.GetUniqueIdentifier();
-
-                if (string.IsNullOrEmpty(id))
-                    continue;
-
-                if (state.TryGetValue(id, out object entityState))
+                if (state.ContainsKey(id))
                 {
-                    try
-                    {
-                        saveable.RestoreState(entityState);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError(
-                            $"SavingSystem: Failed to restore entity '{id}' " +
-                            $"({saveable.name}): {e}");
-                    }
+                    saveable.RestoreState(state[id]);
                 }
             }
 
             OnRestoreStateComplete?.Invoke();
         }
 
-        private bool UseYandexCloud()
+        private string GetPathFromSaveFile(string saveFile)
         {
-            if (!IsWebPlatform)
-                return false;
-
-            return yandexStorage.IsReadyAndAuthorized;
-        }
-
-        private IEnumerator WaitForYandexSDK()
-        {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            if (!waitForYandexSDK)
-                yield break;
-
-            float timer = 0f;
-
-            while (!YG.YandexGame.SDKEnabled &&
-                   timer < maxWaitTime)
-            {
-                timer += Time.unscaledDeltaTime;
-                yield return null;
-            }
-
-            if (!YG.YandexGame.SDKEnabled)
-            {
-                Debug.LogWarning(
-                    "SavingSystem: Yandex SDK did not become ready in time. " +
-                    "Guest/local storage will be used.");
-            }
-#else
-            yield return null;
-#endif
+            return Path.Combine(Application.persistentDataPath, saveFile + ".json");
         }
     }
 }
