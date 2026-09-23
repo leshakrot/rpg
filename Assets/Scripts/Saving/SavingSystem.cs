@@ -9,15 +9,11 @@ using Newtonsoft.Json;
 
 namespace GameDevTV.Saving
 {
-    /// <summary>
-    /// This component provides the interface to the saving system.
-    /// Интегрирован с YandexSDK для WebGL.
-    /// </summary>
     public class SavingSystem : MonoBehaviour
     {
         [Header("Веб-интеграция")]
         [SerializeField] private bool waitForYandexSDK = true;
-        [SerializeField] private float maxWaitTime = 10f;
+        [SerializeField] private float maxWaitTime = 15f;
 
         public static event Action OnRestoreStateComplete;
 
@@ -37,7 +33,7 @@ namespace GameDevTV.Saving
         {
             if (isWebPlatform && waitForYandexSDK)
             {
-                yield return WebSavingAdapter.WaitForData(maxWaitTime);
+                yield return WaitForSaveSystem();
             }
 
             Dictionary<string, object> state = LoadFile(saveFile);
@@ -54,13 +50,21 @@ namespace GameDevTV.Saving
             RestoreState(state);
         }
 
+        public IEnumerator WaitForSaveSystem()
+        {
+            if (isWebPlatform && waitForYandexSDK)
+            {
+                yield return WebSavingAdapter.WaitForData(maxWaitTime);
+            }
+        }
+
         public void Save(string saveFile)
         {
-            if (isWebPlatform && !WebSavingAdapter.IsDataLoaded)
+            if (isWebPlatform && waitForYandexSDK && !WebSavingAdapter.IsDataLoaded())
             {
                 Debug.LogWarning(
-                    $"SavingSystem: данные Yandex ещё не загружены. " +
-                    $"Сохранение '{saveFile}' отменено.");
+                    $"SavingSystem: Save '{saveFile}' пропущен — данные Yandex ещё не загружены."
+                );
                 return;
             }
 
@@ -83,6 +87,14 @@ namespace GameDevTV.Saving
 
         public void Load(string saveFile)
         {
+            if (isWebPlatform && waitForYandexSDK && !WebSavingAdapter.IsDataLoaded())
+            {
+                Debug.LogWarning(
+                    $"SavingSystem: Load '{saveFile}' пропущен — данные Yandex ещё не загружены."
+                );
+                return;
+            }
+
             RestoreState(LoadFile(saveFile));
         }
 
@@ -101,9 +113,7 @@ namespace GameDevTV.Saving
             if (isWebPlatform)
             {
                 foreach (string save in WebSavingAdapter.GetAvailableSaves())
-                {
                     yield return save;
-                }
 
                 yield break;
             }
@@ -111,17 +121,7 @@ namespace GameDevTV.Saving
             foreach (string path in Directory.EnumerateFiles(Application.persistentDataPath))
             {
                 if (Path.GetExtension(path) == ".json")
-                {
                     yield return Path.GetFileNameWithoutExtension(path);
-                }
-            }
-        }
-
-        public IEnumerator WaitForSaveSystem()
-        {
-            if (isWebPlatform && waitForYandexSDK)
-            {
-                yield return WebSavingAdapter.WaitForData(maxWaitTime);
             }
         }
 
@@ -129,26 +129,19 @@ namespace GameDevTV.Saving
         {
             if (isWebPlatform)
             {
-                Dictionary<string, object> webData =
-                    WebSavingAdapter.LoadGameData(saveFile);
+                var webData = WebSavingAdapter.LoadGameData(saveFile);
 
                 if (webData != null && webData.Count > 0)
-                {
-                    Debug.Log($"SavingSystem: загружен веб-слот '{saveFile}'.");
                     return webData;
-                }
 
-                Debug.Log(
-                    $"SavingSystem: веб-слот '{saveFile}' не найден.");
+                Debug.Log($"SavingSystem: Нет данных в веб-хранилище для '{saveFile}'.");
                 return new Dictionary<string, object>();
             }
 
             string path = GetPathFromSaveFile(saveFile);
 
             if (!File.Exists(path))
-            {
                 return new Dictionary<string, object>();
-            }
 
             try
             {
@@ -167,12 +160,14 @@ namespace GameDevTV.Saving
 
                 return JsonConvert.DeserializeObject<Dictionary<string, object>>(
                     json,
-                    settings) ?? new Dictionary<string, object>();
+                    settings
+                ) ?? new Dictionary<string, object>();
             }
             catch (Exception e)
             {
                 Debug.LogError(
-                    $"Failed to load save file {saveFile}: {e.Message}");
+                    $"SavingSystem: Failed to load save file '{saveFile}': {e}"
+                );
                 return new Dictionary<string, object>();
             }
         }
@@ -184,21 +179,19 @@ namespace GameDevTV.Saving
                 var stateDict = state as Dictionary<string, object>;
 
                 if (stateDict == null)
+                {
+                    Debug.LogError(
+                        $"SavingSystem: состояние '{saveFile}' имеет неверный тип."
+                    );
                     return;
+                }
 
                 int sceneIndex = 0;
 
                 if (stateDict.ContainsKey("lastSceneBuildIndex"))
-                {
-                    sceneIndex =
-                        JsonSaveHelper.ToInt(stateDict["lastSceneBuildIndex"]);
-                }
+                    sceneIndex = JsonSaveHelper.ToInt(stateDict["lastSceneBuildIndex"]);
 
-                WebSavingAdapter.SaveGameData(
-                    saveFile,
-                    stateDict,
-                    sceneIndex);
-
+                WebSavingAdapter.SaveGameData(saveFile, stateDict, sceneIndex);
                 return;
             }
 
@@ -224,7 +217,8 @@ namespace GameDevTV.Saving
             catch (Exception e)
             {
                 Debug.LogError(
-                    $"Failed to save file {saveFile}: {e.Message}");
+                    $"SavingSystem: Failed to save file '{saveFile}': {e}"
+                );
             }
         }
 
@@ -232,12 +226,10 @@ namespace GameDevTV.Saving
         {
             foreach (SaveableEntity saveable in FindObjectsOfType<SaveableEntity>())
             {
-                state[saveable.GetUniqueIdentifier()] =
-                    saveable.CaptureState();
+                state[saveable.GetUniqueIdentifier()] = saveable.CaptureState();
             }
 
-            state["lastSceneBuildIndex"] =
-                SceneManager.GetActiveScene().buildIndex;
+            state["lastSceneBuildIndex"] = SceneManager.GetActiveScene().buildIndex;
         }
 
         private void RestoreState(Dictionary<string, object> state)
@@ -259,7 +251,8 @@ namespace GameDevTV.Saving
         {
             return Path.Combine(
                 Application.persistentDataPath,
-                saveFile + ".json");
+                saveFile + ".json"
+            );
         }
     }
 }

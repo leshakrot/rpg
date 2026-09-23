@@ -1,33 +1,31 @@
-using System;
 using System.Collections;
-using RPG.Control;
 using GameDevTV.Saving;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
-using TMPro;
+using RPG.Control;
 using RPG.UI;
+using UnityEngine.UI;
 
 namespace RPG.SceneManagement
 {
-	using UnityEngine.UI;
     public class Portal : MonoBehaviour, ISaveable
     {
         enum DestinationIdentifier
         {
-            Pond_PondPath, 
+            Pond_PondPath,
             Pond_PondCave,
-	        PondPath_MainTown,
-	        MainTown_PlayerHouse1,
+            PondPath_MainTown,
+            MainTown_PlayerHouse1,
             MainTown_Tavern,
             MainTownTavern_Cellar,
-            MainTownTavernCellar_Cave, 
+            MainTownTavernCellar_Cave,
             MainTown_ForestPath,
             ForestPath_Forest,
             MainTown_MainTownCavePath,
             MainTownCavePath_CellarCave,
             ForestPath_ForestPathCave,
-            E,   
+            E,
         }
 
         [SerializeField] int sceneToLoad = -1;
@@ -36,13 +34,12 @@ namespace RPG.SceneManagement
         [SerializeField] float fadeOutTime = 1f;
         [SerializeField] float fadeInTime = 2f;
         [SerializeField] float fadeWaitTime = 0.5f;
-
         [SerializeField] bool isAvailable = true;
 
         [Header("Interaction")]
         [SerializeField] private InteractButton interactButton;
         [SerializeField] private Sprite interactIcon;
-	    [SerializeField] private string interactText = "Переход";
+        [SerializeField] private string interactText = "Переход";
 
         [Header("Location Image")]
         [Tooltip("Картинка локации, в которую ведёт этот портал — показывается на Fader во время перехода")]
@@ -50,14 +47,12 @@ namespace RPG.SceneManagement
 
         private bool isPlayerInRange = false;
 
-        public void ToggleAvailability(bool b)
-        {
-            isAvailable = b;
-        }
+        public void ToggleAvailability(bool b) { isAvailable = b; }
 
         private void OnTriggerEnter(Collider other)
         {
             if (!isAvailable) return;
+
             if (other.CompareTag("Player") && interactButton != null)
             {
                 isPlayerInRange = true;
@@ -92,43 +87,79 @@ namespace RPG.SceneManagement
         {
             if (sceneToLoad < 0)
             {
-                Debug.LogError("Scene to load not set.");
+                Debug.LogError("Portal: Scene to load not set.");
                 yield break;
             }
 
+            // Корутина должна пережить смену сцены.
             DontDestroyOnLoad(gameObject);
 
             Fader fader = FindObjectOfType<Fader>();
             SavingWrapper savingWrapper = FindObjectOfType<SavingWrapper>();
-            PlayerController playerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
-            playerController.enabled = false;
+            GameObject player = GameObject.FindWithTag("Player");
+
+            if (fader == null || savingWrapper == null || player == null)
+            {
+                Debug.LogError("Portal: Не найден Fader, SavingWrapper или Player до перехода.");
+                yield break;
+            }
+
+            PlayerController playerController = player.GetComponent<PlayerController>();
+            if (playerController != null) playerController.enabled = false;
 
             fader.SetLocationImage(destinationImage);
-
             yield return fader.FadeOut(fadeOutTime);
 
+            // Сохраняем состояние старой сцены до её уничтожения.
             savingWrapper.Save();
 
             yield return SceneManager.LoadSceneAsync(sceneToLoad);
-            PlayerController newPlayerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
-            newPlayerController.enabled = false;
 
+            // ВАЖНО: SavingWrapper старой сцены мог быть уничтожен.
+            // Поэтому после LoadSceneAsync обязательно получаем новый.
+            savingWrapper = FindObjectOfType<SavingWrapper>();
+
+            if (savingWrapper == null)
+            {
+                Debug.LogError("Portal: SavingWrapper не найден после загрузки новой сцены.");
+                Destroy(gameObject);
+                yield break;
+            }
+
+            GameObject newPlayer = GameObject.FindWithTag("Player");
+
+            if (newPlayer == null)
+            {
+                Debug.LogError("Portal: Player не найден после загрузки новой сцены.");
+                Destroy(gameObject);
+                yield break;
+            }
+
+            PlayerController newPlayerController = newPlayer.GetComponent<PlayerController>();
+            if (newPlayerController != null) newPlayerController.enabled = false;
+
+            // Восстанавливаем сохранённое состояние в объектах новой сцены.
             savingWrapper.Load();
 
             Portal otherPortal = GetOtherPortal();
-            UpdatePlayer(otherPortal);
+            if (otherPortal == null)
+            {
+                Debug.LogError($"Portal: Не найден портал назначения для '{destination}'.");
+            }
+            else
+            {
+                UpdatePlayer(otherPortal);
+            }
 
             yield return new WaitForSeconds(fadeWaitTime);
 
-            // Обновляем UI после перехода между сценами
             UIManager.RefreshUIFromAnywhere();
 
-            fader.FadeIn(fadeInTime);
+            yield return fader.FadeIn(fadeInTime);
 
-            newPlayerController.enabled = true;
+            if (newPlayerController != null) newPlayerController.enabled = true;
 
-            // Сохраняем ПОСЛЕ fadeWaitTime — все Start() уже отработали,
-            // RestoreState применён, состояние объектов корректное
+            // Сохраняем уже корректное состояние новой сцены.
             savingWrapper.Save();
 
             Destroy(gameObject);
@@ -137,10 +168,27 @@ namespace RPG.SceneManagement
         private void UpdatePlayer(Portal otherPortal)
         {
             GameObject player = GameObject.FindWithTag("Player");
-            player.GetComponent<NavMeshAgent>().enabled = false;
+
+            if (player == null)
+            {
+                Debug.LogError("Portal: Player не найден при UpdatePlayer().");
+                return;
+            }
+
+            if (otherPortal == null || otherPortal.spawnPoint == null)
+            {
+                Debug.LogError("Portal: Портал назначения или его spawnPoint не задан.");
+                return;
+            }
+
+            NavMeshAgent agent = player.GetComponent<NavMeshAgent>();
+
+            if (agent != null) agent.enabled = false;
+
             player.transform.position = otherPortal.spawnPoint.position;
             player.transform.rotation = otherPortal.spawnPoint.rotation;
-            player.GetComponent<NavMeshAgent>().enabled = true;
+
+            if (agent != null) agent.enabled = true;
         }
 
         private Portal GetOtherPortal()
@@ -177,7 +225,7 @@ namespace RPG.SceneManagement
             }
             else
             {
-                Debug.LogError("Неверный тип данных при восстановлении состояния портала.");
+                Debug.LogError("Portal: Неверный тип данных при восстановлении состояния портала.");
             }
         }
     }

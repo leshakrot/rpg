@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -42,13 +43,31 @@ namespace RPG.Dialogue.Editor
         [OnOpenAsset(1)]
         public static bool OnOpenAsset(int instanceID, int line)
         {
-            Dialogue dialogue = EditorUtility.InstanceIDToObject(instanceID) as Dialogue;
+            Dialogue dialogue = GetDialogueFromInstanceID(instanceID);
             if (dialogue != null)
             {
                 ShowEditorWindow();
                 return true;
             }
             return false;
+        }
+
+        private static Dialogue GetDialogueFromInstanceID(int instanceID)
+        {
+            MethodInfo method = typeof(EditorUtility).GetMethod(
+                "InstanceIDToObject",
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                new Type[] { typeof(int) },
+                null
+            );
+
+            if (method == null)
+            {
+                return null;
+            }
+
+            return method.Invoke(null, new object[] { instanceID }) as Dialogue;
         }
 
         private void OnEnable()

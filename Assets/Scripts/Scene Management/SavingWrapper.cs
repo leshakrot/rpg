@@ -1,9 +1,9 @@
 using GameDevTV.Saving;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System;
-using System.Collections.Generic;
 using RPG.Stats;
 using RPG.UI;
 
@@ -53,14 +53,12 @@ namespace RPG.SceneManagement
 
         private void OnWebSaveLoaded()
         {
-            Debug.Log(
-                $"SavingWrapper: веб-данные загружены. " +
-                $"Текущий слот: '{WebSavingAdapter.GetCurrentSaveFileName()}'");
+            Debug.Log("SavingWrapper: веб-сохранения загружены.");
         }
 
         private void OnWebSaveSaved()
         {
-            Debug.Log("SavingWrapper: веб-сохранение отправлено в YandexSDK.");
+            Debug.Log("SavingWrapper: веб-сохранения записаны.");
         }
 
         public void ContinueGame()
@@ -68,43 +66,37 @@ namespace RPG.SceneManagement
             if (isWebPlatform && useWebAdapter)
             {
                 StartCoroutine(ContinueWebGame());
+                return;
             }
-            else
-            {
-                if (!PlayerPrefs.HasKey(currentSaveKey))
-                    return;
 
-                if (!GetComponent<SavingSystem>().SaveFileExists(GetCurrentSave()))
-                    return;
+            if (!PlayerPrefs.HasKey(currentSaveKey))
+                return;
 
-                StartCoroutine(LoadLastScene());
-            }
+            if (!GetComponent<SavingSystem>().SaveFileExists(GetCurrentSave()))
+                return;
+
+            StartCoroutine(LoadLastScene());
         }
 
         private IEnumerator ContinueWebGame()
         {
-            yield return WaitForSaveSystem();
+            yield return GetComponent<SavingSystem>().WaitForSaveSystem();
 
-            string saveFile = GetCurrentSave();
+            string save = WebSavingAdapter.GetCurrentSaveFileName();
 
-            if (!string.IsNullOrEmpty(saveFile) &&
-                GetComponent<SavingSystem>().SaveFileExists(saveFile))
+            if (string.IsNullOrEmpty(save))
             {
-                yield return LoadLastScene();
+                Debug.Log("SavingWrapper: В Yandex нет текущего сохранения.");
+                yield break;
             }
-            else
-            {
-                Debug.Log(
-                    "SavingWrapper: нет сохранения для продолжения веб-игры.");
-            }
+
+            yield return LoadLastScene();
         }
 
         public void NewGame(string saveFile)
         {
-            if (String.IsNullOrEmpty(saveFile))
-            {
+            if (string.IsNullOrEmpty(saveFile))
                 saveFile = "AutoSave";
-            }
 
             SetCurrentSave(saveFile);
             StartCoroutine(LoadFirstScene());
@@ -118,57 +110,23 @@ namespace RPG.SceneManagement
 
         private string GetCurrentSave()
         {
-            string localSave =
-                PlayerPrefs.GetString(currentSaveKey, "");
-
-            if (!string.IsNullOrEmpty(localSave))
-            {
-                return localSave;
-            }
-
             if (isWebPlatform && useWebAdapter)
             {
-                string webSave =
-                    WebSavingAdapter.GetCurrentSaveFileName();
+                string webSave = WebSavingAdapter.GetCurrentSaveFileName();
 
                 if (!string.IsNullOrEmpty(webSave))
-                {
                     return webSave;
-                }
+
+                return PlayerPrefs.GetString(currentSaveKey, "AutoSave");
             }
 
-            return "AutoSave";
+            return PlayerPrefs.GetString(currentSaveKey);
         }
 
         public void LoadGame(string saveFile)
         {
-            if (String.IsNullOrEmpty(saveFile))
-                return;
-
             SetCurrentSave(saveFile);
-
-            if (isWebPlatform && useWebAdapter)
-            {
-                StartCoroutine(LoadSelectedWebGame(saveFile));
-            }
-            else
-            {
-                StartCoroutine(LoadLastScene());
-            }
-        }
-
-        private IEnumerator LoadSelectedWebGame(string saveFile)
-        {
-            yield return WaitForSaveSystem();
-
-            if (!GetComponent<SavingSystem>().SaveFileExists(saveFile))
-            {
-                Debug.LogWarning(
-                    $"SavingWrapper: сохранение '{saveFile}' не найдено.");
-                yield break;
-            }
-
-            yield return LoadLastScene();
+            ContinueGame();
         }
 
         public void LoadMenu()
@@ -180,21 +138,24 @@ namespace RPG.SceneManagement
         {
             Fader fader = FindObjectOfType<Fader>();
 
+            if (fader == null)
+            {
+                Debug.LogError("SavingWrapper: Fader не найден.");
+                yield break;
+            }
+
             yield return fader.FadeOut(_fadeOutTime);
-            yield return GetComponent<SavingSystem>().LoadLastScene(
-                GetCurrentSave());
+
+            yield return GetComponent<SavingSystem>().LoadLastScene(GetCurrentSave());
 
             GameObject player = GameObject.FindWithTag("Player");
 
             if (player != null)
             {
-                BaseStats playerStats =
-                    player.GetComponent<BaseStats>();
+                BaseStats playerStats = player.GetComponent<BaseStats>();
 
                 if (playerStats != null)
-                {
                     playerStats.RefreshStats();
-                }
             }
 
             yield return new WaitForSeconds(0.1f);
@@ -224,19 +185,13 @@ namespace RPG.SceneManagement
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.L))
-            {
                 Load();
-            }
 
             if (Input.GetKeyDown(KeyCode.S))
-            {
                 Save();
-            }
 
             if (Input.GetKeyDown(KeyCode.Delete))
-            {
                 Delete();
-            }
         }
 
         public void Load()
@@ -247,13 +202,10 @@ namespace RPG.SceneManagement
 
             if (player != null)
             {
-                BaseStats playerStats =
-                    player.GetComponent<BaseStats>();
+                BaseStats playerStats = player.GetComponent<BaseStats>();
 
                 if (playerStats != null)
-                {
                     playerStats.RefreshStats();
-                }
             }
 
             UIManager.RefreshUIFromAnywhere();
@@ -277,10 +229,7 @@ namespace RPG.SceneManagement
         public IEnumerator WaitForSaveSystem()
         {
             if (isWebPlatform && useWebAdapter)
-            {
-                yield return GetComponent<SavingSystem>()
-                    .WaitForSaveSystem();
-            }
+                yield return GetComponent<SavingSystem>().WaitForSaveSystem();
         }
     }
 }

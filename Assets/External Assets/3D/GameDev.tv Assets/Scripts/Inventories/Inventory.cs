@@ -146,6 +146,22 @@ namespace GameDevTV.Inventories
 
         public bool AddItemToSlot(int slot, InventoryItem item, int number)
         {
+            // Сначала предлагаем предмет другим хранилищам на этом же объекте
+            // (например, Purse для валюты). Если он полностью туда ушёл —
+            // в инвентарь класть уже нечего.
+            foreach (var store in GetComponents<IItemStore>())
+            {
+                number -= store.AddItems(item, number);
+            }
+            if (number <= 0)
+            {
+                if (inventoryUpdated != null)
+                {
+                    inventoryUpdated();
+                }
+                return true;
+            }
+
             if (slots[slot].item != null)
             {
                 return AddToFirstEmptySlot(item, number); ;
