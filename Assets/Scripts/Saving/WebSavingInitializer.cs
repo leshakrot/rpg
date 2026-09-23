@@ -128,7 +128,7 @@ namespace GameDevTV.Saving
         public bool IsReady()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            return isInitialized && YandexGame.SDKEnabled && WebSavingAdapter.IsDataLoaded;
+            return isInitialized && YandexGame.SDKEnabled && WebSavingAdapter.IsDataLoaded();
 #else
             return true;
 #endif
