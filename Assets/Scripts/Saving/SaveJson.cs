@@ -1,21 +1,24 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace GameDevTV.Saving
 {
     /// <summary>
-    /// Single JSON configuration for the existing Dictionary<string, object>
-    /// save format. This deliberately keeps the old root structure intact.
+    /// ЕДИНСТВЕННОЕ место, где настраивается JSON для сейвов.
+    /// Настройки (TypeNameHandling.Auto + конвертеры Vector3/Quaternion/Color)
+    /// идентичны тем, что использовались раньше, поэтому формат файлов не меняется.
     /// </summary>
     public static class SaveJson
     {
-        private static JsonSerializerSettings CreateSettings(Formatting formatting)
+        public static JsonSerializerSettings CreateSettings(bool pretty = false)
         {
             return new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
-                Formatting = formatting,
+                Formatting = pretty ? Formatting.Indented : Formatting.None,
                 Converters = new JsonConverter[]
                 {
                     new Vector3JsonConverter(),
@@ -25,14 +28,17 @@ namespace GameDevTV.Saving
             };
         }
 
+        public static JsonSerializer CreateSerializer()
+        {
+            return JsonSerializer.Create(CreateSettings());
+        }
+
         public static string Serialize(Dictionary<string, object> state, bool pretty = false)
         {
             if (state == null)
                 throw new ArgumentNullException(nameof(state));
 
-            return JsonConvert.SerializeObject(
-                state,
-                CreateSettings(pretty ? Formatting.Indented : Formatting.None));
+            return JsonConvert.SerializeObject(state, CreateSettings(pretty));
         }
 
         public static Dictionary<string, object> Deserialize(string json)
@@ -43,9 +49,45 @@ namespace GameDevTV.Saving
             Dictionary<string, object> state =
                 JsonConvert.DeserializeObject<Dictionary<string, object>>(
                     json,
-                    CreateSettings(Formatting.None));
+                    CreateSettings());
 
             return state ?? new Dictionary<string, object>();
+        }
+
+        /// <summary>
+        /// Безопасное приведение значения из десериализованного JSON к int
+        /// (Json.NET отдаёт long / double / JValue / string в зависимости от пути).
+        /// </summary>
+        public static int ToInt(object value, int fallback = 0)
+        {
+            if (value == null)
+                return fallback;
+
+            try
+            {
+                if (value is JValue jValue)
+                    value = jValue.Value;
+
+                if (value == null)
+                    return fallback;
+
+                if (value is string text)
+                {
+                    return int.TryParse(
+                        text,
+                        NumberStyles.Integer,
+                        CultureInfo.InvariantCulture,
+                        out int parsed)
+                        ? parsed
+                        : fallback;
+                }
+
+                return Convert.ToInt32(value, CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return fallback;
+            }
         }
     }
 }

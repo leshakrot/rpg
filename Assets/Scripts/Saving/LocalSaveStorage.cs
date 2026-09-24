@@ -7,216 +7,237 @@ using UnityEngine;
 namespace GameDevTV.Saving
 {
     /// <summary>
-    /// Local storage for guests.
+    /// Локальное хранилище (для неавторизованных игроков, редактора и десктопа).
     ///
-    /// Desktop: one JSON file per save in Application.persistentDataPath.
-    /// WebGL: JSON is stored in PlayerPrefs, which Unity maps to browser
-    /// persistent storage. We do NOT use System.IO on WebGL.
+    /// Десктоп / редактор: один JSON-файл на сейв в Application.persistentDataPath
+    ///                     (так же, как в оригинальной системе: "&lt;имя&gt;.json").
+    /// WebGL:              JSON лежит в PlayerPrefs (Unity сам кладёт их в IndexedDB
+    ///                     браузера). System.IO в WebGL не используется.
     /// </summary>
-    public sealed class LocalSaveStorage
+    public sealed class LocalSaveStorage : ISaveStorage
     {
+        // Тот же ключ, что использовал старый SavingWrapper - ничего не теряется.
+        private const string CurrentSaveKey = "currentSaveName";
+
         private const string WebPrefix = "GameDevTV.Saving.Local.";
         private const string WebIndexKey = WebPrefix + "__index";
+        private const string ReservedName = "__index";
+
+        private static bool UseBrowserStorage =>
+            Application.platform == RuntimePlatform.WebGLPlayer;
+
+        public string Name => "Local";
+
+        // ---------------------------------------------------------------- API
 
         public bool Exists(string saveFile)
         {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            return PlayerPrefs.HasKey(GetWebKey(saveFile));
-#else
-            return File.Exists(GetFilePath(saveFile));
-#endif
+            if (!IsValidName(saveFile))
+                return false;
+
+            return UseBrowserStorage
+                ? PlayerPrefs.HasKey(GetWebKey(saveFile))
+                : File.Exists(GetFilePath(saveFile));
         }
 
-        public bool TryLoad(
-            string saveFile,
-            out Dictionary<string, object> state)
+        public bool TryLoad(string saveFile, out Dictionary<string, object> state)
         {
             state = new Dictionary<string, object>();
 
-#if UNITY_WEBGL && !UNITY_EDITOR
-            string key = GetWebKey(saveFile);
-
-            if (!PlayerPrefs.HasKey(key))
-                return false;
-
-            string json = PlayerPrefs.GetString(key, string.Empty);
-
-            if (string.IsNullOrEmpty(json))
+            if (!IsValidName(saveFile))
                 return false;
 
             try
             {
+                string json;
+
+                if (UseBrowserStorage)
+                {
+                    string key = GetWebKey(saveFile);
+
+                    if (!PlayerPrefs.HasKey(key))
+                        return false;
+
+                    json = PlayerPrefs.GetString(key, string.Empty);
+                }
+                else
+                {
+                    string path = GetFilePath(saveFile);
+
+                    if (!File.Exists(path))
+                        return false;
+
+                    json = File.ReadAllText(path, Encoding.UTF8);
+                }
+
+                if (string.IsNullOrEmpty(json))
+                    return false;
+
                 state = SaveJson.Deserialize(json);
                 return state.Count > 0;
             }
             catch (Exception e)
             {
-                Debug.LogError(
-                    $"[Saving] Failed to deserialize local WebGL save '{saveFile}': {e}");
+                Debug.LogError($"[Saving] Не удалось прочитать локальный сейв '{saveFile}': {e}");
                 state = new Dictionary<string, object>();
                 return false;
             }
-#else
-            string path = GetFilePath(saveFile);
-
-            if (!File.Exists(path))
-                return false;
-
-            try
-            {
-                string json = File.ReadAllText(path, Encoding.UTF8);
-                state = SaveJson.Deserialize(json);
-                return state.Count > 0;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(
-                    $"[Saving] Failed to read local save '{saveFile}': {e}");
-                state = new Dictionary<string, object>();
-                return false;
-            }
-#endif
         }
 
-        public bool TrySave(
-            string saveFile,
-            Dictionary<string, object> state)
+        public bool TrySave(string saveFile, Dictionary<string, object> state)
         {
-            if (state == null)
+            if (state == null || !IsValidName(saveFile))
                 return false;
 
             try
             {
-                string json = SaveJson.Serialize(state, true);
+                if (UseBrowserStorage)
+                {
+                    PlayerPrefs.SetString(GetWebKey(saveFile), SaveJson.Serialize(state, false));
+                    AddToWebIndex(saveFile);
+                    PlayerPrefs.Save();
+                    return true;
+                }
 
-#if UNITY_WEBGL && !UNITY_EDITOR
-                PlayerPrefs.SetString(GetWebKey(saveFile), json);
-                AddToWebIndex(saveFile);
-                PlayerPrefs.Save();
-                return true;
-#else
+                string json = SaveJson.Serialize(state, true);
                 string path = GetFilePath(saveFile);
                 string tempPath = path + ".tmp";
 
+                // Пишем во временный файл, потом копируем поверх:
+                // если игра упадёт посреди записи, старый сейв останется целым.
                 File.WriteAllText(tempPath, json, Encoding.UTF8);
-
-                if (File.Exists(path))
-                    File.Delete(path);
-
-                File.Move(tempPath, path);
+                File.Copy(tempPath, path, true);
+                File.Delete(tempPath);
                 return true;
-#endif
             }
             catch (Exception e)
             {
-                Debug.LogError(
-                    $"[Saving] Failed to save local '{saveFile}': {e}");
+                Debug.LogError($"[Saving] Не удалось записать локальный сейв '{saveFile}': {e}");
                 return false;
             }
         }
 
         public bool Delete(string saveFile)
         {
+            if (!IsValidName(saveFile))
+                return false;
+
             try
             {
-#if UNITY_WEBGL && !UNITY_EDITOR
-                string key = GetWebKey(saveFile);
+                bool deleted;
 
-                if (!PlayerPrefs.HasKey(key))
-                    return false;
+                if (UseBrowserStorage)
+                {
+                    string key = GetWebKey(saveFile);
+                    deleted = PlayerPrefs.HasKey(key);
 
-                PlayerPrefs.DeleteKey(key);
-                RemoveFromWebIndex(saveFile);
-                PlayerPrefs.Save();
-                return true;
-#else
-                string path = GetFilePath(saveFile);
+                    if (deleted)
+                    {
+                        PlayerPrefs.DeleteKey(key);
+                        RemoveFromWebIndex(saveFile);
+                    }
+                }
+                else
+                {
+                    string path = GetFilePath(saveFile);
+                    deleted = File.Exists(path);
 
-                if (!File.Exists(path))
-                    return false;
+                    if (deleted)
+                        File.Delete(path);
+                }
 
-                File.Delete(path);
-                return true;
-#endif
+                if (deleted)
+                {
+                    if (GetCurrentSaveName() == saveFile)
+                        PlayerPrefs.DeleteKey(CurrentSaveKey);
+
+                    PlayerPrefs.Save();
+                }
+
+                return deleted;
             }
             catch (Exception e)
             {
-                Debug.LogError(
-                    $"[Saving] Failed to delete local save '{saveFile}': {e}");
+                Debug.LogError($"[Saving] Не удалось удалить локальный сейв '{saveFile}': {e}");
                 return false;
             }
         }
 
-        public IEnumerable<string> ListSaves()
+        public List<string> ListSaves()
         {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            foreach (string save in ReadWebIndex())
-                yield return save;
-#else
-            if (!Directory.Exists(Application.persistentDataPath))
-                yield break;
+            if (UseBrowserStorage)
+                return ReadWebIndex();
 
-            foreach (string path in Directory.EnumerateFiles(
-                Application.persistentDataPath,
-                "*.json",
-                SearchOption.TopDirectoryOnly))
+            var result = new List<string>();
+            string directory = Application.persistentDataPath;
+
+            if (!Directory.Exists(directory))
+                return result;
+
+            foreach (string path in Directory.GetFiles(directory, "*.json", SearchOption.TopDirectoryOnly))
             {
-                yield return Path.GetFileNameWithoutExtension(path);
+                if (Path.GetExtension(path) == ".json")
+                    result.Add(Path.GetFileNameWithoutExtension(path));
             }
-#endif
+
+            return result;
+        }
+
+        public string GetCurrentSaveName()
+        {
+            return PlayerPrefs.GetString(CurrentSaveKey, string.Empty);
+        }
+
+        public void SetCurrentSaveName(string saveFile)
+        {
+            if (string.IsNullOrEmpty(saveFile))
+                PlayerPrefs.DeleteKey(CurrentSaveKey);
+            else
+                PlayerPrefs.SetString(CurrentSaveKey, saveFile);
+
+            PlayerPrefs.Save();
+        }
+
+        // ------------------------------------------------------------ helpers
+
+        private static bool IsValidName(string saveFile)
+        {
+            if (string.IsNullOrWhiteSpace(saveFile))
+                return false;
+
+            if (saveFile == ReservedName || saveFile.Contains("\n"))
+                return false;
+
+            if (UseBrowserStorage)
+                return true;
+
+            // Десктоп: имя превращается в имя файла - защищаемся от путей.
+            return saveFile.IndexOfAny(Path.GetInvalidFileNameChars()) < 0
+                   && !saveFile.Contains("/")
+                   && !saveFile.Contains("\\")
+                   && saveFile != "."
+                   && saveFile != "..";
         }
 
         private static string GetFilePath(string saveFile)
         {
-            ValidateSaveName(saveFile);
-
-            return Path.Combine(
-                Application.persistentDataPath,
-                saveFile + ".json");
+            return Path.Combine(Application.persistentDataPath, saveFile + ".json");
         }
 
         private static string GetWebKey(string saveFile)
         {
-            ValidateSaveName(saveFile);
             return WebPrefix + saveFile;
         }
 
-        private static void ValidateSaveName(string saveFile)
-        {
-            if (string.IsNullOrWhiteSpace(saveFile))
-                throw new ArgumentException(
-                    "Save file name cannot be empty.",
-                    nameof(saveFile));
-
-#if !UNITY_WEBGL || UNITY_EDITOR
-            // Preserve the original filename semantics but prevent traversal.
-            if (saveFile.IndexOfAny(
-                Path.GetInvalidFileNameChars()) >= 0 ||
-                saveFile.Contains("/") ||
-                saveFile.Contains("\\") ||
-                saveFile == "." ||
-                saveFile == "..")
-            {
-                throw new ArgumentException(
-                    $"Invalid save file name: '{saveFile}'",
-                    nameof(saveFile));
-            }
-#endif
-        }
-
-#if UNITY_WEBGL && !UNITY_EDITOR
         private static List<string> ReadWebIndex()
         {
             var result = new List<string>();
-
             string raw = PlayerPrefs.GetString(WebIndexKey, string.Empty);
 
             if (string.IsNullOrEmpty(raw))
                 return result;
 
-            string[] entries = raw.Split('\n');
-
-            foreach (string entry in entries)
+            foreach (string entry in raw.Split('\n'))
             {
                 if (!string.IsNullOrEmpty(entry) &&
                     !result.Contains(entry) &&
@@ -229,6 +250,11 @@ namespace GameDevTV.Saving
             return result;
         }
 
+        private static void WriteWebIndex(List<string> saves)
+        {
+            PlayerPrefs.SetString(WebIndexKey, string.Join("\n", saves.ToArray()));
+        }
+
         private static void AddToWebIndex(string saveFile)
         {
             List<string> saves = ReadWebIndex();
@@ -236,20 +262,14 @@ namespace GameDevTV.Saving
             if (!saves.Contains(saveFile))
                 saves.Add(saveFile);
 
-            PlayerPrefs.SetString(
-                WebIndexKey,
-                string.Join("\n", saves.ToArray()));
+            WriteWebIndex(saves);
         }
 
         private static void RemoveFromWebIndex(string saveFile)
         {
             List<string> saves = ReadWebIndex();
             saves.Remove(saveFile);
-
-            PlayerPrefs.SetString(
-                WebIndexKey,
-                string.Join("\n", saves.ToArray()));
+            WriteWebIndex(saves);
         }
-#endif
     }
 }
