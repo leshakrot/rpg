@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 namespace RPG.Control
 {
@@ -20,7 +21,7 @@ namespace RPG.Control
     {
         [Header("Wire up in your prefab")]
         [Tooltip("Text component that will display the item name")]
-        [SerializeField] private Text _labelText;
+        [SerializeField] private TextMeshProUGUI _labelText;
 
         [Tooltip("Button the player clicks to pick up the item")]
         [SerializeField] private Button _labelButton;
@@ -144,14 +145,14 @@ namespace RPG.Control
             textRect.offsetMin = new Vector2(6f,  2f);
             textRect.offsetMax = new Vector2(-6f, -2f);
 
-            label._labelText                      = textGO.AddComponent<Text>();
-            label._labelText.alignment            = TextAnchor.MiddleCenter;
-            label._labelText.color                = Color.white;
-            label._labelText.fontSize             = 18;
-            label._labelText.resizeTextForBestFit = true;
-            label._labelText.resizeTextMinSize    = 8;
-            label._labelText.resizeTextMaxSize    = 20;
-            label._labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label._labelText                   = textGO.AddComponent<TextMeshProUGUI>();
+            label._labelText.alignment         = TextAlignmentOptions.Center;
+            label._labelText.color             = Color.white;
+            label._labelText.fontSize          = 18;
+            label._labelText.enableAutoSizing  = true;
+            label._labelText.fontSizeMin       = 8;
+            label._labelText.fontSizeMax       = 20;
+            label._labelText.font = TMP_Settings.defaultFontAsset;
 
             var outline            = textGO.AddComponent<Outline>();
             outline.effectColor    = Color.black;

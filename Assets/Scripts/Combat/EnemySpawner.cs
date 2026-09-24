@@ -74,6 +74,7 @@ namespace RPG.Combat
         private Dictionary<SpawnPoint, List<GameObject>> enemiesBySpawnPoint = new Dictionary<SpawnPoint, List<GameObject>>();
         private Dictionary<SpawnPoint, Coroutine> respawnCoroutines = new Dictionary<SpawnPoint, Coroutine>();
         private Dictionary<GameObject, Coroutine> corpseRemovalCoroutines = new Dictionary<GameObject, Coroutine>();
+        private Dictionary<GameObject, UnityAction> enemyDeathHandlers = new Dictionary<GameObject, UnityAction>();
         private string currentSceneName;
         private int playerLevel = 1;
 
@@ -370,12 +371,7 @@ namespace RPG.Combat
 
             if (respawnDeadEnemies)
             {
-                var health = enemy.GetComponent<Health>();
-                if (health != null)
-                {
-                    health.onDie.RemoveAllListeners();
-                    health.onDie.AddListener(() => OnEnemyDied(enemy, point));
-                }
+                RegisterEnemyDeathHandler(enemy, point);
             }
 
             if (autoRemoveCorpses && !respawnDeadEnemies)
@@ -402,6 +398,39 @@ namespace RPG.Combat
             }
 
             return true;
+        }
+
+        private void RegisterEnemyDeathHandler(GameObject enemy, SpawnPoint spawnPoint)
+        {
+            if (enemy == null || spawnPoint == null) return;
+
+            var health = enemy.GetComponent<Health>();
+            if (health == null) return;
+
+            // Не трогаем чужие подписки на Health.onDie.
+            // В частности, это важно для RagdollController и компонентов,
+            // которые были добавлены через ComponentToAdd.
+            UnregisterEnemyDeathHandler(enemy);
+
+            UnityAction handler = () => OnEnemyDied(enemy, spawnPoint);
+            enemyDeathHandlers[enemy] = handler;
+            health.onDie.AddListener(handler);
+        }
+
+        private void UnregisterEnemyDeathHandler(GameObject enemy)
+        {
+            if (enemy == null) return;
+
+            if (enemyDeathHandlers.TryGetValue(enemy, out UnityAction handler))
+            {
+                var health = enemy.GetComponent<Health>();
+                if (health != null)
+                {
+                    health.onDie.RemoveListener(handler);
+                }
+
+                enemyDeathHandlers.Remove(enemy);
+            }
         }
 
         private bool CheckSpawnConditions(SpawnPoint point)
@@ -576,6 +605,10 @@ namespace RPG.Combat
         private void OnEnemyDied(GameObject deadEnemy, SpawnPoint spawnPoint)
         {
             if (showDebugInfo) Debug.Log($"[EnemySpawner] Враг {deadEnemy.name} умер в точке {spawnPoint.name}");
+
+            // Наш обработчик больше не нужен после смерти.
+            // Остальные подписчики Health.onDie (например, ragdoll) не затрагиваем.
+            UnregisterEnemyDeathHandler(deadEnemy);
 
             spawnedEnemies.Remove(deadEnemy);
             conditionalEnemies.Remove(deadEnemy);
@@ -762,7 +795,11 @@ namespace RPG.Combat
 
             foreach (GameObject enemy in spawnedEnemies)
             {
-                if (enemy != null) Destroy(enemy);
+                if (enemy != null)
+                {
+                    UnregisterEnemyDeathHandler(enemy);
+                    Destroy(enemy);
+                }
             }
 
             spawnedEnemies.Clear();
@@ -984,6 +1021,11 @@ namespace RPG.Combat
             restoredFromSave = true;
             hasSpawnedThisSession = true;
 
+            foreach (var enemy in new List<GameObject>(enemyDeathHandlers.Keys))
+            {
+                UnregisterEnemyDeathHandler(enemy);
+            }
+
             spawnedEnemies.Clear();
             enemiesBySpawnPoint.Clear();
 
@@ -1024,8 +1066,7 @@ namespace RPG.Combat
                                     }
                                     enemiesBySpawnPoint[spawnPoint].Add(enemy);
 
-                                    health.onDie.RemoveAllListeners();
-                                    health.onDie.AddListener(() => OnEnemyDied(enemy, spawnPoint));
+                                    RegisterEnemyDeathHandler(enemy, spawnPoint);
 
                                     spawnPoint.SetOccupied(true);
                                 }
