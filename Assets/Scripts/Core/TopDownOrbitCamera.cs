@@ -40,6 +40,20 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
     [Tooltip("Чувствительность масштабирования для мобильных устройств (подбери значение).")]
     [SerializeField] private float mobileZoomSpeed = 0.05f;
 
+    [Header("Camera Collision (Occlusion)")]
+    [Tooltip("Слои, которые считаются препятствиями между камерой и игроком (террейн, стены, окружение). Не включай сюда слой игрока и триггеры.")]
+    [SerializeField] private LayerMask cameraCollisionMask = ~0;
+    [Tooltip("Радиус сферы для проверки препятствий (SphereCast). Рекомендуется брать близко к Near Clip Plane камеры, чтобы геометрия не 'протыкала' объектив.")]
+    [SerializeField] private float cameraCollisionRadius = 0.25f;
+    [Tooltip("Дополнительный отступ от найденной поверхности препятствия, чтобы камера не клипала (не заходила) внутрь него.")]
+    [SerializeField] private float cameraCollisionBuffer = 0.15f;
+    [Tooltip("Минимальная дистанция от игрока, ближе которой камера не подъедет, даже если препятствие вплотную.")]
+    [SerializeField] private float cameraCollisionMinDistance = 0.4f;
+    [Tooltip("Скорость (units/сек) подтягивания камеры к игроку при появлении препятствия. Специально быстрее, чем возврат назад, чтобы камера не 'проваливалась' сквозь объект и не показывала пустоту под террейном.")]
+    [SerializeField] private float cameraCollisionPullInSpeed = 25f;
+    [Tooltip("Время сглаживания возврата камеры к исходной (установленной колёсиком) дистанции зума после исчезновения препятствия.")]
+    [SerializeField] private float cameraCollisionReleaseSmoothTime = 0.25f;
+
     [Header("Mobile Controls")]
     [Tooltip("Минимальное расстояние для определения свайпа (в пикселях).")]
     [SerializeField] private float minSwipeDistance = 10f;
@@ -84,6 +98,8 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
     private float _currentXVelocity = 0f;
     private float _currentYVelocity = 0f;
     private float _currentDistanceVelocity = 0f;
+    private float _currentCollisionDistance = 0f; // Фактическая дистанция камеры после учёта препятствий (сглаженная)
+    private float _collisionReleaseVelocity = 0f;  // Velocity-параметр для SmoothDamp при возврате из-за препятствия
 
     // Флаги состояния ввода
     private bool _isDragging = false;
@@ -140,6 +156,7 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
         if (target == null) { Debug.LogError($"[{gameObject.name}] Цель для камеры не назначена!", this); enabled = false; return; }
         _smoothX = _currentX; _smoothY = _currentY; _smoothDistance = distance;
         distance = Mathf.Clamp(distance, minDistance, maxDistance);
+        _currentCollisionDistance = _smoothDistance;
         if (enableDebugLogs) Debug.Log($"[{gameObject.name}] Camera Initialized. Target: {target.name}");
     }
 
@@ -484,11 +501,59 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
         Vector3 targetPivotPosition = target.position + Vector3.up * targetHeightOffset;
         Quaternion rotation = Quaternion.Euler(_smoothY, _smoothX, 0);
         Vector3 direction = rotation * Vector3.forward;
-        Vector3 desiredPosition = targetPivotPosition - direction * _smoothDistance;
+
+        // Дистанция, урезанная под ближайшее препятствие между игроком и желаемой (установленной зумом) позицией камеры.
+        float occlusionClampedDistance = GetOcclusionAdjustedDistance(targetPivotPosition, direction, _smoothDistance);
+
+        if (occlusionClampedDistance < _currentCollisionDistance)
+        {
+            // Препятствие появилось (или стало ближе) — быстро подтягиваем камеру, "скользя" по нему,
+            // чтобы объектив не успел провалиться сквозь геометрию (и не показал пустоту под террейном/за стеной).
+            _currentCollisionDistance = Mathf.MoveTowards(_currentCollisionDistance, occlusionClampedDistance, cameraCollisionPullInSpeed * Time.deltaTime);
+        }
+        else
+        {
+            // Путь свободен (или освободился) — плавно возвращаем камеру к исходному зуму, установленному игроком.
+            _currentCollisionDistance = Mathf.SmoothDamp(_currentCollisionDistance, occlusionClampedDistance, ref _collisionReleaseVelocity, cameraCollisionReleaseSmoothTime);
+        }
+
+        Vector3 desiredPosition = targetPivotPosition - direction * _currentCollisionDistance;
         transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref _currentPositionVelocity, positionSmoothTime);
         transform.rotation = rotation;
 
         ApplyShake();
+    }
+
+    /// <summary>
+    /// Проверяет, перекрывает ли что-то линию между игроком и желаемой (по зуму) позицией камеры,
+    /// и если да — возвращает урезанную дистанцию, на которую можно безопасно отодвинуть камеру.
+    /// Использует один SphereCast (без аллокаций GC) вместо серии Raycast — дёшево по производительности
+    /// и при этом сфера радиуса cameraCollisionRadius не даёт объективу "протыкать" тонкую геометрию по краям.
+    /// </summary>
+    private float GetOcclusionAdjustedDistance(Vector3 pivot, Vector3 pivotToCameraDirection, float desiredDistance)
+    {
+        float minAllowedDistance = Mathf.Min(cameraCollisionMinDistance, desiredDistance);
+
+        // Камера смотрит "из" pivot в направлении, обратном тому, что смотрит на игрока.
+        Vector3 castDirection = -pivotToCameraDirection;
+        float castRange = desiredDistance - cameraCollisionRadius;
+        if (castRange <= 0f) return minAllowedDistance;
+
+        // Редкий, но важный edge-case: сама точка обзора (грудь/голова игрока) уже внутри препятствия
+        // (например, игрок вплотную к стене) — SphereCast не репортит коллайдеры, в которых сфера стартует.
+        if (Physics.CheckSphere(pivot, cameraCollisionRadius, cameraCollisionMask, QueryTriggerInteraction.Ignore))
+        {
+            return minAllowedDistance;
+        }
+
+        if (Physics.SphereCast(pivot, cameraCollisionRadius, castDirection, out RaycastHit hit, castRange, cameraCollisionMask, QueryTriggerInteraction.Ignore))
+        {
+            float safeDistance = hit.distance - cameraCollisionBuffer;
+            return Mathf.Clamp(safeDistance, minAllowedDistance, desiredDistance);
+        }
+
+        // Ничего не перекрывает — можно стоять на полной, установленной игроком дистанции зума.
+        return desiredDistance;
     }
 
     /// <summary>
@@ -560,6 +625,7 @@ public class TopDownOrbitCamera : MonoBehaviour, ISaveable // ISaveable опци
         _smoothX = _currentX;
         _smoothY = _currentY;
         _smoothDistance = distance;
+        _currentCollisionDistance = distance;
         
         if (enableDebugLogs)
             Debug.Log($"[{gameObject.name}] RestoreState: X={data.currentX}, Y={data.currentY}, Dist={data.distance}");
