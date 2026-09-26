@@ -121,12 +121,22 @@ public class DayNightSystem : MonoBehaviour, ISaveable
     public Gradient moonColor;
     [Space]
     [Tooltip("Максимальная интенсивность солнца")]
-    [Range(0, 3)] public float maxSunIntensity = 1.5f;
+    [Range(0, 3)] public float maxSunIntensity = 1.9f;
     [Tooltip("Максимальная интенсивность луны")]
-    [Range(0, 1)] public float maxMoonIntensity = 0.55f;
+    [Range(0, 1)] public float maxMoonIntensity = 0.22f;
 
     [Header("Звёзды")]
-    [Range(0, 1)] public float starsBrightness = 0.85f;
+    [Range(0, 1)] public float starsBrightness = 1.0f;
+
+    // Визуальные параметры skybox. НЕ влияют на игровое время, события или сохранения.
+    [Header("Визуальная атмосфера")]
+    [Range(0f, 1f)] public float skyAtmosphereIntensity = 1f;
+    [Range(0f, 1f)] public float celestialGlow = 1f;
+    [Range(0f, 1f)] public float duskGlow = 1f;
+
+    // Не сериализуются: используются только для дешёвой оптимизации DynamicGI.
+    private Color _lastGIColor = Color.clear;
+    private float _giTimer;
 
     [Header("Туман (лёгкий, атмосферный)")]
     public bool enableFog = true;
@@ -252,33 +262,117 @@ public class DayNightSystem : MonoBehaviour, ISaveable
     private void UpdateSkybox()
     {
         if (skyboxMaterial == null) return;
-        float t        = currentTime / 24f;
-        float dayProg  = GetDayProgress();
 
-        // Основные цвета неба
-        SetSkyboxColor("_SkyColor",      skyColor,      t);
-        SetSkyboxColor("_HorizonColor",  horizonColor,  t);
-        SetSkyboxColor("_GroundColor",   groundColor,   t);
+        float t = currentTime / 24f;
 
-        // Звёзды: показываем ночью через _StarBrightness
-        // Шейдер CozyDarkFantasySkybox определяет nightFactor сам через яркость _SkyColor,
-        // но мы также управляем через _StarBrightness для гибкости
+        // Это ТОЛЬКО визуальные коэффициенты. Игровое время и его логика не меняются.
+        float dawnEnd = dawnStart + atmosphericSettings.dawnDuration;
+        float duskEnd = duskStart + atmosphericSettings.duskDuration;
+
+        float dawn = 0f;
+        if (currentTime >= dawnStart && currentTime <= dawnEnd)
+            dawn = Mathf.SmoothStep(1f, 0f, (currentTime - dawnStart) / atmosphericSettings.dawnDuration);
+
+        float dusk = 0f;
+        if (currentTime >= duskStart && currentTime <= duskEnd)
+            dusk = Mathf.SmoothStep(0f, 1f, (currentTime - duskStart) / atmosphericSettings.duskDuration);
+
+        float night = 0f;
+        if (currentTime < dawnStart)
+            night = 1f;
+        else if (currentTime >= dawnStart && currentTime < dawnEnd)
+            night = Mathf.SmoothStep(1f, 0f, (currentTime - dawnStart) / atmosphericSettings.dawnDuration);
+        else if (currentTime > duskStart && currentTime < duskEnd)
+            night = Mathf.SmoothStep(0f, 1f, (currentTime - duskStart) / atmosphericSettings.duskDuration);
+        else if (currentTime >= duskEnd)
+            night = 1f;
+
+        float day = 1f - Mathf.Max(dawn, dusk, night);
+
+        // Основные цвета.
+        SetSkyboxColor("_SkyColor", skyColor, t);
+        SetSkyboxColor("_HorizonColor", horizonColor, t);
+        SetSkyboxColor("_GroundColor", groundColor, t);
+
+        if (skyboxMaterial.HasProperty("_MidSkyColor"))
+        {
+            Color upper = skyColor != null ? skyColor.Evaluate(t) : Color.blue;
+            Color horizon = horizonColor != null ? horizonColor.Evaluate(t) : Color.gray;
+            Color mid = Color.Lerp(upper, horizon, 0.20f);
+            skyboxMaterial.SetColor("_MidSkyColor", mid);
+        }
+
         if (skyboxMaterial.HasProperty("_StarBrightness"))
             skyboxMaterial.SetFloat("_StarBrightness", starsBrightness);
 
-        // Warmth для старых шейдеров (если используется)
-        if (skyboxMaterial.HasProperty("_WarmthFactor"))
-            skyboxMaterial.SetFloat("_WarmthFactor", Mathf.Lerp(-0.08f, 0.12f, dayProg));
+        if (skyboxMaterial.HasProperty("_NightFactor"))
+            skyboxMaterial.SetFloat("_NightFactor", night);
 
-        // Динамический boost ночи (для CozyDarkFantasySkybox)
-        if (skyboxMaterial.HasProperty("_NightBoost"))
+        if (skyboxMaterial.HasProperty("_DawnFactor"))
+            skyboxMaterial.SetFloat("_DawnFactor", dawn);
+
+        if (skyboxMaterial.HasProperty("_DuskFactor"))
+            skyboxMaterial.SetFloat("_DuskFactor", dusk);
+
+        if (skyboxMaterial.HasProperty("_DayIntensity"))
+            skyboxMaterial.SetFloat("_DayIntensity", day);
+
+        if (skyboxMaterial.HasProperty("_WarmthFactor"))
         {
-            float boost = Mathf.Lerp(1.6f, 1.0f, dayProg);
-            skyboxMaterial.SetFloat("_NightBoost", boost);
+            // Тёплый только рассвет/закат. В полдень цвет не превращается в сепию.
+            float golden = Mathf.Max(dawn, dusk);
+            skyboxMaterial.SetFloat("_WarmthFactor", golden);
         }
 
-        // DynamicGI: пересчёт после смены цветов скайбокса
-        DynamicGI.UpdateEnvironment();
+        if (skyboxMaterial.HasProperty("_NightBoost"))
+            skyboxMaterial.SetFloat("_NightBoost", Mathf.Lerp(1.0f, 2.05f, night));
+
+        if (sunLight != null && skyboxMaterial.HasProperty("_SunDirection"))
+            skyboxMaterial.SetVector("_SunDirection", -sunLight.transform.forward);
+
+        if (moonLight != null && skyboxMaterial.HasProperty("_MoonDirection"))
+            skyboxMaterial.SetVector("_MoonDirection", -moonLight.transform.forward);
+
+        if (skyboxMaterial.HasProperty("_CelestialGlow"))
+            skyboxMaterial.SetFloat("_CelestialGlow", celestialGlow);
+
+        if (skyboxMaterial.HasProperty("_DuskGlow"))
+            skyboxMaterial.SetFloat("_DuskGlow", duskGlow);
+
+        if (skyboxMaterial.HasProperty("_AtmosphereIntensity"))
+            skyboxMaterial.SetFloat("_AtmosphereIntensity", skyAtmosphereIntensity);
+
+        _giTimer += Time.deltaTime;
+        Color giColor = skyColor != null ? skyColor.Evaluate(t) : Color.gray;
+        if (_giTimer >= 0.25f || ColorDifference(_lastGIColor, giColor) > 0.018f)
+        {
+            DynamicGI.UpdateEnvironment();
+            _lastGIColor = giColor;
+            _giTimer = 0f;
+        }
+    }
+
+    private float GetGoldenHourFactor()
+    {
+        if (atmosphericSettings == null) return 0f;
+
+        float dawnEnd = dawnStart + atmosphericSettings.dawnDuration;
+        float duskEnd = duskStart + atmosphericSettings.duskDuration;
+
+        float dawn = 0f;
+        if (currentTime >= dawnStart && currentTime <= dawnEnd)
+            dawn = Mathf.SmoothStep(0f, 1f, (currentTime - dawnStart) / atmosphericSettings.dawnDuration);
+
+        float dusk = 0f;
+        if (currentTime >= duskStart && currentTime <= duskEnd)
+            dusk = Mathf.SmoothStep(1f, 0f, (currentTime - duskStart) / atmosphericSettings.duskDuration);
+
+        return Mathf.Max(dawn * (1f - dawn), dusk * (1f - dusk)) * 4f;
+    }
+
+    private float ColorDifference(Color a, Color b)
+    {
+        return Mathf.Abs(a.r - b.r) + Mathf.Abs(a.g - b.g) + Mathf.Abs(a.b - b.b);
     }
 
     private void SetSkyboxColor(string prop, Gradient grad, float t)
@@ -335,11 +429,14 @@ public class DayNightSystem : MonoBehaviour, ISaveable
 
         sunLight.color     = currentSunColorSmooth;
         sunLight.intensity = currentSunIntensitySmooth;
-        sunLight.shadowStrength = Mathf.Lerp(0.25f, 0.65f, sunFactor); // мягкие тени
+        float golden = GetGoldenHourFactor();
+        sunLight.shadowStrength = Mathf.Lerp(0.12f, 0.72f, sunFactor);
+        if (golden > 0f)
+            sunLight.shadowStrength = Mathf.Lerp(sunLight.shadowStrength, 0.62f, golden * 0.65f);
 
         moonLight.color     = currentMoonColorSmooth;
         moonLight.intensity = currentMoonIntensitySmooth;
-        moonLight.shadowStrength = Mathf.Lerp(0.05f, 0.4f, moonFactor);
+        moonLight.shadowStrength = Mathf.Lerp(0.02f, 0.28f, moonFactor);
     }
 
     // ─── Ambient (окружающий свет) ──────────────────────────────────────────
@@ -358,7 +455,8 @@ public class DayNightSystem : MonoBehaviour, ISaveable
         currentAmbientSmooth = Color.Lerp(currentAmbientSmooth, targetAmbient,
                                           Time.deltaTime * transitionSpeed);
 
-        RenderSettings.ambientLight = currentAmbientSmooth * atmosphericSettings.ambientIntensity;
+        float visualAmbient = Mathf.Lerp(0.30f, 0.72f, dayProg);
+        RenderSettings.ambientLight = currentAmbientSmooth * atmosphericSettings.ambientIntensity * visualAmbient;
     }
 
     // ─── Туман ──────────────────────────────────────────────────────────────
@@ -450,9 +548,9 @@ public class DayNightSystem : MonoBehaviour, ISaveable
         atmosphericSettings.dawnDuration       = 1.2f;
         atmosphericSettings.duskDuration       = 1.2f;
         atmosphericSettings.daySaturation      = 1.05f;
-        atmosphericSettings.nightSaturation    = 0.75f;
-        atmosphericSettings.dayTemperature     = 0.08f;
-        atmosphericSettings.nightTemperature   = -0.12f;
+        atmosphericSettings.nightSaturation    = 0.62f;
+        atmosphericSettings.dayTemperature     = 0.03f;
+        atmosphericSettings.nightTemperature   = -0.18f;
     }
 
     private void InitializeDefaultGradients()
@@ -478,100 +576,114 @@ public class DayNightSystem : MonoBehaviour, ISaveable
 
     private Gradient MakeAmbientGradient()
     {
-        // ключи по времени: 0=полночь, 0.23=рассвет, 0.5=полдень, 0.79=закат, 1=полночь
         return MakeGradient(
-            (0f,    new Color(0.06f, 0.07f, 0.18f)),  // полночь — тёмный индиго
-            (0.22f, new Color(0.55f, 0.38f, 0.28f)),  // рассвет — тёплый терракот
-            (0.33f, new Color(0.82f, 0.72f, 0.58f)),  // раннее утро — мягкий бежевый
-            (0.50f, new Color(0.88f, 0.84f, 0.76f)),  // полдень — тёплый молочный
-            (0.67f, new Color(0.82f, 0.72f, 0.58f)),  // послеполудень
-            (0.79f, new Color(0.75f, 0.42f, 0.22f)),  // закат — янтарный
-            (0.87f, new Color(0.22f, 0.16f, 0.30f)),  // сумерки — фиолетовый
-            (1f,    new Color(0.06f, 0.07f, 0.18f))   // полночь
+            (0.00f, new Color(0.012f, 0.015f, 0.040f)),
+            (0.18f, new Color(0.025f, 0.018f, 0.065f)),
+            (0.23f, new Color(0.16f, 0.035f, 0.055f)),
+            (0.28f, new Color(0.55f, 0.22f, 0.10f)),
+            (0.34f, new Color(0.62f, 0.65f, 0.68f)),
+            (0.50f, new Color(0.72f, 0.76f, 0.78f)),
+            (0.66f, new Color(0.62f, 0.64f, 0.65f)),
+            (0.76f, new Color(0.55f, 0.16f, 0.07f)),
+            (0.82f, new Color(0.16f, 0.025f, 0.075f)),
+            (0.90f, new Color(0.020f, 0.014f, 0.050f)),
+            (1.00f, new Color(0.012f, 0.015f, 0.040f))
         );
     }
 
     private Gradient MakeSunGradient()
     {
         return MakeGradient(
-            (0f,    new Color(0.18f, 0.22f, 0.5f)),   // ночь — не используется
-            (0.22f, new Color(1f,   0.65f, 0.35f)),   // рассвет — персиковый
-            (0.37f, new Color(1f,   0.92f, 0.75f)),   // утро — тёплый белый
-            (0.50f, new Color(1f,   0.96f, 0.85f)),   // полдень — чистый
-            (0.63f, new Color(1f,   0.92f, 0.75f)),   // день
-            (0.79f, new Color(1f,   0.55f, 0.20f)),   // закат — глубокий янтарь
-            (0.87f, new Color(0.6f, 0.35f, 0.55f)),   // сумерки — розово-фиолетовый
-            (1f,    new Color(0.18f, 0.22f, 0.5f))
+            (0.00f, new Color(0.18f, 0.24f, 0.58f)),
+            (0.18f, new Color(0.70f, 0.28f, 0.16f)),
+            (0.23f, new Color(1.00f, 0.38f, 0.12f)),
+            (0.30f, new Color(1.00f, 0.72f, 0.42f)),
+            (0.42f, new Color(1.00f, 0.95f, 0.82f)),
+            (0.50f, new Color(1.00f, 0.98f, 0.90f)),
+            (0.62f, new Color(1.00f, 0.93f, 0.78f)),
+            (0.75f, new Color(1.00f, 0.62f, 0.25f)),
+            (0.81f, new Color(1.00f, 0.30f, 0.08f)),
+            (0.88f, new Color(0.58f, 0.28f, 0.62f)),
+            (1.00f, new Color(0.18f, 0.24f, 0.58f))
         );
     }
 
     private Gradient MakeMoonGradient()
     {
         return MakeGradient(
-            (0f,    new Color(0.65f, 0.78f, 1.00f)),  // холодный лунно-голубой
-            (0.5f,  new Color(0.58f, 0.72f, 0.98f)),  // чуть теплее
-            (1f,    new Color(0.65f, 0.78f, 1.00f))
+            (0.00f, new Color(0.58f, 0.70f, 1.00f)),
+            (0.25f, new Color(0.68f, 0.78f, 1.00f)),
+            (0.50f, new Color(0.74f, 0.82f, 1.00f)),
+            (0.75f, new Color(0.64f, 0.74f, 1.00f)),
+            (1.00f, new Color(0.58f, 0.70f, 1.00f))
         );
     }
 
     private Gradient MakeFogGradient()
     {
         return MakeGradient(
-            (0f,    new Color(0.10f, 0.12f, 0.28f)),  // ночной туман — тёмный индиго
-            (0.22f, new Color(0.80f, 0.62f, 0.45f)),  // утренний — персиковый
-            (0.37f, new Color(0.78f, 0.82f, 0.88f)),  // утро — серо-голубой
-            (0.50f, new Color(0.80f, 0.83f, 0.88f)),  // день — светло-серый
-            (0.63f, new Color(0.78f, 0.82f, 0.88f)),
-            (0.79f, new Color(0.72f, 0.48f, 0.30f)),  // закат — янтарный туман
-            (0.87f, new Color(0.18f, 0.14f, 0.28f)),  // сумерки
-            (1f,    new Color(0.10f, 0.12f, 0.28f))
+            (0.00f, new Color(0.045f, 0.055f, 0.16f)),
+            (0.16f, new Color(0.07f, 0.055f, 0.18f)),
+            (0.23f, new Color(0.42f, 0.16f, 0.16f)),
+            (0.30f, new Color(0.78f, 0.47f, 0.31f)),
+            (0.40f, new Color(0.72f, 0.77f, 0.84f)),
+            (0.58f, new Color(0.78f, 0.82f, 0.88f)),
+            (0.75f, new Color(0.86f, 0.38f, 0.18f)),
+            (0.82f, new Color(0.30f, 0.10f, 0.23f)),
+            (0.92f, new Color(0.055f, 0.045f, 0.15f)),
+            (1.00f, new Color(0.045f, 0.055f, 0.16f))
         );
     }
 
     private Gradient MakeSkyGradient()
     {
-        // ВАЖНО: ночные значения должны быть ТЁМНЫМИ (яркость < 0.10)
-        // чтобы шейдер правильно определял NightFactor и показывал звёзды.
-        // Формула: dot(color, float3(0.299, 0.587, 0.114)) < 0.10 = ночь
         return MakeGradient(
-            (0.00f, new Color(0.05f, 0.04f, 0.16f)),  // полночь — тёмный индиго       (lum≈0.05)
-            (0.20f, new Color(0.08f, 0.06f, 0.20f)),  // 4:48 — ещё ночь               (lum≈0.07)
-            (0.23f, new Color(0.30f, 0.18f, 0.30f)),  // рассвет — пурпурный           (lum≈0.23)
-            (0.30f, new Color(0.38f, 0.52f, 0.78f)),  // утро — синее небо             (lum≈0.49)
-            (0.42f, new Color(0.32f, 0.58f, 0.88f)),  // позднее утро                  (lum≈0.52)
-            (0.50f, new Color(0.28f, 0.60f, 0.92f)),  // полдень — чистый голубой      (lum≈0.54)
-            (0.62f, new Color(0.32f, 0.58f, 0.88f)),  // день
-            (0.72f, new Color(0.45f, 0.38f, 0.65f)),  // предзакатный
-            (0.80f, new Color(0.20f, 0.12f, 0.35f)),  // ранние сумерки                (lum≈0.15)
-            (0.88f, new Color(0.08f, 0.06f, 0.20f)),  // поздние сумерки               (lum≈0.07)
-            (1.00f, new Color(0.05f, 0.04f, 0.16f))   // полночь
+            (0.00f, new Color(0.008f, 0.010f, 0.035f)),
+            (0.18f, new Color(0.018f, 0.012f, 0.060f)),
+            (0.22f, new Color(0.070f, 0.020f, 0.085f)),
+            (0.25f, new Color(0.30f, 0.070f, 0.115f)),
+            (0.30f, new Color(0.30f, 0.34f, 0.55f)),
+            (0.38f, new Color(0.16f, 0.43f, 0.82f)),
+            (0.50f, new Color(0.16f, 0.50f, 0.96f)),
+            (0.62f, new Color(0.18f, 0.46f, 0.88f)),
+            (0.72f, new Color(0.32f, 0.20f, 0.48f)),
+            (0.77f, new Color(0.42f, 0.045f, 0.12f)),
+            (0.81f, new Color(0.20f, 0.025f, 0.095f)),
+            (0.88f, new Color(0.035f, 0.012f, 0.055f)),
+            (1.00f, new Color(0.008f, 0.010f, 0.035f))
         );
     }
 
     private Gradient MakeHorizonGradient()
     {
         return MakeGradient(
-            (0.00f, new Color(0.10f, 0.10f, 0.28f)),  // ночной горизонт — тёмно-синий
-            (0.20f, new Color(0.12f, 0.10f, 0.30f)),
-            (0.23f, new Color(0.85f, 0.50f, 0.30f)),  // рассвет — тёплый оранжевый
-            (0.30f, new Color(0.88f, 0.80f, 0.68f)),  // утро
-            (0.50f, new Color(0.92f, 0.88f, 0.80f)),  // день — молочно-бежевый
-            (0.70f, new Color(0.88f, 0.80f, 0.65f)),  // послеполудень
-            (0.78f, new Color(1.00f, 0.52f, 0.18f)),  // закат — яркий янтарь
-            (0.84f, new Color(0.55f, 0.22f, 0.40f)),  // сумерки — розово-фиолетовый
-            (0.90f, new Color(0.14f, 0.10f, 0.30f)),  // ночь
-            (1.00f, new Color(0.10f, 0.10f, 0.28f))
+            (0.00f, new Color(0.025f, 0.025f, 0.075f)),
+            (0.18f, new Color(0.045f, 0.025f, 0.095f)),
+            (0.22f, new Color(0.30f, 0.055f, 0.10f)),
+            (0.245f, new Color(1.00f, 0.16f, 0.025f)),
+            (0.275f, new Color(1.00f, 0.48f, 0.08f)),
+            (0.31f, new Color(1.00f, 0.76f, 0.34f)),
+            (0.38f, new Color(0.84f, 0.82f, 0.74f)),
+            (0.50f, new Color(0.78f, 0.82f, 0.84f)),
+            (0.66f, new Color(0.72f, 0.75f, 0.78f)),
+            (0.75f, new Color(1.00f, 0.22f, 0.035f)),
+            (0.785f, new Color(1.00f, 0.42f, 0.06f)),
+            (0.82f, new Color(0.48f, 0.055f, 0.18f)),
+            (0.89f, new Color(0.065f, 0.018f, 0.085f)),
+            (1.00f, new Color(0.025f, 0.025f, 0.075f))
         );
     }
 
     private Gradient MakeGroundGradient()
     {
         return MakeGradient(
-            (0.00f, new Color(0.03f, 0.03f, 0.08f)),  // ночь — почти чёрный
-            (0.23f, new Color(0.18f, 0.12f, 0.12f)),  // рассвет
-            (0.50f, new Color(0.25f, 0.28f, 0.22f)),  // день
-            (0.80f, new Color(0.14f, 0.08f, 0.10f)),  // закат
-            (1.00f, new Color(0.03f, 0.03f, 0.08f))
+            (0.00f, new Color(0.006f, 0.006f, 0.018f)),
+            (0.20f, new Color(0.018f, 0.008f, 0.028f)),
+            (0.25f, new Color(0.085f, 0.018f, 0.022f)),
+            (0.50f, new Color(0.16f, 0.18f, 0.15f)),
+            (0.66f, new Color(0.14f, 0.13f, 0.11f)),
+            (0.78f, new Color(0.065f, 0.008f, 0.022f)),
+            (1.00f, new Color(0.006f, 0.006f, 0.018f))
         );
     }
 

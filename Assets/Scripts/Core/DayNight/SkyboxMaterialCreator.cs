@@ -101,16 +101,16 @@ public class SkyboxMaterialCreator : EditorWindow
             mat.SetColor("_MidSkyColor", new Color(0.38f, 0.55f, 0.82f, 1f));
 
         // --- Атмосфера ---
-        mat.SetFloat("_HorizonBlend",    mobile ? 2.5f : 3.0f);
-        mat.SetFloat("_AtmospherePower", mobile ? 0.85f : 0.75f);
-        mat.SetFloat("_HorizonGlow",     mobile ? 0.28f : 0.35f);
+        mat.SetFloat("_HorizonBlend",    mobile ? 2.8f : 3.6f);
+        mat.SetFloat("_AtmospherePower", mobile ? 0.90f : 0.72f);
+        mat.SetFloat("_HorizonGlow",     mobile ? 0.22f : 0.42f);
         mat.SetFloat("_WarmthFactor",    0.08f);
 
         // --- Звёзды ---
-        mat.SetFloat("_StarBrightness", 0.90f);
-        mat.SetFloat("_StarDensity",    mobile ? 55f : 75f);
-        mat.SetFloat("_StarSize",       mobile ? 0.018f : 0.022f);
-        mat.SetFloat("_StarTwinkle",    mobile ? 0.25f : 0.35f);
+        mat.SetFloat("_StarBrightness", 0.96f);
+        mat.SetFloat("_StarDensity",    mobile ? 48f : 105f);
+        mat.SetFloat("_StarSize",       mobile ? 0.014f : 0.020f);
+        mat.SetFloat("_StarTwinkle",    mobile ? 0.15f : 0.28f);
         if (!mobile) mat.SetFloat("_StarColorShift", 0.30f);
 
         // --- Ночь ---
@@ -122,8 +122,11 @@ public class SkyboxMaterialCreator : EditorWindow
         // --- Млечный путь (только PC) ---
         if (!mobile)
         {
-            mat.SetFloat("_MilkyWayIntensity", 0.28f);
-            mat.SetFloat("_MilkyWayRotation",  0.5f);
+            mat.SetFloat("_MilkyWayIntensity", 0.42f);
+            mat.SetFloat("_MilkyWayRotation",  0.72f);
+            mat.SetFloat("_AtmosphereIntensity", 1.0f);
+            mat.SetFloat("_CelestialGlow", 1.0f);
+            mat.SetFloat("_DuskGlow", 1.0f);
         }
     }
 }

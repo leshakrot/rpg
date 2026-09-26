@@ -167,15 +167,15 @@ public class AtmosphericPresetManager : MonoBehaviour
         if (IsDefault(lowPreset))
         {
             lowPreset.presetName                 = "Low";
-            lowPreset.lightIntensityMultiplier   = 0.90f;
-            lowPreset.ambientIntensityMultiplier = 1.10f;  // чуть светлее без теней
+            lowPreset.lightIntensityMultiplier   = 0.92f;
+            lowPreset.ambientIntensityMultiplier = 1.04f;  // чуть светлее без теней
             lowPreset.enableSoftShadows          = false;
             lowPreset.shadowStrengthSun          = 0.50f;
             lowPreset.shadowStrengthMoon         = 0.20f;
             lowPreset.shadowDistanceMultiplier   = 0.55f;
             lowPreset.enableFog                  = true;
-            lowPreset.fogDensityMultiplier       = 0.75f;  // лёгкий туман даже на Low
-            lowPreset.colorSaturationMultiplier  = 0.95f;
+            lowPreset.fogDensityMultiplier       = 0.82f;  // лёгкий туман даже на Low
+            lowPreset.colorSaturationMultiplier  = 0.98f;
         }
 
         // ── Medium ─────────────────────────────────────────────────────────
@@ -183,14 +183,14 @@ public class AtmosphericPresetManager : MonoBehaviour
         {
             mediumPreset.presetName                 = "Medium";
             mediumPreset.lightIntensityMultiplier   = 1.00f;
-            mediumPreset.ambientIntensityMultiplier = 1.00f;
+            mediumPreset.ambientIntensityMultiplier = 0.98f;
             mediumPreset.enableSoftShadows          = true;
             mediumPreset.shadowStrengthSun          = 0.60f;
             mediumPreset.shadowStrengthMoon         = 0.35f;
             mediumPreset.shadowDistanceMultiplier   = 0.80f;
             mediumPreset.enableFog                  = true;
             mediumPreset.fogDensityMultiplier       = 1.00f;
-            mediumPreset.colorSaturationMultiplier  = 1.00f;
+            mediumPreset.colorSaturationMultiplier  = 1.03f;
         }
 
         // ── High ───────────────────────────────────────────────────────────
@@ -198,14 +198,14 @@ public class AtmosphericPresetManager : MonoBehaviour
         {
             highPreset.presetName                 = "High";
             highPreset.lightIntensityMultiplier   = 1.05f;
-            highPreset.ambientIntensityMultiplier = 0.95f;
+            highPreset.ambientIntensityMultiplier = 0.92f;
             highPreset.enableSoftShadows          = true;
             highPreset.shadowStrengthSun          = 0.65f;
             highPreset.shadowStrengthMoon         = 0.40f;
             highPreset.shadowDistanceMultiplier   = 1.00f;
             highPreset.enableFog                  = true;
-            highPreset.fogDensityMultiplier       = 1.10f;
-            highPreset.colorSaturationMultiplier  = 1.05f;
+            highPreset.fogDensityMultiplier       = 1.06f;
+            highPreset.colorSaturationMultiplier  = 1.10f;
         }
 
         // ── Ultra ──────────────────────────────────────────────────────────
@@ -213,14 +213,14 @@ public class AtmosphericPresetManager : MonoBehaviour
         {
             ultraPreset.presetName                 = "Ultra";
             ultraPreset.lightIntensityMultiplier   = 1.10f;
-            ultraPreset.ambientIntensityMultiplier = 0.90f;
+            ultraPreset.ambientIntensityMultiplier = 0.88f;
             ultraPreset.enableSoftShadows          = true;
             ultraPreset.shadowStrengthSun          = 0.68f;
             ultraPreset.shadowStrengthMoon         = 0.45f;
             ultraPreset.shadowDistanceMultiplier   = 1.30f;
             ultraPreset.enableFog                  = true;
-            ultraPreset.fogDensityMultiplier       = 1.20f;
-            ultraPreset.colorSaturationMultiplier  = 1.08f;
+            ultraPreset.fogDensityMultiplier       = 1.10f;
+            ultraPreset.colorSaturationMultiplier  = 1.14f;
         }
     }
 
