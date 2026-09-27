@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b887383adfa29fd47b5b333aba08945b, type: 3}
+  m_Name: "\u0416\u0438\u0432\u0430\u044F \u0432\u043E\u0434\u0430"
+  m_EditorClassIdentifier: 
+  _objectives:
+  - reference: collect_healing_herb
+    description: "\u0421\u043E\u0431\u0435\u0440\u0438\u0442\u0435 5 \u0446\u0435\u043B\u0435\u0431\u043D\u044B\u0445 \u0442\u0440\u0430\u0432 \u0434\u043B\u044F \u0442\u0440\u0430\u0432\u043D\u0438\u043A\u0430"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 1
+    requiredCount: 5
+    hiddenInitially: 0
+    revealCondition:
+      _and: []
+    isCollectionObjective: 1
+    itemToCollect: {fileID: 11400000, guid: 00000000000000000000000000000000, type: 2}
+  - reference: collect_bitter_herb
+    description: "\u0421\u043E\u0431\u0435\u0440\u0438\u0442\u0435 4 \u0433\u043E\u0440\u044C\u043A\u0438\u0445 \u0442\u0440\u0430\u0432\u0430 \u0434\u043B\u044F \u0442\u0440\u0430\u0432\u043D\u0438\u043A\u0430"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 1
+    requiredCount: 4
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - collect_healing_herb
+          _negate: 0
+    isCollectionObjective: 1
+    itemToCollect: {fileID: 11400000, guid: 00000000000000000000000000000000, type: 2}
+  - reference: collect_water_herb
+    description: "\u0421\u043E\u0431\u0435\u0440\u0438\u0442\u0435 2 \u0440\u0435\u0434\u043A\u0438\u0445 \u0442\u0440\u0430\u0432\u0430 \u0434\u043B\u044F \u0442\u0440\u0430\u0432\u043D\u0438\u043A\u0430"
+    usesCondition: 0
+    completionCondition:
+      _and: []
+    hasProgress: 1
+    requiredCount: 2
+    hiddenInitially: 1
+    revealCondition:
+      _and:
+      - _or:
+        - _predicate: CompletedObjective
+          _parameters:
+          - collect_bitter_herb
+          _negate: 0
+    isCollectionObjective: 1
+    itemToCollect: {fileID: 11400000, guid: 00000000000000000000000000000000, type: 2}
+  _rewards:
+  - number: 2
+    item: {fileID: 11400000, guid: 00000000000000000000000000000000, type: 2}
+    isSecret: 1
+  _objectivesToComplete: 0

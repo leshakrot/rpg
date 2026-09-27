@@ -21,10 +21,12 @@ namespace RPG.SceneManagement
             MainTownTavern_Cellar,
             MainTownTavernCellar_Cave,
             MainTown_ForestPath,
+            MainTown_OldChannel,
             ForestPath_Forest,
             MainTown_MainTownCavePath,
             MainTownCavePath_CellarCave,
             ForestPath_ForestPathCave,
+            
             E,
         }
 

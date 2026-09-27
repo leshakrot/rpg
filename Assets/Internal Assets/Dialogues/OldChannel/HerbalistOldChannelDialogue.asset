@@ -1,0 +1,880 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9000000000000000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 211f6849-c975-411b-b1db-686f08279227
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "**Травник на секунду отрывается от котла, смотрит на героя и вытирает руки о фартук.**\nЕсли ты просто проходишь мимо — проходи. Если пришёл за зельем — придётся подождать. Если пришёл с травами — вот это уже другое дело."
+  children:
+  - a9ae8a02-a978-472e-823a-6b7c87cd2a8a
+  - b3dee901-006b-485d-ae3d-7504bc423919
+  - 3c5aee05-ef10-4d85-b002-707e95f3052b
+  - ae927a5a-eecd-4eb8-ac47-700b023d67ae
+  rect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "a9ae8a02-a978-472e-823a-6b7c87cd2a8a"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "Ты здесь один живёшь?"
+  children:
+  - 5c29b7f5-5a6b-4c85-bad5-e636c7ad7230
+  rect:
+    serializedVersion: 2
+    x: 250
+    y: -220
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "b3dee901-006b-485d-ae3d-7504bc423919"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "Что ты здесь делаешь?"
+  children:
+  - bdc7ed41-efe5-4beb-829d-5996c071548f
+  rect:
+    serializedVersion: 2
+    x: 250
+    y: -70
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "3c5aee05-ef10-4d85-b002-707e95f3052b"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "Что это за вода?"
+  children:
+  - 0de11de7-bc91-40d4-9d75-9c80d47df74a
+  rect:
+    serializedVersion: 2
+    x: 250
+    y: 80
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "ae927a5a-eecd-4eb8-ac47-700b023d67ae"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "Тебе что-нибудь нужно?"
+  children:
+  - 99764c60-e443-444b-9891-756bfeb6377d
+  rect:
+    serializedVersion: 2
+    x: 250
+    y: 230
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "5c29b7f5-5a6b-4c85-bad5-e636c7ad7230"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "Один. Мне так удобнее. Здесь никто не мешает работать, а если ночью что-нибудь взрывается, виноват всё равно я."
+  children:
+  - 952d4d9d-45e0-4e33-a238-a32c40aacdc5
+  rect:
+    serializedVersion: 2
+    x: 500
+    y: -220
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "952d4d9d-45e0-4e33-a238-a32c40aacdc5"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "**Он кивает на навес, книги и заставленные пузырьками полки.**\nЖиву, собираю растения, сушу их, варю настои. Иногда изучаю старые записи. Иногда делаю всё это одновременно и потом долго отмываю стол."
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 750
+    y: -220
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "bdc7ed41-efe5-4beb-829d-5996c071548f"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "Зельями занимаюсь. Не теми, которые продают на ярмарке под названием «выпей — и станешь богатырём». Настоящими. Где важны пропорции, температура и то, какую воду ты взял."
+  children:
+  - e32964e6-dca9-4804-bc42-e4c08164c6e8
+  rect:
+    serializedVersion: 2
+    x: 500
+    y: -70
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "e32964e6-dca9-4804-bc42-e4c08164c6e8"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "И эта вода для этого нужна?"
+  children:
+  - 6d363491-f82e-452f-9a3d-e98d38874756
+  rect:
+    serializedVersion: 2
+    x: 750
+    y: -70
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "6d363491-f82e-452f-9a3d-e98d38874756"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "Очень. Некоторые растения с ней отдают полезные свойства гораздо охотнее. Я пока не понял почему. Но результат вижу."
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 1000
+    y: -70
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "0de11de7-bc91-40d4-9d75-9c80d47df74a"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "**Травник оглядывается на светящийся поток.**\nНе обычная. И русло тоже не обычное — хотя на первый взгляд кажется, что просто речка."
+  children:
+  - f339e2a5-540d-4862-b15a-4e99f862c632
+  rect:
+    serializedVersion: 2
+    x: 500
+    y: 80
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "f339e2a5-540d-4862-b15a-4e99f862c632"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "Русло? Ты хочешь сказать, его сделали люди?"
+  children:
+  - bd5d2f57-ece7-4f5d-9564-644536683f9d
+  rect:
+    serializedVersion: 2
+    x: 750
+    y: 80
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "bd5d2f57-ece7-4f5d-9564-644536683f9d"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "Именно. Вода когда-то растекалась по всей этой низине. Здесь было мокро, грязно и весной, говорят, вообще невозможно было пройти."
+  children:
+  - 89a4a8ee-279a-4288-9cac-0c8db8379465
+  rect:
+    serializedVersion: 2
+    x: 1000
+    y: 80
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "89a4a8ee-279a-4288-9cac-0c8db8379465"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "Старые жители отвели поток сюда: насыпали берега, укрепили русло, сделали переправы. Воду не остановили — просто заставили её идти там, где людям удобно."
+  children:
+  - 549560d3-44b1-4568-a34d-366be52a56a6
+  rect:
+    serializedVersion: 2
+    x: 1250
+    y: 80
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "549560d3-44b1-4568-a34d-366be52a56a6"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "А вот почему сама вода такая — этого я пока не знаю. Она приходит с водопада, проходит по старому руслу и всё равно сохраняет свои свойства. Я проверял воду из других ручьёв — такого эффекта нет."
+  children:
+  - efb168c5-2e10-4993-a8bc-2c491e94ac91
+  rect:
+    serializedVersion: 2
+    x: 1500
+    y: 80
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "efb168c5-2e10-4993-a8bc-2c491e94ac91"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "И что она делает с травами?"
+  children:
+  - 5b5c446f-bb9b-493f-848a-f07bff991c84
+  rect:
+    serializedVersion: 2
+    x: 1750
+    y: 80
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "5b5c446f-bb9b-493f-848a-f07bff991c84"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "Усиливает некоторые из них. Иногда совсем немного. Иногда — достаточно, чтобы из обычного настоя получилось настоящее лекарство."
+  children:
+  - 2bcc219e-ce70-4699-95ad-8272605ada15
+  rect:
+    serializedVersion: 2
+    x: 2000
+    y: 80
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "2bcc219e-ce70-4699-95ad-8272605ada15"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "Но мне нужны свежие растения. Старые запасы закончились, а самому идти собирать сейчас не могу — у меня здесь настой кипит."
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 2250
+    y: 80
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "99764c60-e443-444b-9891-756bfeb6377d"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "Как раз нужны. Если принесёшь свежие травы, я смогу закончить одну смесь и проверить её на этой воде."
+  children:
+  - 97f4ed2d-641d-4a29-ba68-c082ab76a626
+  rect:
+    serializedVersion: 2
+    x: 500
+    y: 230
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "97f4ed2d-641d-4a29-ba68-c082ab76a626"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "Какие именно?"
+  children:
+  - 484430ce-6710-444a-9c02-898de6c22e6d
+  rect:
+    serializedVersion: 2
+    x: 750
+    y: 230
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "484430ce-6710-444a-9c02-898de6c22e6d"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "Пять целебных, четыре горьких и две редких. Первые две группы найдёшь в лесу. Редкие ищи ближе к воде и в сырых низинах."
+  children:
+  - 2ef46786-2950-4d64-a3a7-8d7903450f51
+  rect:
+    serializedVersion: 2
+    x: 1000
+    y: 230
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "2ef46786-2950-4d64-a3a7-8d7903450f51"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "А мне с этого что?"
+  children:
+  - a8c1c1f5-1dd2-4b26-aeab-71a06e256c65
+  rect:
+    serializedVersion: 2
+    x: 1250
+    y: 230
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "a8c1c1f5-1dd2-4b26-aeab-71a06e256c65"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "Готовое зелье, когда закончу. И можешь считать это оплатой за то, что избавишь меня от необходимости бросать котёл и тащиться по лесу самому."
+  children:
+  - 1676fcdc-92ad-4617-b6bc-9c8ef1ea356c
+  rect:
+    serializedVersion: 2
+    x: 1500
+    y: 230
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "1676fcdc-92ad-4617-b6bc-9c8ef1ea356c"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "Ладно. Принесу."
+  children:
+  - d8e0fddc-6684-40ed-9241-01a4ed2751fa
+  rect:
+    serializedVersion: 2
+    x: 1750
+    y: 230
+    width: 200
+    height: 100
+  onEnterActions: []
+  - start_quest_living_water
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "d8e0fddc-6684-40ed-9241-01a4ed2751fa"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "Договорились. Только не тащи первое зелёное растение, которое увидишь. Здесь хватает похожих. Мне нужны именно те, о которых я сказал."
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 2000
+    y: 230
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+
+--- !u!114 &-8999999999999999975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "1e8a178d-0afe-4f80-8c81-0ad2cc5bb305"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "**Травник пересчитывает принесённые растения, раскладывает их по кучкам и довольно кивает.**\nВот. Теперь можно работать."
+  children:
+  - 931250a6-8b2b-4fd9-a3c4-c8e03ce19087
+  rect:
+    serializedVersion: 2
+    x: 0
+    y: 500
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - "Живая вода"
+        _negate: 0
+
+--- !u!114 &-8999999999999999974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "931250a6-8b2b-4fd9-a3c4-c8e03ce19087"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "И что ты из этого сделаешь?"
+  children:
+  - 16f8e0b2-5a6f-4d38-a0c6-6ae1f8918b05
+  rect:
+    serializedVersion: 2
+    x: 300
+    y: 500
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - "Живая вода"
+        _negate: 0
+
+--- !u!114 &-8999999999999999973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "16f8e0b2-5a6f-4d38-a0c6-6ae1f8918b05"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "Сначала настой. Потом добавлю воду из русла. Если расчёты не врут, получится хорошее лечебное зелье. Если врут — узнаем, насколько хорошо горит мой навес."
+  children:
+  - be580657-b841-4f8f-898f-c0499c7ce40c
+  rect:
+    serializedVersion: 2
+    x: 550
+    y: 500
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - "Живая вода"
+        _negate: 0
+
+--- !u!114 &-8999999999999999972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "be580657-b841-4f8f-898f-c0499c7ce40c"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "Ещё понадобятся травы?"
+  children:
+  - d7c8f75f-562c-4532-9f74-f971dcfa4b3b
+  rect:
+    serializedVersion: 2
+    x: 800
+    y: 500
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - "Живая вода"
+        _negate: 0
+
+--- !u!114 &-8999999999999999971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: "d7c8f75f-562c-4532-9f74-f971dcfa4b3b"
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "Конечно. Я же не собираюсь один раз сварить зелье и закрыть лавку. Если новая смесь сработает, буду пробовать дальше. Так что всё, что найдёшь в лесу, можешь приносить."
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 1050
+    y: 500
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and:
+    - _or:
+      - _predicate: CompletedQuest
+        _parameters:
+        - "Живая вода"
+        _negate: 0
+
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cb41413d0f918744b4655afe6c9f18f, type: 3}
+  m_Name: HerbalistOldChannelDialogue
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.Dialogue
+  nodes:
+  - {fileID: -9000000000000000000}
+  - {fileID: -8999999999999999999}
+  - {fileID: -8999999999999999998}
+  - {fileID: -8999999999999999997}
+  - {fileID: -8999999999999999996}
+  - {fileID: -8999999999999999995}
+  - {fileID: -8999999999999999994}
+  - {fileID: -8999999999999999993}
+  - {fileID: -8999999999999999992}
+  - {fileID: -8999999999999999991}
+  - {fileID: -8999999999999999990}
+  - {fileID: -8999999999999999989}
+  - {fileID: -8999999999999999988}
+  - {fileID: -8999999999999999987}
+  - {fileID: -8999999999999999986}
+  - {fileID: -8999999999999999985}
+  - {fileID: -8999999999999999984}
+  - {fileID: -8999999999999999983}
+  - {fileID: -8999999999999999982}
+  - {fileID: -8999999999999999981}
+  - {fileID: -8999999999999999980}
+  - {fileID: -8999999999999999979}
+  - {fileID: -8999999999999999978}
+  - {fileID: -8999999999999999977}
+  - {fileID: -8999999999999999976}
+  - {fileID: -8999999999999999975}
+  - {fileID: -8999999999999999974}
+  - {fileID: -8999999999999999973}
+  - {fileID: -8999999999999999972}
+  - {fileID: -8999999999999999971}
+  newNodeOffset: {x: 250, y: 0}
