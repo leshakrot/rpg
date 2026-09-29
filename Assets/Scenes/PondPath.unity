@@ -938,6 +938,38 @@ MonoBehaviour:
     _and: []
   patrolPathObject: {fileID: 0}
   componentsToAdd: []
+--- !u!1 &185704987
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 185704988}
+  m_Layer: 0
+  m_Name: GuideTargets
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &185704988
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 185704987}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1004836826}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &195176910
 GameObject:
   m_ObjectHideFlags: 0
@@ -4887,6 +4919,52 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963016797}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1004836825
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1004836826}
+  - component: {fileID: 1004836827}
+  m_Layer: 0
+  m_Name: gold_helper_house
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1004836826
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004836825}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 35.96, y: 5.21, z: 67.51}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 185704988}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1004836827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004836825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a9be95cf4ca3b24194b6d888c81cab5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Companions.GuideTarget
+  targetId: gold_helper_house
+  guidePoint: {fileID: 1004836826}
 --- !u!1001 &1009953988
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7718,7 +7796,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 578189691652438176, guid: 1345df2c3cd9cbd40a817776750bb2f4, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -314.57227
+      value: -314.57242
       objectReference: {fileID: 0}
     - target: {fileID: 580318067004747719, guid: 1345df2c3cd9cbd40a817776750bb2f4, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -10194,7 +10272,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5489135212274682532, guid: 1345df2c3cd9cbd40a817776750bb2f4, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -562.0894
+      value: -562.0898
       objectReference: {fileID: 0}
     - target: {fileID: 5489688479755327494, guid: 1345df2c3cd9cbd40a817776750bb2f4, type: 3}
       propertyPath: m_AnchorMax.x
@@ -10230,7 +10308,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5543091506847929671, guid: 1345df2c3cd9cbd40a817776750bb2f4, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -562.81
+      value: -562.81036
       objectReference: {fileID: 0}
     - target: {fileID: 5551642854549289169, guid: 1345df2c3cd9cbd40a817776750bb2f4, type: 3}
       propertyPath: m_fontAsset
@@ -18427,3 +18505,4 @@ SceneRoots:
   - {fileID: 1666632784}
   - {fileID: 429723498}
   - {fileID: 1701403397}
+  - {fileID: 185704988}

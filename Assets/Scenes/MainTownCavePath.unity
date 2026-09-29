@@ -8720,6 +8720,98 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1680705048751985167, guid: 59164371d45b17340a37c3edf0278e73, type: 3}
   m_PrefabInstance: {fileID: 1868659769}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &998930204
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 998930205}
+  - component: {fileID: 998930206}
+  m_Layer: 0
+  m_Name: gold_bandits_camp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &998930205
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 998930204}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.85060984, z: -0, w: -0.52579755}
+  m_LocalPosition: {x: 21.43, y: 2.855, z: 38.09}
+  m_LocalScale: {x: 2.5380006, y: 2.538, z: 2.5380006}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1561079712}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &998930206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 998930204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a9be95cf4ca3b24194b6d888c81cab5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Companions.GuideTarget
+  targetId: gold_broken_jinn_cart
+  guidePoint: {fileID: 998930205}
+--- !u!1 &1044221726
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1044221727}
+  - component: {fileID: 1044221728}
+  m_Layer: 0
+  m_Name: gold_jinn_hints
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1044221727
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044221726}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.85060984, z: -0, w: -0.52579755}
+  m_LocalPosition: {x: 11.867, y: 2.855, z: 20.483}
+  m_LocalScale: {x: 2.5380006, y: 2.538, z: 2.5380006}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1561079712}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1044221728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044221726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a9be95cf4ca3b24194b6d888c81cab5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Companions.GuideTarget
+  targetId: gold_jinn_hints
+  guidePoint: {fileID: 1044221727}
 --- !u!1001 &1056452134
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11963,7 +12055,7 @@ GameObject:
   - component: {fileID: 1509298507}
   - component: {fileID: 1509298508}
   m_Layer: 0
-  m_Name: CompanionGuideTarget
+  m_Name: gold_broken_jinn_cart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12280,6 +12372,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1509298507}
+  - {fileID: 998930205}
+  - {fileID: 1044221727}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1566299635 stripped
