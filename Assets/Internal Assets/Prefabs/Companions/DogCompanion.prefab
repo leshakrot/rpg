@@ -2860,8 +2860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fad873abac1b5034bad202ff13389c5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damageTextPrefab: {fileID: 6382639610877371558, guid: ccf838a0fc8db344bae7cbea2c429d7a,
-    type: 3}
+  _damageTextPrefab: {fileID: 6382639610877371558, guid: ccf838a0fc8db344bae7cbea2c429d7a, type: 3}
 --- !u!114 &4086001761202355980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2874,8 +2873,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd79f937c33a4fd4abf5389b83a9cd52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RPG.UI.KnockoutCountdownText.KnockoutCountdownSpawner
-  _knockoutCountdownTextPrefab: {fileID: 3951020647706948061, guid: afed72c4116a2c64aac8fd53c242c7d5,
-    type: 3}
+  _knockoutCountdownTextPrefab: {fileID: 3951020647706948061, guid: afed72c4116a2c64aac8fd53c242c7d5, type: 3}
 --- !u!1 &5400896760858775074
 GameObject:
   m_ObjectHideFlags: 0
@@ -2930,9 +2928,13 @@ GameObject:
   - component: {fileID: 4594447918945362429}
   - component: {fileID: 2289306121183595165}
   - component: {fileID: 2215169504456969294}
+  - component: {fileID: 4981900473571478434}
+  - component: {fileID: 5703718968248837145}
   - component: {fileID: 3486578022821377742}
   - component: {fileID: 4889043228414617376}
   - component: {fileID: 2264020888405994469}
+  - component: {fileID: -7584091230554500420}
+  - component: {fileID: -150173450578190529}
   - component: {fileID: 4046419578505163433}
   - component: {fileID: 3497947109735415402}
   - component: {fileID: 5349239601348214663}
@@ -3114,7 +3116,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uniqueIdentifier: 79c27d6a-3ed7-4312-9bb2-9590ae72e7b9
+  uniqueIdentifier: b0d02cb2-5964-434b-bb29-10a722347d9d
 --- !u!54 &4723629739888219441
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3197,10 +3199,65 @@ MonoBehaviour:
   followDistance: 3
   followStopDistance: 2
   followCatchUpSpeedMultiplier: 1.15
+  followSpeedSmoothTime: 0.25
+  followStopHysteresis: 0.45
+  followSlowdownDistance: 2.6
+  followMinimumMovingSpeed: 0.65
   combatRange: 10
   knockoutRespawnDuration: 15
   reviveHealthPercentage: 50
   knockoutCountdownSpawner: {fileID: 4086001761202355980}
+--- !u!114 &4981900473571478434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5496219608855063166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69c960884c4d69142b4ddc054acb495d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Companions.CompanionGuide
+  companionData: {fileID: 11400000, guid: 3a3d0844ecdc1db4d901615eb202d2e3, type: 2}
+  map: {fileID: 11400000, guid: 60e93ebe95cd3c8439018208b042ac75, type: 2}
+  currentTargetSource: {fileID: 0}
+  guideSpeed: 1
+  arriveDistance: 1.5
+  repathInterval: 0.3
+  resolveTimeout: 2
+  waitForPlayerDistance: 10
+  resumeDistance: 5
+  facePlayerWhileWaiting: 1
+  guidingBoolParam: isGuiding
+  waitingBoolParam: isGuideWaiting
+  onGuideStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  onWaitingForPlayer:
+    m_PersistentCalls:
+      m_Calls: []
+  onArrived:
+    m_PersistentCalls:
+      m_Calls: []
+  onGuideStopped:
+    m_PersistentCalls:
+      m_Calls: []
+  onGuideFailed:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &5703718968248837145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5496219608855063166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dd4df64a7f88eb46aa4393ff6f3ca60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Companions.CompanionGuidePredicates
 --- !u!114 &3486578022821377742
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3249,6 +3306,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91bea514e3e18d54c978dc85d813d597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Companions.CompanionPredicates
+--- !u!114 &-7584091230554500420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5496219608855063166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d99e6be0c50bc7a4eab994d635cc8313, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Companions.CompanionQuestGuideChoiceProvider
+  marker: ShowActiveQuestsForGuide
+--- !u!114 &-150173450578190529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5496219608855063166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0cc3fe65fb5dfb4db3f2ce4ff7894d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Companions.CompanionQuestGuidePredicates
 --- !u!114 &4046419578505163433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3285,9 +3367,57 @@ MonoBehaviour:
   - rid: 3663690647665901775
   - rid: 3663690647665901776
   - rid: 3663690647665901983
+  - rid: 2859777629381984364
+  - rid: 2859777629381984365
+  - rid: 2859777629381984379
   references:
     version: 2
     RefIds:
+    - rid: 2859777629381984364
+      type: {class: TriggerAction, ns: RPG.Dialogue, asm: Assembly-CSharp}
+      data:
+        actionName: GuideToPendingSelection
+        onTrigger:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 4981900473571478434}
+              m_TargetAssemblyTypeName: RPG.Companions.CompanionGuide, Assembly-CSharp
+              m_MethodName: GuideToPendingSelection
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+    - rid: 2859777629381984365
+      type: {class: TriggerAction, ns: RPG.Dialogue, asm: Assembly-CSharp}
+      data:
+        actionName: ShowActiveQuestsForGuide
+        onTrigger:
+          m_PersistentCalls:
+            m_Calls: []
+    - rid: 2859777629381984379
+      type: {class: TriggerAction, ns: RPG.Dialogue, asm: Assembly-CSharp}
+      data:
+        actionName: StopGuide
+        onTrigger:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 4981900473571478434}
+              m_TargetAssemblyTypeName: RPG.Companions.CompanionGuide, Assembly-CSharp
+              m_MethodName: StopGuide
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
     - rid: 3663690647665901774
       type: {class: TriggerAction, ns: RPG.Dialogue, asm: Assembly-CSharp}
       data:
@@ -3582,8 +3712,7 @@ MonoBehaviour:
   m_text: 5
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 193673e6eb50bf2488197904f43cf1af, type: 2}
-  m_sharedMaterial: {fileID: 6190578607772716692, guid: 193673e6eb50bf2488197904f43cf1af,
-    type: 2}
+  m_sharedMaterial: {fileID: 6190578607772716692, guid: 193673e6eb50bf2488197904f43cf1af, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3630,7 +3759,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -4489,8 +4618,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7689977617968597229}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0000000019399242, y: -0.000000011251102, z: -0.16991363,
-    w: 0.98545897}
+  m_LocalRotation: {x: -0.0000000019399242, y: -0.000000011251102, z: -0.16991363, w: 0.98545897}
   m_LocalPosition: {x: 0.023196736, y: 6.217249e-15, z: -8.721912e-15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4557,8 +4685,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7690006490627286997}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0000000046286064, y: -0.000000010653025, z: -0.3984985,
-    w: 0.91716903}
+  m_LocalRotation: {x: -0.0000000046286064, y: -0.000000010653025, z: -0.3984985, w: 0.91716903}
   m_LocalPosition: {x: 0.13379683, y: -4.973799e-16, z: -2.9784966e-10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4843,8 +4970,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7690198052037700593}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.000000014186427, y: 0.0000000030611629, z: -0.21092644,
-    w: 0.9775019}
+  m_LocalRotation: {x: -0.000000014186427, y: 0.0000000030611629, z: -0.21092644, w: 0.9775019}
   m_LocalPosition: {x: 0.10986165, y: 2.1316282e-16, z: -4.0589754e-14}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -5528,8 +5654,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7690459987829820005}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0000000046286717, y: -0.000000010653174, z: -0.3984985,
-    w: 0.91716903}
+  m_LocalRotation: {x: -0.0000000046286717, y: -0.000000010653174, z: -0.3984985, w: 0.91716903}
   m_LocalPosition: {x: -0.13379683, y: 2.1316282e-16, z: 2.9786199e-10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -5721,8 +5846,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7690571573941764171}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.000000015705432, y: -0.0000000033889354, z: -0.21092644,
-    w: 0.9775019}
+  m_LocalRotation: {x: 0.000000015705432, y: -0.0000000033889354, z: -0.21092644, w: 0.9775019}
   m_LocalPosition: {x: -0.10986165, y: -4.2632563e-16, z: 3.360867e-14}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -5754,8 +5878,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7690580656960626529}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.000000039526263, y: -0.0000000047704343, z: -0.16991363,
-    w: 0.98545897}
+  m_LocalRotation: {x: -0.000000039526263, y: -0.0000000047704343, z: -0.16991363, w: 0.98545897}
   m_LocalPosition: {x: -0.023196736, y: -6.110667e-15, z: 8.490985e-15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

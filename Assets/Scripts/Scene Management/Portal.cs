@@ -49,6 +49,15 @@ namespace RPG.SceneManagement
 
         private bool isPlayerInRange = false;
 
+        /// <summary>Build index сцены, куда ведёт портал (как в поле sceneToLoad). -1, если не задан.</summary>
+        public int SceneToLoad => sceneToLoad;
+
+        /// <summary>Доступен ли портал сейчас (не заблокирован квестом/событием).</summary>
+        public bool IsAvailable => isAvailable;
+
+        /// <summary>true, пока идёт переход между сценами через ЛЮБОЙ портал (с момента запуска загрузки до завершения Load()).</summary>
+        public static bool IsTransitioning { get; private set; }
+
         public void ToggleAvailability(bool b) { isAvailable = b; }
 
         private void OnTriggerEnter(Collider other)
@@ -95,6 +104,7 @@ namespace RPG.SceneManagement
 
             // Корутина должна пережить смену сцены.
             DontDestroyOnLoad(gameObject);
+            IsTransitioning = true;
 
             Fader fader = FindObjectOfType<Fader>();
             SavingWrapper savingWrapper = FindObjectOfType<SavingWrapper>();
@@ -103,6 +113,7 @@ namespace RPG.SceneManagement
             if (fader == null || savingWrapper == null || player == null)
             {
                 Debug.LogError("Portal: Не найден Fader, SavingWrapper или Player до перехода.");
+                IsTransitioning = false;
                 yield break;
             }
 
@@ -124,6 +135,7 @@ namespace RPG.SceneManagement
             if (savingWrapper == null)
             {
                 Debug.LogError("Portal: SavingWrapper не найден после загрузки новой сцены.");
+                IsTransitioning = false;
                 Destroy(gameObject);
                 yield break;
             }
@@ -133,6 +145,7 @@ namespace RPG.SceneManagement
             if (newPlayer == null)
             {
                 Debug.LogError("Portal: Player не найден после загрузки новой сцены.");
+                IsTransitioning = false;
                 Destroy(gameObject);
                 yield break;
             }
@@ -152,6 +165,8 @@ namespace RPG.SceneManagement
             {
                 UpdatePlayer(otherPortal);
             }
+
+            IsTransitioning = false;
 
             yield return new WaitForSeconds(fadeWaitTime);
 

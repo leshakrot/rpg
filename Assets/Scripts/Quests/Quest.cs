@@ -47,6 +47,11 @@ namespace RPG.Quests
             public bool isCollectionObjective = false;
             [Tooltip("Какой предмет необходимо собрать.")]
             public InventoryItem itemToCollect;
+
+            [Header("Companion Guide")]
+            [Tooltip("Id GuideTarget (RPG.Companions.GuideTarget), куда компаньон должен вести игрока, " +
+                     "пока этот objective активен. Пусто — objective не поддерживает ведение компаньоном.")]
+            public string guideTargetId;
         }
 
 

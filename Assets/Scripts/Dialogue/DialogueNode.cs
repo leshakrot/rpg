@@ -115,6 +115,23 @@ namespace RPG.Dialogue
 		    return overallResult;
         }
 
+        /// <summary>
+        /// Создаёт временную ноду-выбор, НЕ входящую в ассет Dialogue — для динамических списков
+        /// вариантов (например, "выбери один из активных квестов"). В отличие от SetText/AddChild/
+        /// SetPlayerSpeaking ниже, работает и в билде, не только в редакторе: используется
+        /// IDynamicChoiceProvider-реализациями (см. RPG.Companions.CompanionQuestGuideChoiceProvider).
+        /// childIds должны указывать на реальные ноды того же Dialogue-ассета (обычно — те же
+        /// children, что и у ноды-маркера, чью раскладку выборов мы подменяем).
+        /// </summary>
+        public static DialogueNode CreateRuntimeChoice(string text, bool isPlayerSpeaking, IEnumerable<string> childIds)
+        {
+            DialogueNode node = CreateInstance<DialogueNode>();
+            node.text = text;
+            node.isPlayerSpeaking = isPlayerSpeaking;
+            node.children = new List<string>(childIds);
+            return node;
+        }
+
 #if UNITY_EDITOR
         public void SetPosition(Vector2 newPosition)
         {

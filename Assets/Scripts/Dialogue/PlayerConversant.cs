@@ -15,7 +15,23 @@ namespace RPG.Dialogue
         private AIConversant _currentConversant = null;
         private bool _isChoosing = false;
 
+        // Провайдеры динамических списков ответов (см. IDynamicChoiceProvider) —
+        // например, CompanionQuestGuideChoiceProvider подменяет статичные children
+        // ноды "Веди меня к цели" списком активных квестов.
+        private readonly List<IDynamicChoiceProvider> _dynamicProviders = new List<IDynamicChoiceProvider>();
+
         public event Action onConversationUpdated;
+
+        public void RegisterDynamicChoiceProvider(IDynamicChoiceProvider provider)
+        {
+            if (provider != null && !_dynamicProviders.Contains(provider))
+                _dynamicProviders.Add(provider);
+        }
+
+        public void UnregisterDynamicChoiceProvider(IDynamicChoiceProvider provider)
+        {
+            _dynamicProviders.Remove(provider);
+        }
 
         public void StartDialogue(AIConversant newConversant, Dialogue newDialogue)
         {
@@ -60,11 +76,32 @@ namespace RPG.Dialogue
 
         public IEnumerable<DialogueNode> GetChoices()
         {
+            // Если для текущей ноды зарегистрирован провайдер динамических вариантов —
+            // отдаём его список вместо статичных children из ассета Dialogue.
+            foreach (var provider in _dynamicProviders)
+            {
+                if (provider != null && provider.TryGetChoices(_currentNode, out IEnumerable<DialogueNode> dynamicChoices))
+                {
+                    return dynamicChoices;
+                }
+            }
+
             return FilterOnCondition(_currentDialogue.GetPlayerChildren(_currentNode));
         }
 
         public void SelectChoice(DialogueNode chosenNode)
         {
+            // Даём провайдерам шанс распознать выбранную ноду как "свою" (например,
+            // динамически сгенерированный пункт "веди меня к цели X") и обработать выбор
+            // до того, как сработают её OnEnterActions.
+            foreach (var provider in _dynamicProviders)
+            {
+                if (provider != null && provider.TryHandleSelection(chosenNode))
+                {
+                    break;
+                }
+            }
+
             _currentNode = chosenNode;
             TriggerEnterAction();
             _isChoosing = false;
@@ -73,7 +110,7 @@ namespace RPG.Dialogue
 
         public void Next()
         {
-            int numPlayerResponses = FilterOnCondition(_currentDialogue.GetPlayerChildren(_currentNode)).Count();
+            int numPlayerResponses = GetChoices().Count();
             if (numPlayerResponses > 0)
             {
                 _isChoosing = true;

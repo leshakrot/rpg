@@ -147,6 +147,7 @@ namespace RPG.Quests.Editor
 					newElement.FindPropertyRelative("hasProgress").boolValue = false;
 					newElement.FindPropertyRelative("requiredCount").intValue = 1;
 					newElement.FindPropertyRelative("hiddenInitially").boolValue = false;
+					newElement.FindPropertyRelative("guideTargetId").stringValue = "";
 					// TODO: Reset Condition fields if possible/necessary
 				};
 				objectiveListDrawer.onReorderCallback = (ReorderableList list) => { currentlyEditedObjectiveIndex = -1; };
@@ -264,6 +265,9 @@ namespace RPG.Quests.Editor
 					currentY += DrawPropertyField("itemToCollect", true);
 				}
 
+				// Companion Guide: привязка к GuideTarget (для CompanionGuide/CompanionQuestGuideChoiceProvider)
+				currentY += DrawPropertyField("guideTargetId", true);
+
 				currentY += DrawPropertyField("hiddenInitially", false);
 				if (element.FindPropertyRelative("hiddenInitially").boolValue)
 				{
@@ -342,7 +346,10 @@ namespace RPG.Quests.Editor
 				{
 					totalHeight += GetPropHeight("itemToCollect");
 				}
-				
+
+				// Companion Guide
+				totalHeight += GetPropHeight("guideTargetId");
+
 				totalHeight += GetPropHeight("hiddenInitially");
 				if (element.FindPropertyRelative("hiddenInitially")?.boolValue ?? false) // Добавим проверку на null
 				{

@@ -64,6 +64,9 @@ namespace RPG.Companions
         private float         _followSpeedVelocity;
         private bool          _wasFollowingMovement;
 
+        // ── аддоны (напр. CompanionGuide) ───────────────────────────────
+        private ICompanionFollowOverride _followOverride;
+
         // ── Unity lifecycle ───────────────────────────────────────────────
 
         private void Awake()
@@ -161,6 +164,17 @@ namespace RPG.Companions
             UnregisterSelf();
         }
 
+        /// <summary>
+        /// Регистрирует аддон, управляющий следованием (напр. CompanionGuide).
+        /// Пока addon.IsOverriding == true, TickFollow() делегирует ему тик вместо обычной логики.
+        /// Обнаружение врагов и переход в бой контроллер по-прежнему обрабатывает сам,
+        /// уведомляя аддон через OnInterrupted().
+        /// </summary>
+        public void SetFollowOverride(ICompanionFollowOverride followOverride) => _followOverride = followOverride;
+
+        /// <summary>true, если компаньон нанят и активен (не Inactive).</summary>
+        public bool IsActive => _state != State.Inactive;
+
         // ── тик следования ────────────────────────────────────────────────
 
         private void TickFollow()
@@ -168,8 +182,15 @@ namespace RPG.Companions
             Health enemy = GetBestEnemy();
             if (enemy != null)
             {
+                _followOverride?.OnInterrupted();
                 _target = enemy;
                 _state  = State.Combat;
+                return;
+            }
+
+            if (_followOverride != null && _followOverride.IsOverriding)
+            {
+                _followOverride.Tick();
                 return;
             }
 

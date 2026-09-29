@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8ac08cc9c4743c458cdca8361705b5b, type: 3}
+  m_Name: GuideMap
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Companions.GuideMap
+  targets:
+  - id: gold_broken_jinn_cart
+    sceneIndex: 11
+  - id: guidetarget1
+    sceneIndex: 14
+  links:
+  - fromScene: 1
+    toScene: 2
+  - fromScene: 1
+    toScene: 3
+  - fromScene: 2
+    toScene: 1
+  - fromScene: 3
+    toScene: 4
+  - fromScene: 3
+    toScene: 1
+  - fromScene: 4
+    toScene: 3
+  - fromScene: 4
+    toScene: 11
+  - fromScene: 4
+    toScene: 5
+  - fromScene: 4
+    toScene: 6
+  - fromScene: 4
+    toScene: 13
+  - fromScene: 4
+    toScene: 9
+  - fromScene: 5
+    toScene: 4
+  - fromScene: 6
+    toScene: 4
+  - fromScene: 6
+    toScene: 7
+  - fromScene: 7
+    toScene: 6
+  - fromScene: 7
+    toScene: 8
+  - fromScene: 8
+    toScene: 7
+  - fromScene: 8
+    toScene: 11
+  - fromScene: 9
+    toScene: 4
+  - fromScene: 9
+    toScene: 10
+  - fromScene: 9
+    toScene: 12
+  - fromScene: 10
+    toScene: 3
+  - fromScene: 10
+    toScene: 9
+  - fromScene: 11
+    toScene: 8
+  - fromScene: 11
+    toScene: 4
+  - fromScene: 12
+    toScene: 9
+  - fromScene: 13
+    toScene: 4
