@@ -11,6 +11,7 @@ namespace RPG.Stats
         Wolf = 5,
         Boar = 6,
         Chest = 7,
-        Spider = 8
+        Spider = 8,
+        Dog = 9
     }
 }

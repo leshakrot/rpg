@@ -1,0 +1,151 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-2254360998854137774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 100aa480-1e97-4eeb-8c39-a89ab1a1c3fd
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u041F\u0440\u0438\u0432\u0435\u0442"
+  children:
+  - 4686f710-aa8f-40fd-b100-d850ec1cdccd
+  - 6813f649-0f2c-4110-8f7b-a3c9c464813e
+  rect:
+    serializedVersion: 2
+    x: 69
+    y: 58
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cb41413d0f918744b4655afe6c9f18f, type: 3}
+  m_Name: AnimalTrainer
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.Dialogue
+  nodes:
+  - {fileID: -2254360998854137774}
+  - {fileID: 2344204779320332009}
+  - {fileID: 6759999334087787578}
+  - {fileID: 5894932633333904841}
+  - {fileID: 6392050709855030682}
+  newNodeOffset: {x: 250, y: 0}
+--- !u!114 &2344204779320332009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 4686f710-aa8f-40fd-b100-d850ec1cdccd
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "\u041F\u0440\u0438\u0432\u0435\u0442"
+  children:
+  - de3adafa-ec65-4c8b-b2e7-59c6e3c86878
+  rect:
+    serializedVersion: 2
+    x: 319
+    y: 58
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &5894932633333904841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 6813f649-0f2c-4110-8f7b-a3c9c464813e
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "\u041E\u0431\u0443\u0447\u0438 \u0411\u0430\u0440\u0431\u043E\u0441\u0430"
+  children:
+  - e3824c1e-89eb-4a38-b853-917f0bfd8dae
+  rect:
+    serializedVersion: 2
+    x: 317
+    y: 162
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &6392050709855030682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: e3824c1e-89eb-4a38-b853-917f0bfd8dae
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u0425\u043E\u0440\u043E\u0448\u043E"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 568
+    y: 163
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions:
+  - companion_train
+  condition:
+    _and: []
+--- !u!114 &6759999334087787578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: de3adafa-ec65-4c8b-b2e7-59c6e3c86878
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u041F\u043E\u043A\u0430"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 569
+    y: 58
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []

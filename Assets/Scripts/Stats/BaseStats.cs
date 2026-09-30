@@ -15,6 +15,10 @@ namespace RPG.Stats
 		[SerializeField] private GameObject _levelUpParticleEffect = null;
 		[SerializeField] private bool _shouldUseModifiers = false;
 
+		// Уровни, купленные у дрессировщика (AnimalTrainer). Прибавляются к уровню по опыту.
+		// Для игрока и врагов всегда 0 — поведение не меняется.
+		private int _levelBonus = 0;
+
 		private Experience _experience;
 
 		// Вызывается только при реальном повышении уровня (регенерирует здоровье)
@@ -140,6 +144,46 @@ namespace RPG.Stats
 		{
 			return _currentLevel.value;
 		}
+
+		public int LevelBonus => _levelBonus;
+
+		/// <summary>Максимальный уровень, до которого есть данные в Progression (по кривой Health).</summary>
+		public int GetMaxLevel()
+		{
+			if (_progression == null) return _startingLevel;
+			int levels = _progression.GetLevels(Stat.Health, _characterClass);
+			return Mathf.Max(_startingLevel, levels > 0 ? levels : _progression.MaxLevel);
+		}
+
+		/// <summary>
+		/// Выставляет число уровней, купленных у дрессировщика.
+		/// asLevelUp = true — как настоящий левел-ап (эффект + onLevelUp, здоровье регенерируется).
+		/// asLevelUp = false — тихо (загрузка/спавн): только onStatsRefreshed, без регенерации.
+		/// Безопасно вызывать до Awake() этого компонента — значение подхватится при первом расчёте уровня.
+		/// </summary>
+		public void SetLevelBonus(int bonus, bool asLevelUp = false)
+		{
+			bonus = Mathf.Max(0, bonus);
+			if (bonus == _levelBonus) return;
+			_levelBonus = bonus;
+			if (_currentLevel == null) return;
+
+			int newLevel = CalculateLevel();
+			bool leveledUp = newLevel > _currentLevel.value;
+			_currentLevel.value = newLevel;
+
+			if (asLevelUp && leveledUp)
+			{
+				LevelUpEffect();
+				onLevelUp?.Invoke();
+			}
+			else
+			{
+				onStatsRefreshed?.Invoke();
+			}
+
+			NotifyAllStatsChanged();
+		}
         
 		public float GetXPToLevelUp(int level)
 		{
@@ -164,6 +208,14 @@ namespace RPG.Stats
 		}
 
 		private int CalculateLevel()
+		{
+			int baseLevel = CalculateLevelFromExperience();
+			if (_levelBonus <= 0) return baseLevel;
+
+			return Mathf.Min(baseLevel + _levelBonus, Mathf.Max(baseLevel, GetMaxLevel()));
+		}
+
+		private int CalculateLevelFromExperience()
 		{
 			Experience experience = GetComponent<Experience>();
 			if (experience == null) return _startingLevel;    

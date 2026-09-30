@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using GameDevTV.Saving;
 using RPG.Combat;
+using RPG.Stats;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -205,6 +206,46 @@ namespace RPG.Companions
         public void UnregisterActiveCompanion(string id)
             => _active.Remove(id);
 
+        // ── дрессировка (данные живут здесь, а не на префабе, чтобы переживать респавн/загрузку) ──
+
+        /// <summary>Живой контроллер активного компаньона или null, если его сейчас нет рядом с игроком.</summary>
+        public CompanionController GetActiveCompanion(string id) =>
+            _active.TryGetValue(id, out var ctrl) && ctrl != null ? ctrl : null;
+
+        public int GetTrainedLevels(string id) =>
+            _hired.TryGetValue(id, out var info) ? info.trainedLevels : 0;
+
+        public bool AddTrainedLevels(string id, int levels)
+        {
+            if (levels <= 0 || !_hired.TryGetValue(id, out var info)) return false;
+            info.trainedLevels += levels;
+            return true;
+        }
+
+        public int GetTrainedPoints(string id, Trait trait)
+        {
+            if (!_hired.TryGetValue(id, out var info) || info.trainedSkills == null) return 0;
+            foreach (var entry in info.trainedSkills)
+                if (entry.trait == trait) return entry.points;
+            return 0;
+        }
+
+        public bool AddTrainedPoints(string id, Trait trait, int points)
+        {
+            if (points <= 0 || !_hired.TryGetValue(id, out var info)) return false;
+
+            info.trainedSkills ??= new List<TrainedSkillEntry>();
+            foreach (var entry in info.trainedSkills)
+            {
+                if (entry.trait != trait) continue;
+                entry.points += points;
+                return true;
+            }
+
+            info.trainedSkills.Add(new TrainedSkillEntry { trait = trait, points = points });
+            return true;
+        }
+
         // ── запросы состояния ─────────────────────────────────────────────
 
         public bool IsCompanionHired(string id)      => _hired.ContainsKey(id);
@@ -300,5 +341,17 @@ namespace RPG.Companions
         // Данные рекрутера
         public string  recruiterSceneName;
         public Vector3 recruiterPosition;
+
+        // Дрессировка (AnimalTrainer). Старые сохранения без этих полей читаются как «0 / пусто».
+        public int trainedLevels;
+        public List<TrainedSkillEntry> trainedSkills = new List<TrainedSkillEntry>();
+    }
+
+    /// <summary>Сколько очков вложено в навык (Trait) у компаньона.</summary>
+    [System.Serializable]
+    public class TrainedSkillEntry
+    {
+        public Trait trait;
+        public int   points;
     }
 }

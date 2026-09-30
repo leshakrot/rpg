@@ -16,6 +16,8 @@ namespace RPG.Stats
 		TotalTraitPoints = 6,
 		BuyingDiscountPercentage = 7,
 		Defence = 8,
-		MovementSpeed = 9
+		MovementSpeed = 9,
+		/// <summary>Скорость компаньона при движении к GuideTarget (см. AnimalTraining.GetGuideMoveSpeed).</summary>
+		GuideMoveSpeed = 10
 	}
 }

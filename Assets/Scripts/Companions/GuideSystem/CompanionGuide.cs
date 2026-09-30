@@ -22,6 +22,7 @@ namespace RPG.Companions
         [SerializeField] private MonoBehaviour currentTargetSource;
 
         [Header("Движение")]
+        [Tooltip("Запасная скорость. Используется, если на собаке нет AnimalTraining или для неё не задан Stat.GuideMoveSpeed в Progression.")]
         [SerializeField] private float guideSpeed = 3.5f;
         [Tooltip("На каком расстоянии от финальной цели собака считается дошедшей.")]
         [SerializeField] private float arriveDistance = 1.5f;
@@ -55,6 +56,9 @@ namespace RPG.Companions
         private NavMeshAgent _agent;
         private Animator _animator;
         private IGuideTargetSource _source;
+        private AnimalTraining _training;
+        private float _cachedGuideSpeed;
+        private float _nextSpeedRefreshTime;
         private int _guidingHash, _waitingHash;
 
         private Transform _player;
@@ -86,6 +90,7 @@ namespace RPG.Companions
             _controller = GetComponent<CompanionController>();
             _agent      = GetComponent<NavMeshAgent>();
             _animator   = GetComponentInChildren<Animator>();
+            _training   = GetComponent<AnimalTraining>();
             _source     = currentTargetSource as IGuideTargetSource;
 
             if (currentTargetSource != null && _source == null)
@@ -267,7 +272,7 @@ namespace RPG.Companions
         private void MoveTo(Vector3 destination, float stoppingDistance)
         {
             _agent.isStopped = false;
-            _agent.speed = guideSpeed;
+            _agent.speed = GetGuideSpeed();
             _agent.stoppingDistance = stoppingDistance;
 
             if (!_destinationIssued || Time.time >= _nextRepathTime)
@@ -278,6 +283,22 @@ namespace RPG.Companions
             }
 
             SetAnim(guiding: true, waiting: false);
+        }
+
+        /// <summary>
+        /// Скорость движения к GuideTarget: Stat.GuideMoveSpeed (Progression + навыки у дрессировщика).
+        /// Значение кэшируется на полсекунды — GetStat каждый кадр не нужен.
+        /// </summary>
+        private float GetGuideSpeed()
+        {
+            if (_training == null) return guideSpeed;
+
+            if (Time.time >= _nextSpeedRefreshTime)
+            {
+                _cachedGuideSpeed = _training.GetGuideMoveSpeed(guideSpeed);
+                _nextSpeedRefreshTime = Time.time + 0.5f;
+            }
+            return _cachedGuideSpeed;
         }
 
         private void Hold()

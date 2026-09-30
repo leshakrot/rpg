@@ -2938,6 +2938,7 @@ GameObject:
   - component: {fileID: 4046419578505163433}
   - component: {fileID: 3497947109735415402}
   - component: {fileID: 5349239601348214663}
+  - component: {fileID: 3248837109060259751}
   m_Layer: 0
   m_Name: DogCompanion
   m_TagString: Untagged
@@ -3157,10 +3158,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startingLevel: 1
-  _characterClass: 5
+  _characterClass: 9
   _progression: {fileID: 11400000, guid: acd2c1c77d6f112468c3d8efb3dbad19, type: 2}
   _levelUpParticleEffect: {fileID: 0}
-  _shouldUseModifiers: 0
+  _shouldUseModifiers: 1
 --- !u!136 &2289306121183595165
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3520,6 +3521,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Quests.QuestCompletion
   _quest: {fileID: 11400000, guid: 8806ad42d4b78b2459fa9a6a2a76c6a2, type: 2}
   _objective: give_sausage
+--- !u!114 &3248837109060259751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5496219608855063166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaabc3db9cffdef48b94e6fa65159604, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Companions.AnimalTraining
+  companionData: {fileID: 11400000, guid: 3a3d0844ecdc1db4d901615eb202d2e3, type: 2}
+  bonusConfig:
+  - trait: 2
+    stat: 0
+    additiveBonusPerPoint: 10
+    percentageBonusPerPoint: 0
+  - trait: 0
+    stat: 5
+    additiveBonusPerPoint: 1.5
+    percentageBonusPerPoint: 0
+  - trait: 1
+    stat: 0
+    additiveBonusPerPoint: 0
+    percentageBonusPerPoint: 4
+  - trait: 3
+    stat: 10
+    additiveBonusPerPoint: 0
+    percentageBonusPerPoint: 6
 --- !u!1 &5695801820792325754
 GameObject:
   m_ObjectHideFlags: 0

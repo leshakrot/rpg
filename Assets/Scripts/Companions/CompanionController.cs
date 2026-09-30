@@ -135,6 +135,9 @@ namespace RPG.Companions
 
             _state = State.Following;
 
+            // Подтягиваем купленные у дрессировщика уровни (если на животном есть AnimalTraining)
+            GetComponent<AnimalTraining>()?.SyncFromManager();
+
             CompanionManager.Instance.RegisterActiveCompanion(_companionID, this);
         }
 
