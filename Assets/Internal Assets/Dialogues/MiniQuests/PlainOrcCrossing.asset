@@ -1,0 +1,261 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-2190512067113567740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 04ccda01-1215-4c0d-8c66-05acb88e3c0a
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u041F\u041B\u0410\u0422\u0418 \u0414\u0415\u041D\u042C\u0413\u0418"
+  children:
+  - 5bcd00cc-7494-4eb7-b1e2-7935eb617649
+  - de3cf453-78b4-4475-8049-ca680931751b
+  - 05e97233-1c65-408d-8755-257f5960c5e9
+  rect:
+    serializedVersion: 2
+    x: 576
+    y: 52
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &-602200413682391406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 05e97233-1c65-408d-8755-257f5960c5e9
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "\u041D\u0435\u0442\u0443 \u0434\u0435\u043D\u0435\u0433"
+  children:
+  - e58dc23c-f5e4-4705-83f5-59c097c4a3f1
+  rect:
+    serializedVersion: 2
+    x: 824
+    y: 162
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cb41413d0f918744b4655afe6c9f18f, type: 3}
+  m_Name: PlainOrcCrossing
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.Dialogue
+  nodes:
+  - {fileID: 8112955517662089913}
+  - {fileID: 887527930373110018}
+  - {fileID: -2190512067113567740}
+  - {fileID: 5045146758701811831}
+  - {fileID: 6710730211688887479}
+  - {fileID: 264363998132996204}
+  - {fileID: 8120287848228306622}
+  - {fileID: -602200413682391406}
+  - {fileID: 4576098790487424866}
+  newNodeOffset: {x: 250, y: 0}
+--- !u!114 &264363998132996204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: e691e3f7-013f-4086-abb2-cc4ede7ddb5a
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u041F\u0438\u0437\u0434\u0430 \u0442\u0435 \u0441\u0443\u043A\u0430"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 1072
+    y: 276
+    width: 200
+    height: 100
+  onEnterActions:
+  - aggrevate
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &887527930373110018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: ad434329-c57c-4f35-ba76-992cd2633c43
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "\u0427\u0442\u043E \u0442\u0435\u0431\u0435 \u043D\u0443\u0436\u043D\u043E?"
+  children:
+  - 04ccda01-1215-4c0d-8c66-05acb88e3c0a
+  rect:
+    serializedVersion: 2
+    x: 326
+    y: 52
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &4576098790487424866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: e58dc23c-f5e4-4705-83f5-59c097c4a3f1
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u0422\u043E\u0433\u0434\u0430 \u043F\u0440\u043E\u0432\u0430\u043B\u0438\u0432\u0430\u0439 \u043E\u0442\u0441\u044E\u0434\u0430!"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 1069
+    y: 160
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &5045146758701811831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 5bcd00cc-7494-4eb7-b1e2-7935eb617649
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "\u0414\u0430\u0442\u044C 100 \u0434\u0435\u043D\u0435\u0433"
+  children:
+  - 2d1bee3a-80c7-4067-b19e-6059fcefb990
+  rect:
+    serializedVersion: 2
+    x: 826
+    y: 51
+    width: 200
+    height: 100
+  onEnterActions:
+  - take_money_from_player
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &6710730211688887479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: de3cf453-78b4-4475-8049-ca680931751b
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 1
+  text: "\u041D\u0430\u0445\u0443\u0439 \u043F\u043E\u0448\u0435\u043B"
+  children:
+  - e691e3f7-013f-4086-abb2-cc4ede7ddb5a
+  rect:
+    serializedVersion: 2
+    x: 828
+    y: 277
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &8112955517662089913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: ce80bb4a-d079-4aeb-9ae7-3a2c2314af46
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u0421\u0422\u0410\u042F\u0422\u042C \u0421\u0423\u041A\u0410!"
+  children:
+  - ad434329-c57c-4f35-ba76-992cd2633c43
+  rect:
+    serializedVersion: 2
+    x: 76
+    y: 52
+    width: 200
+    height: 100
+  onEnterActions: []
+  onExitActions: []
+  condition:
+    _and: []
+--- !u!114 &8120287848228306622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c648a866d680e7a4b9814c1685013423, type: 3}
+  m_Name: 2d1bee3a-80c7-4067-b19e-6059fcefb990
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Dialogue.DialogueNode
+  isPlayerSpeaking: 0
+  text: "\u0422\u044B \u043C\u043E\u0436\u0435\u0448\u044C \u043F\u0440\u043E\u0445\u043E\u0434\u0438\u0442\u044C \u0430 \u043C\u044B \u043F\u043E\u0439\u0434\u0435\u043C \u0438\u0441\u043A\u0430\u0442\u044C \u0434\u0440\u0443\u0433\u043E\u0433\u043E \u043B\u043E\u0445\u0430.\n*\u0411\u043E\u043B\u044C\u0448\u043E\u0439 \u043E\u0440\u043A \u0441\u043E \u0441\u0432\u043E\u0435\u0439 \u0441\u0432\u0438\u0442\u043E\u0439 \u0443\u0445\u043E\u0434\u0438\u0442 \u0438 \u0432\u044B \u043C\u043E\u0436\u0435\u0442\u0435 \u0438\u0434\u0442\u0438 \u0434\u0430\u043B\u044C\u0448\u0435*"
+  children: []
+  rect:
+    serializedVersion: 2
+    x: 1073
+    y: 49
+    width: 200
+    height: 100
+  onEnterActions:
+  - leave
+  onExitActions: []
+  condition:
+    _and: []

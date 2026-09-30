@@ -22,6 +22,8 @@ namespace RPG.SceneManagement
             MainTownTavernCellar_Cave,
             MainTown_ForestPath,
             MainTown_OldChannel,
+            OldChannel_PlainToFarm,
+            PlainToFarm_Farm,
             ForestPath_Forest,
             MainTown_MainTownCavePath,
             MainTownCavePath_CellarCave,
