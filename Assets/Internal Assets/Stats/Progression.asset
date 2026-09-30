@@ -12,1054 +12,1640 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d159d2a426c6e5141a20232a7746c819, type: 3}
   m_Name: Progression
   m_EditorClassIdentifier: 
+  maxLevel: 18
   progressionData:
   - characterClass: 0
     stat: 0
-    values:
-    - 280
-    - 355
-    - 430
-    - 505
-    - 580
-    - 655
-    - 730
-    - 805
-    - 880
-    - 955
-    - 1030
-    - 1105
-    - 1180
-    - 1255
-    - 1330
-    - 1405
-    - 1480
-    - 1555
+    mode: 3
+    start: 280
+    end: 1400
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 0
     stat: 1
-    values:
-    - 100
-    - 115
-    - 132.25
-    - 152.08748
-    - 174.90062
-    - 201.13571
-    - 231.30605
-    - 266.00195
-    - 305.90225
-    - 351.78757
-    - 404.5557
-    - 465.23904
-    - 535.0249
-    - 615.27856
-    - 707.5704
-    - 813.70593
-    - 935.7617
-    - 1076.126
+    mode: 1
+    start: 100
+    end: 300
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 0
     stat: 2
-    values:
-    - 2.5
-    - 2.775
-    - 3.08025
-    - 3.4190776
-    - 3.795176
-    - 4.2126455
-    - 4.676037
-    - 5.190401
-    - 5.761345
-    - 6.395093
-    - 7.098553
-    - 7.8793945
-    - 8.746128
-    - 9.708202
-    - 10.776105
-    - 11.961475
-    - 13.277239
-    - 14.737735
+    mode: 1
+    start: 2.5
+    end: 6
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 2
+    values: []
   - characterClass: 0
     stat: 5
-    values:
-    - 35
-    - 50
-    - 65
-    - 80
-    - 95
-    - 110
-    - 125
-    - 140
-    - 155
-    - 170
-    - 185
-    - 200
-    - 215
-    - 230
-    - 245
-    - 260
-    - 275
-    - 290
+    mode: 3
+    start: 35
+    end: 150
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 0
     stat: 8
-    values:
-    - 15
-    - 25
-    - 35
-    - 45
-    - 55
-    - 65
-    - 75
-    - 85
-    - 95
-    - 105
-    - 115
-    - 125
-    - 135
-    - 145
-    - 155
-    - 165
-    - 175
-    - 185
+    mode: 1
+    start: 15
+    end: 55
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 0
     stat: 4
+    mode: 0
+    start: 1
+    end: 1
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 0
     values:
-    - 275
-    - 500
-    - 775
-    - 1100
-    - 1475
-    - 1900
-    - 2375
-    - 2900
-    - 3475
-    - 4100
-    - 4775
-    - 5500
-    - 6275
-    - 7100
-    - 7975
-    - 8900
-    - 9875
-    - 10900
+    - 150
+    - 330
+    - 550
+    - 810
+    - 1115
+    - 1480
+    - 1905
+    - 2400
+    - 2980
+    - 3650
+    - 4430
+    - 5330
+    - 6365
+    - 7555
+    - 8920
+    - 10490
+    - 12280
   - characterClass: 0
     stat: 6
+    mode: 0
+    start: 1
+    end: 1
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 0
     values:
     - 1
     - 1
-    - 2
     - 1
     - 1
     - 2
     - 1
     - 1
-    - 2
-    - 2
-    - 1
-    - 2
     - 1
     - 1
     - 2
     - 1
     - 1
+    - 1
+    - 1
     - 2
+    - 1
+    - 1
+    - 1
   - characterClass: 0
     stat: 7
-    values:
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
-    - 7
-    - 8
-    - 9
-    - 10
-    - 11
-    - 12
-    - 13
-    - 14
-    - 15
-    - 16
-    - 17
-    - 18
+    mode: 1
+    start: 0
+    end: 17
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 0
     stat: 9
-    values:
-    - 5.5
-    - 5.6
-    - 5.7
-    - 5.8
-    - 5.9
-    - 6
-    - 6.1
-    - 6.2
-    - 6.3
-    - 6.4
-    - 6.5
-    - 6.6
-    - 6.7
-    - 6.8
-    - 6.9
-    - 7
-    - 7.1
-    - 7.2
+    mode: 1
+    start: 5.5
+    end: 6.5
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 3
+    values: []
   - characterClass: 1
     stat: 0
-    values:
-    - 123.5
-    - 129.23656
-    - 136.29437
-    - 144.37541
-    - 153.31395
-    - 163.00111
-    - 173.3587
-    - 184.3271
-    - 195.85907
-    - 207.91602
-    - 220.4657
-    - 233.48064
-    - 246.93713
-    - 260.81445
-    - 275.0943
-    - 289.76025
-    - 304.79767
-    - 320.1933
+    mode: 3
+    start: 129.62962
+    end: 340.9091
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 1
     stat: 5
-    values:
-    - 18
-    - 30
-    - 42
-    - 54
-    - 66
-    - 78
-    - 90
-    - 102
-    - 114
-    - 126
-    - 138
-    - 150
-    - 162
-    - 174
-    - 186
-    - 198
-    - 210
-    - 222
+    mode: 3
+    start: 23
+    end: 135.625
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 1
     stat: 8
-    values:
-    - 8
-    - 16.4
-    - 24.8
-    - 33.199997
-    - 41.6
-    - 50
-    - 58.399998
-    - 66.799995
-    - 75.2
-    - 83.6
-    - 92
-    - 100.399994
-    - 108.799995
-    - 117.2
-    - 125.59999
-    - 134
-    - 142.4
-    - 150.79999
+    mode: 1
+    start: 8
+    end: 32
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 1
     stat: 3
-    values:
-    - 25
-    - 40
-    - 55
-    - 70
-    - 85
-    - 100.00001
-    - 115.00001
-    - 130
-    - 145
-    - 160.00002
-    - 175.00002
-    - 190.00002
-    - 205.00002
-    - 220.00002
-    - 235.00002
-    - 250.00002
-    - 265
-    - 280.00003
+    mode: 3
+    start: 25
+    end: 126.3618
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 1
     stat: 9
-    values:
-    - 4.5099998
-    - 4.6099997
-    - 4.7099996
-    - 4.81
-    - 4.91
-    - 5.0099998
-    - 5.1099997
-    - 5.2099996
-    - 5.31
-    - 5.41
-    - 5.5099998
-    - 5.6099997
-    - 5.7099996
-    - 5.81
-    - 5.91
-    - 6.0099998
-    - 6.1099997
-    - 6.2099996
+    mode: 1
+    start: 4.5
+    end: 4.5
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 2
+    values: []
   - characterClass: 2
     stat: 0
-    values:
-    - 90.2
-    - 94.22254
-    - 99.43153
-    - 105.6
-    - 112.59675
-    - 120.33327
-    - 128.74457
-    - 137.78032
-    - 147.4
-    - 157.57011
-    - 168.26231
-    - 179.45229
-    - 191.11876
-    - 203.24304
-    - 215.80846
-    - 228.8
-    - 242.20416
-    - 256.00858
+    mode: 3
+    start: 83.33333
+    end: 254.23729
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
+  - characterClass: 2
+    stat: 5
+    mode: 3
+    start: 35.77778
+    end: 217
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
+  - characterClass: 2
+    stat: 8
+    mode: 1
+    start: 5
+    end: 18
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
+  - characterClass: 2
+    stat: 3
+    mode: 3
+    start: 35
+    end: 176.90651
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
+  - characterClass: 2
+    stat: 9
+    mode: 1
+    start: 4.8
+    end: 4.8
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 2
+    values: []
   - characterClass: 2
     stat: 1
-    values:
-    - 165
-    - 198.00002
-    - 237.6
-    - 285.12003
-    - 342.14404
-    - 410.5729
-    - 492.6875
-    - 591.22504
-    - 709.47003
-    - 851.3641
-    - 1021.63696
-    - 1225.9644
-    - 1471.1572
-    - 1765.3889
-    - 2118.4666
-    - 2542.1602
-    - 3050.5923
-    - 3660.711
+    mode: 1
+    start: 150
+    end: 350
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 2
     stat: 2
-    values:
-    - 4.4
-    - 4.8840003
-    - 5.4212403
-    - 6.0175767
-    - 6.67951
-    - 7.4142566
-    - 8.229825
-    - 9.135106
-    - 10.139968
-    - 11.255364
-    - 12.493454
-    - 13.867734
-    - 15.393186
-    - 17.086435
-    - 18.965944
-    - 21.052198
-    - 23.36794
-    - 25.938414
-  - characterClass: 2
-    stat: 5
-    values:
-    - 32.45
-    - 35.532055
-    - 39.56412
-    - 44.371105
-    - 49.85103
-    - 55.93471
-    - 62.571156
-    - 69.72071
-    - 77.35138
-    - 85.43664
-    - 93.953995
-    - 102.884094
-    - 112.210014
-    - 121.916824
-    - 131.99118
-    - 142.42111
-    - 153.19574
-    - 164.30519
-  - characterClass: 2
-    stat: 8
-    values:
-    - 5.5
-    - 14.52
-    - 23.54
-    - 32.56
-    - 41.58
-    - 50.600002
-    - 59.620003
-    - 68.64
-    - 77.66
-    - 86.68001
-    - 95.700005
-    - 104.72
-    - 113.740005
-    - 122.76001
-    - 131.78
-    - 140.8
-    - 149.82
-    - 158.84001
-  - characterClass: 2
-    stat: 3
-    values:
-    - 38.5
-    - 61.600002
-    - 84.700005
-    - 107.8
-    - 130.90001
-    - 154.00002
-    - 177.1
-    - 200.20001
-    - 223.30002
-    - 246.40002
-    - 269.50003
-    - 292.60004
-    - 315.7
-    - 338.80002
-    - 361.90002
-    - 385.00003
-    - 408.10004
-    - 431.20004
-  - characterClass: 2
-    stat: 9
-    values:
-    - 4.785
-    - 4.8849998
-    - 4.9849997
-    - 5.085
-    - 5.185
-    - 5.285
-    - 5.3849998
-    - 5.4849997
-    - 5.585
-    - 5.685
-    - 5.785
-    - 5.8849998
-    - 5.9849997
-    - 6.085
-    - 6.185
-    - 6.285
-    - 6.3849998
-    - 6.4849997
+    mode: 1
+    start: 4
+    end: 8
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 2
+    values: []
   - characterClass: 3
     stat: 0
-    values:
-    - 102.8
-    - 107.649826
-    - 113.77158
-    - 120.89994
-    - 128.88448
-    - 137.62508
-    - 147.04898
-    - 157.10033
-    - 167.73447
-    - 178.91473
-    - 190.61028
-    - 202.79474
-    - 215.44522
-    - 228.54161
-    - 242.06609
-    - 256.0027
-    - 270.337
-    - 285.05603
+    mode: 3
+    start: 98.130844
+    end: 297.61905
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 3
     stat: 5
-    values:
-    - 22
-    - 36
-    - 50
-    - 64
-    - 78
-    - 92
-    - 106
-    - 120
-    - 134
-    - 148
-    - 162
-    - 176
-    - 190
-    - 204
-    - 218
-    - 232
-    - 246
-    - 260
+    mode: 3
+    start: 26.833334
+    end: 166.92308
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 3
     stat: 8
-    values:
-    - 7
-    - 17
-    - 27
-    - 37
-    - 47
-    - 57
-    - 67
-    - 77
-    - 87
-    - 97
-    - 107
-    - 117
-    - 127
-    - 137
-    - 147
-    - 157
-    - 167
-    - 177
+    mode: 1
+    start: 7
+    end: 26
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 3
     stat: 3
-    values:
-    - 28
-    - 44.800003
-    - 61.600002
-    - 78.4
-    - 95.200005
-    - 112.00001
-    - 128.8
-    - 145.6
-    - 162.40001
-    - 179.20001
-    - 196.00002
-    - 212.80002
-    - 229.6
-    - 246.40001
-    - 263.2
-    - 280.00003
-    - 296.80002
-    - 313.6
+    mode: 3
+    start: 28.75
+    end: 145.31607
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 3
     stat: 9
-    values:
-    - 5.225
-    - 5.325
-    - 5.4249997
-    - 5.525
-    - 5.625
-    - 5.725
-    - 5.825
-    - 5.9249997
-    - 6.025
-    - 6.125
-    - 6.225
-    - 6.325
-    - 6.4249997
-    - 6.525
-    - 6.625
-    - 6.725
-    - 6.825
-    - 6.9249997
+    mode: 1
+    start: 5.2
+    end: 5.2
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 2
+    values: []
   - characterClass: 4
     stat: 0
-    values:
-    - 246.60002
-    - 257.17773
-    - 270.0588
-    - 284.70816
-    - 300.8307
-    - 318.2335
-    - 336.7786
-    - 356.3612
-    - 376.8985
-    - 398.323
-    - 420.57846
-    - 443.61703
-    - 467.39758
-    - 491.88406
-    - 517.04474
-    - 542.8514
-    - 569.27856
-    - 596.30347
+    mode: 3
+    start: 237.28813
+    end: 555.55554
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 4
     stat: 5
-    values:
-    - 40.2
-    - 43.421078
-    - 47.54981
-    - 52.406235
-    - 57.887142
-    - 63.923275
-    - 70.464
-    - 77.47021
-    - 84.910545
-    - 92.75914
-    - 100.99415
-    - 109.596855
-    - 118.55096
-    - 127.84211
-    - 137.45757
-    - 147.38585
-    - 157.61667
-    - 168.1406
+    mode: 3
+    start: 40.25
+    end: 241.11111
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 4
     stat: 8
-    values:
-    - 21.6
-    - 37.2
-    - 52.800003
-    - 68.4
-    - 84
-    - 99.600006
-    - 115.200005
-    - 130.8
-    - 146.40001
-    - 162
-    - 177.6
-    - 193.20001
-    - 208.8
-    - 224.40001
-    - 240
-    - 255.6
-    - 271.2
-    - 286.80002
+    mode: 1
+    start: 18
+    end: 62
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 4
     stat: 3
-    values:
-    - 60.000004
-    - 96.00001
-    - 132.00002
-    - 168.00002
-    - 204.00002
-    - 240.00003
-    - 276.00003
-    - 312.00003
-    - 348.00003
-    - 384.00003
-    - 420.00003
-    - 456.00006
-    - 492.00006
-    - 528.00006
-    - 564.00006
-    - 600.00006
-    - 636.00006
-    - 672.00006
+    mode: 3
+    start: 50
+    end: 252.7236
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 4
     stat: 9
-    values:
-    - 4.0150003
-    - 4.1150002
-    - 4.215
-    - 4.3150005
-    - 4.4150004
-    - 4.5150003
-    - 4.6150002
-    - 4.715
-    - 4.8150005
-    - 4.9150004
-    - 5.0150003
-    - 5.1150002
-    - 5.215
-    - 5.3150005
-    - 5.4150004
-    - 5.5150003
-    - 5.6150002
-    - 5.715
+    mode: 1
+    start: 4
+    end: 4
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 2
+    values: []
   - characterClass: 5
     stat: 0
-    values:
-    - 48
-    - 64
-    - 80
-    - 96
-    - 112
-    - 128
-    - 144
-    - 160
-    - 176
-    - 192
-    - 208
-    - 224
-    - 240
-    - 256
-    - 272
-    - 288
-    - 304
-    - 320
+    mode: 3
+    start: 67.30769
+    end: 206.89656
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 5
     stat: 5
-    values:
-    - 9.6
-    - 18.400002
-    - 27.2
-    - 36
-    - 44.800003
-    - 53.600002
-    - 62.4
-    - 71.200005
-    - 80
-    - 88.8
-    - 97.600006
-    - 106.4
-    - 115.200005
-    - 124
-    - 132.8
-    - 141.6
-    - 150.40001
-    - 159.2
+    mode: 3
+    start: 16.1
+    end: 98.63637
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 5
     stat: 8
-    values:
-    - 3.2
-    - 9.68
-    - 16.160002
-    - 22.640001
-    - 29.120003
-    - 35.600002
-    - 42.08
-    - 48.560005
-    - 55.040005
-    - 61.520004
-    - 68.00001
-    - 74.48
-    - 80.96001
-    - 87.44001
-    - 93.920006
-    - 100.40001
-    - 106.880005
-    - 113.36001
+    mode: 1
+    start: 4
+    end: 16
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 5
     stat: 3
-    values:
-    - 12
-    - 19.2
-    - 26.400002
-    - 33.600002
-    - 40.800003
-    - 48
-    - 55.2
-    - 62.4
-    - 69.600006
-    - 76.8
-    - 84
-    - 91.200005
-    - 98.4
-    - 105.600006
-    - 112.8
-    - 120.00001
-    - 127.200005
-    - 134.40001
+    mode: 3
+    start: 15.000001
+    end: 75.817085
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 5
     stat: 9
-    values:
-    - 5.9950004
-    - 6.0950003
-    - 6.195
-    - 6.2950006
-    - 6.3950005
-    - 6.4950004
-    - 6.5950003
-    - 6.695
-    - 6.7950006
-    - 6.8950005
-    - 6.9950004
-    - 7.0950003
-    - 7.195
-    - 7.2950006
-    - 7.3950005
-    - 7.4950004
-    - 7.5950003
-    - 7.695
+    mode: 1
+    start: 6
+    end: 6
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 2
+    values: []
   - characterClass: 6
     stat: 0
-    values:
-    - 82.98
-    - 86.298195
-    - 90.422745
-    - 95.17719
-    - 100.46268
-    - 106.2139
-    - 112.38372
-    - 118.93613
-    - 125.84247
-    - 133.0793
-    - 140.62697
-    - 148.46873
-    - 156.59006
-    - 164.97827
-    - 173.62213
-    - 182.51157
-    - 191.63756
-    - 200.99194
+    mode: 3
+    start: 99.0566
+    end: 290.3226
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 6
     stat: 5
-    values:
-    - 13.5
-    - 24.3
-    - 35.1
-    - 45.899998
-    - 56.699997
-    - 67.5
-    - 78.299995
-    - 89.09999
-    - 99.899994
-    - 110.7
-    - 121.49999
-    - 132.29999
-    - 143.09999
-    - 153.9
-    - 164.69998
-    - 175.49998
-    - 186.29999
-    - 197.09999
+    mode: 3
+    start: 20.125
+    end: 127.647064
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 6
     stat: 8
-    values:
-    - 5.3999996
-    - 14.4
-    - 23.4
-    - 32.4
-    - 41.4
-    - 50.4
-    - 59.4
-    - 68.4
-    - 77.4
-    - 86.4
-    - 95.4
-    - 104.4
-    - 113.4
-    - 122.4
-    - 131.4
-    - 140.4
-    - 149.4
-    - 158.4
+    mode: 1
+    start: 6
+    end: 24
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 6
     stat: 3
-    values:
-    - 18
-    - 28.8
-    - 39.6
-    - 50.4
-    - 61.2
-    - 72
-    - 82.8
-    - 93.6
-    - 104.4
-    - 115.200005
-    - 126
-    - 136.8
-    - 147.6
-    - 158.40001
-    - 169.2
-    - 180
-    - 190.8
-    - 201.6
+    mode: 3
+    start: 20
+    end: 101.08944
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 6
     stat: 9
-    values:
-    - 4.29
-    - 4.39
-    - 4.49
-    - 4.59
-    - 4.69
-    - 4.79
-    - 4.89
-    - 4.99
-    - 5.09
-    - 5.19
-    - 5.29
-    - 5.39
-    - 5.49
-    - 5.59
-    - 5.69
-    - 5.79
-    - 5.89
-    - 5.99
+    mode: 1
+    start: 4.3
+    end: 4.3
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 2
+    values: []
+  - characterClass: 8
+    stat: 0
+    mode: 3
+    start: 60.576923
+    end: 193.96552
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
+  - characterClass: 8
+    stat: 5
+    mode: 3
+    start: 16.1
+    end: 98.63637
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
+  - characterClass: 8
+    stat: 8
+    mode: 1
+    start: 4
+    end: 16
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
+  - characterClass: 8
+    stat: 3
+    mode: 3
+    start: 17.5
+    end: 88.453255
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
+  - characterClass: 8
+    stat: 9
+    mode: 1
+    start: 5.5
+    end: 5.5
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 2
+    values: []
+  - characterClass: 7
+    stat: 0
+    mode: 1
+    start: 1
+    end: 1
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
+  - characterClass: 7
+    stat: 5
+    mode: 1
+    start: 0
+    end: 0
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
+  - characterClass: 7
+    stat: 9
+    mode: 1
+    start: 0
+    end: 0
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
   - characterClass: 7
     stat: 3
-    values:
-    - 31.5
-    - 34.24264
-    - 37.794228
-    - 42
-    - 46.770508
-    - 52.045406
-    - 57.780388
-    - 63.941124
-    - 70.5
-    - 77.434166
-    - 84.724304
-    - 92.35383
-    - 100.30825
-    - 108.5748
-    - 117.14212
-    - 126
-    - 135.13919
-    - 144.5513
-  - characterClass: 7
-    stat: 9
-    values:
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-  - characterClass: 7
-    stat: 0
-    values:
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
-  - characterClass: 7
-    stat: 5
-    values:
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-    - 0
-  - characterClass: 8
-    stat: 0
-    values:
-    - 55
-    - 74
-    - 93
-    - 112
-    - 131
-    - 150
-    - 169
-    - 188
-    - 207
-    - 226
-    - 245
-    - 264
-    - 283
-    - 302
-    - 321
-    - 340
-    - 359
-    - 378
-  - characterClass: 8
-    stat: 5
-    values:
-    - 14
-    - 26
-    - 38
-    - 50
-    - 62
-    - 74
-    - 86
-    - 98
-    - 110
-    - 122
-    - 134
-    - 146
-    - 158
-    - 170
-    - 182
-    - 194
-    - 206
-    - 218
-  - characterClass: 8
-    stat: 8
-    values:
-    - 4
-    - 12.1
-    - 20.2
-    - 28.300001
-    - 36.4
-    - 44.5
-    - 52.600002
-    - 60.700005
-    - 68.8
-    - 76.9
-    - 85
-    - 93.100006
-    - 101.200005
-    - 109.3
-    - 117.40001
-    - 125.50001
-    - 133.6
-    - 141.70001
-  - characterClass: 8
-    stat: 3
-    values:
-    - 18
-    - 28.8
-    - 39.6
-    - 50.4
-    - 61.2
-    - 72
-    - 82.8
-    - 93.6
-    - 104.4
-    - 115.200005
-    - 126
-    - 136.8
-    - 147.6
-    - 158.40001
-    - 169.2
-    - 180
-    - 190.8
-    - 201.6
-  - characterClass: 8
-    stat: 9
-    values:
-    - 5.5
-    - 5.6
-    - 5.7
-    - 5.8
-    - 5.9
-    - 6
-    - 6.1
-    - 6.2
-    - 6.3
-    - 6.4
-    - 6.5
-    - 6.6
-    - 6.7
-    - 6.8
-    - 6.9
-    - 7
-    - 7.1
-    - 7.2
+    mode: 3
+    start: 25
+    end: 126.3618
+    shape: 1
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rounding: 1
+    values: []
