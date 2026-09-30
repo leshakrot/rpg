@@ -34,11 +34,6 @@ namespace RPG.Stats
 		private void Start()
 		{
 			_currentLevel.ForceInit();
-            
-			if (_progression != null)
-			{
-				_progression.OnStatProgressionChanged += OnProgressionChanged;
-			}
 		}
 
 		private void OnEnable()
@@ -55,20 +50,8 @@ namespace RPG.Stats
 			{
 				_experience.onExperienceGained -= UpdateLevel;
 			}
-            
-			if (_progression != null)
-			{
-				_progression.OnStatProgressionChanged -= OnProgressionChanged;
-			}
 		}
 
-		private void OnProgressionChanged(CharacterClass characterClass, Stat stat)
-		{
-			if (characterClass == _characterClass)
-			{
-				onStatChanged?.Invoke(stat);
-			}
-		}
 
 		private void UpdateLevel()
 		{
