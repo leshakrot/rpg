@@ -1,37 +1,39 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using RPG.Processing;
 using RPG.Control;
 using GameDevTV.Inventories;
-using RPG.UI.Crafting; // Для использования CraftingSlotUI
+using RPG.Inventories;
+using RPG.UI.Crafting; // Р”Р»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ CraftingSlotUI
 
 namespace RPG.UI
 {
     public class ProcessingUI : MonoBehaviour
     {
-        [Header("Основные компоненты")]
+        [Header("РћСЃРЅРѕРІРЅС‹Рµ РєРѕРјРїРѕРЅРµРЅС‚С‹")]
         [SerializeField] private GameObject uiContainer;
         [SerializeField] private Button closeButton;
 
-        [Header("Список рецептов")]
+        [Header("РЎРїРёСЃРѕРє СЂРµС†РµРїС‚РѕРІ")]
         [SerializeField] private Transform recipeListRoot;
         [SerializeField] private RecipeUIEntry recipeButtonPrefab;
 
-        [Header("Детали выбранного рецепта")]
+        [Header("Р”РµС‚Р°Р»Рё РІС‹Р±СЂР°РЅРЅРѕРіРѕ СЂРµС†РµРїС‚Р°")]
         [SerializeField] private TextMeshProUGUI stationNameText;
-        [SerializeField] private Transform recipeDetailsContainer; // Контейнер для отображения рецепта
-        [SerializeField] private CraftingSlotUI itemSlotPrefab; // Префаб слота для предметов
-        [SerializeField] private GameObject recipeArrowPrefab; // Префаб стрелки
+        [SerializeField] private Transform recipeDetailsContainer; // РљРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ СЂРµС†РµРїС‚Р°
+        [SerializeField] private CraftingSlotUI itemSlotPrefab; // РџСЂРµС„Р°Р± СЃР»РѕС‚Р° РґР»СЏ РїСЂРµРґРјРµС‚РѕРІ
+        [SerializeField] private GameObject recipeArrowPrefab; // РџСЂРµС„Р°Р± СЃС‚СЂРµР»РєРё
         [SerializeField] private Button craftButton;
 
-        [Header("Проверка ресурсов")]
-        [SerializeField] private TextMeshProUGUI resourceStatusText; // Опциональный текст статуса
+        [Header("РџСЂРѕРІРµСЂРєР° СЂРµСЃСѓСЂСЃРѕРІ")]
+        [SerializeField] private TextMeshProUGUI resourceStatusText; // РћРїС†РёРѕРЅР°Р»СЊРЅС‹Р№ С‚РµРєСЃС‚ СЃС‚Р°С‚СѓСЃР°
 
         private PlayerController playerController;
         private ProcessingStation currentStation;
         private ProcessingRecipe selectedRecipe;
         private Inventory playerInventory;
+        private ActionStore playerActionStore;
 
         public static ProcessingUI Instance { get; private set; }
 
@@ -53,10 +55,16 @@ namespace RPG.UI
             playerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
             playerInventory = playerController.GetComponent<Inventory>();
 
-            // Подписываемся на изменения инвентаря для обновления UI
+            // РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° РёР·РјРµРЅРµРЅРёСЏ РёРЅРІРµРЅС‚Р°СЂСЏ РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ UI
             if (playerInventory != null)
             {
                 playerInventory.inventoryUpdated += UpdateRecipeDetails;
+            }
+
+            playerActionStore = playerController.GetComponent<ActionStore>();
+            if (playerActionStore != null)
+            {
+                playerActionStore.storeUpdated += UpdateRecipeDetails;
             }
 
             Hide();
@@ -64,38 +72,43 @@ namespace RPG.UI
 
         private void OnDestroy()
         {
-            // Отписываемся от событий при уничтожении
+            // РћС‚РїРёСЃС‹РІР°РµРјСЃСЏ РѕС‚ СЃРѕР±С‹С‚РёР№ РїСЂРё СѓРЅРёС‡С‚РѕР¶РµРЅРёРё
             if (playerInventory != null)
             {
                 playerInventory.inventoryUpdated -= UpdateRecipeDetails;
             }
+
+            if (playerActionStore != null)
+            {
+                playerActionStore.storeUpdated -= UpdateRecipeDetails;
+            }
         }
 
         /// <summary>
-        /// Показывает окно переработки для указанной станции.
+        /// РџРѕРєР°Р·С‹РІР°РµС‚ РѕРєРЅРѕ РїРµСЂРµСЂР°Р±РѕС‚РєРё РґР»СЏ СѓРєР°Р·Р°РЅРЅРѕР№ СЃС‚Р°РЅС†РёРё.
         /// </summary>
         public void Show(ProcessingStation station)
         {
             this.currentStation = station;
             uiContainer.SetActive(true);
 
-            // Очищаем старый список рецептов
+            // РћС‡РёС‰Р°РµРј СЃС‚Р°СЂС‹Р№ СЃРїРёСЃРѕРє СЂРµС†РµРїС‚РѕРІ
             ClearContainer(recipeListRoot);
 
-            // Заполняем список новыми рецептами
+            // Р—Р°РїРѕР»РЅСЏРµРј СЃРїРёСЃРѕРє РЅРѕРІС‹РјРё СЂРµС†РµРїС‚Р°РјРё
             foreach (var recipe in station.AvailableRecipes)
             {
                 var entry = Instantiate(recipeButtonPrefab, recipeListRoot);
                 entry.Setup(recipe, this);
             }
 
-            // Обновляем заголовок
+            // РћР±РЅРѕРІР»СЏРµРј Р·Р°РіРѕР»РѕРІРѕРє
             if (stationNameText != null)
             {
                 stationNameText.text = station.StationName;
             }
 
-            // Выбираем первый рецепт по умолчанию
+            // Р’С‹Р±РёСЂР°РµРј РїРµСЂРІС‹Р№ СЂРµС†РµРїС‚ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
             if (station.AvailableRecipes.Count > 0)
             {
                 SelectRecipe(station.AvailableRecipes[0]);
@@ -103,7 +116,7 @@ namespace RPG.UI
         }
 
         /// <summary>
-        /// Вызывается при выборе рецепта из списка.
+        /// Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё РІС‹Р±РѕСЂРµ СЂРµС†РµРїС‚Р° РёР· СЃРїРёСЃРєР°.
         /// </summary>
         public void SelectRecipe(ProcessingRecipe recipe)
         {
@@ -112,84 +125,84 @@ namespace RPG.UI
         }
 
         /// <summary>
-        /// Обновляет визуальное отображение выбранного рецепта.
+        /// РћР±РЅРѕРІР»СЏРµС‚ РІРёР·СѓР°Р»СЊРЅРѕРµ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ РІС‹Р±СЂР°РЅРЅРѕРіРѕ СЂРµС†РµРїС‚Р°.
         /// </summary>
         private void UpdateRecipeDetails()
         {
             if (selectedRecipe == null) return;
 
-            // Очищаем контейнер деталей рецепта
+            // РћС‡РёС‰Р°РµРј РєРѕРЅС‚РµР№РЅРµСЂ РґРµС‚Р°Р»РµР№ СЂРµС†РµРїС‚Р°
             ClearContainer(recipeDetailsContainer);
 
-            // Создаем слот для входного ресурса
+            // РЎРѕР·РґР°РµРј СЃР»РѕС‚ РґР»СЏ РІС…РѕРґРЅРѕРіРѕ СЂРµСЃСѓСЂСЃР°
             var inputSlot = Instantiate(itemSlotPrefab, recipeDetailsContainer);
 
-            // Проверяем количество ресурсов в инвентаре
+            // РџСЂРѕРІРµСЂСЏРµРј РєРѕР»РёС‡РµСЃС‚РІРѕ СЂРµСЃСѓСЂСЃРѕРІ РІ РёРЅРІРµРЅС‚Р°СЂРµ
             int availableAmount = GetTotalItemCount(playerInventory, selectedRecipe.Input.item);
             bool hasEnoughResources = availableAmount >= selectedRecipe.Input.quantity;
 
-            // Настраиваем слот с цветовой индикацией
+            // РќР°СЃС‚СЂР°РёРІР°РµРј СЃР»РѕС‚ СЃ С†РІРµС‚РѕРІРѕР№ РёРЅРґРёРєР°С†РёРµР№
             inputSlot.Setup(selectedRecipe.Input.item, selectedRecipe.Input.quantity);
             SetSlotAppearance(inputSlot, hasEnoughResources, availableAmount, selectedRecipe.Input.quantity);
 
-            // Создаем стрелку
+            // РЎРѕР·РґР°РµРј СЃС‚СЂРµР»РєСѓ
             if (recipeArrowPrefab != null)
             {
                 Instantiate(recipeArrowPrefab, recipeDetailsContainer);
             }
 
-            // Создаем слот для результата
+            // РЎРѕР·РґР°РµРј СЃР»РѕС‚ РґР»СЏ СЂРµР·СѓР»СЊС‚Р°С‚Р°
             var outputSlot = Instantiate(itemSlotPrefab, recipeDetailsContainer);
             outputSlot.Setup(selectedRecipe.Output.item, selectedRecipe.Output.quantity);
-            SetSlotAppearance(outputSlot, true, selectedRecipe.Output.quantity, selectedRecipe.Output.quantity); // Результат всегда "доступен"
+            SetSlotAppearance(outputSlot, true, selectedRecipe.Output.quantity, selectedRecipe.Output.quantity); // Р РµР·СѓР»СЊС‚Р°С‚ РІСЃРµРіРґР° "РґРѕСЃС‚СѓРїРµРЅ"
 
-            // Обновляем состояние кнопки крафта
+            // РћР±РЅРѕРІР»СЏРµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РєРЅРѕРїРєРё РєСЂР°С„С‚Р°
             craftButton.interactable = hasEnoughResources;
 
-            // Обновляем текст кнопки
+            // РћР±РЅРѕРІР»СЏРµРј С‚РµРєСЃС‚ РєРЅРѕРїРєРё
             Text buttonText = craftButton.GetComponentInChildren<Text>();
             if (buttonText != null)
             {
-                buttonText.text = hasEnoughResources ? "Создать" : "Недостаточно ресурсов";
+                buttonText.text = hasEnoughResources ? "РЎРѕР·РґР°С‚СЊ" : "РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ СЂРµСЃСѓСЂСЃРѕРІ";
             }
 
-            // Обновляем статусный текст (если есть)
+            // РћР±РЅРѕРІР»СЏРµРј СЃС‚Р°С‚СѓСЃРЅС‹Р№ С‚РµРєСЃС‚ (РµСЃР»Рё РµСЃС‚СЊ)
             if (resourceStatusText != null)
             {
                 if (hasEnoughResources)
                 {
-                    resourceStatusText.text = $"Готово к переработке! Время: {selectedRecipe.TimeToProcess:F1}с";
+                    resourceStatusText.text = $"Р“РѕС‚РѕРІРѕ Рє РїРµСЂРµСЂР°Р±РѕС‚РєРµ! Р’СЂРµРјСЏ: {selectedRecipe.TimeToProcess:F1}СЃ";
                     resourceStatusText.color = Color.green;
                 }
                 else
                 {
                     int needed = selectedRecipe.Input.quantity - availableAmount;
-                    resourceStatusText.text = $"Нужно еще: {needed}x {selectedRecipe.Input.item.GetDisplayName()}";
+                    resourceStatusText.text = $"РќСѓР¶РЅРѕ РµС‰Рµ: {needed}x {selectedRecipe.Input.item.GetDisplayName()}";
                     resourceStatusText.color = Color.red;
                 }
             }
         }
 
         /// <summary>
-        /// Настраивает внешний вид слота в зависимости от доступности ресурсов.
+        /// РќР°СЃС‚СЂР°РёРІР°РµС‚ РІРЅРµС€РЅРёР№ РІРёРґ СЃР»РѕС‚Р° РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РґРѕСЃС‚СѓРїРЅРѕСЃС‚Рё СЂРµСЃСѓСЂСЃРѕРІ.
         /// </summary>
         private void SetSlotAppearance(CraftingSlotUI slot, bool hasEnough, int available, int required)
         {
-            // Получаем компоненты слота для изменения внешнего вида
+            // РџРѕР»СѓС‡Р°РµРј РєРѕРјРїРѕРЅРµРЅС‚С‹ СЃР»РѕС‚Р° РґР»СЏ РёР·РјРµРЅРµРЅРёСЏ РІРЅРµС€РЅРµРіРѕ РІРёРґР°
             Image background = slot.GetComponent<Image>();
             if (background != null)
             {
                 if (hasEnough)
                 {
-                    background.color = new Color(0.2f, 0.8f, 0.2f, 0.3f); // Зеленоватый
+                    background.color = new Color(0.2f, 0.8f, 0.2f, 0.3f); // Р—РµР»РµРЅРѕРІР°С‚С‹Р№
                 }
                 else
                 {
-                    background.color = new Color(0.8f, 0.2f, 0.2f, 0.3f); // Красноватый
+                    background.color = new Color(0.8f, 0.2f, 0.2f, 0.3f); // РљСЂР°СЃРЅРѕРІР°С‚С‹Р№
                 }
             }
 
-            // Можно добавить дополнительный текст с количеством в инвентаре
+            // РњРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Р№ С‚РµРєСЃС‚ СЃ РєРѕР»РёС‡РµСЃС‚РІРѕРј РІ РёРЅРІРµРЅС‚Р°СЂРµ
             Text[] texts = slot.GetComponentsInChildren<Text>();
             foreach (Text text in texts)
             {
@@ -203,7 +216,7 @@ namespace RPG.UI
         }
 
         /// <summary>
-        /// Скрывает окно переработки.
+        /// РЎРєСЂС‹РІР°РµС‚ РѕРєРЅРѕ РїРµСЂРµСЂР°Р±РѕС‚РєРё.
         /// </summary>
         public void Hide()
         {
@@ -211,7 +224,7 @@ namespace RPG.UI
         }
 
         /// <summary>
-        /// Вызывается при нажатии на кнопку "Создать".
+        /// Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё РЅР°Р¶Р°С‚РёРё РЅР° РєРЅРѕРїРєСѓ "РЎРѕР·РґР°С‚СЊ".
         /// </summary>
         private void Craft()
         {
@@ -219,13 +232,13 @@ namespace RPG.UI
 
             ProcessingManager.Instance.StartProcessing(selectedRecipe, playerController);
 
-            // Обновляем UI после начала обработки
-            // Небольшая задержка, чтобы инвентарь успел обновиться
+            // РћР±РЅРѕРІР»СЏРµРј UI РїРѕСЃР»Рµ РЅР°С‡Р°Р»Р° РѕР±СЂР°Р±РѕС‚РєРё
+            // РќРµР±РѕР»СЊС€Р°СЏ Р·Р°РґРµСЂР¶РєР°, С‡С‚РѕР±С‹ РёРЅРІРµРЅС‚Р°СЂСЊ СѓСЃРїРµР» РѕР±РЅРѕРІРёС‚СЊСЃСЏ
             Invoke(nameof(UpdateRecipeDetails), 0.1f);
         }
 
         /// <summary>
-        /// Очищает контейнер от дочерних объектов.
+        /// РћС‡РёС‰Р°РµС‚ РєРѕРЅС‚РµР№РЅРµСЂ РѕС‚ РґРѕС‡РµСЂРЅРёС… РѕР±СЉРµРєС‚РѕРІ.
         /// </summary>
         private void ClearContainer(Transform container)
         {
@@ -236,19 +249,11 @@ namespace RPG.UI
         }
 
         /// <summary>
-        /// Подсчитывает общее количество предмета в инвентаре.
+        /// РџРѕРґСЃС‡РёС‚С‹РІР°РµС‚ РѕР±С‰РµРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРµРґРјРµС‚Р° РІ РёРЅРІРµРЅС‚Р°СЂРµ.
         /// </summary>
         private int GetTotalItemCount(Inventory inventory, InventoryItem item)
         {
-            int total = 0;
-            for (int i = 0; i < inventory.GetSize(); i++)
-            {
-                if (inventory.GetItemInSlot(i) == item)
-                {
-                    total += inventory.GetNumberInSlot(i);
-                }
-            }
-            return total;
+            return PlayerItemStorage.GetTotalCount(inventory, item);
         }
     }
 }

@@ -1,16 +1,17 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 using RPG.Control;
 using GameDevTV.Inventories;
 using System.Collections;
 using RPG.UI.RequirementText;
-using RPG.Harvesting; // <-- ¬¿∆ÕŒ: ƒÓ·‡‚¸ÚÂ ˝ÚÓÚ using ‰Îˇ ‰ÓÒÚÛÔ‡ Í HarvestBar
+using RPG.Inventories;
+using RPG.Harvesting; // <-- –í–ê–ñ–ù–û: –î–æ–±–∞–≤—å—Ç–µ —ç—Ç–æ—Ç using –¥–ª—è –¥–æ—Å—Ç—É–ø–∞ –∫ HarvestBar
 
 namespace RPG.Processing
 {
     public class ProcessingManager : MonoBehaviour
     {
         [Header("UI")]
-        [Tooltip("œÂÂÚ‡˘ËÚÂ Ò˛‰‡ Ó·˙ÂÍÚ HarvestBarHUD Ò ‚‡¯Â„Ó Canvas")]
+        [Tooltip("–ü–µ—Ä–µ—Ç–∞—â–∏—Ç–µ —Å—é–¥–∞ –æ–±—ä–µ–∫—Ç HarvestBarHUD —Å –≤–∞—à–µ–≥–æ Canvas")]
         [SerializeField] private HarvestBar processingBar = null;
 
         private static ProcessingManager _instance;
@@ -34,7 +35,7 @@ namespace RPG.Processing
             int itemsInInventory = GetTotalItemCount(inventory, recipe.Input.item);
             if (itemsInInventory < recipe.Input.quantity)
             {
-                RequirementTextManager.Show($"ÕÛÊÌÓ: {recipe.Input.item.GetDisplayName()} ({recipe.Input.quantity})");
+                RequirementTextManager.Show($"–ù—É–∂–Ω–æ: {recipe.Input.item.GetDisplayName()} ({recipe.Input.quantity})");
                 return;
             }
 
@@ -43,65 +44,41 @@ namespace RPG.Processing
 
         private IEnumerator ProcessCoroutine(ProcessingRecipe recipe, Inventory inventory)
         {
-            // «‡·Ë‡ÂÏ ÂÒÛÒ˚
+            // –ó–∞–±–∏—Ä–∞–µ–º —Ä–µ—Å—É—Ä—Å—ã
             RemoveItems(inventory, recipe.Input.item, recipe.Input.quantity);
 
-            // œÓÍ‡Á˚‚‡ÂÏ ÔÓÎÓÒÛ ÔÓ„ÂÒÒ‡
+            // –ü–æ–∫–∞–∑—ã–≤–∞–µ–º –ø–æ–ª–æ—Å—É –ø—Ä–æ–≥—Ä–µ—Å—Å–∞
             if (processingBar != null)
             {
-                string processName = $"—ÓÁ‰‡ÌËÂ: {recipe.Output.item.GetDisplayName()}";
-                // »«Ã≈Õ≈Õ»≈: ¬˚Á˚‚‡ÂÏ ÌÓ‚˚È ÏÂÚÓ‰
+                string processName = $"–°–æ–∑–¥–∞–Ω–∏–µ: {recipe.Output.item.GetDisplayName()}";
+                // –ò–ó–ú–ï–ù–ï–ù–ò–ï: –í—ã–∑—ã–≤–∞–µ–º –Ω–æ–≤—ã–π –º–µ—Ç–æ–¥
                 processingBar.StartProcessing(processName, recipe.TimeToProcess);
             }
 
-            // ∆‰ÂÏ (ÚÂÔÂ¸ ˝ÚÓ ÔÓÒÚÓ Á‡‰ÂÊÍ‡, Ò‡Ï ·‡ ÛÔ‡‚ÎˇÂÚÒˇ Ò‚ÓÂÈ ÍÓÛÚËÌÓÈ)
+            // –ñ–¥–µ–º (—Ç–µ–ø–µ—Ä—å —ç—Ç–æ –ø—Ä–æ—Å—Ç–æ –∑–∞–¥–µ—Ä–∂–∫–∞, —Å–∞–º –±–∞—Ä —É–ø—Ä–∞–≤–ª—è–µ—Ç—Å—è —Å–≤–æ–µ–π –∫–æ—Ä—É—Ç–∏–Ω–æ–π)
             yield return new WaitForSeconds(recipe.TimeToProcess);
 
-            // ¬˚‰‡ÂÏ „ÓÚÓ‚˚È ÔÓ‰ÛÍÚ
+            // –í—ã–¥–∞–µ–º –≥–æ—Ç–æ–≤—ã–π –ø—Ä–æ–¥—É–∫—Ç
             bool addedSuccessfully = inventory.AddToFirstEmptySlot(recipe.Output.item, recipe.Output.quantity);
             if (!addedSuccessfully)
             {
-                Debug.LogWarning($"ÕÂ Û‰‡ÎÓÒ¸ ‰Ó·‡‚ËÚ¸ {recipe.Output.item.GetDisplayName()} ‚ ËÌ‚ÂÌÚ‡¸. ÕÂÚ ÏÂÒÚ‡!");
+                Debug.LogWarning($"–ù–µ —É–¥–∞–ª–æ—Å—å –¥–æ–±–∞–≤–∏—Ç—å {recipe.Output.item.GetDisplayName()} –≤ –∏–Ω–≤–µ–Ω—Ç–∞—Ä—å. –ù–µ—Ç –º–µ—Å—Ç–∞!");
             }
 
-            // ¬¿∆ÕŒ: Ã˚ ·ÓÎ¸¯Â ÌÂ ‚˚Á˚‚‡ÂÏ Á‰ÂÒ¸ Stop(), Ú.Í. ÍÓÛÚËÌ‡ ‚ HarvestBar Ò‡Ï‡ Á‡‚Â¯ËÚÒˇ Ë ÒÍÓÂÚ ·‡.
+            // –í–ê–ñ–ù–û: –ú—ã –±–æ–ª—å—à–µ –Ω–µ –≤—ã–∑—ã–≤–∞–µ–º –∑–¥–µ—Å—å Stop(), —Ç.–∫. –∫–æ—Ä—É—Ç–∏–Ω–∞ –≤ HarvestBar —Å–∞–º–∞ –∑–∞–≤–µ—Ä—à–∏—Ç—Å—è –∏ —Å–∫—Ä–æ–µ—Ç –±–∞—Ä.
         }
 
-        // ... (‚ÒÔÓÏÓ„‡ÚÂÎ¸Ì˚Â ÏÂÚÓ‰˚ GetTotalItemCount Ë RemoveItems ÓÒÚ‡˛ÚÒˇ ·ÂÁ ËÁÏÂÌÂÌËÈ) ...
+        // ... (–≤—Å–ø–æ–º–æ–≥–∞—Ç–µ–ª—å–Ω—ã–µ –º–µ—Ç–æ–¥—ã GetTotalItemCount –∏ RemoveItems –æ—Å—Ç–∞—é—Ç—Å—è –±–µ–∑ –∏–∑–º–µ–Ω–µ–Ω–∏–π) ...
         private int GetTotalItemCount(Inventory inventory, InventoryItem item)
         {
-            int total = 0;
-            for (int i = 0; i < inventory.GetSize(); i++)
-            {
-                if (inventory.GetItemInSlot(i) == item)
-                {
-                    total += inventory.GetNumberInSlot(i);
-                }
-            }
-            return total;
+            // –£—á–∏—Ç—ã–≤–∞–µ–º –∏ –∏–Ω–≤–µ–Ω—Ç–∞—Ä—å, –∏ action bar
+            return PlayerItemStorage.GetTotalCount(inventory, item);
         }
 
         private void RemoveItems(Inventory inventory, InventoryItem item, int quantity)
         {
-            int quantityToRemove = quantity;
-            for (int i = 0; i < inventory.GetSize(); i++)
-            {
-                if (inventory.GetItemInSlot(i) == item)
-                {
-                    int numberInSlot = inventory.GetNumberInSlot(i);
-                    if (numberInSlot >= quantityToRemove)
-                    {
-                        inventory.RemoveFromSlot(i, quantityToRemove);
-                        quantityToRemove = 0;
-                        break;
-                    }
-                    else
-                    {
-                        inventory.RemoveFromSlot(i, numberInSlot);
-                        quantityToRemove -= numberInSlot;
-                    }
-                }
-            }
+            // –°–Ω–∞—á–∞–ª–∞ —Å–ø–∏—Å—ã–≤–∞–µ–º –∏–∑ –∏–Ω–≤–µ–Ω—Ç–∞—Ä—è, –æ—Å—Ç–∞—Ç–æ–∫ ‚Äî —Å action bar
+            PlayerItemStorage.RemoveItems(inventory, item, quantity);
         }
     }
 }

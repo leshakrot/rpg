@@ -4,6 +4,7 @@ using TMPro;
 using RPG.Crafting;
 using RPG.Control;
 using GameDevTV.Inventories;
+using RPG.Inventories;
 using System.Collections.Generic;
 
 namespace RPG.UI.Crafting
@@ -29,6 +30,7 @@ namespace RPG.UI.Crafting
 		private PlayerController playerController;
 		private CraftingStation currentStation;
 		private Inventory playerInventory;
+		private ActionStore playerActionStore;
 
 		private List<GameObject> recipeUIList = new List<GameObject>();
 
@@ -59,6 +61,12 @@ namespace RPG.UI.Crafting
 				playerInventory.inventoryUpdated += UpdateAllUI;
 			}
 
+			playerActionStore = playerController.GetComponent<ActionStore>();
+			if (playerActionStore != null)
+			{
+				playerActionStore.storeUpdated += UpdateAllUI;
+			}
+
 			Hide();
 		}
 
@@ -67,6 +75,11 @@ namespace RPG.UI.Crafting
 			if (playerInventory != null)
 			{
 				playerInventory.inventoryUpdated -= UpdateAllUI;
+			}
+
+			if (playerActionStore != null)
+			{
+				playerActionStore.storeUpdated -= UpdateAllUI;
 			}
 		}
 
@@ -184,15 +197,7 @@ namespace RPG.UI.Crafting
 
 		private int GetTotalItemCount(Inventory inventory, InventoryItem item)
 		{
-			int total = 0;
-			for (int i = 0; i < inventory.GetSize(); i++)
-			{
-				if (object.ReferenceEquals(inventory.GetItemInSlot(i), item))
-				{
-					total += inventory.GetNumberInSlot(i);
-				}
-			}
-			return total;
+			return PlayerItemStorage.GetTotalCount(inventory, item);
 		}
 	}
 }
