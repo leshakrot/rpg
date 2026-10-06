@@ -22,6 +22,7 @@ namespace RPG.UI.Crafting
 
         CraftingRecipe craftingRecipe;
         Inventory inventory;
+        ActionStore actionStore;
 
         // Флаг: идёт ли сейчас крафт — блокирует повторные нажатия
         private bool isCrafting = false;
@@ -29,6 +30,10 @@ namespace RPG.UI.Crafting
         private void Awake()
         {
             inventory = Inventory.GetPlayerInventory();
+            if (inventory != null)
+            {
+                actionStore = inventory.GetComponent<ActionStore>();
+            }
         }
 
         private void OnEnable()
@@ -37,6 +42,10 @@ namespace RPG.UI.Crafting
             {
                 inventory.inventoryUpdated += UpdateCraftButtonStates;
             }
+            if (actionStore != null)
+            {
+                actionStore.storeUpdated += UpdateCraftButtonStates;
+            }
         }
 
         private void OnDisable()
@@ -44,6 +53,10 @@ namespace RPG.UI.Crafting
             if (inventory != null)
             {
                 inventory.inventoryUpdated -= UpdateCraftButtonStates;
+            }
+            if (actionStore != null)
+            {
+                actionStore.storeUpdated -= UpdateCraftButtonStates;
             }
 
             // Если закрыли UI во время крафта — сбрасываем флаг и останавливаем бар

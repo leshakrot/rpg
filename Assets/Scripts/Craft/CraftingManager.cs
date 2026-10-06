@@ -1,7 +1,8 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using RPG.Control;
 using GameDevTV.Inventories;
 using RPG.UI.RequirementText;
+using RPG.Inventories;
 
 namespace RPG.Crafting
 {
@@ -21,44 +22,44 @@ namespace RPG.Crafting
         }
 
         /// <summary>
-        /// Выполняет крафт предмета по указанному рецепту.
+        /// Р’С‹РїРѕР»РЅСЏРµС‚ РєСЂР°С„С‚ РїСЂРµРґРјРµС‚Р° РїРѕ СѓРєР°Р·Р°РЅРЅРѕРјСѓ СЂРµС†РµРїС‚Сѓ.
         /// </summary>
         public bool CraftItem(PlayerController player, InventoryItem resultItem, CraftingRecipe.Recipes recipe)
         {
             var inventory = player.GetComponent<Inventory>();
             if (inventory == null)
             {
-                Debug.LogError("У игрока нет компонента Inventory!");
+                Debug.LogError("РЈ РёРіСЂРѕРєР° РЅРµС‚ РєРѕРјРїРѕРЅРµРЅС‚Р° Inventory!");
                 return false;
             }
 
-            // Проверяем наличие ингредиентов
+            // РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РёРЅРіСЂРµРґРёРµРЅС‚РѕРІ
             if (!HasIngredients(inventory, recipe))
             {
                 ShowMissingIngredientsMessage(recipe);
                 return false;
             }
 
-            // Убираем ингредиенты из инвентаря
+            // РЈР±РёСЂР°РµРј РёРЅРіСЂРµРґРёРµРЅС‚С‹ РёР· РёРЅРІРµРЅС‚Р°СЂСЏ
             RemoveItems(inventory, recipe);
 
-            // Добавляем результат
+            // Р”РѕР±Р°РІР»СЏРµРј СЂРµР·СѓР»СЊС‚Р°С‚
             bool addedSuccessfully = inventory.AddToFirstEmptySlot(resultItem, 1);
             if (!addedSuccessfully)
             {
-                Debug.LogWarning($"Не удалось добавить {resultItem.GetDisplayName()} в инвентарь. Нет места!");
-                // Возвращаем ингредиенты обратно
+                Debug.LogWarning($"РќРµ СѓРґР°Р»РѕСЃСЊ РґРѕР±Р°РІРёС‚СЊ {resultItem.GetDisplayName()} РІ РёРЅРІРµРЅС‚Р°СЂСЊ. РќРµС‚ РјРµСЃС‚Р°!");
+                // Р’РѕР·РІСЂР°С‰Р°РµРј РёРЅРіСЂРµРґРёРµРЅС‚С‹ РѕР±СЂР°С‚РЅРѕ
                 ReturnIngredients(inventory, recipe);
-                RequirementTextManager.Show("Недостаточно места в инвентаре!");
+                RequirementTextManager.Show("РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РјРµСЃС‚Р° РІ РёРЅРІРµРЅС‚Р°СЂРµ!");
                 return false;
             }
 
-            Debug.Log($"Успешно создан предмет: {resultItem.GetDisplayName()}");
+            Debug.Log($"РЈСЃРїРµС€РЅРѕ СЃРѕР·РґР°РЅ РїСЂРµРґРјРµС‚: {resultItem.GetDisplayName()}");
             return true;
         }
 
         /// <summary>
-        /// Проверяет, может ли игрок скрафтить предмет.
+        /// РџСЂРѕРІРµСЂСЏРµС‚, РјРѕР¶РµС‚ Р»Рё РёРіСЂРѕРє СЃРєСЂР°С„С‚РёС‚СЊ РїСЂРµРґРјРµС‚.
         /// </summary>
         public bool CanCraft(PlayerController player, CraftingRecipe.Recipes recipe)
         {
@@ -69,7 +70,7 @@ namespace RPG.Crafting
         }
 
         /// <summary>
-        /// Показывает сообщение о недостающих ингредиентах.
+        /// РџРѕРєР°Р·С‹РІР°РµС‚ СЃРѕРѕР±С‰РµРЅРёРµ Рѕ РЅРµРґРѕСЃС‚Р°СЋС‰РёС… РёРЅРіСЂРµРґРёРµРЅС‚Р°С….
         /// </summary>
         private void ShowMissingIngredientsMessage(CraftingRecipe.Recipes recipe)
         {
@@ -86,11 +87,11 @@ namespace RPG.Crafting
                 }
             }
 
-            RequirementTextManager.Show($"Недостаточно материалов: {missingItems}");
+            RequirementTextManager.Show($"РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РјР°С‚РµСЂРёР°Р»РѕРІ: {missingItems}");
         }
 
         /// <summary>
-        /// Возвращает ингредиенты в инвентарь (в случае ошибки).
+        /// Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРіСЂРµРґРёРµРЅС‚С‹ РІ РёРЅРІРµРЅС‚Р°СЂСЊ (РІ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё).
         /// </summary>
         private void ReturnIngredients(Inventory inventory, CraftingRecipe.Recipes recipe)
         {
@@ -101,66 +102,36 @@ namespace RPG.Crafting
         }
 
         /// <summary>
-        /// Убирает ингредиенты из инвентаря.
+        /// РЈР±РёСЂР°РµС‚ РёРЅРіСЂРµРґРёРµРЅС‚С‹ РёР· РёРЅРІРµРЅС‚Р°СЂСЏ.
         /// </summary>
         private void RemoveItems(Inventory inventory, CraftingRecipe.Recipes recipe)
         {
             foreach (CraftingRecipe.Ingredients ingredient in recipe.ingredients)
             {
-                if (ingredient.item.IsStackable())
-                {
-                    int itemSlot = inventory.GetItemSlot(ingredient.item, ingredient.number);
-                    inventory.RemoveFromSlot(itemSlot, ingredient.number);
-                }
-                else
-                {
-                    for (int i = 0; i < ingredient.number; i++)
-                    {
-                        int itemSlot = inventory.GetItemSlot(ingredient.item, 1);
-                        inventory.RemoveFromSlot(itemSlot, 1);
-                    }
-                }
+                // РЎРЅР°С‡Р°Р»Р° СЃРїРёСЃС‹РІР°РµРј РёР· РёРЅРІРµРЅС‚Р°СЂСЏ, РѕСЃС‚Р°С‚РѕРє вЂ” СЃ action bar
+                PlayerItemStorage.RemoveItems(inventory, ingredient.item, ingredient.number);
             }
         }
 
         /// <summary>
-        /// Проверяет наличие всех ингредиентов в инвентаре.
+        /// РџСЂРѕРІРµСЂСЏРµС‚ РЅР°Р»РёС‡РёРµ РІСЃРµС… РёРЅРіСЂРµРґРёРµРЅС‚РѕРІ РІ РёРЅРІРµРЅС‚Р°СЂРµ.
         /// </summary>
         private bool HasIngredients(Inventory inventory, CraftingRecipe.Recipes recipe)
         {
             foreach (CraftingRecipe.Ingredients ingredient in recipe.ingredients)
             {
-                bool hasItem = false;
-
-                if (ingredient.item.IsStackable())
-                {
-                    hasItem = inventory.GetItemSlot(ingredient.item, ingredient.number) >= 0;
-                }
-                else
-                {
-                    int itemCount = GetTotalItemCount(inventory, ingredient.item);
-                    hasItem = itemCount >= ingredient.number;
-                }
-
-                if (!hasItem) return false;
+                // РЈС‡РёС‚С‹РІР°РµРј Рё РёРЅРІРµРЅС‚Р°СЂСЊ, Рё action bar
+                if (GetTotalItemCount(inventory, ingredient.item) < ingredient.number) return false;
             }
             return true;
         }
 
         /// <summary>
-        /// Подсчитывает общее количество предмета в инвентаре.
+        /// РџРѕРґСЃС‡РёС‚С‹РІР°РµС‚ РѕР±С‰РµРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРµРґРјРµС‚Р° РІ РёРЅРІРµРЅС‚Р°СЂРµ.
         /// </summary>
         private int GetTotalItemCount(Inventory inventory, InventoryItem item)
         {
-            int total = 0;
-            for (int i = 0; i < inventory.GetSize(); i++)
-            {
-                if (object.ReferenceEquals(inventory.GetItemInSlot(i), item))
-                {
-                    total += inventory.GetNumberInSlot(i);
-                }
-            }
-            return total;
+            return PlayerItemStorage.GetTotalCount(inventory, item);
         }
     }
 }

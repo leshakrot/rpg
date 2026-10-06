@@ -125,6 +125,59 @@ namespace GameDevTV.Inventories
         }
 
         /// <summary>
+        /// Total number of the given item across all action bar slots.
+        /// </summary>
+        public int GetItemCount(InventoryItem item)
+        {
+            if (item == null) return 0;
+            int total = 0;
+            foreach (var pair in dockedItems)
+            {
+                if (object.ReferenceEquals(pair.Value.item, item))
+                {
+                    total += pair.Value.number;
+                }
+            }
+            return total;
+        }
+
+        /// <summary>
+        /// Remove up to <paramref name="number"/> of the given item, taking it from
+        /// any action bar slots that contain it.
+        /// </summary>
+        /// <returns>How many items were actually removed.</returns>
+        public int RemoveItemsByType(InventoryItem item, int number)
+        {
+            if (item == null || number <= 0) return 0;
+
+            int remaining = number;
+            var indexes = new List<int>(dockedItems.Keys);
+            foreach (int index in indexes)
+            {
+                if (remaining <= 0) break;
+
+                DockedItemSlot slot = dockedItems[index];
+                if (!object.ReferenceEquals(slot.item, item)) continue;
+
+                int toRemove = Mathf.Min(slot.number, remaining);
+                slot.number -= toRemove;
+                remaining -= toRemove;
+                if (slot.number <= 0)
+                {
+                    dockedItems.Remove(index);
+                }
+            }
+
+            int removed = number - remaining;
+            if (removed > 0 && storeUpdated != null)
+            {
+                storeUpdated();
+            }
+            return removed;
+        }
+
+
+        /// <summary>
         /// What is the maximum number of items allowed in this slot.
         /// 
         /// This takes into account whether the slot already contains an item
